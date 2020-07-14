@@ -1,7 +1,8 @@
-# _tsr_
-dynamic tracking tool
+# _TSR_
+Dynamic tracking management tool. _TSR_ is built on Spring and React.
 
-# setup
-_tsr_ uses Java 13, direnv, and docker.
+## Goal
+Dynamically manage and track planning requirements in a collaborative space.
 
+## Setup
 For setup, run `setup.sh`
