@@ -5,6 +5,8 @@ plugins {
 	id("io.spring.dependency-management") version "1.0.9.RELEASE"
 	kotlin("jvm") version "1.3.72"
 	kotlin("plugin.spring") version "1.3.72"
+
+	id("com.github.ben-manes.versions") version "0.28.0" // helps find latest dependency versions `./gradlew dependencyUpdates`
 }
 
 group = "us.gorak.tsr"
