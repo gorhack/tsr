@@ -1,4 +1,4 @@
-package us.gorak.tsr.tsr
+package us.gorak.tsr
 
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication

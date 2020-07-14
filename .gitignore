@@ -1,13 +1,7 @@
-# Compiled class file
+# Defaults
 *.class
-
-# Log file
 *.log
-
-# BlueJ files
 *.ctxt
-
-# Mobile Tools for Java (J2ME)
 .mtj.tmp/
 
 # Package Files #
@@ -21,3 +15,52 @@
 
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
+
+HELP.md
+.env
+.gradle
+build/
+!gradle/wrapper/gradle-wrapper.jar
+!**/src/main/**
+!**/src/test/**
+yarn-error.log
+*.pid
+*.hprof
+stale_outputs_checked
+.editorconfig
+
+**/secrets
+**/overrides
+
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+out/
+
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+
+### VS Code ###
+.vscode/
+
+node_modules/
+src/main/resources/static/
+yarn*.log
+
+**/.DS_STORE
+

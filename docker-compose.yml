@@ -1,0 +1,11 @@
+version: "3.7"
+services:
+  db:
+    image: postgres:12.2-alpine
+    environment:
+      POSTGRES_DB: "${TSR_DATABASE}"
+      POSTGRES_PASSWORD: "${TSR_DB_PASS}"
+      POSTGRES_USER: "${TSR_DB_USER}"
+      PGDATA: "/var/lib/postgresql/data/tsr"
+    volumes:
+      - ./postgres/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d

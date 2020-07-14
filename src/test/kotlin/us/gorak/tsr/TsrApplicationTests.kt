@@ -1,4 +1,4 @@
-package us.gorak.tsr.tsr
+package us.gorak.tsr
 
 import org.junit.jupiter.api.Test
 import org.springframework.boot.test.context.SpringBootTest
