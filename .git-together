@@ -1,0 +1,4 @@
+[git-together]
+	domain = gorak.us
+[git-together "authors"]
+  kg = "Kyle Gorak; kyle@gorak.us"
