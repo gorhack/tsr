@@ -2,6 +2,8 @@ version: "3.7"
 services:
   db:
     image: postgres:12.2-alpine
+    ports:
+      - '5432:5432'
     environment:
       POSTGRES_DB: "${TSR_DATABASE}"
       POSTGRES_PASSWORD: "${TSR_DB_PASS}"
