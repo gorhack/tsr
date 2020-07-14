@@ -6,7 +6,11 @@
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-scripts": "^3.4.1",
-    "typescript": "^3.9.6"
+    "typescript": "^3.9.6",
+    "websocket-extensions": "^0.1.4"
+  },
+  "dependencyComments": {
+    "websocket-extensions": "dependabot vulnerability requires >=0.1.4"
   },
   "scripts": {
     "start": "react-scripts start",
