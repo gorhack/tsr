@@ -15,6 +15,7 @@ fi
 cd $GITHUB_WORKSPACE
 # Run gradle tests
 # fail if tests fail
+echo "******* Testing Backend"
 {
   ./gradlew test --info
 } ||

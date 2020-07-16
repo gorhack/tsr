@@ -18,12 +18,12 @@ jobs:
     runs-on: ubuntu-18.04
     steps:
       - uses: actions/checkout@v2
-      - name: install-yarn
-        run: |
-          curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
-          echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list
-          sudo apt-get update
-          sudo apt-get install yarn
+#      - name: install-yarn
+#        run: |
+#          curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
+#          echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list
+#          sudo apt-get update
+#          sudo apt-get install yarn
 
       - name: Set up JDK 13
         uses: actions/setup-java@v1
@@ -39,4 +39,5 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: scout-jar
-          path: build/libs/scout-*.jar
+          path: build/libs/scout-0.0.1-SNAPSHOT.jar
+        run: ls -al
