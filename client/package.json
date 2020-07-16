@@ -15,6 +15,7 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
+    "postbuild": "echo copying files; rm -rf ../src/main/resources/static && mkdir -p ../src/main/resources/static  && cp -f -R build/* ../src/main/resources/static",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "format": "prettier --write src/**/*.{js,jsx,ts,tsx}",
