@@ -13,7 +13,7 @@ if [[ -z "$GITHUB_REPOSITORY" ]]; then
 fi
 
 cd $GITHUB_WORKSPACE/client
-echo "******* Testing Backend"
+echo "******* Testing Frontend"
 yarn install
 yarn lint:ci
 CI=true yarn test

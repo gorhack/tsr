@@ -15,6 +15,10 @@ group = "us.gorak.tsr"
 version = "0.0.1-SNAPSHOT"
 java.sourceCompatibility = JavaVersion.VERSION_13
 
+node {
+	nodeModulesDir = file("${project.projectDir}/client")
+}
+
 repositories {
 	mavenCentral()
 	maven { url = uri("https://repo.spring.io/milestone") }
