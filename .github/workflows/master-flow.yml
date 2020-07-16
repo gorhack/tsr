@@ -1,6 +1,6 @@
 # This is a basic workflow to help you get started with Actions
 
-name: Main CI
+name: Full CI/CD
 
 on:
   push:
