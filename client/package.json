@@ -18,7 +18,8 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "format": "prettier --write src/**/*.{js,jsx,ts,tsx}",
-    "lint": "eslint --fix src/**/*.{js,jsx,ts,tsx}"
+    "lint": "eslint --fix src/**/*.{js,jsx,ts,tsx}",
+    "lint:ci": "eslint . --max-warnings 0 --ext .js,.jsx,.ts,.tsx"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -58,7 +59,7 @@
     "eslint-plugin-react-hooks": "^4.0.7",
     "eslint-plugin-standard": "^4.0.1",
     "http-proxy-middleware": "^1.0.5",
-    "testdouble": "^3.16.1",
-    "prettier": "^2.0.5"
+    "prettier": "^2.0.5",
+    "testdouble": "^3.16.1"
   }
 }

@@ -42,12 +42,6 @@ if [[ ! $(which docker-compose) ]]; then
     fi
 fi
 # =============================================================================== Get images from the repo
-printf "\nEnter your Gitlab Username followed by your password (or a personal access token)\n"
-loginStatus=1
-while [[ ${loginStatus} != 0 ]]; do
-    docker login registry.master.forcenex.us
-    loginStatus=$?
-done
 
 docker pull postgres:12.2-alpine
 # =============================================================================== Start services and index elasticsearch
