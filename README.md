@@ -1,4 +1,4 @@
-![Main CI/CD](https://github.com/gorhack/tsr/workflows/Main%20CI/badge.svg)
+![Full CI/CD](https://github.com/gorhack/tsr/workflows/Full%20CI/CD/badge.svg)
 # _TSR_
 #### Track, Synchronize, Reporting Tool
 Dynamic tracking management tool. _TSR_ is built on Spring and React.
