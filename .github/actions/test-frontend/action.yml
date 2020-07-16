@@ -1,0 +1,5 @@
+name: 'test runner'
+description: 'front end test runner'
+runs:
+  using: 'docker'
+  image: 'Dockerfile'

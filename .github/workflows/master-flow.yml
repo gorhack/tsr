@@ -16,6 +16,7 @@ jobs:
       - uses: ./.github/actions/test-backend
   build:
     runs-on: ubuntu-18.04
+    needs: run-tests
     steps:
       - uses: actions/checkout@v2
 #      - name: install-yarn
