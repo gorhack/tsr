@@ -1,0 +1,42 @@
+# This is a basic workflow to help you get started with Actions
+
+name: Main CI
+
+on:
+  push:
+    branches: [ master ]
+
+jobs:
+  test:
+    name: run-tests
+    runs-on: ubuntu-18.04
+    steps:
+      - uses: actions/checkout@v2
+      - uses: ./.github/actions/test-frontend
+      - uses: ./.github/actions/test-backend
+  build:
+    runs-on: ubuntu-18.04
+    steps:
+      - uses: actions/checkout@v2
+      - name: install-yarn
+        run: |
+          curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
+          echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list
+          sudo apt-get update
+          sudo apt-get install yarn
+
+      - name: Set up JDK 13
+        uses: actions/setup-java@v1
+        with:
+          java-version: 13
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Build Jar
+        run: ./build.sh
+
+      - name: Saves build artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: scout-jar
+          path: build/libs/scout-*.jar
