@@ -10,3 +10,5 @@ LABEL "com.github.actions.icon"="terminal"
 LABEL "com.github.actions.color"="green"
 
 COPY entrypoint.sh /entrypoint.sh
+
+ENTRYPOINT ["/entrypoint.sh"]
