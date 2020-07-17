@@ -25,7 +25,7 @@ jobs:
       - name: Saves build artifact
         uses: actions/upload-artifact@v2
         with:
-          name: tsr.jar
+          name: tsr-jar
           path: build/libs/*.jar
   test:
     name: run-tests
@@ -38,20 +38,23 @@ jobs:
   docker:
     name: push docker
     runs-on: ubuntu-18.04
-    needs: test
+    needs: build
     steps:
       - uses: actions/checkout@v2
 
       - name: download build aritifact
-        uses: actions/download-artifact@v1
+        uses: actions/download-artifact@v2
         with:
           name: tsr-jar
+          path: build/libs/
       - name: login and push to docker
         shell: bash
         env:
           DOCKER_ACCESS_TOKEN: ${{ secrets.DOCKER_ACCESS_TOKEN }}
           DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
         run: |
+          ls -al
+          ls -al build/libs
           cd pipeline/docker/app_container
           ./build.sh
           ./push.sh
