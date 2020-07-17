@@ -36,15 +36,15 @@ jobs:
       - uses: ./.github/actions/test-frontend
       - uses: ./.github/actions/test-backend
   docker:
-    name: push-docker
+    name: push docker
     runs-on: ubuntu-18.04
-    needs: build, test
+    needs: [build, test]
     steps:
       - name: download build aritifact
         - uses: actions/download-artifact@v1
           with:
             name: tsr-jar
-      - name: login-and-push-to-docker
+      - name: login and push to docker
         - uses: actions/checkout@v2
         - shell: bash
           env:
