@@ -48,9 +48,9 @@ jobs:
           name: tsr-jar
       - name: login and push to docker
         shell: bash
-          env:
-            DOCKER_ACCESS_TOKEN: ${{ secrets.DOCKER_ACCESS_TOKEN }}
-            DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+        env:
+          DOCKER_ACCESS_TOKEN: ${{ secrets.DOCKER_ACCESS_TOKEN }}
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
         run: |
             ./pipeline/docker/app_container/build.sh
             ./pipeline/docker/app_container/push.sh
