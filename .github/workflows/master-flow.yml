@@ -51,8 +51,6 @@ jobs:
           DOCKER_ACCESS_TOKEN: ${{ secrets.DOCKER_ACCESS_TOKEN }}
           DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
         run: |
-          ls -al
-          ls -al build/libs
           cd pipeline/docker/app_container
           ./build.sh
           ./push.sh
