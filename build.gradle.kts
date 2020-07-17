@@ -5,6 +5,7 @@ plugins {
 	id("org.springframework.boot") version "2.4.0-SNAPSHOT"
 	id("io.spring.dependency-management") version "1.0.9.RELEASE"
 	id("com.moowork.node") version "1.3.1"
+	id("org.sonarqube") version "3.0"
 	kotlin("jvm") version "1.3.72"
 	kotlin("plugin.spring") version "1.3.72"
 
