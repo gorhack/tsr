@@ -44,7 +44,7 @@ jobs:
         - uses: actions/download-artifact@v1
           with:
             name: tsr-jar
-      - name: login and push to docker
+      - name: login-and-push-to-docker
         - uses: actions/checkout@v2
         - shell: bash
           env:
