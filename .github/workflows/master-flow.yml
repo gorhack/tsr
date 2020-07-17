@@ -40,16 +40,17 @@ jobs:
     runs-on: ubuntu-18.04
     needs: test
     steps:
+      - uses: actions/checkout@v2
+
       - name: download build aritifact
         uses: actions/download-artifact@v1
         with:
           name: tsr-jar
       - name: login and push to docker
-        - uses: actions/checkout@v2
-        - shell: bash
+        shell: bash
           env:
             DOCKER_ACCESS_TOKEN: ${{ secrets.DOCKER_ACCESS_TOKEN }}
             DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
-        - run: |
+        run: |
             ./pipeline/docker/app_container/build.sh
             ./pipeline/docker/app_container/push.sh
