@@ -1,5 +1,6 @@
 ![Full CI/CD](https://github.com/gorhack/tsr/workflows/Full%20CI/CD/badge.svg)
 [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=gorhack_tsr&metric=coverage)](https://sonarcloud.io/dashboard?id=gorhack_tsr)
+[![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=gorhack_tsr&metric=security_rating)](https://sonarcloud.io/dashboard?id=gorhack_tsr)
 [![Vulnerabilities](https://sonarcloud.io/api/project_badges/measure?project=gorhack_tsr&metric=vulnerabilities)](https://sonarcloud.io/dashboard?id=gorhack_tsr)
 
 
