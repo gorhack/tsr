@@ -42,8 +42,8 @@ jobs:
     steps:
       - name: download build aritifact
         uses: actions/download-artifact@v1
-          with:
-            name: tsr-jar
+        with:
+          name: tsr-jar
       - name: login and push to docker
         - uses: actions/checkout@v2
         - shell: bash
