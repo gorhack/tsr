@@ -38,11 +38,12 @@ jobs:
   docker:
     name: push docker
     runs-on: ubuntu-18.04
-    needs: [build, test]
+    needs: test
     steps:
-      - uses: actions/download-artifact@v1
-        with:
-          name: tsr-jar
+      - name: download build aritifact
+        uses: actions/download-artifact@v1
+          with:
+            name: tsr-jar
       - name: login and push to docker
         - uses: actions/checkout@v2
         - shell: bash
