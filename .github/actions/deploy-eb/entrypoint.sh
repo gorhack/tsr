@@ -22,16 +22,15 @@ if [[ -z "$AWS_SECRET_KEY" ]]; then
 #  exit 1
 fi
 
-
 echo "******* Installing EB CLI"
 # https://github.com/aws/aws-elastic-beanstalk-cli-setup
+apt-get update \
+    && apt-get install \
+    git build-essential zlib1g-dev libssl-dev libncurses-dev \
+    libffi-dev libsqlite3-dev libreadline-dev libbz2-dev
 build-essential zlib1g-dev libssl-dev libncurses-dev libffi-dev libsqlite3-dev libreadline-dev libbz2-dev
 git clone https://github.com/aws/aws-elastic-beanstalk-cli-setup.git
 ./aws-elastic-beanstalk-cli-setup/scripts/bundled_installer
-apt-get update \
-    && apt-get install \
-    build-essential zlib1g-dev libssl-dev libncurses-dev \
-    libffi-dev libsqlite3-dev libreadline-dev libbz2-dev
 
 echo "******* Deploying to AWS EB"
 cd $GITHUB_WORKSPACE/remote-docker
