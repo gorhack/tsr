@@ -48,9 +48,23 @@ jobs:
       - name: login and push to docker
         shell: bash
         env:
-          DOCKER_ACCESS_TOKEN: ${{ secrets.DOCKER_ACCESS_TOKEN }}
+          DOCKER_GITHUBPKG_USERNAME: $GITHUB_ACTOR
+          DOCKER_GITHUBPKG_ACCESS_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+          DOCKER_ACCESS_TOKEN: ${{ secrets.DOCKER_ACCESS_TOKEN }}
         run: |
           cd pipeline/docker/app_container
           ./build.sh
           ./push.sh
+  deploy_aws:
+    name: deploy to aws eb
+    runs-on: ubuntu-18.04
+    needs: docker
+    steps:
+      - name: login and push to aws eb
+        shell: bash
+        env:
+          AWS_ACCESS_ID: ${{ secrets.AWS_ACCESS_ID }}
+          AWS_SECRET_KEY: ${{ secrets.AWS_SECRET_KEY }}
+        run: |
+          echo "Hello, world"
