@@ -58,13 +58,11 @@ jobs:
           ./push.sh
   deploy_aws:
     name: deploy to aws eb
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-18.04`
     needs: docker
     steps:
-      - name: login and push to aws eb
-        shell: bash
-        env:
+      - uses: actions/checkout@v2
+      - uses: ./.github/actions/deploy-eb
+        with:
           AWS_ACCESS_ID: ${{ secrets.AWS_ACCESS_ID }}
           AWS_SECRET_KEY: ${{ secrets.AWS_SECRET_KEY }}
-        run: |
-          echo "Hello, world"
