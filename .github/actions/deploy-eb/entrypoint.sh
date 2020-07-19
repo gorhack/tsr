@@ -28,7 +28,8 @@ echo "******* Installing EB CLI"
 build-essential zlib1g-dev libssl-dev libncurses-dev libffi-dev libsqlite3-dev libreadline-dev libbz2-dev
 git clone https://github.com/aws/aws-elastic-beanstalk-cli-setup.git
 ./aws-elastic-beanstalk-cli-setup/scripts/bundled_installer
-apt-get install \
+apt-get update \
+    && apt-get install \
     build-essential zlib1g-dev libssl-dev libncurses-dev \
     libffi-dev libsqlite3-dev libreadline-dev libbz2-dev
 

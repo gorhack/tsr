@@ -58,7 +58,7 @@ jobs:
           ./push.sh
   deploy_aws:
     name: deploy to aws eb
-    runs-on: ubuntu-18.04`
+    runs-on: ubuntu-18.04
     needs: docker
     steps:
       - uses: actions/checkout@v2
