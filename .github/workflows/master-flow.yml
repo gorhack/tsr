@@ -61,8 +61,15 @@ jobs:
     runs-on: ubuntu-18.04
     needs: docker
     steps:
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-west-2
       - uses: actions/checkout@v2
-      - uses: ./.github/actions/deploy-eb
+      - name: Deploy to AWS EB
+        uses: ./.github/actions/deploy-eb
         env:
           AWS_ACCESS_ID: ${{ secrets.AWS_ACCESS_ID }}
           AWS_SECRET_KEY: ${{ secrets.AWS_SECRET_KEY }}

@@ -1,6 +1,6 @@
 #!/bin/sh
 
-#set -eou pipefail
+set -eou pipefail
 
 if [[ -z "$GITHUB_WORKSPACE" ]]; then
   echo "Set the GITHUB_WORKSPACE env variable."
@@ -24,8 +24,8 @@ fi
 
 echo "******* Installing EB CLI"
 # https://github.com/aws/aws-elastic-beanstalk-cli-setup
-apt-get update \
-    && apt-get install \
+apt-get -y update \
+    && apt-get -y install \
     git build-essential zlib1g-dev libssl-dev libncurses-dev \
     libffi-dev libsqlite3-dev libreadline-dev libbz2-dev
 build-essential zlib1g-dev libssl-dev libncurses-dev libffi-dev libsqlite3-dev libreadline-dev libbz2-dev
