@@ -12,12 +12,12 @@ if [[ -z "$GITHUB_REPOSITORY" ]]; then
   exit 1
 fi
 
-if [[ -z "$AWS_ACCESS_ID" ]]; then
+if [[ -z "$AWS_ACCESS_KEY_ID" ]]; then
   echo "Set the AWS_ACCESS_ID env variable."
   exit 1
 fi
 
-if [[ -z "$AWS_SECRET_KEY" ]]; then
+if [[ -z "$AWS_SECRET_ACCESS_KEY" ]]; then
   echo "Set the AWS_SECRET_KEY env variable."
   exit 1
 fi
