@@ -25,41 +25,41 @@ jobs:
         with:
           name: tsr-jar
           path: build/libs/*.jar
-  test:
-    name: run tests
-    runs-on: ubuntu-18.04
-    needs: build
-    steps:
-      - uses: actions/checkout@v2
-      - uses: ./.github/actions/test-frontend
-      - uses: ./.github/actions/test-backend
-  docker:
-    name: push to docker
-    runs-on: ubuntu-18.04
-    needs: test
-    steps:
-      - uses: actions/checkout@v2
-
-      - name: download build aritifact
-        uses: actions/download-artifact@v2
-        with:
-          name: tsr-jar
-          path: build/libs/
-      - name: login and push to docker
-        shell: bash
-        env:
-          DOCKER_GITHUBPKG_USERNAME: $GITHUB_ACTOR
-          DOCKER_GITHUBPKG_ACCESS_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
-          DOCKER_ACCESS_TOKEN: ${{ secrets.DOCKER_ACCESS_TOKEN }}
-        run: |
-          cd pipeline/docker/app_container
-          ./build.sh
-          ./push.sh
+#  test:
+#    name: run tests
+#    runs-on: ubuntu-18.04
+#    needs: build
+#    steps:
+#      - uses: actions/checkout@v2
+#      - uses: ./.github/actions/test-frontend
+#      - uses: ./.github/actions/test-backend
+#  docker:
+#    name: push to docker
+#    runs-on: ubuntu-18.04
+#    needs: test
+#    steps:
+#      - uses: actions/checkout@v2
+#
+#      - name: download build aritifact
+#        uses: actions/download-artifact@v2
+#        with:
+#          name: tsr-jar
+#          path: build/libs/
+#      - name: login and push to docker
+#        shell: bash
+#        env:
+#          DOCKER_GITHUBPKG_USERNAME: $GITHUB_ACTOR
+#          DOCKER_GITHUBPKG_ACCESS_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+#          DOCKER_ACCESS_TOKEN: ${{ secrets.DOCKER_ACCESS_TOKEN }}
+#        run: |
+#          cd pipeline/docker/app_container
+#          ./build.sh
+#          ./push.sh
   deploy_aws:
     name: deploy to aws eb
     runs-on: ubuntu-18.04
-    needs: docker
+    needs: build
     steps:
       - uses: actions/checkout@v2
       - name: Deploy to AWS EB
