@@ -27,12 +27,12 @@ echo "******* Installing EB CLI"
 apt-get -y update \
     && apt-get -y install \
     git build-essential zlib1g-dev libssl-dev libncurses-dev \
-    libffi-dev libsqlite3-dev libreadline-dev libbz2-dev
+    libffi-dev libsqlite3-dev libreadline-dev libbz2-dev curl
 build-essential zlib1g-dev libssl-dev libncurses-dev libffi-dev libsqlite3-dev libreadline-dev libbz2-dev
 git clone https://github.com/aws/aws-elastic-beanstalk-cli-setup.git
 ./aws-elastic-beanstalk-cli-setup/scripts/bundled_installer
 
 echo "******* Deploying to AWS EB"
-cd $GITHUB_WORKSPACE/pipeline/remote-docker
+cd "$GITHUB_WORKSPACE"/pipeline/remote-docker || exit 1
 eb init -p docker tsr
 eb deploy

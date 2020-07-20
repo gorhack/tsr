@@ -12,7 +12,7 @@ if [[ -z "$GITHUB_REPOSITORY" ]]; then
   exit 1
 fi
 
-cd $GITHUB_WORKSPACE/client
+cd "$GITHUB_WORKSPACE"/client || exit 1
 echo "******* Testing Frontend"
 yarn install
 yarn lint:ci

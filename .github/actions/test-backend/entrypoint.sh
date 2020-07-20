@@ -12,7 +12,7 @@ if [[ -z "$GITHUB_REPOSITORY" ]]; then
   exit 1
 fi
 
-cd $GITHUB_WORKSPACE
+cd "$GITHUB_WORKSPACE" || exit 1
 # Run gradle tests
 # fail if tests fail
 echo "******* Testing Backend"

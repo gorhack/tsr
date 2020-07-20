@@ -5,26 +5,26 @@ on:
     branches: [ master ]
 
 jobs:
-  build:
-    runs-on: ubuntu-18.04
-    steps:
-      - uses: actions/checkout@v2
-
-      - name: Set up JDK 13
-        uses: actions/setup-java@v1
-        with:
-          java-version: 13
-      - name: Grant execute permission for gradlew
-        run: chmod +x gradlew
-
-      - name: Build Jar
-        run: ./build.sh
-
-      - name: Saves build artifact
-        uses: actions/upload-artifact@v2
-        with:
-          name: tsr-jar
-          path: build/libs/*.jar
+#  build:
+#    runs-on: ubuntu-18.04
+#    steps:
+#      - uses: actions/checkout@v2
+#
+#      - name: Set up JDK 13
+#        uses: actions/setup-java@v1
+#        with:
+#          java-version: 13
+#      - name: Grant execute permission for gradlew
+#        run: chmod +x gradlew
+#
+#      - name: Build Jar
+#        run: ./build.sh
+#
+#      - name: Saves build artifact
+#        uses: actions/upload-artifact@v2
+#        with:
+#          name: tsr-jar
+#          path: build/libs/*.jar
 #  test:
 #    name: run tests
 #    runs-on: ubuntu-18.04
@@ -59,7 +59,7 @@ jobs:
   deploy_aws:
     name: deploy to aws eb
     runs-on: ubuntu-18.04
-    needs: build
+#    needs: docker
     steps:
       - uses: actions/checkout@v2
       - name: Deploy to AWS EB
