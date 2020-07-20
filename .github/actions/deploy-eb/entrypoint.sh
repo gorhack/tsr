@@ -33,14 +33,6 @@ git clone https://github.com/aws/aws-elastic-beanstalk-cli-setup.git
 echo 'export PATH="/github/home/.ebcli-virtual-env/executables:$PATH"' >> /github/home/.bash_profile
 echo 'export PATH=/github/home/.pyenv/versions/3.7.2/bin:$PATH' >> /github/home/.bash_profile && source /github/home/.bash_profile
 
-echo "******* Configure AWS"
-mkdir ~/.aws
-touch ~/.aws/config
-chmod 600 ~/.aws/config
-echo "[profile prod]" > ~/.aws/config
-echo "aws_access_key_id=$AWS_ACCESS_KEY_ID" >> ~/.aws/config
-echo "aws_secret_access_key=$AWS_SECRET_ACCESS_KEY" >> ~/.aws/config
-
 echo "******* Deploying to AWS EB"
 cd "$GITHUB_WORKSPACE"/pipeline/remote-docker || exit 1
 eb deploy
