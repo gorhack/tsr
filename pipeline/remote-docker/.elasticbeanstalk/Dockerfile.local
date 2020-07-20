@@ -1,2 +1,0 @@
-FROM docker.io/g0rak/tsr
-EXPOSE 8080
