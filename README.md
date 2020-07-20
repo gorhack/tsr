@@ -12,7 +12,7 @@ Dynamic tracking management tool. _TSR_ is built on Spring and React.
 Dynamically manage and track planning requirements in a collaborative space.
 - [ ] CI/CD pipeline
     - [x] testing
-    - [ ] deploy
+    - [x] deploy (currently deploys to [aws eb](http://event-track.eba-dnnmqrpi.us-west-2.elasticbeanstalk.com))
 - [ ] SSO
     - [ ] keycloak ?
     - [ ] user roles
@@ -22,6 +22,10 @@ Dynamically manage and track planning requirements in a collaborative space.
 
 ## Setup
 For setup, run `setup.sh`
+
+## Run
+Ensure docker is running the required containers with `./docker-go.sh`. `./run.sh` will run the full application.
+`./gradlew bootrun` will just run the backend. `yarn start` in the client directory will run just the front end.
 
 ## Testing
 Created with TDD principles. Run `test.sh` to run all tests.
