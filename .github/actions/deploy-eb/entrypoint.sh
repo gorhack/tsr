@@ -33,6 +33,6 @@ git clone https://github.com/aws/aws-elastic-beanstalk-cli-setup.git
 ./aws-elastic-beanstalk-cli-setup/scripts/bundled_installer
 
 echo "******* Deploying to AWS EB"
-cd $GITHUB_WORKSPACE/remote-docker
+cd $GITHUB_WORKSPACE/pipeline/remote-docker
 eb init -p docker tsr
 eb deploy

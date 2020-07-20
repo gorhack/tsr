@@ -63,6 +63,6 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - uses: ./.github/actions/deploy-eb
-        with:
+        env:
           AWS_ACCESS_ID: ${{ secrets.AWS_ACCESS_ID }}
           AWS_SECRET_KEY: ${{ secrets.AWS_SECRET_KEY }}
