@@ -5,9 +5,9 @@ services:
     ports:
       - '5432:5432'
     environment:
-      POSTGRES_DB: "${TSR_DATABASE}"
-      POSTGRES_PASSWORD: "${TSR_DB_PASS}"
-      POSTGRES_USER: "${TSR_DB_USER}"
+      POSTGRES_DB: "${RDS_DB_NAME}"
+      POSTGRES_PASSWORD: "${RDS_PASSWORD}"
+      POSTGRES_USER: "${RDS_USERNAME}"
       PGDATA: "/var/lib/postgresql/data/tsr"
     volumes:
       - ./postgres/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
