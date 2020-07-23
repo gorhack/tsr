@@ -36,7 +36,7 @@ jobs:
   docker:
     name: push to docker
     runs-on: ubuntu-18.04
-    needs: build
+    needs: test
     steps:
       - uses: actions/checkout@v2
 
@@ -45,6 +45,7 @@ jobs:
         with:
           name: tsr-jar
           path: ./tsr.jar
+
       - name: Build and push Docker image
         uses: docker/build-push-action@v1.1.0
         with:
@@ -52,7 +53,7 @@ jobs:
           password: ${{ secrets.DOCKER_ACCESS_TOKEN }}
           repository: g0rak/tsr
           tag_with_sha: true
-#          tag_with_ref: true
+          tag_with_ref: true
           dockerfile: pipeline/docker/app_container/Dockerfile
   deploy_aws:
     name: deploy to aws eb
