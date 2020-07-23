@@ -11,7 +11,7 @@ Dynamic tracking management tool. _TSR_ is built on Spring and React.
 Dynamically manage and track planning requirements in a collaborative space.
 - [x] CI/CD pipeline
     - [x] testing
-    - [x] deploy (currently deploys to [aws eb](http://event-track.eba-dnnmqrpi.us-west-2.elasticbeanstalk.com))
+    - [x] deploy (currently deploys to [aws eb](https://tracked.events))
 - [ ] SSO
     - [ ] keycloak ?
     - [ ] user roles
