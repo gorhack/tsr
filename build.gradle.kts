@@ -12,7 +12,7 @@ plugins {
 	id("com.github.ben-manes.versions") version "0.28.0" // helps find latest dependency versions `./gradlew dependencyUpdates`
 }
 
-group = "us.gorak.tsr"
+group = "events.tracked.tsr"
 version = "0.0.1-SNAPSHOT"
 java.sourceCompatibility = JavaVersion.VERSION_13
 

@@ -1,4 +1,4 @@
-package us.gorak.tsr
+package events.tracked.tsr
 
 import org.junit.jupiter.api.Test
 import org.springframework.boot.test.context.SpringBootTest

@@ -1,4 +1,4 @@
-package us.gorak.tsr
+package events.tracked.tsr
 
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
