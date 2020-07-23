@@ -1,4 +1,4 @@
-FROM g0rak/eb-cli:latest
+FROM ubuntu:18.04
 
 LABEL "name"="Deploy AWS elastic beanstalk"
 LABEL "maintainer"="Kyle Gorak"
