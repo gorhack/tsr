@@ -45,17 +45,14 @@ jobs:
         with:
           name: tsr-jar
           path: ./tsr.jar
-      - name: where the files at
-        run: |
-          ls
-          echo ${{steps.download.outputs.download-path}}
       - name: Build and push Docker image
         uses: docker/build-push-action@v1.1.0
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_ACCESS_TOKEN }}
           repository: g0rak/tsr
-          tag_with_ref: true
+          tag_with_sha: true
+#          tag_with_ref: true
           dockerfile: pipeline/docker/app_container/Dockerfile
   deploy_aws:
     name: deploy to aws eb
