@@ -42,7 +42,7 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: tsr-jar
-          path: pipeline/eb/tsr.jar
+          path: ${{ env.GITHUB_WORKSPACE }}/pipeline/eb/
 
       - name: Deploy to AWS EB
         uses: ./.github/actions/deploy-eb
