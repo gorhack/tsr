@@ -1,9 +1,10 @@
 branch-defaults:
   default:
-    environment: event-track
+    environment: tracked-events
 global:
   application_name: tsr
   default_ec2_keyname: null
   default_platform: Docker
   default_region: us-west-2
+  include_git_submodules: true
   workspace_type: Application

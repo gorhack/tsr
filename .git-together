@@ -1,4 +1,5 @@
 [git-together]
-	domain = gorak.us
+	domain = events.tracked
 [git-together "authors"]
   kg = "Kyle Gorak; kyle@gorak.us"
+  rm = "Riley McKenzie; ryemack@protonmail.com"
