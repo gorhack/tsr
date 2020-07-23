@@ -25,4 +25,6 @@ fi
 echo "******* Deploying to AWS EB"
 cd "$GITHUB_WORKSPACE"/pipeline/eb || exit 1
 mv ./tsr/*.jar ./tsr.jar
-eb deploy tracked-events --label "${$SHA8::8}"
+echo "commit $SHA8"
+eb deploy tracked-events
+#eb deploy tracked-events --label "${$SHA8::8}"
