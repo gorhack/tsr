@@ -34,7 +34,7 @@ jobs:
   deploy_aws:
     name: deploy to aws eb
     runs-on: ubuntu-18.04
-    needs: test
+    needs: build
     steps:
       - uses: actions/checkout@v2
 
