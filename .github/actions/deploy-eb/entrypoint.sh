@@ -35,4 +35,4 @@ echo 'export PATH=/github/home/.pyenv/versions/3.7.2/bin:$PATH' >> /github/home/
 
 echo "******* Deploying to AWS EB"
 cd "$GITHUB_WORKSPACE"/pipeline/remote-docker || exit 1
-eb deploy event-track
+eb deploy event-track --label "$SHA8"
