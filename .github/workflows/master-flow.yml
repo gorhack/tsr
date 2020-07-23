@@ -52,7 +52,7 @@ jobs:
           password: ${{ secrets.DOCKER_ACCESS_TOKEN }}
           repository: g0rak/tsr
           tag_with_ref: true
-          dockerfile: $GITHUB_WORKSPACE/pipeline/docker/app_container/Dockerfile
+          dockerfile: pipeline/docker/app_container/Dockerfile
   deploy_aws:
     name: deploy to aws eb
     runs-on: ubuntu-18.04
