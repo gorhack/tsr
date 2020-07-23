@@ -45,6 +45,7 @@ jobs:
         with:
           name: tsr-jar
           path: ./tsr.jar
+      - name: where the files at
         run: |
           ls
           echo ${{steps.download.outputs.download-path}}
