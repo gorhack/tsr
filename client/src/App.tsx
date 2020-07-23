@@ -6,6 +6,7 @@ const App: React.FC = () => {
         <div className="App">
             <main className="App-content">
                 <div>Hello, world</div>
+                <div>v2</div>
             </main>
         </div>
     );

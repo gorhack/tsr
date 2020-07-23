@@ -35,6 +35,4 @@ echo 'export PATH=/github/home/.pyenv/versions/3.7.2/bin:$PATH' >> /github/home/
 
 echo "******* Deploying to AWS EB"
 cd "$GITHUB_WORKSPACE"/pipeline/remote-docker || exit 1
-eb init -p docker tsr
-eb create --database.engine postgres --database.version 12.2
-eb deploy
+eb deploy event-track
