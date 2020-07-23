@@ -36,7 +36,7 @@ jobs:
   docker:
     name: push to docker
     runs-on: ubuntu-18.04
-    needs: test
+    needs: build
     steps:
       - uses: actions/checkout@v2
 
@@ -44,7 +44,10 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: tsr-jar
-          path: $GITHUB_WORKSPACE/tsr.jar
+          path: ./tsr.jar
+        run: |
+          ls
+          echo ${{steps.download.outputs.download-path}}
       - name: Build and push Docker image
         uses: docker/build-push-action@v1.1.0
         with:
