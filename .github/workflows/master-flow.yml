@@ -16,7 +16,7 @@ jobs:
           java-version: 13
 
       - name: Build Jar
-        run: ./build.sh
+        run: ./pipeline/build.sh
 
       - name: Saves build artifact
         uses: actions/upload-artifact@v2
