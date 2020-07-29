@@ -13,7 +13,7 @@ Dynamically manage and track planning requirements in a collaborative space.
     - [x] testing
     - [x] deploy (currently deploys to [aws eb](https://tracked.events))
 - [ ] SSO
-    - [ ] keycloak ?
+    - [x] [keycloak](https://kc.tracked.events/auth/)
     - [ ] user roles
 - [ ] integrate with 3rd party systems
 - [ ] real time
@@ -28,3 +28,16 @@ Ensure docker is running the required containers with `./docker-go.sh`. `./run.s
 
 ## Testing
 Created with TDD principles. Run `test.sh` to run all tests.
+
+## AWS
+### App
+To initialize Elastic Beanstalk app through the CLI, run `eb init -p docker tsr`
+
+To create EB environment with PG and Application LB, run
+`eb create tracked-events --database.engine postgres --database.version 12.2 --elb-type application`
+
+### Keycloak
+Testing keycloak environment deployed to EC2 at https://kc.tracked.events.
+
+### Certificate
+Route 53 for the domain alias mapping. Certificate Manager to create the TLS certificate.
