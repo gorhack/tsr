@@ -14,6 +14,8 @@ Dynamically manage and track planning requirements in a collaborative space.
     - [x] deploy (currently deploys to [aws eb](https://tracked.events))
 - [ ] SSO
     - [x] [keycloak](https://kc.tracked.events/auth/)
+    - [ ] transition from dev/testing environment to deployment version of kc
+    - [ ] third party SSO?
     - [ ] user roles
 - [ ] integrate with 3rd party systems
 - [ ] real time
@@ -23,7 +25,7 @@ Dynamically manage and track planning requirements in a collaborative space.
 For setup, run `setup.sh`
 
 ## Run
-Ensure docker is running the required containers with `./docker-go.sh`. `./run.sh` will run the full application.
+Ensure docker is running the required containers with `./docker_go.sh`. `./run.sh` will run the full application.
 `./gradlew bootrun` will just run the backend. `yarn start` in the client directory will run just the front end.
 
 ## Testing
@@ -31,10 +33,15 @@ Created with TDD principles. Run `test.sh` to run all tests.
 
 ## AWS
 ### App
-To initialize Elastic Beanstalk app through the CLI, run `eb init -p docker tsr`
+To initialize Elastic Beanstalk (EB) app through the CLI, run `eb init -p docker tsr`
 
-To create EB environment with PG and Application LB, run
+To create EB environment with Postgresql and an Application Load Balancer, run
 `eb create tracked-events --database.engine postgres --database.version 12.2 --elb-type application`
+
+The application deploys to AWS during CI/CD pipeline on the `master` branch. Steps below on manually deploying your local changes:
+1. build the application `./pipeline/build.sh`
+1. move the .jar in `build/libs` to `pipeline/eb` as `tsr.jar`
+1. `eb deploy tracked-events --label [name of deploy]`
 
 ### Keycloak
 Testing keycloak environment deployed to EC2 at https://kc.tracked.events.
