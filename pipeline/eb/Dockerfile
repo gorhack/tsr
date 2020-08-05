@@ -5,7 +5,7 @@ ENV RDS_PASSWORD=tsr
 ENV RDS_USERNAME=tsr
 ENV SPRING_PROFILES_ACTIVE=default
 
-ADD tsr.jar /tsr.jar
+COPY tsr.jar /tsr.jar
 
 EXPOSE 8080
 
