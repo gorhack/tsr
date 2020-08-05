@@ -820,7 +820,7 @@
       "enabled": true,
       "alwaysDisplayInConsole": false,
       "clientAuthenticatorType": "client-secret",
-      "secret": "**********",
+      "secret": "random-password",
       "redirectUris": [
         "http://localhost:3000/login/oauth2/code/keycloak",
         "http://localhost:8080/login/oauth2/code/keycloak"
@@ -835,7 +835,7 @@
       "implicitFlowEnabled": false,
       "directAccessGrantsEnabled": true,
       "serviceAccountsEnabled": false,
-      "publicClient": true,
+      "publicClient": false,
       "frontchannelLogout": false,
       "protocol": "openid-connect",
       "attributes": {},
