@@ -11,3 +11,7 @@ services:
       PGDATA: "/var/lib/postgresql/data/tsr"
     volumes:
       - ./postgres/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
+  keycloak:
+    image: g0rak/tsr-keycloak
+    ports:
+      - '8081:8080'
