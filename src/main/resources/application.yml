@@ -32,12 +32,19 @@ spring:
       max-request-size: 200MB
   jackson:
     time-zone: UTC
-keycloak:
-  auth-server-url: ${TSR_KEYCLOAK_HOST}/auth
-  realm: tsr
-  resource: tsr-keycloak
-  public-client: true
-  principal-attribute: preferred_username
+  security:
+    oauth2:
+      client:
+        registration:
+          keycloak:
+            clientId: tsr_keycloak
+            clientSecret: random-password
+        provider:
+          keycloak:
+            issuer-uri: ${TSR_KEYCLOAK_HOST}/auth/realms/tsr
+      resourceserver:
+        jwt:
+          jwk-set-uri: ${TSR_KEYCLOAK_HOST}/auth/realms/tsr/protocol/openid-connect/certs
 logging:
   level:
     events:

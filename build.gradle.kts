@@ -51,10 +51,15 @@ dependencies {
 	implementation("jakarta.persistence:jakarta.persistence-api:2.2.3")
 
 	// SSO - Security
-	implementation("org.keycloak:keycloak-spring-boot-starter:${keycloakVersion}")
-	implementation("org.keycloak.bom:keycloak-adapter-bom:${keycloakVersion}")
-	implementation("org.springframework.security:spring-security-oauth2-client:${springSecurityVersion}")
+	implementation("org.springframework.boot:spring-boot-starter-security")
+	implementation("org.springframework.security:spring-security-web:${springSecurityVersion}")
+	implementation("org.springframework.security:spring-security-config:${springSecurityVersion}")
 	implementation("org.springframework.security:spring-security-core:${springSecurityVersion}")
+	implementation("org.springframework.security.oauth:spring-security-oauth2:2.5.0.RELEASE")
+	implementation("org.springframework.security:spring-security-oauth2-jose:${springSecurityVersion}")
+	implementation("org.springframework.security:spring-security-oauth2-resource-server:${springSecurityVersion}")
+	implementation("org.springframework.security:spring-security-oauth2-client:${springSecurityVersion}")
+	implementation("org.springframework.session:spring-session-jdbc:2.3.0.RELEASE") // not previously the same as springSecurityVersion
 
 	runtimeOnly("org.postgresql:postgresql")
 

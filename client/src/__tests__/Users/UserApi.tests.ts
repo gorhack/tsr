@@ -1,7 +1,7 @@
 import axios from "axios";
 import nock from "nock";
-import {getUserInfo, UserRoleUpdate} from "../UserApi";
-import {NockBody} from "./TestHelpers";
+import {getUserInfo, UserRoleUpdate} from "../../Users/UserApi";
+import {NockBody} from "../TestHelpers";
 
 describe("user info", () => {
    axios.defaults.baseURL = "http://example.com";
