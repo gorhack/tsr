@@ -1,4 +1,4 @@
-package events.tracked.tsr.client
+package events.tracked.tsr.client.user
 
 import io.mockk.*
 import events.tracked.tsr.makeOidcUser

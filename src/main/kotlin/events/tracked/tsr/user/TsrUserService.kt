@@ -15,5 +15,16 @@ class TsrUserService(private val tsrUserRepository: TsrUserRepository) {
         }
         return maybeUser;
     }
+    fun assertUserIsAdmin(user: OidcUser): Boolean {
+        val receivedUser = tsrUserRepository.findByUserId(user.userId)
+        val maybeUser = receivedUser ?: return false
+        return maybeUser.role == UserRole.ADMIN
+    }
+
+    fun updateUserRole(userRoleUpdate: UserRoleUpdateDTO) {
+        val tsrUser = tsrUserRepository.findByUserId(userRoleUpdate.userId) ?:
+        throw IllegalArgumentException()
+        tsrUserRepository.save(tsrUser.copy(role = userRoleUpdate.role))
+    }
     fun isEmpty(): Boolean = tsrUserRepository.count() == 0L
 }
