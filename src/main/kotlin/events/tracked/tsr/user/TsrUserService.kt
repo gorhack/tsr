@@ -1,19 +1,21 @@
 package events.tracked.tsr.user
 
-import org.springframework.stereotype.Service
+import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.oauth2.core.oidc.user.OidcUser
+import org.springframework.stereotype.Service
 
 @Service
 class TsrUserService(private val tsrUserRepository: TsrUserRepository) {
     fun assertUserExistsAndReturnUser(user: OidcUser): TsrUser {
         val maybeUser = tsrUserRepository.findByUserId(user.userId)
         if (maybeUser == null) {
-            val role: UserRole = if (isEmpty()) UserRole.ADMIN else UserRole.USER
+            val hasAdminRole = user.authorities.contains(SimpleGrantedAuthority("SCOPE_tsr.admin"))
+            val role: UserRole = if (isEmpty() || hasAdminRole) UserRole.ADMIN else UserRole.USER
             val userName = user.preferredUsername ?: user.userName
             val newUser = TsrUser(userId = user.userId, username = userName, role = role)
             return tsrUserRepository.save(newUser)
         }
-        return maybeUser;
+        return maybeUser
     }
     fun assertUserIsAdmin(user: OidcUser): Boolean {
         val receivedUser = tsrUserRepository.findByUserId(user.userId)

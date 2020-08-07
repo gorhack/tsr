@@ -9,6 +9,7 @@ import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.springframework.security.core.authority.SimpleGrantedAuthority
 import java.lang.IllegalArgumentException
 
 class TsrUserServiceTest {
@@ -41,6 +42,7 @@ class TsrUserServiceTest {
         every { mockTsrUserRepository.count() } returns 1
         every { mockTsrUserRepository.findByUserId(userId) } returns null
         every { user.preferredUsername } returns "preferredUserName"
+        every { user.authorities } returns listOf()
 
         val tsrUserWithPreferred = tsrUser.copy(username = "preferredUserName")
         every { mockTsrUserRepository.save(tsrUserWithPreferred) } returns tsrUserWithPreferred
@@ -55,6 +57,7 @@ class TsrUserServiceTest {
         every { mockTsrUserRepository.count() } returns 1
         every { mockTsrUserRepository.findByUserId(userId) } returns null
         every { user.preferredUsername } returns null
+        every { user.authorities } returns listOf()
 
         every { mockTsrUserRepository.save(tsrUser) } returns tsrUser
         subject.assertUserExistsAndReturnUser(user)
@@ -97,6 +100,7 @@ class TsrUserServiceTest {
         every { mockTsrUserRepository.findByUserId(userId) } returns null
         every { mockTsrUserRepository.count() } returns 0
         every { user.preferredUsername } returns user.userName
+        every { user.authorities } returns listOf()
         every { mockTsrUserRepository.save(any() as TsrUser) } returns tsrUser
 
 
@@ -112,11 +116,12 @@ class TsrUserServiceTest {
     }
 
     @Test
-    fun `assertUserExists creates a new user with role 'user' if there are users`() {
+    fun `assertUserExists creates a new user with role 'user' if there are users and user does not have tsradmin role`() {
         val user = makeOidcUser(userId, "username")
         every { mockTsrUserRepository.findByUserId(userId) } returns null
         every { mockTsrUserRepository.count() } returns 1
         every { user.preferredUsername } returns user.userName
+        every { user.authorities } returns listOf()
         every { mockTsrUserRepository.save(any() as TsrUser) } returns tsrUser
 
         subject.assertUserExistsAndReturnUser(user)
@@ -126,6 +131,26 @@ class TsrUserServiceTest {
         verify(exactly = 1) { mockTsrUserRepository.save(
                 withArg<TsrUser> {
                     assertThat(it.role).isEqualTo(UserRole.USER)
+                }
+        )}
+    }
+
+    @Test
+    fun `assertUserExists creates a new user with role 'admin' if there are users and user is a tsradmin role`() {
+        val user = makeOidcUser(userId, "username")
+        every { mockTsrUserRepository.findByUserId(userId) } returns null
+        every { mockTsrUserRepository.count() } returns 1
+        every { user.preferredUsername } returns user.userName
+        every { user.authorities } returns listOf(SimpleGrantedAuthority("SCOPE_tsr.admin"))
+        every { mockTsrUserRepository.save(any() as TsrUser) } returns adminTsrUser
+
+        subject.assertUserExistsAndReturnUser(user)
+
+        verify { mockTsrUserRepository.findByUserId(userId) }
+
+        verify(exactly = 1) { mockTsrUserRepository.save(
+                withArg<TsrUser> {
+                    assertThat(it.role).isEqualTo(UserRole.ADMIN)
                 }
         )}
     }
