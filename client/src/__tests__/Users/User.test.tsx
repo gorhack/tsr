@@ -20,10 +20,10 @@ describe("Display user info", () => {
             role: "USER",
         });
         td.when(mockGetUserInfo()).thenDo(() => userPromise);
+        render(<User />);
         await act(async () => {
-            await render(<User />);
+            await userPromise;
         });
-        await userPromise;
         expect(screen.getByText("tsrUser1")).toBeInTheDocument();
         expect(screen.getByText("123-123-123")).toBeInTheDocument();
     });
