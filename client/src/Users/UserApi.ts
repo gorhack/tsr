@@ -14,7 +14,7 @@ export interface UserRoleUpdate {
 export const saveUserRole = async (role: UserRole, userId: string): Promise<TsrUser> => {
     const userRoleUpdate: UserRoleUpdate = { role, userId };
     const uri = "api/v1/user/role";
-    const result = await axios.post(uri, userRoleUpdate);
+    const result = await axios.put(uri, userRoleUpdate);
     return result.data;
 };
 
