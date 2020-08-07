@@ -1,8 +1,8 @@
 spring:
   datasource:
-    url: jdbc:postgresql://${RDS_HOSTNAME}:${RDS_PORT}/${TSR_TEST_DB_NAME}
-    username: ${RDS_USERNAME}
-    password: ${RDS_PASSWORD}
+    url: jdbc:postgresql://localhost:5432/tsr_test
+    username: tsr
+    password: tsr
   flyway:
     locations: classpath:/db/migration
     ignore-missing-migrations: false
