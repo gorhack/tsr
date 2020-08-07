@@ -7,6 +7,7 @@ plugins {
 	id("com.moowork.node") version "1.3.1"
 	id("org.flywaydb.flyway") version "6.5.2"
 	id("org.sonarqube") version "3.0"
+
 	id ("org.jetbrains.kotlin.plugin.jpa") version "1.3.72"
 	id ("org.jetbrains.kotlin.plugin.noarg") version "1.3.72"
 	kotlin("jvm") version "1.3.72"
@@ -30,7 +31,7 @@ noArg {
 flyway {
 	user = "tsr"
 	password = "tsr"
-	url = "jdbc:postgresql://192.168.1.7:5432/tsr"
+	url = "jdbc:postgresql://localhost:5432/tsr"
 }
 
 repositories {
@@ -41,13 +42,20 @@ repositories {
 
 var springSecurityVersion = "5.3.3.RELEASE"
 var keycloakVersion = "11.0.0"
+var jacksonVersion = "2.11.1"
+var jetBrainsKotlin = "1.3.72"
 
 dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 	implementation("org.springframework.boot:spring-boot-starter-web")
-	implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
+	implementation("org.springframework.boot:spring-boot-starter-actuator")
+
+	// Deserialize json
+	implementation("com.fasterxml.jackson.module:jackson-module-kotlin:${jacksonVersion}")
 	implementation("org.flywaydb:flyway-core:6.5.2")
-	implementation("org.jetbrains.kotlin:kotlin-reflect")
+
+	implementation("org.jetbrains.kotlin:kotlin-reflect:${jetBrainsKotlin}")
+	implementation("org.jetbrains.kotlin:kotlin-stdlib-js:${jetBrainsKotlin}")
 	implementation("jakarta.persistence:jakarta.persistence-api:2.2.3")
 
 	// SSO - Security
@@ -61,14 +69,12 @@ dependencies {
 	implementation("org.springframework.security:spring-security-oauth2-client:${springSecurityVersion}")
 	implementation("org.springframework.session:spring-session-jdbc:2.3.0.RELEASE") // not previously the same as springSecurityVersion
 
+	implementation("org.hibernate.validator:hibernate-validator-cdi:6.1.5.Final")
+
 	runtimeOnly("org.postgresql:postgresql")
 
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testImplementation("io.mockk:mockk:1.10.0")
-}
-
-tasks.withType<Test> {
-	useJUnitPlatform()
 }
 
 tasks.withType<KotlinCompile> {
@@ -79,6 +85,7 @@ tasks.withType<KotlinCompile> {
 }
 
 tasks.withType<Test> {
+	useJUnitPlatform()
 	failFast = true
 	testLogging {
 		info {

@@ -19,19 +19,8 @@ spring:
         create_empty_composites:
           enabled: true
     database-platform: org.hibernate.dialect.PostgreSQLDialect
-  session:
-    store-type: jdbc
-    jdbc:
-      initialize-schema: never
-    timeout: 24h
-  servlet:
-    multipart:
-      max-file-size: 200MB
-      max-request-size: 200MB
-  jackson:
-    time-zone: UTC
-keycloak:
-  enabled: false
+    hibernate:
+      ddl-auto: update
 logging:
   level:
     org:

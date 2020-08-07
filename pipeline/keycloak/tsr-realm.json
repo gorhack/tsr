@@ -1,7 +1,7 @@
 {
   "id": "tsr",
   "realm": "tsr",
-  "notBefore": 0,
+  "notBefore": 1580240562,
   "revokeRefreshToken": false,
   "refreshTokenMaxReuse": 0,
   "accessTokenLifespan": 300,
@@ -42,22 +42,6 @@
   "failureFactor": 30,
   "roles": {
     "realm": [
-      {
-        "id": "50dd8218-a655-4d2b-a945-7f6f84de5e88",
-        "name": "tsr.write",
-        "composite": false,
-        "clientRole": false,
-        "containerId": "tsr",
-        "attributes": {}
-      },
-      {
-        "id": "df48a555-db28-41f4-9968-c6a45ad6dab6",
-        "name": "tsr.admin",
-        "composite": false,
-        "clientRole": false,
-        "containerId": "tsr",
-        "attributes": {}
-      },
       {
         "id": "c75c8632-f6d6-4600-bfcf-e12dc0d2c8f8",
         "name": "uma_authorization",
@@ -310,7 +294,17 @@
       "security-admin-console": [],
       "admin-cli": [],
       "account-console": [],
-      "broker": [],
+      "broker": [
+        {
+          "id": "52584b68-5b30-4316-b3d1-ff2689e916a5",
+          "name": "read-token",
+          "description": "${role_read-token}",
+          "composite": false,
+          "clientRole": true,
+          "containerId": "a213d7cc-8664-4347-812e-aeb2218dd5e1",
+          "attributes": {}
+        }
+      ],
       "account": [
         {
           "id": "fbd04f4f-0ddc-47d3-a100-c62717087c41",
@@ -519,14 +513,6 @@
           "tsr.write"
         ]
       }
-    ],
-    "account": [
-      {
-        "client": "account-console",
-        "roles": [
-          "manage-account"
-        ]
-      }
     ]
   },
   "clients": [
@@ -535,7 +521,7 @@
       "clientId": "account",
       "name": "${client_account}",
       "rootUrl": "${authBaseUrl}",
-      "baseUrl": "/realms/tsr/account/",
+      "baseUrl": "/auth/realms/tsr/account/",
       "surrogateAuthRequired": false,
       "enabled": true,
       "alwaysDisplayInConsole": false,
@@ -546,7 +532,7 @@
         "view-profile"
       ],
       "redirectUris": [
-        "/realms/tsr/account/*"
+        "/auth/realms/tsr/account/*"
       ],
       "webOrigins": [],
       "notBefore": 0,
@@ -582,14 +568,14 @@
       "clientId": "account-console",
       "name": "${client_account-console}",
       "rootUrl": "${authBaseUrl}",
-      "baseUrl": "/realms/tsr/account/",
+      "baseUrl": "/auth/realms/tsr/account/",
       "surrogateAuthRequired": false,
       "enabled": true,
       "alwaysDisplayInConsole": false,
       "clientAuthenticatorType": "client-secret",
       "secret": "**********",
       "redirectUris": [
-        "/realms/tsr/account/*"
+        "/auth/realms/tsr/account/*"
       ],
       "webOrigins": [],
       "notBefore": 0,
@@ -754,14 +740,14 @@
       "clientId": "security-admin-console",
       "name": "${client_security-admin-console}",
       "rootUrl": "${authAdminUrl}",
-      "baseUrl": "/admin/tsr/console/",
+      "baseUrl": "/auth/admin/tsr/console/index.html",
       "surrogateAuthRequired": false,
       "enabled": true,
       "alwaysDisplayInConsole": false,
       "clientAuthenticatorType": "client-secret",
       "secret": "**********",
       "redirectUris": [
-        "/admin/tsr/console/*"
+        "/auth/admin/tsr/console/*"
       ],
       "webOrigins": [
         "+"
@@ -842,6 +828,23 @@
       "authenticationFlowBindingOverrides": {},
       "fullScopeAllowed": true,
       "nodeReRegistrationTimeout": -1,
+      "protocolMappers": [
+        {
+          "id": "3000ba14-8c9e-4930-bf98-b43dd891a02b",
+          "name": "user_name",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-property-mapper",
+          "consentRequired": false,
+          "config": {
+            "userinfo.token.claim": "true",
+            "user.attribute": "username",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "claim.name": "user_name",
+            "jsonType.label": "String"
+          }
+        }
+      ],
       "defaultClientScopes": [
         "web-origins",
         "role_list",
@@ -2155,10 +2158,25 @@
   "clientAuthenticationFlow": "clients",
   "dockerAuthenticationFlow": "docker auth",
   "attributes": {
-    "clientOfflineSessionMaxLifespan": "0",
-    "clientSessionIdleTimeout": "0",
-    "clientSessionMaxLifespan": "0",
-    "clientOfflineSessionIdleTimeout": "0"
+    "_browser_header.xXSSProtection": "1; mode=block",
+    "_browser_header.xFrameOptions": "SAMEORIGIN",
+    "_browser_header.strictTransportSecurity": "max-age=31536000; includeSubDomains",
+    "permanentLockout": "false",
+    "quickLoginCheckMilliSeconds": "1000",
+    "_browser_header.xRobotsTag": "none",
+    "maxFailureWaitSeconds": "900",
+    "minimumQuickLoginWaitSeconds": "60",
+    "failureFactor": "30",
+    "actionTokenGeneratedByUserLifespan": "300",
+    "maxDeltaTimeSeconds": "43200",
+    "_browser_header.xContentTypeOptions": "nosniff",
+    "offlineSessionMaxLifespan": "5184000",
+    "actionTokenGeneratedByAdminLifespan": "43200",
+    "_browser_header.contentSecurityPolicyReportOnly": "",
+    "bruteForceProtected": "false",
+    "_browser_header.contentSecurityPolicy": "frame-src 'self'; frame-ancestors 'self'; object-src 'none';",
+    "waitIncrementSeconds": "60",
+    "offlineSessionMaxLifespanEnabled": "false"
   },
   "keycloakVersion": "11.0.0",
   "userManagedAccessAllowed": false
