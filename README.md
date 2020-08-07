@@ -16,7 +16,7 @@ Dynamically manage and track planning requirements in a collaborative space.
     - [x] [keycloak](https://kc.tracked.events/auth/)
     - [ ] transition from dev/testing environment to deployment version of kc
     - [ ] third party SSO?
-    - [ ] user roles
+    - [x] user roles ("user" / "admin")
 - [ ] integrate with 3rd party systems
 - [ ] real time
 - [ ] notifications
@@ -29,7 +29,11 @@ Ensure docker is running the required containers with `./docker_go.sh`. `./run.s
 `./gradlew bootrun` will just run the backend. `yarn start` in the client directory will run just the front end.
 
 ## Testing
-Created with TDD principles. Run `test.sh` to run all tests.
+Created with TDD principles. Run `test.sh` to run all tests. 
+
+On the front-end we use jest, react-testing-library, and testdouble for mocking.
+
+On the backend we use JUnit5 and mockk for mocking. 
 
 ## AWS
 ### App
