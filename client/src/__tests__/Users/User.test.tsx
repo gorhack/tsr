@@ -3,7 +3,7 @@ import * as React from "react";
 import td from "testdouble";
 import * as UserApi from "../../Users/UserApi";
 import { User } from "../../Users/User";
-import {TsrUser} from "../../Users/UserApi";
+import { TsrUser } from "../../Users/UserApi";
 
 describe("Display user info", () => {
     let mockGetUserInfo: typeof UserApi.getUserInfo;
@@ -19,11 +19,9 @@ describe("Display user info", () => {
             userId: "123-123-123",
             role: "USER",
         });
-        td.when(mockGetUserInfo()).thenDo(() => userPromise)
+        td.when(mockGetUserInfo()).thenDo(() => userPromise);
         await act(async () => {
-            await render(
-                <User />
-            )
+            await render(<User />);
         });
         await userPromise;
         expect(screen.getByText("tsrUser1")).toBeInTheDocument();
