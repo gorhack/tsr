@@ -42,11 +42,11 @@ jobs:
       - uses: actions/checkout@v2
       - run: ./gradlew test --info
         env:
-          RDS_HOSTNAME=localhost
-          RDS_PORT=5432
-          TSR_TEST_DB_NAME=tsr_test
-          RDS_USERNAME=tsr
-          RDS_PASSWORD=tsr
+          RDS_HOSTNAME: localhost
+          RDS_PORT: 5432
+          TSR_TEST_DB_NAME: tsr_test
+          RDS_USERNAME: tsr
+          RDS_PASSWORD: tsr
       - uses: ./.github/actions/test-frontend
   deploy_aws:
     name: deploy to aws eb
