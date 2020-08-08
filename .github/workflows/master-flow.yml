@@ -41,8 +41,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: setup java and test backend
-        uses: actions/setup-java@v1
+      - uses: actions/setup-java@v1
         with:
           java-version: 13
         run: ./gradlew test --info
@@ -52,8 +51,7 @@ jobs:
           TSR_TEST_DB_NAME: tsr_test
           RDS_USERNAME: tsr
           RDS_PASSWORD: tsr
-      - name: test front-end
-        uses: ./.github/actions/test-frontend
+      - uses: ./.github/actions/test-frontend
   deploy_aws:
     name: deploy to aws eb
     runs-on: ubuntu-18.04
