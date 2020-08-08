@@ -23,7 +23,7 @@ jobs:
         with:
           name: tsr-jar
           path: build/libs/*.jar
-  test-backend:
+  test:
     name: run tests
     runs-on: ubuntu-18.04
 #    needs: build
