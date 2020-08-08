@@ -20,7 +20,7 @@ spring:
           enabled: true
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
-      ddl-auto: validate
+      ddl-auto: update
 logging:
   level:
     org:
