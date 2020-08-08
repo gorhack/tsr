@@ -41,8 +41,8 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-java@v1
-          with:
-            java-version: 13
+        with:
+          java-version: 13
       - run: ./gradlew test --info
         env:
           RDS_HOSTNAME: localhost
