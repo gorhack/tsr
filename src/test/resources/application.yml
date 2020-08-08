@@ -1,8 +1,8 @@
 spring:
   datasource:
-    url: jdbc:postgresql://${RDS_HOSTNAME}:${RDS_PORT}/${TSR_TEST_DB_NAME}
-    username: ${RDS_USERNAME}
-    password: ${RDS_PASSWORD}
+    url: jdbc:postgresql://localhost:${RDS_PORT}/tsr_test
+    username: postgres
+    password: postgres
   flyway:
     locations: classpath:/db/migration
     ignore-missing-migrations: false
@@ -20,7 +20,7 @@ spring:
           enabled: true
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
-      ddl-auto: update
+      ddl-auto: validate
 logging:
   level:
     org:
