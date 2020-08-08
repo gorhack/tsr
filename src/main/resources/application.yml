@@ -38,7 +38,7 @@ spring:
         registration:
           keycloak:
             clientId: tsr_keycloak
-            clientSecret: random-password
+            clientSecret: ${TSR_KEYCLOAK_SECRET_KEY}
         provider:
           keycloak:
             issuer-uri: ${TSR_KEYCLOAK_HOST}/auth/realms/tsr
