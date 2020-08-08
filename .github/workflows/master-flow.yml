@@ -27,25 +27,31 @@ jobs:
     name: run tests
     runs-on: ubuntu-18.04
 #    needs: build
-    container: openjdk:13-alpine
     services:
       postgres:
         image: postgres:12.2-alpine
         env:
           POSTGRES_USER: tsr
           POSTGRES_PASSWORD: tsr
+          PGDATABASE: tsr_test
           PGDATA: "/var/lib/postgresql/data/tsr_test"
+        ports:
+          - 5432:5432
         # needed because the postgres container does not provide a healthcheck
         options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
     steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-java@v1
+        with:
+          java-version: 13
       - run: ./gradlew test --info
         env:
-          RDS_HOSTNAME: postgres
+          RDS_HOSTNAME: localhost
           RDS_PORT: 5432
           TSR_TEST_DB_NAME: tsr_test
           RDS_USERNAME: tsr
           RDS_PASSWORD: tsr
-#      - uses: ./.github/actions/test-frontend
+      - uses: ./.github/actions/test-frontend
   deploy_aws:
     name: deploy to aws eb
     runs-on: ubuntu-18.04
