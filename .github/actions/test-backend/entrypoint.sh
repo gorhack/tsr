@@ -14,11 +14,17 @@ fi
 
 cd "$GITHUB_WORKSPACE" || exit 1
 
+echo "psql db envs"
 RDS_HOSTNAME=$PG_HOST
+echo "$RDS_HOSTNAME"
 RDS_PORT=$PG_PORT
+echo "$RDS_PORT"
 TSR_TEST_DB_NAME=$PG_DATABASE
+echo "$TSR_TEST_DB_NAME"
 RDS_USERNAME=$PG_USER
+echo "$RDS_USERNAME"
 RDS_PASSWORD=$PG_PASSWORD
+echo "$RDS_PASSWORD"
 # Run gradle tests
 # fail if tests fail
 echo "******* Testing Backend"
