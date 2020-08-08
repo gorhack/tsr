@@ -13,9 +13,13 @@ if [[ -z "$GITHUB_REPOSITORY" ]]; then
 fi
 
 cd "$GITHUB_WORKSPACE" || exit 1
-RDS_HOSTNAME=localhost
-RDS_PORT=5432
-TSR_TEST_DB_NAME=tsr_test
+
+RDS_HOSTNAME=$PG_HOST
+RDS_PORT=$PG_PORT
+RDS_PORT=$PG_PORT
+TSR_TEST_DB_NAME=$PG_DATABASE
+RDS_USERNAME=$PG_USER
+RDS_PASSWORD=$PG_PASSWORD
 # Run gradle tests
 # fail if tests fail
 echo "******* Testing Backend"

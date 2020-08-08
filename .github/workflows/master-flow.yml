@@ -26,22 +26,26 @@ jobs:
   test:
     name: run tests
     runs-on: ubuntu-18.04
-    needs: build
+#    needs: build
     services:
-      db:
+      postgres:
         image: postgres:12.2-alpine
         env:
-          POSTGRES_USER: tsr
-          POSTGRES_PASSWORD: tsr
-          POSTGRES_DB: tsr
+          POSTGRES_PASSWORD: postgres
         ports:
-          - 5432:5432
+          - 5432/tcp
         # needed because the postgres container does not provide a healthcheck
         options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
     steps:
       - uses: actions/checkout@v2
       - uses: ./.github/actions/test-frontend
       - uses: ./.github/actions/test-backend
+        env:
+          PG_HOST: postgres
+          PG_USER: tsr
+          PG_DATABASE: tsr_test
+          PG_PASSWORD: tsr
+          PG_PORT: ${{ job.services.postgres.ports['5432'] }}
   deploy_aws:
     name: deploy to aws eb
     runs-on: ubuntu-18.04
