@@ -14,7 +14,7 @@ Dynamically manage and track planning requirements in a collaborative space.
     - [x] deploy (currently deploys to [aws eb](https://tracked.events))
 - [ ] SSO
     - [x] [keycloak](https://kc.tracked.events/auth/)
-    - [ ] transition from dev/testing environment to deployment version of kc
+    - [ ] transition from dev/testing environment to deployment ready version of kc
     - [ ] third party SSO?
     - [x] user roles ("user" / "admin")
 - [ ] integrate with 3rd party systems
@@ -22,18 +22,18 @@ Dynamically manage and track planning requirements in a collaborative space.
 - [ ] notifications
 
 ## Setup
-For setup, run `setup.sh`
+For setup, run `setup.sh`. If you need to deploy locally, install the [eb cli](https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/eb-cli3-install.html).
 
 ## Run
 Ensure docker is running the required containers with `./docker_go.sh`. `./run.sh` will run the full application.
 `./gradlew bootrun` will just run the backend. `yarn start` in the client directory will run just the front end.
 
 ## Testing
-Created with TDD principles. Run `test.sh` to run all tests. 
+Created with TDD principles. Run `test.sh` to run all tests.
 
-On the front-end we use jest, react-testing-library, and testdouble for mocking.
+On the front-end we use jest, react-testing-library, and testdouble/jest for mocking.
 
-On the backend we use JUnit5 and mockk for mocking. 
+On the backend we use JUnit5 and mockk for mocking.
 
 ## AWS
 ### App
@@ -48,7 +48,7 @@ The application deploys to AWS during CI/CD pipeline on the `master` branch. Ste
 1. `eb deploy tracked-events --label [name of deploy]`
 
 ### Keycloak
-Testing keycloak environment deployed to EC2 at https://kc.tracked.events.
+Testing keycloak environment deployed to EC2 at https://kc.tracked.events. Locally keycloak runs on port 8081 with credentials tsr:password // tsrAdmin:password.
 
 ### Certificate
 Route 53 for the domain alias mapping. Certificate Manager to create the TLS certificate.
