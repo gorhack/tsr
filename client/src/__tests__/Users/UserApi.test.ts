@@ -2,12 +2,13 @@ import axios from "axios";
 import nock from "nock";
 import { getUserInfo, saveUserRole, TsrUser, UserRoleUpdate } from "../../Users/UserApi";
 import { NockBody } from "../TestHelpers";
+import {HttpStatus} from "../../api";
 
 describe("user info", () => {
     axios.defaults.baseURL = "http://example.com";
 
     it("gets logged in user", async () => {
-        nock("http://example.com").get("/api/v1/user").reply(200, {
+        nock("http://example.com").get("/api/v1/user").reply(HttpStatus.OK, {
             user: "Regular User",
             username: "just_a_regular_user",
         });
@@ -25,7 +26,7 @@ describe("user info", () => {
 
         nock("http://example.com")
             .put("/api/v1/user/role", userChange as NockBody)
-            .reply(200, {
+            .reply(HttpStatus.OK, {
                 ...userChange,
                 username: "just_a_regular_user",
             } as TsrUser);
