@@ -16,7 +16,7 @@ class SecurityConfiguration {
                 .headers().frameOptions().sameOrigin()
 
         http.authorizeRequests()
-                .antMatchers("/actuator/health").permitAll()
+                .antMatchers("/actuator/health", "/actuator/info").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .logout()
