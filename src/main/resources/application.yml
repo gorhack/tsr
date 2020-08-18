@@ -45,8 +45,6 @@ spring:
       resourceserver:
         jwt:
           jwk-set-uri: ${TSR_KEYCLOAK_HOST}/auth/realms/tsr/protocol/openid-connect/certs
-server:
-  port: 5000
 
 logging:
   level:
