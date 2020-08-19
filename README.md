@@ -31,9 +31,11 @@ Ensure docker is running the required containers with `./docker_go.sh`. `./run.s
 ## Testing
 Created with TDD principles. Run `test.sh` to run all tests.
 
-On the front-end we use jest, react-testing-library, and testdouble/jest for mocking.
+On the front-end we use [react-testing-library](https://testing-library.com/docs/react-testing-library/intro), and
+[testdouble](https://github.com/testdouble/testdouble.js) / [jest](https://jestjs.io) for mocking.
 
-On the backend we use JUnit5 and mockk for mocking.
+On the backend we use [JUnit5](https://junit.org/junit5/docs/current/user-guide/) and [mockk](https://mockk.io) for
+mocking.
 
 ## AWS
 ### App
@@ -42,13 +44,17 @@ To initialize Elastic Beanstalk (EB) app through the CLI, run `eb init -p docker
 To create EB environment with Postgresql and an Application Load Balancer, run
 `eb create tracked-events --database.engine postgres --database.version 12.2 --elb-type application`
 
-The application deploys to AWS during CI/CD pipeline on the `master` branch. Steps below on manually deploying your local changes:
+The application deploys to AWS during CI/CD pipeline on the `master` branch. Steps below on manually deploying your
+local changes:
 1. build the application `./pipeline/build.sh`
 1. move the .jar in `build/libs` to `pipeline/eb` as `tsr.jar`
 1. `eb deploy tracked-events --label [name of deploy]`
 
-### Keycloak
-Testing keycloak environment deployed to EC2 at https://kc.tracked.events. Locally keycloak runs on port 8081 with credentials tsr:password // tsrAdmin:password.
+### Auth
+Currently, _TSR_ uses [Keycloak's](https://www.keycloak.org) Oauth2 and Spring Security for authentication. There is a
+testing keycloak environment deployed to EC2 at https://kc.tracked.events. Locally, keycloak runs within
+[docker](https://hub.docker.com/repository/docker/g0rak/tsr-keycloak) on port 8081 with realm credentials tsr:tsr and
+user credentials tsr:password /and/ tsrAdmin:password
 
 ### Certificate
 Route 53 for the domain alias mapping. Certificate Manager to create the TLS certificate.
