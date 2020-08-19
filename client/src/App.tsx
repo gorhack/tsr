@@ -12,12 +12,12 @@ const App: React.FC = () => {
             <div className="App">
                 <main className="App-content">
                     <Switch>
+                        <Route path="/createEvent">
+                            <CreateEvent />
+                        </Route>
                         <Route path="/">
                             <User />
                             <Home />
-                        </Route>
-                        <Route path="/createEvent">
-                            <CreateEvent />
                         </Route>
                     </Switch>
                 </main>

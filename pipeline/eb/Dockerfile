@@ -1,8 +1,5 @@
 FROM openjdk:13-alpine
 
-ENV RDS_DB_NAME=tsr
-ENV RDS_PASSWORD=tsr
-ENV RDS_USERNAME=tsr
 ENV SPRING_PROFILES_ACTIVE=default
 
 COPY tsr.jar /tsr.jar
