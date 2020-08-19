@@ -2,7 +2,7 @@ import axios from "axios";
 import nock from "nock";
 import { getUserInfo, saveUserRole, TsrUser, UserRoleUpdate } from "../../Users/UserApi";
 import { NockBody } from "../TestHelpers";
-import {HttpStatus} from "../../api";
+import { HttpStatus } from "../../api";
 
 describe("user info", () => {
     axios.defaults.baseURL = "http://example.com";

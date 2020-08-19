@@ -4,7 +4,7 @@ import { CreateEvent } from "../../Events/CreateEvent";
 import React from "react";
 import { Route, Router } from "react-router-dom";
 import { createMemoryHistory } from "history";
-import { fillInInputValueInForm, makeEvent, makeEventType } from "../TestHelpers";
+import { fillInInputValueInForm } from "../TestHelpers";
 import td from "testdouble";
 import * as EventApi from "../../Events/EventApi";
 import { TsrEvent } from "../../Events/EventApi";
