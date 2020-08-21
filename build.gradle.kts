@@ -8,10 +8,10 @@ plugins {
 	id("org.flywaydb.flyway") version "6.5.2"
 	id("org.sonarqube") version "3.0"
 
-	id ("org.jetbrains.kotlin.plugin.jpa") version "1.3.72"
-	id ("org.jetbrains.kotlin.plugin.noarg") version "1.3.72"
-	kotlin("jvm") version "1.3.72"
-	kotlin("plugin.spring") version "1.3.72"
+	id ("org.jetbrains.kotlin.plugin.jpa") version "1.4.0"
+	id ("org.jetbrains.kotlin.plugin.noarg") version "1.4.0"
+	kotlin("jvm") version "1.4.0"
+	kotlin("plugin.spring") version "1.4.0"
 
 	id("com.github.ben-manes.versions") version "0.29.0" // helps find latest dependency versions `./gradlew dependencyUpdates`
 }
@@ -43,7 +43,7 @@ repositories {
 var springSecurityVersion = "5.3.3.RELEASE"
 var keycloakVersion = "11.0.0"
 var jacksonVersion = "2.11.1"
-var jetBrainsKotlin = "1.3.72"
+var jetBrainsKotlin = "1.4.0"
 
 dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
