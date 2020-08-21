@@ -7,7 +7,7 @@
 #### Track, Synchronize, Reporting Tool
 Dynamic tracking management tool. _TSR_ is built on Spring and React.
 
-## Goal
+## Project Goals
 Dynamically manage and track planning requirements in a collaborative space.
 - [x] CI/CD pipeline
     - [x] testing
@@ -17,6 +17,7 @@ Dynamically manage and track planning requirements in a collaborative space.
     - [ ] transition from dev/testing environment to deployment ready version of kc
     - [ ] third party SSO?
     - [x] user roles ("user" / "admin")
+- [ ] transition from [dev/testing rds](https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/using-features.managing.db.html?icmpid=docs_elasticbeanstalk_console) db to deployment db
 - [ ] integrate with 3rd party systems
 - [ ] real time
 - [ ] notifications
@@ -37,12 +38,15 @@ On the front-end we use [react-testing-library](https://testing-library.com/docs
 On the backend we use [JUnit5](https://junit.org/junit5/docs/current/user-guide/) and [mockk](https://mockk.io) for
 mocking.
 
+## Auth
+Currently, _TSR_ uses [Keycloak's](https://www.keycloak.org) Oauth2 and Spring Security for authentication. Locally,
+keycloak runs within [docker](https://hub.docker.com/repository/docker/g0rak/tsr-keycloak) on port 8081 with realm
+credentials tsr:tsr and user credentials tsr:password /and/ tsrAdmin:password
+
 ## AWS
 ### App
-To initialize Elastic Beanstalk (EB) app through the CLI, run `eb init -p docker tsr`
-
-To create EB environment with Postgresql and an Application Load Balancer, run
-`eb create tracked-events --database.engine postgres --database.version 12.2 --elb-type application`
+The Elastic Beanstalk (EB) setup is complete for _TSR_ in the `./pipeline/eb` directory with configuration and docker
+files.
 
 The application deploys to AWS during CI/CD pipeline on the `master` branch. Steps below on manually deploying your
 local changes:
@@ -50,11 +54,13 @@ local changes:
 1. move the .jar in `build/libs` to `pipeline/eb` as `tsr.jar`
 1. `eb deploy tracked-events --label [name of deploy]`
 
+To initialize app through the CLI, run `eb init -p docker tsr`
+
+To create EB environment with Postgresql and an Application Load Balancer, run
+`eb create tracked-events --database.engine postgres --database.version 12.2 --elb-type application`
+
 ### Auth
-Currently, _TSR_ uses [Keycloak's](https://www.keycloak.org) Oauth2 and Spring Security for authentication. There is a
-testing keycloak environment deployed to EC2 at https://kc.tracked.events. Locally, keycloak runs within
-[docker](https://hub.docker.com/repository/docker/g0rak/tsr-keycloak) on port 8081 with realm credentials tsr:tsr and
-user credentials tsr:password /and/ tsrAdmin:password
+A dev/testing keycloak environment deployed to EC2 at https://kc.tracked.events.
 
 ### Certificate
 Route 53 for the domain alias mapping. Certificate Manager to create the TLS certificate.
