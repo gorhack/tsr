@@ -57,7 +57,9 @@ local changes:
 To initialize app through the CLI, run `eb init -p docker tsr`
 
 To create EB environment with Postgresql and an Application Load Balancer, run
-`eb create tracked-events --database.engine postgres --database.version 12.2 --elb-type application`
+`eb create tracked-events \
+--database.engine postgres --database.version 12.2 \
+--envvars TSR_KEYCLOAK_HOST=https://kc.tracked.events,TSR_KEYCLOAK_SECRET_KEY=random-password`
 
 ### Auth
 A dev/testing keycloak environment deployed to EC2 at https://kc.tracked.events.
