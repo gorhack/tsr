@@ -54,6 +54,22 @@ local changes:
 1. move the .jar in `build/libs` to `pipeline/eb` as `tsr.jar`
 1. `eb deploy tracked-events --label [name of deploy]`
 
+### Auth
+A dev/testing keycloak environment deployed to EC2 at https://kc.tracked.events.
+
+### Certificate
+Route 53 for the domain alias mapping. Certificate Manager to create the TLS certificate.
+
+### AWS Initial Setup
+
+#### Configure ./pipeline/eb/.ebextensions
+Create security group `tsr-eb-sg` with inbound/outbound rules 80 and 443 open. Copy the id to
+`AWS::ElasticLoadBalancingV2::LoadBalancer -> SecurityGroups`.
+
+Create Certificate in Certificate Manager. Copy Arn to `AWS::ElasticLoadBalancingV2::Listener -> Certificates ->
+CertificateArn`
+
+#### Using EB CLI
 To initialize app through the CLI, run `eb init -p docker tsr`
 
 To create EB environment with Postgresql and an Application Load Balancer, run
@@ -61,8 +77,4 @@ To create EB environment with Postgresql and an Application Load Balancer, run
 --database.engine postgres --database.version 12.2 \
 --envvars TSR_KEYCLOAK_HOST=https://kc.tracked.events,TSR_KEYCLOAK_SECRET_KEY=random-password`
 
-### Auth
-A dev/testing keycloak environment deployed to EC2 at https://kc.tracked.events.
-
-### Certificate
-Route 53 for the domain alias mapping. Certificate Manager to create the TLS certificate.
+Add the rds to the elastic beanstalk application security groups.

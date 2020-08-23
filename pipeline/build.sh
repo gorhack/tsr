@@ -24,4 +24,6 @@ echo "******* Building Backend"
 echo "******* Creating jar"
 ./gradlew jar
 
+cp ./build/libs/tsr*.jar ./pipeline/eb/tsr.jar
+
 exit 0
