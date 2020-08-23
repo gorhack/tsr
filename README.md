@@ -48,10 +48,9 @@ credentials tsr:tsr and user credentials tsr:password /and/ tsrAdmin:password
 The Elastic Beanstalk (EB) setup is complete for _TSR_ in the `./pipeline/eb` directory with configuration and docker
 files.
 
-The application deploys to AWS during CI/CD pipeline on the `master` branch. Steps below on manually deploying your
+The application deploys to AWS during CI/CD pipeline on the `master` branch. Manual steps to deploy your
 local changes:
 1. build the application `./pipeline/build.sh`
-1. move the .jar in `build/libs` to `pipeline/eb` as `tsr.jar`
 1. `eb deploy tracked-events --label [name of deploy]`
 
 ### Auth
@@ -72,9 +71,14 @@ CertificateArn`
 #### Using EB CLI
 To initialize app through the CLI, run `eb init -p docker tsr`
 
-To create EB environment with Postgresql and an Application Load Balancer, run
-`eb create tracked-events \
---database.engine postgres --database.version 12.2 \
---envvars TSR_KEYCLOAK_HOST=https://kc.tracked.events,TSR_KEYCLOAK_SECRET_KEY=random-password`
+Additional environment configuration in `.ebextensions` which add the alb's HTTP redirect and configure the health path
+to `/actuator/health`.
 
-Add the rds to the elastic beanstalk application security groups.
+To create EB environment with Postgresql RDS, run
+```
+eb create tracked-events \
+--database.engine postgres --database.version 12.2 \
+--envvars TSR_KEYCLOAK_HOST=https://kc.tracked.events,TSR_KEYCLOAK_SECRET_KEY=random-password
+```
+
+Add the new RDS's security group to the elastic beanstalk application's security groups.
