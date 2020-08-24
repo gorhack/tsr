@@ -6,7 +6,7 @@ import { saveEvent, TsrEvent } from "./EventApi";
 import { SelectOption } from "../api";
 
 type FormData = {
-    eventName?: string;
+    eventName: string;
     organization: string;
     startDate: string;
     endDate: string;
