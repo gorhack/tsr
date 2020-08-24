@@ -83,6 +83,7 @@ if [[ $? != 0 ]]; then
     JAVA_HOME="/Library/Java/JavaVirtualMachines/adoptopenjdk-13.jdk/Contents/Home"
   elif [[ ${operatingSystem} == "Linux" ]]; then
     JAVA_HOME="/usr/java/jdk-13"
+    # if using Ubuntu 20.04 LTS JAVA_HOME=/usr/lib/jvm/java-13-openjdk-amd64
   fi
   echo "export JAVA_HOME=$JAVA_HOME" >> $profileHome
   echo "export PATH=$PATH:$HOME/bin:$JAVA_HOME/bin" >> $profileHome
