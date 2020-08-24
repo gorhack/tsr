@@ -62,10 +62,8 @@ Route 53 for the domain alias mapping. Certificate Manager to create the TLS cer
 ### AWS Initial Setup
 
 #### Configure ./pipeline/eb/.ebextensions
-Create security group `tsr-eb-sg` with inbound/outbound rules 80 and 443 open. Copy the id to
-`AWS::ElasticLoadBalancingV2::LoadBalancer -> SecurityGroups`.
 
-Create Certificate in Certificate Manager. Copy Arn to `AWS::ElasticLoadBalancingV2::Listener -> Certificates ->
+Create Certificate in Certificate Manager. Copy Certificate Arn to `AWSEBV2LoadBalancerListenerHTTPS -> Certificates ->
 CertificateArn`
 
 #### Using EB CLI
