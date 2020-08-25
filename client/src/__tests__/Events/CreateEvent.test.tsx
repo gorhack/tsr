@@ -4,7 +4,7 @@ import { CreateEvent } from "../../Events/CreateEvent";
 import React from "react";
 import { Route, Router } from "react-router-dom";
 import { createMemoryHistory } from "history";
-import { fillInInputValueInForm } from "../TestHelpers";
+import {fillInInputValueInForm, reRender} from "../TestHelpers";
 import td from "testdouble";
 import * as EventApi from "../../Events/EventApi";
 import { TsrEvent } from "../../Events/EventApi";
@@ -40,17 +40,19 @@ describe("create an event", () => {
     it("submitting the form saves event and goes to /eventId", async () => {
         const history = createMemoryHistory();
         const tsrEvent = {
-            eventName: "",
+            eventName: "name",
             organization: "org",
             startDate: "1234",
             endDate: "1234",
             eventType: undefined,
         };
-        const saveEventPromise: Promise<TsrEvent> = Promise.resolve({ ...tsrEvent, eventId: 1 });
+        const saveEventPromise: Promise<TsrEvent> = Promise.resolve({ eventId: 1, ...tsrEvent });
         const result = renderCreateEvent(history);
+        fillInInputValueInForm(result, "input the event name", "name", true);
         fillInInputValueInForm(result, "input your organization", "org", false);
         fillInInputValueInForm(result, "select the start date", "1234", false);
         fillInInputValueInForm(result, "select the end date", "1234", false);
+
         td.when(mockSaveEvent(tsrEvent)).thenDo(() => saveEventPromise);
 
         fireEvent.submit(result.getByTitle("createEventForm"));
@@ -58,6 +60,22 @@ describe("create an event", () => {
             await saveEventPromise;
         });
         expect(history.location.pathname).toEqual("/1");
+    });
+
+    describe("handle errors", () => {
+        it("requires event name", async () => {
+            renderCreateEvent();
+            expect(screen.queryByText("event must have a name")).toBeNull();
+            fireEvent.submit(screen.getByTitle("createEventForm"));
+            await reRender();
+            expect(screen.getByText("event name is required")).toBeInTheDocument();
+        });
+
+        it.skip("requires event organization", () => {});
+
+        it.skip("requires start date", () => {});
+
+        it.skip("requires end date after start date", () => {});
     });
 
     const renderCreateEvent = (history = createMemoryHistory()): RenderResult => {

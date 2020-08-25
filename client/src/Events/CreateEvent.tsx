@@ -15,9 +15,9 @@ type FormData = {
 
 export const CreateEvent: React.FC = () => {
     const history = useHistory();
-    const { handleSubmit, register } = useForm<FormData>({
+    const { handleSubmit, register, errors } = useForm<FormData>({
         defaultValues: {
-            eventTypeOption: { label: "", value: "" },
+            // eventTypeOption: { label: "", value: "" },
         },
     });
 
@@ -57,9 +57,14 @@ export const CreateEvent: React.FC = () => {
                     inputProps={{
                         placeholder: "event name...",
                         name: "eventName",
-                        ref: register({}),
+                        ref: register({
+                            required: true,
+                        }),
                     }}
                 />
+                {errors.eventName?.type && (
+                    <label title="eventNameError">event name is required</label>
+                )}
                 <LabeledInput
                     label={"input your organization"}
                     inputProps={{
