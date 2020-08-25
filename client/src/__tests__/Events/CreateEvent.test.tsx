@@ -64,24 +64,42 @@ describe("create an event", () => {
 
     describe("handle errors", () => {
         it("requires event name", async () => {
+            const errorMsg = "event name is required";
             renderCreateEvent();
-            expect(screen.queryByText("event must have a name")).toBeNull();
+            expect(screen.queryByText(errorMsg)).toBeNull();
             fireEvent.submit(screen.getByTitle("createEventForm"));
             await reRender();
-            expect(screen.getByText("event name is required")).toBeInTheDocument();
+            expect(screen.getByText(errorMsg)).toBeInTheDocument();
         });
 
         it("requires event organization", async () => {
+            const errorMsg = "organization is required";
             renderCreateEvent();
-            expect(screen.queryByText("enter your organization")).toBeNull();
+            expect(screen.queryByText(errorMsg)).toBeNull();
             fireEvent.submit(screen.getByTitle("createEventForm"));
             await reRender();
-            expect(screen.getByText("organization is required")).toBeInTheDocument();
+            expect(screen.getByText(errorMsg)).toBeInTheDocument();
         });
 
-        it.skip("requires start date", () => {});
+        // eslint-disable-next-line jest/no-disabled-tests
+        it.skip("requires start date", async () => {
+            const errorMsg = "start date is required";
+            renderCreateEvent();
+            expect(screen.queryByText(errorMsg)).toBeNull();
+            fireEvent.submit(screen.getByTitle("createEventForm"));
+            await reRender();
+            expect(screen.getByText(errorMsg)).toBeInTheDocument();
+        });
 
-        it.skip("requires end date after start date", () => {});
+        // eslint-disable-next-line jest/no-disabled-tests
+        it.skip("requires end date after start date", async () => {
+            const errorMsg = "end date is required and must be after the start date";
+            renderCreateEvent();
+            expect(screen.queryByText(errorMsg)).toBeNull();
+            fireEvent.submit(screen.getByTitle("createEventForm"));
+            await reRender();
+            expect(screen.getByText(errorMsg)).toBeInTheDocument();
+        });
     });
 
     const renderCreateEvent = (history = createMemoryHistory()): RenderResult => {
