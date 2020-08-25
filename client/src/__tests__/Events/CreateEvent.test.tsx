@@ -4,7 +4,7 @@ import { CreateEvent } from "../../Events/CreateEvent";
 import React from "react";
 import { Route, Router } from "react-router-dom";
 import { createMemoryHistory } from "history";
-import {fillInInputValueInForm, reRender} from "../TestHelpers";
+import { fillInInputValueInForm, reRender } from "../TestHelpers";
 import td from "testdouble";
 import * as EventApi from "../../Events/EventApi";
 import { TsrEvent } from "../../Events/EventApi";
@@ -71,7 +71,13 @@ describe("create an event", () => {
             expect(screen.getByText("event name is required")).toBeInTheDocument();
         });
 
-        it.skip("requires event organization", () => {});
+        it("requires event organization", async () => {
+            renderCreateEvent();
+            expect(screen.queryByText("enter your organization")).toBeNull();
+            fireEvent.submit(screen.getByTitle("createEventForm"));
+            await reRender();
+            expect(screen.getByText("organization is required")).toBeInTheDocument();
+        });
 
         it.skip("requires start date", () => {});
 

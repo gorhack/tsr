@@ -54,6 +54,7 @@ export const CreateEvent: React.FC = () => {
             <form title="createEventForm" onSubmit={handleSubmit(onSubmit)}>
                 <LabeledInput
                     label={"input the event name"}
+                    error={errors.eventName && "event name is required"}
                     inputProps={{
                         placeholder: "event name...",
                         name: "eventName",
@@ -62,15 +63,15 @@ export const CreateEvent: React.FC = () => {
                         }),
                     }}
                 />
-                {errors.eventName?.type && (
-                    <label title="eventNameError">event name is required</label>
-                )}
                 <LabeledInput
                     label={"input your organization"}
+                    error={errors.organization && "organization is required"}
                     inputProps={{
                         placeholder: "organization...",
                         name: "organization",
-                        ref: register({}),
+                        ref: register({
+                            required: true,
+                        }),
                     }}
                 />
                 <LabeledInput
