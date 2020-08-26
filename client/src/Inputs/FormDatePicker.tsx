@@ -18,6 +18,7 @@ export const FormDatePicker = (props: FormDatePickerProps): ReactElement => {
     return (
         <Controller
             name={props.name}
+            defaultValue={""}
             control={props.control}
             rules={{
                 required: true,
@@ -27,6 +28,7 @@ export const FormDatePicker = (props: FormDatePickerProps): ReactElement => {
                     <label className="Labeled-Input">
                         <span className={"space-1"}>{props.label}</span>
                         <DatePicker
+                            startDate={props.minDate}
                             minDate={props.minDate}
                             maxDate={props.maxDate}
                             placeholderText={props.placeholder}

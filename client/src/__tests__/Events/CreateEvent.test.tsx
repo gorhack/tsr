@@ -44,19 +44,19 @@ describe("create an event", () => {
             eventName: "name",
             organization: "org",
             startDate: new Date(dateToInput).toJSON(),
-            endDate: "1234",
+            endDate: new Date(dateToInput).toJSON(),
             eventType: undefined,
         };
         const saveEventPromise: Promise<TsrEvent> = Promise.resolve({ eventId: 1, ...tsrEvent });
         const result = renderCreateEvent(history);
         fillInInputValueInForm(result, "input the event name", "name", true);
         fillInInputValueInForm(result, "input your organization", "org", true);
-        fillInInputValueInForm(result, "select the start date", dateToInput, false);
-        fillInInputValueInForm(result, "select the end date", "1234", false);
+        fillInInputValueInForm(result, "start date", dateToInput, false, true);
+        fillInInputValueInForm(result, "end date", dateToInput, false, true);
 
         td.when(mockSaveEvent(tsrEvent)).thenDo(() => saveEventPromise);
 
-        fireEvent.submit(result.getByTitle("createEventForm"));
+        await submitEventForm();
         await act(async () => {
             await saveEventPromise;
         });
@@ -68,18 +68,22 @@ describe("create an event", () => {
             const errorMsg = "event name is required";
             renderCreateEvent();
             expect(screen.queryByText(errorMsg)).toBeNull();
-            fireEvent.submit(screen.getByTitle("createEventForm"));
-            await reRender();
+
+            await submitEventForm();
             expect(screen.getByText(errorMsg)).toBeInTheDocument();
         });
 
         it("requires event organization", async () => {
             const errorMsg = "organization is required";
-            renderCreateEvent();
+            const result = renderCreateEvent();
             expect(screen.queryByText(errorMsg)).toBeNull();
-            fireEvent.submit(screen.getByTitle("createEventForm"));
-            await reRender();
+
+            await submitEventForm();
             expect(screen.getByText(errorMsg)).toBeInTheDocument();
+
+            fillInInputValueInForm(result, "input your organization", "an org", true);
+            await submitEventForm();
+            expect(screen.queryByText(errorMsg)).toBeNull();
         });
 
         it("requires start date", async () => {
@@ -87,32 +91,49 @@ describe("create an event", () => {
             const result = renderCreateEvent();
             expect(screen.queryByText(errorMsg)).toBeNull();
 
-            fireEvent.submit(screen.getByTitle("createEventForm"));
-            await reRender();
-
+            await submitEventForm();
             expect(screen.getByText(errorMsg)).toBeInTheDocument();
+
             fillInInputValueInForm(result, "start date", "1234", false, true);
-            fireEvent.submit(screen.getByTitle("createEventForm"));
-            await reRender();
-
+            await submitEventForm();
             expect(screen.getByText(errorMsg)).toBeInTheDocument();
+
             fillInInputValueInForm(result, "start date", dateToInput, false, true);
-            fireEvent.submit(screen.getByTitle("createEventForm"));
-            await reRender();
+            await submitEventForm();
 
             expect(screen.queryByText(errorMsg)).toBeNull();
         });
 
-        // eslint-disable-next-line jest/no-disabled-tests
-        it.skip("requires end date after start date", async () => {
-            const errorMsg = "end date is required and must be after the start date";
-            renderCreateEvent();
+        it("requires end date after start date", async () => {
+            const errorMsg = "end date after the start date is required MM/dd/YYYY";
+            const result = renderCreateEvent();
             expect(screen.queryByText(errorMsg)).toBeNull();
-            fireEvent.submit(screen.getByTitle("createEventForm"));
-            await reRender();
+
+            await submitEventForm();
             expect(screen.getByText(errorMsg)).toBeInTheDocument();
+
+            fillInInputValueInForm(result, "end date", "1234", false, true);
+            await submitEventForm();
+            expect(screen.getByText(errorMsg)).toBeInTheDocument();
+
+            const yesterday = new Date(dateToInput)
+                .setDate(new Date(dateToInput).getDate() - 1)
+                .toLocaleString();
+            fillInInputValueInForm(result, "end date", yesterday, false, true);
+            await submitEventForm();
+            expect(screen.getByText(errorMsg)).toBeInTheDocument();
+
+            fillInInputValueInForm(result, "end date", dateToInput, false, true);
+            await submitEventForm();
+
+            expect(screen.queryByText(errorMsg)).toBeNull();
         });
     });
+
+    const submitEventForm = async () => {
+        fireEvent.submit(screen.getByTitle("createEventForm"));
+        await reRender();
+    };
 
     const renderCreateEvent = (history = createMemoryHistory()): RenderResult => {
         history.push("/createEvent");

@@ -10,17 +10,21 @@ type FormData = {
     eventName: string;
     organization: string;
     startDate: Date;
-    endDate: string;
+    endDate: Date;
     eventTypeOption?: SelectOption;
 };
 
+const TODAYS_DATE = new Date();
+const DATE_IN_10_YEARS = new Date(new Date().setFullYear(new Date().getFullYear() + 10));
+
 export const CreateEvent: React.FC = () => {
     const history = useHistory();
-    const { handleSubmit, register, errors, control } = useForm<FormData>({
+    const { handleSubmit, register, errors, control, watch } = useForm<FormData>({
         defaultValues: {
             // eventTypeOption: { label: "", value: "" },
         },
     });
+    const dateWatch = watch(["startDate", "endDate"]);
 
     const onCancel = (e: React.MouseEvent<HTMLButtonElement>): void => {
         e.preventDefault();
@@ -32,7 +36,7 @@ export const CreateEvent: React.FC = () => {
             eventName,
             organization,
             startDate: startDate.toJSON(),
-            endDate,
+            endDate: endDate.toJSON(),
             eventType: eventTypeOption
                 ? {
                       sortOrder: 1,
@@ -80,17 +84,30 @@ export const CreateEvent: React.FC = () => {
                     name={"startDate"}
                     label={"select the start date"}
                     placeholder={"start date"}
-                    minDate={new Date()}
-                    maxDate={new Date(new Date().setFullYear(new Date().getFullYear() + 10))}
+                    minDate={TODAYS_DATE}
+                    maxDate={DATE_IN_10_YEARS}
                     error={errors.startDate && "start date is required MM/dd/YYYY"}
                 />
-                <LabeledInput
+                <FormDatePicker
+                    control={control}
+                    name={"endDate"}
                     label={"select the end date"}
-                    inputProps={{
-                        placeholder: "end date",
-                        name: "endDate",
-                        ref: register({}),
-                    }}
+                    placeholder={"end date"}
+                    minDate={dateWatch.startDate ? dateWatch.startDate : TODAYS_DATE}
+                    maxDate={
+                        dateWatch.startDate
+                            ? new Date(
+                                  new Date(dateWatch.startDate.toString()).setFullYear(
+                                      dateWatch.startDate.getFullYear() + 10,
+                                  ),
+                              )
+                            : DATE_IN_10_YEARS
+                    }
+                    error={
+                        !!(errors.endDate || dateWatch.startDate > dateWatch.endDate)
+                            ? "end date after the start date is required MM/dd/YYYY"
+                            : undefined
+                    }
                 />
                 <LabeledInput
                     label={"select the event type"}
