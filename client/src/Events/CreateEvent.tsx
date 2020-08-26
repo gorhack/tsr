@@ -4,6 +4,7 @@ import { useHistory } from "react-router";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { saveEvent, TsrEvent } from "./EventApi";
 import { SelectOption } from "../api";
+import { FormDatePicker } from "../Inputs/FormDatePicker";
 
 type FormData = {
     eventName: string;
@@ -15,7 +16,7 @@ type FormData = {
 
 export const CreateEvent: React.FC = () => {
     const history = useHistory();
-    const { handleSubmit, register, errors } = useForm<FormData>({
+    const { handleSubmit, register, errors , control} = useForm<FormData>({
         defaultValues: {
             // eventTypeOption: { label: "", value: "" },
         },
@@ -74,7 +75,8 @@ export const CreateEvent: React.FC = () => {
                         }),
                     }}
                 />
-                <LabeledInput
+                <FormDatePicker
+                    control={control}
                     label={"select the start date"}
                     error={errors.startDate && "start date is required MM/dd/YYYY"}
                     inputProps={{
