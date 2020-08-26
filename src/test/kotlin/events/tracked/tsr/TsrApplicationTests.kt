@@ -13,6 +13,7 @@ class TsrApplicationTests {
 
 	@Test
 	fun contextLoads() {
+		// intentionally blank... autowire build test
 	}
 
 }
