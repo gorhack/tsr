@@ -49,10 +49,10 @@ describe("create an event", () => {
         };
         const saveEventPromise: Promise<TsrEvent> = Promise.resolve({ eventId: 1, ...tsrEvent });
         const result = renderCreateEvent(history);
-        fillInInputValueInForm(result, "input the event name", "name", true);
-        fillInInputValueInForm(result, "input your organization", "org", true);
-        fillInInputValueInForm(result, "start date", dateToInput, false, true);
-        fillInInputValueInForm(result, "end date", dateToInput, false, true);
+        fillInInputValueInForm(result, "name", "input the event name");
+        fillInInputValueInForm(result, "org", "input your organization");
+        fillInInputValueInForm(result, dateToInput, undefined, "start date", false);
+        fillInInputValueInForm(result, dateToInput, undefined, "end date", false);
 
         td.when(mockSaveEvent(tsrEvent)).thenDo(() => saveEventPromise);
 
@@ -81,7 +81,7 @@ describe("create an event", () => {
             await submitEventForm();
             expect(screen.getByText(errorMsg)).toBeInTheDocument();
 
-            fillInInputValueInForm(result, "input your organization", "an org", true);
+            fillInInputValueInForm(result, "an org", "input your organization");
             await submitEventForm();
             expect(screen.queryByText(errorMsg)).toBeNull();
         });
@@ -94,11 +94,11 @@ describe("create an event", () => {
             await submitEventForm();
             expect(screen.getByText(errorMsg)).toBeInTheDocument();
 
-            fillInInputValueInForm(result, "start date", "1234", false, true);
+            fillInInputValueInForm(result, "1234", undefined, "start date");
             await submitEventForm();
             expect(screen.getByText(errorMsg)).toBeInTheDocument();
 
-            fillInInputValueInForm(result, "start date", dateToInput, false, true);
+            fillInInputValueInForm(result, dateToInput, undefined, "start date", false);
             await submitEventForm();
 
             expect(screen.queryByText(errorMsg)).toBeNull();
@@ -112,18 +112,18 @@ describe("create an event", () => {
             await submitEventForm();
             expect(screen.getByText(errorMsg)).toBeInTheDocument();
 
-            fillInInputValueInForm(result, "end date", "1234", false, true);
+            fillInInputValueInForm(result, "1234", undefined, "end date");
             await submitEventForm();
             expect(screen.getByText(errorMsg)).toBeInTheDocument();
 
             const yesterday = new Date(dateToInput)
                 .setDate(new Date(dateToInput).getDate() - 1)
                 .toLocaleString();
-            fillInInputValueInForm(result, "end date", yesterday, false, true);
+            fillInInputValueInForm(result, yesterday, undefined, "end date");
             await submitEventForm();
             expect(screen.getByText(errorMsg)).toBeInTheDocument();
 
-            fillInInputValueInForm(result, "end date", dateToInput, false, true);
+            fillInInputValueInForm(result, dateToInput, undefined, "end date", false);
             await submitEventForm();
 
             expect(screen.queryByText(errorMsg)).toBeNull();

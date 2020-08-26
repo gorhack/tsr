@@ -7,12 +7,12 @@ export type NockBody = any;
 
 export const fillInInputValueInForm = (
     container: RenderResult,
-    label: string,
     newValue: string | number,
+    labelText?: string,
+    placeholderText?: string,
     includeValidation = true,
-    placeholder?: boolean,
 ): void => {
-    const input = getInputValueType(container, label, placeholder);
+    const input = getInputValueType(container, labelText, placeholderText);
     fireEvent.change(input, { target: { value: newValue } });
     fireEvent.blur(input); // lol HACK to trigger validation
     if (includeValidation) {
@@ -22,12 +22,18 @@ export const fillInInputValueInForm = (
 
 const getInputValueType = (
     container: RenderResult,
-    label: string,
-    placeholder?: boolean,
+    label?: string,
+    placeholder?: string,
 ): HTMLInputElement => {
-    return placeholder
-        ? (container.getByPlaceholderText(label) as HTMLInputElement)
-        : (container.getByLabelText(label) as HTMLInputElement);
+    if (label && placeholder) {
+        throw new Error("fillInInputValueInForm can take either a label OR a placeholder value");
+    } else if (label) {
+        return container.getByLabelText(label) as HTMLInputElement;
+    } else if (placeholder) {
+        return container.getByPlaceholderText(placeholder) as HTMLInputElement;
+    } else {
+        throw new Error("fillInInputValueInForm must take either a label OR a placeholder value");
+    }
 };
 
 export function makeEventType(partial: Partial<EventType>): EventType {
