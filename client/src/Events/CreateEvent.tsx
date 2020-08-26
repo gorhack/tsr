@@ -76,10 +76,14 @@ export const CreateEvent: React.FC = () => {
                 />
                 <LabeledInput
                     label={"select the start date"}
+                    error={errors.startDate && "start date is required MM/dd/YYYY"}
                     inputProps={{
                         placeholder: "start date",
                         name: "startDate",
-                        ref: register({}),
+                        ref: register({
+                            required: true,
+                            pattern: /^[0,1]?[0-9]\/[0-3]?[0-9]\/([0-9]{2}|[0-9]{4})$/
+                        }),
                     }}
                 />
                 <LabeledInput

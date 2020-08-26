@@ -81,14 +81,21 @@ describe("create an event", () => {
             expect(screen.getByText(errorMsg)).toBeInTheDocument();
         });
 
-        // eslint-disable-next-line jest/no-disabled-tests
-        it.skip("requires start date", async () => {
-            const errorMsg = "start date is required";
-            renderCreateEvent();
+        it("requires start date", async () => {
+            const errorMsg = "start date is required MM/dd/YYYY";
+            const result = renderCreateEvent();
             expect(screen.queryByText(errorMsg)).toBeNull();
             fireEvent.submit(screen.getByTitle("createEventForm"));
             await reRender();
             expect(screen.getByText(errorMsg)).toBeInTheDocument();
+            fillInInputValueInForm(result, "select the start date", "1234", false);
+            fireEvent.submit(screen.getByTitle("createEventForm"));
+            await reRender();
+            expect(screen.getByText(errorMsg)).toBeInTheDocument();
+            fillInInputValueInForm(result, "select the start date", "01/01/2020", false);
+            fireEvent.submit(screen.getByTitle("createEventForm"));
+            await reRender();
+            expect(screen.queryByText(errorMsg)).toBeNull();
         });
 
         // eslint-disable-next-line jest/no-disabled-tests
