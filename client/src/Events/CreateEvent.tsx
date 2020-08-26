@@ -16,7 +16,7 @@ type FormData = {
 
 export const CreateEvent: React.FC = () => {
     const history = useHistory();
-    const { handleSubmit, register, errors , control} = useForm<FormData>({
+    const { handleSubmit, register, errors, control } = useForm<FormData>({
         defaultValues: {
             // eventTypeOption: { label: "", value: "" },
         },
@@ -77,16 +77,12 @@ export const CreateEvent: React.FC = () => {
                 />
                 <FormDatePicker
                     control={control}
+                    name={"startDate"}
                     label={"select the start date"}
+                    placeholder={"start date"}
+                    minDate={new Date()}
+                    maxDate={new Date(new Date().setFullYear(new Date().getFullYear() + 10))}
                     error={errors.startDate && "start date is required MM/dd/YYYY"}
-                    inputProps={{
-                        placeholder: "start date",
-                        name: "startDate",
-                        ref: register({
-                            required: true,
-                            pattern: /^[0,1]?[0-9]\/[0-3]?[0-9]\/([0-9]{2}|[0-9]{4})$/
-                        }),
-                    }}
                 />
                 <LabeledInput
                     label={"select the end date"}

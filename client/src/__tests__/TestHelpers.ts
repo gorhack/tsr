@@ -10,13 +10,24 @@ export const fillInInputValueInForm = (
     label: string,
     newValue: string | number,
     includeValidation = true,
+    placeholder?: boolean,
 ): void => {
-    const input = container.getByLabelText(label) as HTMLInputElement;
+    const input = getInputValueType(container, label, placeholder);
     fireEvent.change(input, { target: { value: newValue } });
     fireEvent.blur(input); // lol HACK to trigger validation
     if (includeValidation) {
         expect(input.value).toEqual(newValue.toString());
     }
+};
+
+const getInputValueType = (
+    container: RenderResult,
+    label: string,
+    placeholder?: boolean,
+): HTMLInputElement => {
+    return placeholder
+        ? (container.getByPlaceholderText(label) as HTMLInputElement)
+        : (container.getByLabelText(label) as HTMLInputElement);
 };
 
 export function makeEventType(partial: Partial<EventType>): EventType {
