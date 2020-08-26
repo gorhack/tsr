@@ -9,7 +9,7 @@ import { FormDatePicker } from "../Inputs/FormDatePicker";
 type FormData = {
     eventName: string;
     organization: string;
-    startDate: string;
+    startDate: Date;
     endDate: string;
     eventTypeOption?: SelectOption;
 };
@@ -31,7 +31,7 @@ export const CreateEvent: React.FC = () => {
         const event: TsrEvent = {
             eventName,
             organization,
-            startDate,
+            startDate: startDate.toJSON(),
             endDate,
             eventType: eventTypeOption
                 ? {

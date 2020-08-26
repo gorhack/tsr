@@ -10,6 +10,7 @@ import * as EventApi from "../../Events/EventApi";
 import { TsrEvent } from "../../Events/EventApi";
 
 describe("create an event", () => {
+    const dateToInput = new Date().toLocaleDateString();
     let mockSaveEvent: typeof EventApi.saveEvent;
     beforeEach(() => {
         mockSaveEvent = td.replace(EventApi, "saveEvent");
@@ -42,15 +43,15 @@ describe("create an event", () => {
         const tsrEvent = {
             eventName: "name",
             organization: "org",
-            startDate: "1234",
+            startDate: new Date(dateToInput).toJSON(),
             endDate: "1234",
             eventType: undefined,
         };
         const saveEventPromise: Promise<TsrEvent> = Promise.resolve({ eventId: 1, ...tsrEvent });
         const result = renderCreateEvent(history);
         fillInInputValueInForm(result, "input the event name", "name", true);
-        fillInInputValueInForm(result, "input your organization", "org", false);
-        fillInInputValueInForm(result, "select the start date", "1234", false);
+        fillInInputValueInForm(result, "input your organization", "org", true);
+        fillInInputValueInForm(result, "select the start date", dateToInput, false);
         fillInInputValueInForm(result, "select the end date", "1234", false);
 
         td.when(mockSaveEvent(tsrEvent)).thenDo(() => saveEventPromise);
@@ -95,7 +96,6 @@ describe("create an event", () => {
             await reRender();
 
             expect(screen.getByText(errorMsg)).toBeInTheDocument();
-            const dateToInput = new Date().toLocaleDateString();
             fillInInputValueInForm(result, "start date", dateToInput, false, true);
             fireEvent.submit(screen.getByTitle("createEventForm"));
             await reRender();
