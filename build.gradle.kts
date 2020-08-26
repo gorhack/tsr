@@ -3,9 +3,9 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
 	id("org.springframework.boot") version "2.4.0-SNAPSHOT"
-	id("io.spring.dependency-management") version "1.0.9.RELEASE"
+	id("io.spring.dependency-management") version "1.0.10.RELEASE"
 	id("com.moowork.node") version "1.3.1"
-	id("org.flywaydb.flyway") version "6.5.2"
+	id("org.flywaydb.flyway") version "6.5.5"
 	id("org.sonarqube") version "3.0"
 
 	id ("org.jetbrains.kotlin.plugin.jpa") version "1.4.0"
@@ -41,14 +41,15 @@ repositories {
 }
 
 var springSecurityVersion = "5.3.3.RELEASE"
+var springBootVersion = "2.3.3.RELEASE"
 var keycloakVersion = "11.0.0"
-var jacksonVersion = "2.11.1"
+var jacksonVersion = "2.11.2"
 var jetBrainsKotlin = "1.4.0"
 
 dependencies {
-	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-	implementation("org.springframework.boot:spring-boot-starter-web")
-	implementation("org.springframework.boot:spring-boot-starter-actuator")
+	implementation("org.springframework.boot:spring-boot-starter-data-jpa:${springBootVersion}")
+	implementation("org.springframework.boot:spring-boot-starter-web:${springBootVersion}")
+	implementation("org.springframework.boot:spring-boot-starter-actuator:${springBootVersion}")
 	implementation("org.flywaydb:flyway-core:6.5.2")
 
 	// Deserialize json
@@ -60,21 +61,21 @@ dependencies {
 	implementation("jakarta.persistence:jakarta.persistence-api:2.2.3")
 
 	// SSO - Security
-	implementation("org.springframework.boot:spring-boot-starter-security")
+	implementation("org.springframework.boot:spring-boot-starter-security:${springBootVersion}")
+	implementation("org.springframework.boot:spring-boot-starter-oauth2-client:${springBootVersion}")
 	implementation("org.springframework.security:spring-security-web:${springSecurityVersion}")
 	implementation("org.springframework.security:spring-security-config:${springSecurityVersion}")
 	implementation("org.springframework.security:spring-security-core:${springSecurityVersion}")
-	implementation("org.springframework.security.oauth:spring-security-oauth2:2.5.0.RELEASE")
 	implementation("org.springframework.security:spring-security-oauth2-jose:${springSecurityVersion}")
 	implementation("org.springframework.security:spring-security-oauth2-resource-server:${springSecurityVersion}")
-	implementation("org.springframework.boot:spring-boot-starter-oauth2-client:2.3.2.RELEASE")
-	implementation("org.springframework.session:spring-session-jdbc:2.3.0.RELEASE") // not previously the same as springSecurityVersion
+	implementation("org.springframework.security.oauth:spring-security-oauth2:2.5.0.RELEASE")
+	implementation("org.springframework.session:spring-session-jdbc:2.3.0.RELEASE")
 
 	implementation("org.hibernate.validator:hibernate-validator-cdi:6.1.5.Final")
 
-	runtimeOnly("org.postgresql:postgresql")
+	runtimeOnly("org.postgresql:postgresql:42.2.16")
 
-	testImplementation("org.springframework.boot:spring-boot-starter-test")
+	testImplementation("org.springframework.boot:spring-boot-starter-test:${springBootVersion}")
 	testImplementation("io.mockk:mockk:1.10.0")
 }
 
