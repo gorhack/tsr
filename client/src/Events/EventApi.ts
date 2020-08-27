@@ -19,6 +19,16 @@ export const getEventTypes = async (): Promise<EventType[]> => {
     }
 };
 
+export const getAllEvents = async (): Promise<TsrEvent[]> => {
+    const uri = "/api/v1/event";
+    try {
+        const response = await axios.get(uri);
+        return response.data;
+    } catch (error) {
+        throw new Error(error.response.message);
+    }
+};
+
 export interface EventType {
     eventTypeId: number;
     eventTypeName: string;

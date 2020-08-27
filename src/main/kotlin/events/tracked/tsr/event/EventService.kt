@@ -12,6 +12,11 @@ class EventService(
         return EventDTO(savedEvent)
     }
 
+    fun getAllEvents(): List<EventDTO> {
+        val allEvents: List<Event> = eventRepository.findAll()
+        return allEvents.map { e -> EventDTO(e) }
+    }
+
     fun getAllEventTypes(): List<EventType> {
         return eventTypeRepository.findAll();
     }

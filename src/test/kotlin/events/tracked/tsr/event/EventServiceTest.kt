@@ -2,6 +2,7 @@ package events.tracked.tsr.event
 
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.verify
 import io.mockk.verifySequence
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions.*
@@ -47,6 +48,33 @@ class EventServiceTest {
         assertEquals(savedEventDTO, subject.saveEvent(unsavedEventDTO))
         verifySequence {
             mockEventRepository.save(unsavedEvent)
+        }
+    }
+
+    @Test
+    fun `getAllEvents returns EventDTO list of all events`() {
+        val event1 = Event(
+                eventId = 1,
+                eventName = "blue",
+                organization = "company",
+                eventType = EventType(1, "rock", "rocks are fun", 1),
+                startDate = LocalDateTime.parse("1970-01-01T00:00:01"),
+                endDate = LocalDateTime.parse("1970-01-02T00:00:01")
+        )
+        val event1DTO = EventDTO(
+                eventId = 1,
+                eventName = "blue",
+                organization = "company",
+                eventType = EventType(1, "rock", "rocks are fun", 1),
+                startDate = LocalDateTime.parse("1970-01-01T00:00:01"),
+                endDate = LocalDateTime.parse("1970-01-02T00:00:01")
+        )
+        val allEvents: List<Event> = listOf(event1)
+
+        every { mockEventRepository.findAll() } returns allEvents
+        assertEquals(listOf(event1DTO), subject.getAllEvents())
+        verifySequence {
+            mockEventRepository.findAll()
         }
     }
 
