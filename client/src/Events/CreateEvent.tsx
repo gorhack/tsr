@@ -1,8 +1,9 @@
-import React from "react";
+import React, { ReactElement, useEffect, useState } from "react";
 import { LabeledInput } from "../Inputs/LabeledInput";
 import { useHistory } from "react-router";
-import { SubmitHandler, useForm } from "react-hook-form";
-import { saveEvent, TsrEvent } from "./EventApi";
+import { Controller, SubmitHandler, useForm } from "react-hook-form";
+import Select, { createFilter } from "react-select";
+import { EventType, getEventTypes, saveEvent, TsrEvent } from "./EventApi";
 import { SelectOption } from "../api";
 import { FormDatePicker } from "../Inputs/FormDatePicker";
 
@@ -19,12 +20,33 @@ const DATE_IN_10_YEARS = new Date(new Date().setFullYear(new Date().getFullYear(
 
 export const CreateEvent: React.FC = () => {
     const history = useHistory();
+    const initialEventType = undefined;
+    const [eventTypes, setEventTypes] = useState<EventType[]>([]);
+    const [eventTypeOptions, setEventTypeOptions] = useState<SelectOption[]>([]);
     const { handleSubmit, register, errors, control, watch } = useForm<FormData>({
         defaultValues: {
-            // eventTypeOption: { label: "", value: "" },
+            eventTypeOption: initialEventType,
         },
     });
     const dateWatch = watch(["startDate", "endDate"]);
+
+    useEffect(() => {
+        (async () => {
+            try {
+                const newEventTypes = await getEventTypes();
+                setEventTypes(newEventTypes);
+                const newEventTypeOptions: SelectOption[] = newEventTypes.map((eventType) => {
+                    return {
+                        id: eventType.eventTypeId,
+                        label: eventType.displayName,
+                    };
+                });
+                setEventTypeOptions(newEventTypeOptions);
+            } catch (e) {
+                console.error("error getting event types", e.message);
+            }
+        })();
+    }, [setEventTypes, setEventTypeOptions]);
 
     const onCancel = (e: React.MouseEvent<HTMLButtonElement>): void => {
         e.preventDefault();
@@ -37,19 +59,15 @@ export const CreateEvent: React.FC = () => {
             organization,
             startDate: startDate.toJSON(),
             endDate: endDate.toJSON(),
-            eventType: eventTypeOption
-                ? {
-                      sortOrder: 1,
-                      eventName: eventTypeOption.value,
-                      displayName: eventTypeOption.value,
-                  }
-                : undefined,
+            eventType: eventTypes.find(
+                (eventType) => eventType.eventTypeId === eventTypeOption?.id,
+            ),
         };
         try {
             const savedEvent = await saveEvent(event);
             history.push(`/${savedEvent.eventId}`);
         } catch (e) {
-            console.log("error saving the event", e.message);
+            console.error("error saving the event", e.message);
         }
     };
 
@@ -109,13 +127,24 @@ export const CreateEvent: React.FC = () => {
                             : undefined
                     }
                 />
-                <LabeledInput
-                    label={"select the event type"}
-                    inputProps={{
-                        placeholder: "event type",
-                        name: "eventType",
-                        ref: register({}),
-                    }}
+                <Controller
+                    name="eventTypeOption"
+                    control={control}
+                    render={(props): ReactElement => (
+                        <Select
+                            options={eventTypeOptions}
+                            onChange={(selection): void => {
+                                props.onChange(selection);
+                            }}
+                            isClearable={true}
+                        />
+                    )}
+                    placeholder="event type"
+                    defaultValue={initialEventType}
+                    filterOption={createFilter({
+                        ignoreCase: true,
+                        matchFrom: "any",
+                    })}
                 />
                 <button>create event</button>
                 <button onClick={onCancel}>cancel</button>

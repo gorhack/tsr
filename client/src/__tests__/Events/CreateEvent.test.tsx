@@ -63,6 +63,18 @@ describe("create an event", () => {
         expect(history.location.pathname).toEqual("/1");
     });
 
+    describe("event select", () => {
+        // eslint-disable-next-line jest/no-disabled-tests
+        it.skip("gets all the event types", () => {
+            // TODO
+        });
+
+        // eslint-disable-next-line jest/no-disabled-tests
+        it.skip("can clear the event types", () => {
+            // TODO
+        });
+    });
+
     describe("handle errors", () => {
         it("requires event name", async () => {
             const errorMsg = "event name is required";

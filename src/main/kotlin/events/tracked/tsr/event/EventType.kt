@@ -8,7 +8,7 @@ data class EventType(
         @Id
         @GeneratedValue(strategy = GenerationType.IDENTITY)
         var eventTypeId: Long = 0,
-        var eventName: String = "",
+        var eventTypeName: String = "",
         var displayName: String = "",
         var sortOrder: Int = 0
 )

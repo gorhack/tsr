@@ -43,7 +43,7 @@ export function makeEventType(partial: Partial<EventType>): EventType {
     return {
         sortOrder: partial.sortOrder,
         displayName: partial.displayName || "",
-        eventName: partial.eventName || "",
+        eventTypeName: partial.eventTypeName || "",
     };
 }
 

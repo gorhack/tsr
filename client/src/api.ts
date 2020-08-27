@@ -7,6 +7,6 @@ export enum HttpStatus {
 }
 
 export interface SelectOption {
-    value: string;
+    id: number;
     label: string;
 }
