@@ -1,6 +1,6 @@
 import axios from "axios";
 import nock from "nock";
-import { getAllEvents, saveEvent, getEventTypes, EventType, TsrEvent } from "../../Events/EventApi";
+import { EventType, getAllEvents, getEventTypes, saveEvent, getEventTypes, EventType, TsrEvent } from "../../Events/EventApi";
 import { NockBody } from "../TestHelpers";
 import { HttpStatus } from "../../api";
 
@@ -90,5 +90,41 @@ describe("event data", () => {
         const response = await getAllEvents();
 
         expect(response).toEqual(events);
+    });
+
+    it("gets event types", async () => {
+        const eventTypes: EventType[] = [
+            {
+                eventTypeId: 1,
+                eventTypeName: "first",
+                displayName: "first name",
+                sortOrder: 1,
+            },
+            {
+                eventTypeId: 2,
+                eventTypeName: "second",
+                displayName: "second name",
+                sortOrder: 2,
+            },
+        ];
+
+        nock("http://example.com")
+            .get("/api/v1/event/types")
+            .reply(HttpStatus.OK, [
+                {
+                    eventTypeId: 1,
+                    eventTypeName: "first",
+                    displayName: "first name",
+                    sortOrder: 1,
+                },
+                {
+                    eventTypeId: 2,
+                    eventTypeName: "second",
+                    displayName: "second name",
+                    sortOrder: 2,
+                },
+            ]);
+        const response = await getEventTypes();
+        expect(response).toEqual(eventTypes);
     });
 });
