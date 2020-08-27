@@ -37,10 +37,14 @@ const getInputValueType = (
 };
 
 export function makeEventType(partial: Partial<EventType>): EventType {
+    if (!partial.eventTypeId) {
+        throw Error("event types must have an id");
+    }
     if (!partial.sortOrder) {
         throw Error("event types must have a sort order");
     }
     return {
+        eventTypeId: partial.eventTypeId,
         sortOrder: partial.sortOrder,
         displayName: partial.displayName || "",
         eventTypeName: partial.eventTypeName || "",

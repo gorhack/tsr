@@ -4,36 +4,39 @@ import { CreateEvent } from "../../Events/CreateEvent";
 import React from "react";
 import { Route, Router } from "react-router-dom";
 import { createMemoryHistory } from "history";
-import { fillInInputValueInForm, reRender } from "../TestHelpers";
+import { fillInInputValueInForm, makeEventType, reRender } from "../TestHelpers";
 import td from "testdouble";
 import * as EventApi from "../../Events/EventApi";
-import { TsrEvent } from "../../Events/EventApi";
+import { EventType, TsrEvent } from "../../Events/EventApi";
+import selectEvent from "react-select-event";
 
 describe("create an event", () => {
     const dateToInput = new Date().toLocaleDateString();
     let mockSaveEvent: typeof EventApi.saveEvent;
+    let mockGetEventTypes: typeof EventApi.getEventTypes;
     beforeEach(() => {
         mockSaveEvent = td.replace(EventApi, "saveEvent");
+        mockGetEventTypes = td.replace(EventApi, "getEventTypes");
     });
 
     afterEach(td.reset);
 
-    it("displays all required event fields", () => {
-        renderCreateEvent();
+    it("displays all required event fields", async () => {
+        await renderCreateEvent();
 
         expect(screen.getByText("create an event")).toBeInTheDocument();
         expect(screen.getByLabelText("input the event name")).toBeInTheDocument();
         expect(screen.getByLabelText("input your organization")).toBeInTheDocument();
         expect(screen.getByLabelText("select the start date")).toBeInTheDocument();
         expect(screen.getByLabelText("select the end date")).toBeInTheDocument();
-        expect(screen.getByLabelText("select the event type")).toBeInTheDocument();
+        expect(screen.getByText("select event type")).toBeInTheDocument();
         expect(screen.getByText("create event")).toBeInTheDocument();
         expect(screen.getByText("cancel")).toBeInTheDocument();
     });
 
-    it("cancel create event goes back to home page", () => {
+    it("cancel create event goes back to home page", async () => {
         const history = createMemoryHistory();
-        renderCreateEvent(history);
+        await renderCreateEvent(history);
         screen.getByText("cancel").click();
         expect(history.location.pathname).toEqual("/");
     });
@@ -48,7 +51,7 @@ describe("create an event", () => {
             eventType: undefined,
         };
         const saveEventPromise: Promise<TsrEvent> = Promise.resolve({ eventId: 1, ...tsrEvent });
-        const result = renderCreateEvent(history);
+        const result = await renderCreateEvent(history);
         fillInInputValueInForm(result, "name", "input the event name");
         fillInInputValueInForm(result, "org", "input your organization");
         fillInInputValueInForm(result, dateToInput, undefined, "start date", false);
@@ -64,21 +67,37 @@ describe("create an event", () => {
     });
 
     describe("event select", () => {
-        // eslint-disable-next-line jest/no-disabled-tests
-        it.skip("gets all the event types", () => {
-            // TODO
+        const setupEventSelectPromise = async (): Promise<RenderResult> => {
+            const eventTypes = [
+                makeEventType({ eventTypeId: 3, sortOrder: 3, displayName: "third" }),
+                makeEventType({ eventTypeId: 1, sortOrder: 1, displayName: "first" }),
+                makeEventType({ eventTypeId: 2, sortOrder: 2, displayName: "second" }),
+            ];
+            const eventTypesPromise = Promise.resolve(eventTypes);
+            return await renderCreateEvent(undefined, eventTypesPromise);
+        };
+
+        it("gets all the event types in order", async () => {
+            await setupEventSelectPromise();
+            await selectEvent.openMenu(screen.getByLabelText("select event type"));
+            expect(screen.getByTestId("event-type-select")).toHaveTextContent(
+                /first.*second.*third/,
+            );
         });
 
-        // eslint-disable-next-line jest/no-disabled-tests
-        it.skip("can clear the event types", () => {
-            // TODO
+        it("can clear the event types", async () => {
+            await setupEventSelectPromise();
+            await selectEvent.select(screen.getByLabelText("select event type"), "second");
+            expect(screen.getByLabelText("second")).toBeInTheDocument();
+            await selectEvent.clearAll(screen.getByLabelText("second"));
+            expect(screen.queryByAltText("second")).toBeNull();
         });
     });
 
     describe("handle errors", () => {
         it("requires event name", async () => {
             const errorMsg = "event name is required";
-            renderCreateEvent();
+            await renderCreateEvent();
             expect(screen.queryByText(errorMsg)).toBeNull();
 
             await submitEventForm();
@@ -87,7 +106,7 @@ describe("create an event", () => {
 
         it("requires event organization", async () => {
             const errorMsg = "organization is required";
-            const result = renderCreateEvent();
+            const result = await renderCreateEvent();
             expect(screen.queryByText(errorMsg)).toBeNull();
 
             await submitEventForm();
@@ -100,7 +119,7 @@ describe("create an event", () => {
 
         it("requires start date", async () => {
             const errorMsg = "start date is required MM/dd/YYYY";
-            const result = renderCreateEvent();
+            const result = await renderCreateEvent();
             expect(screen.queryByText(errorMsg)).toBeNull();
 
             await submitEventForm();
@@ -118,7 +137,7 @@ describe("create an event", () => {
 
         it("requires end date after start date", async () => {
             const errorMsg = "end date after the start date is required MM/dd/YYYY";
-            const result = renderCreateEvent();
+            const result = await renderCreateEvent();
             expect(screen.queryByText(errorMsg)).toBeNull();
 
             await submitEventForm();
@@ -147,14 +166,26 @@ describe("create an event", () => {
         await reRender();
     };
 
-    const renderCreateEvent = (history = createMemoryHistory()): RenderResult => {
+    const renderCreateEvent = async (
+        history = createMemoryHistory(),
+        eventTypesPromise: Promise<EventType[]> = Promise.resolve([]),
+    ): Promise<RenderResult> => {
         history.push("/createEvent");
-        return render(
+
+        td.when(mockGetEventTypes()).thenDo(() => Promise.resolve(eventTypesPromise));
+
+        const result = render(
             <Router history={history}>
                 <Route path="/createEvent">
                     <CreateEvent />
                 </Route>
             </Router>,
         );
+
+        await act(async () => {
+            await eventTypesPromise;
+        });
+
+        return result;
     };
 });

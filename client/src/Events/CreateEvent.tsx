@@ -20,7 +20,7 @@ const DATE_IN_10_YEARS = new Date(new Date().setFullYear(new Date().getFullYear(
 
 export const CreateEvent: React.FC = () => {
     const history = useHistory();
-    const initialEventType = undefined;
+    const initialEventType = { id: 0, label: "" };
     const [eventTypes, setEventTypes] = useState<EventType[]>([]);
     const [eventTypeOptions, setEventTypeOptions] = useState<SelectOption[]>([]);
     const { handleSubmit, register, errors, control, watch } = useForm<FormData>({
@@ -35,12 +35,14 @@ export const CreateEvent: React.FC = () => {
             try {
                 const newEventTypes = await getEventTypes();
                 setEventTypes(newEventTypes);
-                const newEventTypeOptions: SelectOption[] = newEventTypes.map((eventType) => {
-                    return {
-                        id: eventType.eventTypeId,
-                        label: eventType.displayName,
-                    };
-                });
+                const newEventTypeOptions: SelectOption[] = newEventTypes
+                    .sort((e, e2) => e.sortOrder - e2.sortOrder)
+                    .map((eventType) => {
+                        return {
+                            id: eventType.eventTypeId,
+                            label: eventType.displayName,
+                        };
+                    });
                 setEventTypeOptions(newEventTypeOptions);
             } catch (e) {
                 console.error("error getting event types", e.message);
@@ -127,25 +129,28 @@ export const CreateEvent: React.FC = () => {
                             : undefined
                     }
                 />
-                <Controller
-                    name="eventTypeOption"
-                    control={control}
-                    render={(props): ReactElement => (
-                        <Select
-                            options={eventTypeOptions}
-                            onChange={(selection): void => {
-                                props.onChange(selection);
-                            }}
-                            isClearable={true}
-                        />
-                    )}
-                    placeholder="event type"
-                    defaultValue={initialEventType}
-                    filterOption={createFilter({
-                        ignoreCase: true,
-                        matchFrom: "any",
-                    })}
-                />
+                <label data-testid="event-type-select" htmlFor="eventType">
+                    <Controller
+                        name="eventTypeOption"
+                        control={control}
+                        defaultValue={initialEventType}
+                        render={(props): ReactElement => (
+                            <Select
+                                options={eventTypeOptions}
+                                isClearable={true}
+                                placeholder="select event type"
+                                inputId="eventType"
+                                onChange={(selection): void => {
+                                    props.onChange(selection);
+                                }}
+                            />
+                        )}
+                        filterOption={createFilter({
+                            ignoreCase: true,
+                            matchFrom: "any",
+                        })}
+                    />
+                </label>
                 <button>create event</button>
                 <button onClick={onCancel}>cancel</button>
             </form>
