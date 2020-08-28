@@ -1,6 +1,13 @@
 import axios from "axios";
 import nock from "nock";
-import { EventType, getAllEvents, getEventTypes, saveEvent, TsrEvent } from "../../Events/EventApi";
+import {
+    EventType,
+    getAllEvents,
+    getEventTypes,
+    saveEvent,
+    EditableTsrEvent,
+    TsrEvent,
+} from "../../Events/EventApi";
 import { NockBody } from "../TestHelpers";
 import { HttpStatus } from "../../api";
 
@@ -8,7 +15,7 @@ describe("event data", () => {
     axios.defaults.baseURL = "http://example.com";
 
     it("saves an event", async () => {
-        const event: TsrEvent = {
+        const event: EditableTsrEvent = {
             eventName: "first",
             organization: "the one",
             eventType: {
@@ -79,6 +86,10 @@ describe("event data", () => {
                 },
                 startDate: "2020-08-18T14:15:59",
                 endDate: "2020-08-20T01:00:01",
+                createdBy: "user",
+                createdDate: "2020-08-18T14:15:59",
+                lastModifiedBy: "user_2",
+                lastModifiedDate: "2020-08-18T14:15:59",
             },
             {
                 eventId: 2,
@@ -92,6 +103,10 @@ describe("event data", () => {
                 },
                 startDate: "2020-08-18T14:16:59",
                 endDate: "2020-08-20T01:01:01",
+                createdBy: "user",
+                createdDate: "2020-08-18T14:15:59",
+                lastModifiedBy: "user_2",
+                lastModifiedDate: "2020-08-18T14:15:59",
             },
         ];
 

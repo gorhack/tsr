@@ -3,7 +3,7 @@ import { LabeledInput } from "../Inputs/LabeledInput";
 import { useHistory } from "react-router";
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import Select, { createFilter } from "react-select";
-import { EventType, getEventTypes, saveEvent, TsrEvent } from "./EventApi";
+import { EventType, getEventTypes, saveEvent, EditableTsrEvent, TsrEvent } from "./EventApi";
 import { SelectOption } from "../api";
 import { FormDatePicker } from "../Inputs/FormDatePicker";
 import "./CreateEvent.css";
@@ -57,7 +57,7 @@ export const CreateEvent: React.FC = () => {
     };
     const onSubmit: SubmitHandler<FormData> = async (data) => {
         const { eventName, organization, startDate, endDate, eventTypeOption } = data;
-        const event: TsrEvent = {
+        const event: EditableTsrEvent = {
             eventName,
             organization,
             startDate: startDate.toJSON(),
@@ -67,7 +67,7 @@ export const CreateEvent: React.FC = () => {
             ),
         };
         try {
-            const savedEvent = await saveEvent(event);
+            const savedEvent: TsrEvent = await saveEvent(event);
             history.push(`/${savedEvent.eventId}`);
         } catch (e) {
             console.error("error saving the event", e.message);

@@ -10,3 +10,7 @@ export interface SelectOption {
     id: number;
     label: string;
 }
+
+export const currentTime = (): Date => {
+    return new Date();
+};

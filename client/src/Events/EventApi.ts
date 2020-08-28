@@ -2,9 +2,18 @@ import axios from "axios";
 
 const baseUri = "/api/v1/event";
 
-export const saveEvent = async (event: TsrEvent): Promise<TsrEvent> => {
+export const saveEvent = async (event: EditableTsrEvent): Promise<TsrEvent> => {
     try {
         return (await axios.post(baseUri, event)).data;
+    } catch (error) {
+        throw new Error(error.response.message);
+    }
+};
+
+export const getEventById = async (eventId: number): Promise<EditableTsrEvent> => {
+    const uri = baseUri + `/${eventId}`;
+    try {
+        return (await axios.get(uri)).data;
     } catch (error) {
         throw new Error(error.response.message);
     }
@@ -36,13 +45,24 @@ export interface EventType {
     sortOrder: number;
 }
 
-export interface TsrEvent {
+export interface EditableTsrEvent {
     eventId?: number;
     eventName: string;
     organization: string;
     startDate: string;
     endDate: string;
     eventType?: EventType;
-    createdDate?: string;
-    lastModifiedDate?: string;
+}
+
+export interface TsrEvent {
+    eventId: number;
+    eventName: string;
+    organization: string;
+    startDate: string;
+    endDate: string;
+    eventType?: EventType;
+    createdDate: string;
+    createdBy: string;
+    lastModifiedDate: string;
+    lastModifiedBy: string;
 }

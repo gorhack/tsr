@@ -1,4 +1,4 @@
-import { fireEvent, RenderResult, act } from "@testing-library/react";
+import { act, fireEvent, RenderResult } from "@testing-library/react";
 import { EventType, TsrEvent } from "../Events/EventApi";
 
 // Define a NockBody any to avoid linter warnings. Nock can take objects of any type.
@@ -62,6 +62,10 @@ export const makeEvent = (partial: Partial<TsrEvent>): TsrEvent => {
         endDate: partial.endDate || "",
         organization: partial.organization || "",
         eventType: partial.eventType || undefined,
+        lastModifiedDate: partial.lastModifiedDate || "",
+        lastModifiedBy: partial.lastModifiedBy || "",
+        createdDate: partial.createdDate || "",
+        createdBy: partial.createdBy || "",
     };
 };
 
