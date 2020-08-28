@@ -27,7 +27,6 @@ describe("home page of the application", () => {
             await eventListPromise;
         });
 
-        console.log(result.container.innerHTML);
         expect(result.getByText("barracks party")).toBeInTheDocument();
         expect(result.getByText("cq smash")).toBeInTheDocument();
     });

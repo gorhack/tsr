@@ -14,7 +14,7 @@ export const User: React.FC = () => {
                 const user = await getUserInfo();
                 setTsrUser(user);
             } catch (e) {
-                console.log("error retrieving user", e.message);
+                console.error(`error retrieving user, ${e.message.error}`);
             }
         })();
     }, []);
