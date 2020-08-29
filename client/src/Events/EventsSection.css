@@ -1,0 +1,19 @@
+.EventsSection-Events {
+    border: 2px solid var(--action-color);
+    border-radius: .5rem;
+    min-width: 47.5%;
+    max-width: 47.5%;
+}
+
+.EventsSection-SingleEvent {
+    text-align: initial;
+    margin: 0 2rem .5rem 2rem;
+    padding: .25rem;
+    border: 2px solid var(--action-color);
+    border-radius: .5rem;
+}
+
+.EventsSection-Content {
+    display: flex;
+    justify-content: space-between;
+}

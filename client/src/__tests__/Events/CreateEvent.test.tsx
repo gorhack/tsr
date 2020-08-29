@@ -30,7 +30,7 @@ describe("create an event", () => {
         expect(screen.getByLabelText("select the start date")).toBeInTheDocument();
         expect(screen.getByLabelText("select the end date")).toBeInTheDocument();
         expect(screen.getByText("select event type")).toBeInTheDocument();
-        expect(screen.getByText("create event")).toBeInTheDocument();
+        expect(screen.getByText("submit")).toBeInTheDocument();
         expect(screen.getByText("cancel")).toBeInTheDocument();
     });
 

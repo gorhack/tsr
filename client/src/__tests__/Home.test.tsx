@@ -15,7 +15,7 @@ describe("home page of the application", () => {
                 </Route>
             </Router>,
         );
-        screen.getByText("create an event").click();
+        screen.getByText("Create an Event").click();
         expect(history.location.pathname).toEqual("/createEvent");
     });
 });

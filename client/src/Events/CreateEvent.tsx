@@ -6,6 +6,7 @@ import Select, { createFilter } from "react-select";
 import { EventType, getEventTypes, saveEvent, TsrEvent } from "./EventApi";
 import { SelectOption } from "../api";
 import { FormDatePicker } from "../Inputs/FormDatePicker";
+import "./CreateEvent.css";
 
 type FormData = {
     eventName: string;
@@ -76,7 +77,11 @@ export const CreateEvent: React.FC = () => {
     return (
         <div>
             <h1>create an event</h1>
-            <form title="createEventForm" onSubmit={handleSubmit(onSubmit)}>
+            <form
+                className={"CreateEvent-form"}
+                title="createEventForm"
+                onSubmit={handleSubmit(onSubmit)}
+            >
                 <LabeledInput
                     label={"input the event name"}
                     error={errors.eventName && "event name is required"}
@@ -151,8 +156,12 @@ export const CreateEvent: React.FC = () => {
                         })}
                     />
                 </label>
-                <button>create event</button>
-                <button onClick={onCancel}>cancel</button>
+                <div>
+                    <button className={"basic-button"}>submit</button>
+                    <button className={"basic-button"} onClick={onCancel}>
+                        cancel
+                    </button>
+                </div>
             </form>
         </div>
     );

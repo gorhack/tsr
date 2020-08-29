@@ -1,0 +1,11 @@
+.CreateEvent-form {
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+
+    border: 2px solid var(--action-color);
+    border-radius: .5rem;
+
+    margin-left: 12.5%;
+    max-width: 75%;
+}

@@ -7,7 +7,9 @@ export const Home: React.FC = () => {
 
     return (
         <>
-            <button onClick={() => history.push("/createEvent")}>create an event</button>
+            <button className={"basic-button"} onClick={() => history.push("/createEvent")}>
+                Create an Event
+            </button>
             <EventsSection />
         </>
     );

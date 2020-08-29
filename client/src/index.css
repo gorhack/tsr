@@ -1,8 +1,9 @@
 body {
+  background-color: var(--background-color);
+  color: var(--text-color);
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
+  text-transform: uppercase;
+  font-family: var(--font-family-regular);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -10,4 +11,26 @@ body {
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
+}
+
+.basic-button {
+  background-color: #e69a3d;
+  border-color: var(--background-color);
+  border-radius: 5px;
+  text-transform: uppercase;
+  font-family: var(--font-family-bold);
+}
+
+:root {
+  /*basics*/
+  --background-color: #181c23;
+  --action-color: #e69a3d;
+  --text-color: #afafb1;
+  --error-color: #FF4D55;
+
+  /*fonts*/
+  --font-family-regular: Roboto, Arial, sans-serif;
+  --font-family-bold: Roboto-Bold, Arial, sans-serif;
+  --font-family-light: Roboto-Light, Arial, sans-serif;
+  --font-family-italic: Roboto-Italic, Arial, sans-serif;
 }

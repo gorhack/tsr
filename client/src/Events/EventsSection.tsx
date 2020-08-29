@@ -1,5 +1,6 @@
 import React, { ReactElement, useEffect, useState } from "react";
 import { getAllEvents, TsrEvent } from "./EventApi";
+import "./EventsSection.css";
 
 export const EventsSection = (): ReactElement => {
     const [eventList, setEventList] = useState<TsrEvent[]>([]);
@@ -19,16 +20,23 @@ export const EventsSection = (): ReactElement => {
         return (
             <>
                 {eventList.map((e) => (
-                    <span key={e.eventId}>{e.eventName}</span>
+                    <div className={"EventsSection-SingleEvent"} key={e.eventId}>
+                        {e.eventName}
+                    </div>
                 ))}
             </>
         );
     };
 
     return (
-        <>
-            <h1>Heading for Events</h1>
-            {showEvents()}
-        </>
+        <div className={"EventsSection-Content"}>
+            <div className={"EventsSection-Events"}>
+                <h2>My Created Events</h2>
+                {showEvents()}
+            </div>
+            <div className={"EventsSection-Events"}>
+                <h2>My Organization Events</h2>
+            </div>
+        </div>
     );
 };
