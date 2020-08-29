@@ -1,3 +1,5 @@
+import moment, { Moment } from "moment";
+
 export enum HttpStatus {
     OK = 200,
     CREATED = 201,
@@ -11,6 +13,11 @@ export interface SelectOption {
     label: string;
 }
 
-export const currentTime = (): Date => {
-    return new Date();
+// TODO user pref, then use user-set timezone with moment-timezome
+export const userTimeZone = (): string => {
+    return Intl.DateTimeFormat().resolvedOptions().timeZone;
+};
+
+export const currentTime = (): Moment => {
+    return moment();
 };

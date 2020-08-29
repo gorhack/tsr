@@ -5,6 +5,7 @@ import { Route, Switch } from "react-router";
 import { BrowserRouter } from "react-router-dom";
 import { Home } from "./Home";
 import { CreateEvent } from "./Events/CreateEvent";
+import { EventPage } from "./Events/EventPage";
 
 const App: React.FC = () => {
     return (
@@ -14,6 +15,9 @@ const App: React.FC = () => {
                     <Switch>
                         <Route path="/createEvent">
                             <CreateEvent />
+                        </Route>
+                        <Route path="/event/:eventId">
+                            <EventPage />
                         </Route>
                         <Route path="/">
                             <User />

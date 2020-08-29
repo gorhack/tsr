@@ -2,24 +2,27 @@ import { act, render, screen } from "@testing-library/react";
 import React from "react";
 import td from "testdouble";
 import * as EventApi from "../../Events/EventApi";
-import * as api from "../../api";
-import { createMemoryHistory } from "history";
+import * as Api from "../../api";
+import { EventPage } from "../../Events/EventPage";
+import { createMemoryHistory, MemoryHistory } from "history";
 import { Route, Router } from "react-router-dom";
 import { makeEvent } from "../TestHelpers";
+import { TsrEvent } from "../../Events/EventApi";
+import moment from "moment";
 
 describe("displays event details", () => {
     let mockGetEvent: typeof EventApi.getEventById;
-    let mockCurrentTime: typeof api.currentTime;
+    let mockUserTimeZone: typeof Api.userTimeZone;
+    let mockCurrentTime: typeof Api.currentTime;
     beforeEach(() => {
         mockGetEvent = td.replace(EventApi, "getEventById");
-        mockCurrentTime = td.replace(api, "currentTime");
-        const timeNow = new Date("2020-07-19T12:31:59");
-        td.when(mockCurrentTime()).thenDo(() => timeNow);
+        mockUserTimeZone = td.replace(Api, "userTimeZone");
+        mockCurrentTime = td.replace(Api, "currentTime");
     });
     afterEach(td.reset);
 
     it("displays event details", async () => {
-        const event = makeEvent({
+        const event: TsrEvent = {
             eventId: 4,
             eventName: "first event",
             eventType: {
@@ -31,28 +34,27 @@ describe("displays event details", () => {
             startDate: "2020-08-18T14:15:59",
             endDate: "2020-08-20T01:00:01",
             organization: "ragnar",
+            createdBy: "test_user",
             createdDate: "2020-07-18T06:15:59",
+            lastModifiedBy: "test_user_2",
             lastModifiedDate: "2020-07-18T11:26:59",
-        });
-        await renderEventDetails(event);
+        };
+
+        await renderEventDetails({ event });
         const title = screen.getByText("first event details");
         expect(title.tagName).toEqual("H1");
-        const subheading = screen.getByText("07/18/2020-07/20/2020");
+        const subheading = screen.getByText("Tue Aug 18, 2020 - Thu Aug 20, 2020");
         expect(subheading.tagName).toEqual("H2");
-        expect(screen.getByText("event type: big")).toBeInTheDocument();
+        expect(screen.getByText("type: big")).toBeInTheDocument();
         expect(
-            screen.getByText(
-                "start date: Fri Aug 18 2020 14:15:59 GMT-0700 (Pacific Daylight Time)",
-            ),
+            screen.getByText("start date: Tuesday, August 18th 2020, 1415 (TIMEZONE/timezone)"),
         ).toBeInTheDocument();
         expect(
-            screen.getByText("end date: Fri Aug 20 2020 01:00:01 GMT-0700 (Pacific Daylight Time)"),
+            screen.getByText("end date: Thursday, August 20th 2020, 0100 (TIMEZONE/timezone)"),
         ).toBeInTheDocument();
         expect(screen.getByText("organization: ragnar")).toBeInTheDocument();
-        expect(
-            screen.getByText("created by modified by: test_user (18/07/2020)"),
-        ).toBeInTheDocument();
-        expect(screen.getByText("last modified by: test_user_2 (1 day ago)")).toBeInTheDocument();
+        expect(screen.getByText("created by test_user (7/18/20)")).toBeInTheDocument();
+        expect(screen.getByText("last modified by test_user_2 2 days ago")).toBeInTheDocument();
     });
 
     it("only one date if start and end date are the exact same", async () => {
@@ -62,10 +64,10 @@ describe("displays event details", () => {
             startDate: "2020-08-18T14:15:59",
             endDate: "2020-08-18T14:15:59",
         });
-        await renderEventDetails(event);
-        expect(screen.getByText("07/18/2020").tagName).toEqual("H2");
+        await renderEventDetails({ event });
+        expect(screen.getByText("Tue Aug 18, 2020").tagName).toEqual("H2");
         expect(
-            screen.getByText("date: Fri Aug 18 2020 14:15:59 GMT-0700 (Pacific Daylight Time)"),
+            screen.getByText("date: Tuesday, August 18th 2020, 1415 (TIMEZONE/timezone)"),
         ).toBeInTheDocument();
     });
 
@@ -73,72 +75,70 @@ describe("displays event details", () => {
         it("last modified in the last 5 minutes displays just now", async () => {
             const event = makeEvent({
                 eventId: 1,
-                lastModifiedDate: "2020-07-18T11:22:00",
+                lastModifiedBy: "user",
+                lastModifiedDate: "2020-07-18T11:20:00",
             });
-            await renderEventDetails(event);
-            expect(screen.getByText("last modified: just now...")).toBeInTheDocument();
+            await renderEventDetails({ event, currentTime: "2020-07-18T11:25:59" });
+            expect(screen.getByText("last modified by user just now...")).toBeInTheDocument();
         });
 
         it("last modified displays minutes if minutes ago", async () => {
             const event = makeEvent({
                 eventId: 1,
-                lastModifiedDate: "2020-07-18T11:18:00",
+                lastModifiedBy: "user",
+                lastModifiedDate: "2020-07-18T11:20:00",
             });
-            await renderEventDetails(event);
-            expect(
-                screen.getByText("last modified by: test_user_2 13 minutes ago"),
-            ).toBeInTheDocument();
+            await renderEventDetails({ event, currentTime: "2020-07-18T11:26:00" });
+            expect(screen.getByText("last modified by user 6 minutes ago")).toBeInTheDocument();
         });
 
         it("last modified displays hour if 1 hour ago", async () => {
             const event = makeEvent({
                 eventId: 1,
-                lastModifiedDate: "2020-07-18T10:18:00",
+                lastModifiedBy: "user",
+                lastModifiedDate: "2020-07-18T10:20:00",
             });
-            await renderEventDetails(event);
-            expect(
-                screen.getByText("last modified by: test_user_2 1 hour ago"),
-            ).toBeInTheDocument();
+            await renderEventDetails({ event, currentTime: "2020-07-18T12:19:59" });
+            expect(screen.getByText("last modified by user 1 hour ago")).toBeInTheDocument();
         });
 
         it("last modified displays hours if hours ago", async () => {
             const event = makeEvent({
                 eventId: 1,
+                lastModifiedBy: "user",
                 lastModifiedDate: "2020-07-18T09:18:00",
             });
-            await renderEventDetails(event);
-            expect(
-                screen.getByText("last modified by: test_user_2 2 hours ago"),
-            ).toBeInTheDocument();
+            await renderEventDetails({ event, currentTime: "2020-07-18T11:18:00" });
+            expect(screen.getByText("last modified by user 2 hours ago")).toBeInTheDocument();
         });
 
         it("last modified displays day if 1 day ago", async () => {
             const event = makeEvent({
                 eventId: 1,
+                lastModifiedBy: "user",
                 lastModifiedDate: "2020-07-17T09:18:00",
             });
-            await renderEventDetails(event);
-            expect(screen.getByText("last modified by: test_user_2 1 day ago")).toBeInTheDocument();
-        });
-
-        it("last modified displays days if days ago", async () => {
-            const event = makeEvent({
-                eventId: 1,
-                lastModifiedDate: "2020-07-16T09:18:00",
-            });
-            await renderEventDetails(event);
-            expect(
-                screen.getByText("last modified by: test_user_2 2 days ago"),
-            ).toBeInTheDocument();
+            await renderEventDetails({ event, currentTime: "2020-07-18T09:18:00" });
+            expect(screen.getByText("last modified by user 1 day ago")).toBeInTheDocument();
         });
     });
 
-    const renderEventDetails = async (
+    interface RenderEventDetailsProps {
+        event?: TsrEvent;
+        currentTime?: string;
+        history?: MemoryHistory;
+    }
+
+    const renderEventDetails = async ({
         event = makeEvent({ eventId: 1 }),
+        currentTime = "2020-07-20T12:25:42",
         history = createMemoryHistory(),
-    ) => {
+    }: RenderEventDetailsProps) => {
+        history.push(`/event/${event.eventId}`);
         const eventPromise = Promise.resolve(event);
-        td.when(mockGetEvent(event.eventId)).thenResolve(eventPromise);
+        td.when(mockGetEvent(event.eventId)).thenResolve(await eventPromise);
+        td.when(mockUserTimeZone()).thenReturn("TIMEZONE/timezone");
+        td.when(mockCurrentTime()).thenReturn(moment(currentTime));
 
         const result = render(
             <Router history={history}>

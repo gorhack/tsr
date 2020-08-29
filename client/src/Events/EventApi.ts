@@ -10,7 +10,7 @@ export const saveEvent = async (event: EditableTsrEvent): Promise<TsrEvent> => {
     }
 };
 
-export const getEventById = async (eventId: number): Promise<EditableTsrEvent> => {
+export const getEventById = async (eventId: number): Promise<TsrEvent> => {
     const uri = baseUri + `/${eventId}`;
     try {
         return (await axios.get(uri)).data;
