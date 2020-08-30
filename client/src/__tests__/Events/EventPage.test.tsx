@@ -11,12 +11,12 @@ import { TsrEvent } from "../../Events/EventApi";
 import moment from "moment";
 
 describe("displays event details", () => {
-    let mockGetEvent: typeof EventApi.getEventById;
+    let mockGetEventById: typeof EventApi.getEventById;
     let mockUserTimeZone: typeof Api.userTimeZone;
     let mockCurrentTime: typeof Api.currentTime;
 
     beforeEach(() => {
-        mockGetEvent = td.replace(EventApi, "getEventById");
+        mockGetEventById = td.replace(EventApi, "getEventById");
         mockUserTimeZone = td.replace(Api, "userTimeZone");
         mockCurrentTime = td.replace(Api, "currentTime");
     });
@@ -139,7 +139,7 @@ describe("displays event details", () => {
     }: RenderEventDetailsProps) => {
         history.push(`/event/${event.eventId}`);
         const eventPromise = Promise.resolve(event);
-        td.when(mockGetEvent(event.eventId)).thenResolve(await eventPromise);
+        td.when(mockGetEventById(event.eventId)).thenResolve(await eventPromise);
         td.when(mockUserTimeZone()).thenReturn("TIMEZONE/timezone");
         td.when(mockCurrentTime()).thenReturn(moment(currentTime));
 

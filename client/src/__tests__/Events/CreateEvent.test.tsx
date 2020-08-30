@@ -70,7 +70,7 @@ describe("create an event", () => {
         await act(async () => {
             await saveEventPromise;
         });
-        expect(history.location.pathname).toEqual("/1");
+        expect(history.location.pathname).toEqual("/event/1");
     });
 
     describe("event select", () => {

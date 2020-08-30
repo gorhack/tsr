@@ -68,7 +68,7 @@ export const CreateEvent: React.FC = () => {
         };
         try {
             const savedEvent: TsrEvent = await saveEvent(event);
-            history.push(`/${savedEvent.eventId}`);
+            history.push(`/event/${savedEvent.eventId}`);
         } catch (e) {
             console.error("error saving the event", e.message);
         }
