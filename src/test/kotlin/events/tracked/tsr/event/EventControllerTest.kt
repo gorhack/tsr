@@ -50,4 +50,29 @@ internal class EventControllerTest {
             mockEventService.getAllEventTypes()
         }
     }
+
+    @Test
+    fun `returns all events`() {
+        val event = EventDTO(
+                eventId = 1,
+                eventName = "first",
+                organization = "org1",
+                startDate = LocalDateTime.parse("1975-01-01T00:00:01"),
+                endDate = LocalDateTime.parse("1975-01-01T00:00:01"),
+                eventType = EventType(1, "first", "first event", 1),
+                createdDate = LocalDateTime.parse("1974-01-01T00:00:01"),
+                lastModifiedDate = LocalDateTime.parse("1974-01-01T00:00:01")
+        )
+        val event2 = event.copy(
+                eventId = 2,
+                eventName = "second"
+        )
+
+        every { mockEventService.getAllEvents() } returns listOf(event, event2)
+
+        assertThat(subject.getAllEvents()).containsExactlyInAnyOrderElementsOf(listOf(event, event2))
+        verifySequence {
+            mockEventService.getAllEvents()
+        }
+    }
 }
