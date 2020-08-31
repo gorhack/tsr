@@ -14,49 +14,66 @@ class EventServiceTest {
     private lateinit var subject: EventService
     private lateinit var mockEventRepository: EventRepository
     private lateinit var mockEventTypeRepository: EventTypeRepository
+    private lateinit var eventWithoutId: Event
+    private lateinit var eventDTOWithoutId: EventDTO
+    private lateinit var eventWithId: Event
+    private lateinit var eventDTOWithId: EventDTO
 
     @BeforeEach
     fun setup() {
         mockEventRepository = mockk(relaxUnitFun = true)
         mockEventTypeRepository = mockk(relaxUnitFun = true)
         subject = EventService(mockEventRepository, mockEventTypeRepository)
+
+        eventWithoutId = Event(
+            eventName = "blue",
+            organization = "company",
+            eventType = EventType(1, "rock", "rocks are fun", 1),
+            startDate = LocalDateTime.parse("1970-01-01T00:00:01"),
+            endDate = LocalDateTime.parse("1970-01-02T00:00:01")
+        )
+
+        eventDTOWithoutId = EventDTO(
+            eventName = "blue",
+            organization = "company",
+            eventType = EventType(1, "rock", "rocks are fun", 1),
+            startDate = LocalDateTime.parse("1970-01-01T00:00:01"),
+            endDate = LocalDateTime.parse("1970-01-02T00:00:01")
+        )
+
+        eventWithId = Event(
+            eventId = 1L,
+            eventName = "blue",
+            organization = "company",
+            startDate = LocalDateTime.parse("1970-01-01T00:00:01"),
+            endDate = LocalDateTime.parse("1970-01-02T00:00:01"),
+            eventType = EventType(1, "rock", "rocks are fun", 1),
+            lastModifiedBy = "1234",
+            lastModifiedDate = LocalDateTime.parse("1970-01-02T00:00:01"),
+            createdBy = "6789",
+            createdDate = LocalDateTime.parse("1970-01-02T00:00:01")
+        )
+
+        eventDTOWithId = EventDTO(
+            eventId = 1L,
+            eventName = "blue",
+            organization = "company",
+            startDate = LocalDateTime.parse("1970-01-01T00:00:01"),
+            endDate = LocalDateTime.parse("1970-01-02T00:00:01"),
+            eventType = EventType(1, "rock", "rocks are fun", 1),
+            lastModifiedBy = "1234",
+            lastModifiedDate = LocalDateTime.parse("1970-01-02T00:00:01"),
+            createdBy = "6789",
+            createdDate = LocalDateTime.parse("1970-01-02T00:00:01")
+        )
     }
 
     @Test
     fun `saveEvent returns EventDTO with id and auditable filled out`() {
-        val unsavedEvent = Event(
-                eventName = "blue",
-                organization = "company",
-                eventType = EventType(1, "rock", "rocks are fun", 1),
-                startDate = LocalDateTime.parse("1970-01-01T00:00:01"),
-                endDate = LocalDateTime.parse("1970-01-02T00:00:01")
-        )
-        val unsavedEventDTO = EventDTO(
-                eventName = "blue",
-                organization = "company",
-                eventType = EventType(1, "rock", "rocks are fun", 1),
-                startDate = LocalDateTime.parse("1970-01-01T00:00:01"),
-                endDate = LocalDateTime.parse("1970-01-02T00:00:01"),
-        )
-        val savedEvent = Event(
-                eventId = 1L,
-                eventName = "blue",
-                organization = "company",
-                startDate = LocalDateTime.parse("1970-01-01T00:00:01"),
-                endDate = LocalDateTime.parse("1970-01-02T00:00:01"),
-                eventType = EventType(1, "rock", "rocks are fun", 1),
-                lastModifiedBy = "user",
-                lastModifiedDate = LocalDateTime.parse("1970-01-02T00:00:01"),
-                createdBy = "user",
-                createdDate = LocalDateTime.parse("1970-01-02T00:00:01")
-        )
-        val savedEventDTO = unsavedEventDTO.copy(
-                eventId = 1L,
-                lastModifiedBy = "user",
-                lastModifiedDate = LocalDateTime.parse("1970-01-02T00:00:01"),
-                createdBy = "user",
-                createdDate = LocalDateTime.parse("1970-01-02T00:00:01")
-        )
+        val unsavedEvent = eventWithoutId
+        val unsavedEventDTO = eventDTOWithoutId
+        val savedEvent = eventWithId
+        val savedEventDTO = eventDTOWithId
         every { mockEventRepository.save(unsavedEvent) } returns savedEvent
         assertEquals(savedEventDTO, subject.saveEvent(unsavedEventDTO))
         verifySequence {
@@ -66,33 +83,33 @@ class EventServiceTest {
 
     @Test
     fun `getAllEvents returns EventDTO list of all events`() {
-        val event1 = Event(
-                eventId = 1L,
-                eventName = "blue",
-                organization = "company",
-                eventType = EventType(1, "rock", "rocks are fun", 1),
-                startDate = LocalDateTime.parse("1970-01-01T00:00:01"),
-                endDate = LocalDateTime.parse("1970-01-02T00:00:01"),
-                lastModifiedBy = "user",
-                lastModifiedDate = LocalDateTime.parse("1970-01-02T00:00:01"),
-                createdBy = "another user",
-                createdDate = LocalDateTime.parse("1970-01-02T00:00:01")
+        val event2 = Event(
+            eventId = 1L,
+            eventName = "blue",
+            organization = "company",
+            eventType = EventType(1, "rock", "rocks are fun", 1),
+            startDate = LocalDateTime.parse("1970-01-01T00:00:01"),
+            endDate = LocalDateTime.parse("1970-01-02T00:00:01"),
+            lastModifiedBy = "user",
+            lastModifiedDate = LocalDateTime.parse("1970-01-02T00:00:01"),
+            createdBy = "another user",
+            createdDate = LocalDateTime.parse("1970-01-02T00:00:01")
         )
-        val event1DTO = EventDTO(
-                eventId = 1L,
-                eventName = "blue",
-                organization = "company",
-                eventType = EventType(1, "rock", "rocks are fun", 1),
-                startDate = LocalDateTime.parse("1970-01-01T00:00:01"),
-                endDate = LocalDateTime.parse("1970-01-02T00:00:01"),
-                lastModifiedBy = "user",
-                lastModifiedDate = LocalDateTime.parse("1970-01-02T00:00:01"),
-                createdBy = "another user",
-                createdDate = LocalDateTime.parse("1970-01-02T00:00:01")
+        val event2DTO = EventDTO(
+            eventId = 1L,
+            eventName = "blue",
+            organization = "company",
+            eventType = EventType(1, "rock", "rocks are fun", 1),
+            startDate = LocalDateTime.parse("1970-01-01T00:00:01"),
+            endDate = LocalDateTime.parse("1970-01-02T00:00:01"),
+            lastModifiedBy = "user",
+            lastModifiedDate = LocalDateTime.parse("1970-01-02T00:00:01"),
+            createdBy = "another user",
+            createdDate = LocalDateTime.parse("1970-01-02T00:00:01")
         )
 
-        every { mockEventRepository.findAll() } returns listOf(event1)
-        assertEquals(listOf(event1DTO), subject.getAllEvents())
+        every { mockEventRepository.findAll() } returns listOf(eventWithId, event2)
+        assertThat(subject.getAllEvents()).containsExactlyInAnyOrderElementsOf(listOf(event2DTO, eventDTOWithId))
         verifySequence {
             mockEventRepository.findAll()
         }
@@ -113,20 +130,13 @@ class EventServiceTest {
 
     @Test
     fun `getEventById returns an event`() {
-        val event = Event(
-                eventId = 2L,
-                eventName = "an event",
-                organization = "an org",
-                startDate = LocalDateTime.parse("1970-01-01T00:00:01"),
-                endDate = LocalDateTime.parse("1970-01-02T00:00:01"),
-                eventType = null,
-                lastModifiedDate = LocalDateTime.parse("1970-01-02T00:00:01"),
-                lastModifiedBy = "a user",
-                createdDate = LocalDateTime.parse("1970-01-02T00:00:01"),
-                createdBy = "another user"
-        )
-        val eventDTO = EventDTO(event)
-        every { mockEventRepository.findByIdOrNull(2L) } returns event
-        assertEquals(eventDTO, subject.getEventById(2))
+        every { mockEventRepository.findByIdOrNull(1L) } returns eventWithId
+        assertEquals(eventDTOWithId, subject.getEventById(1))
+    }
+
+    @Test
+    fun `getEventsByUserId returns list of events by that user`() {
+        every { mockEventRepository.findAllByCreatedBy("1234") } returns listOf(eventWithId)
+        assertThat(subject.getEventsByUserId("1234")).containsExactlyInAnyOrderElementsOf(listOf(eventDTOWithId))
     }
 }

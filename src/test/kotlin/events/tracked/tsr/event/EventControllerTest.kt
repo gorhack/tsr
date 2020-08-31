@@ -22,14 +22,14 @@ internal class EventControllerTest {
     @Test
     fun `saves event`() {
         val unsavedEventDTO = EventDTO(
-                eventName = "blue",
-                organization = "company",
-                eventType = EventType(1, "rock", "rocks are fun", 1),
-                startDate = LocalDateTime.parse("1970-01-01T00:00:01"),
-                endDate = LocalDateTime.parse("1970-01-02T00:00:01")
+            eventName = "blue",
+            organization = "company",
+            eventType = EventType(1L, "rock", "rocks are fun", 1),
+            startDate = LocalDateTime.parse("1970-01-01T00:00:01"),
+            endDate = LocalDateTime.parse("1970-01-02T00:00:01")
         )
         val savedEventDTO = unsavedEventDTO.copy(
-                eventId = 1L
+            eventId = 1L
         )
         every { mockEventService.saveEvent(unsavedEventDTO) } returns savedEventDTO
         assertEquals(savedEventDTO, subject.saveEvent(unsavedEventDTO))
@@ -40,8 +40,8 @@ internal class EventControllerTest {
 
     @Test
     fun `returns all event types`() {
-        val eventType1 = EventType(1, "first", "first event", 1)
-        val eventType2 = EventType(2, "second", "second event", 2)
+        val eventType1 = EventType(1L, "first", "first event", 1)
+        val eventType2 = EventType(2L, "second", "second event", 2)
 
         every { mockEventService.getAllEventTypes() } returns listOf(eventType1, eventType2)
 
@@ -54,18 +54,18 @@ internal class EventControllerTest {
     @Test
     fun `returns all events`() {
         val event = EventDTO(
-                eventId = 1,
-                eventName = "first",
-                organization = "org1",
-                startDate = LocalDateTime.parse("1975-01-01T00:00:01"),
-                endDate = LocalDateTime.parse("1975-01-01T00:00:01"),
-                eventType = EventType(1, "first", "first event", 1),
-                createdDate = LocalDateTime.parse("1974-01-01T00:00:01"),
-                lastModifiedDate = LocalDateTime.parse("1974-01-01T00:00:01")
+            eventId = 1L,
+            eventName = "first",
+            organization = "org1",
+            startDate = LocalDateTime.parse("1975-01-01T00:00:01"),
+            endDate = LocalDateTime.parse("1975-01-01T00:00:01"),
+            eventType = EventType(1L, "first", "first event", 1),
+            createdDate = LocalDateTime.parse("1974-01-01T00:00:01"),
+            lastModifiedDate = LocalDateTime.parse("1974-01-01T00:00:01")
         )
         val event2 = event.copy(
-                eventId = 2,
-                eventName = "second"
+            eventId = 2L,
+            eventName = "second"
         )
 
         every { mockEventService.getAllEvents() } returns listOf(event, event2)
@@ -79,15 +79,33 @@ internal class EventControllerTest {
     @Test
     fun `getEventById returns an event`() {
         val eventDTO = EventDTO(
-                eventId = 2L,
-                organization = "orgggg",
-                eventName = "red",
-                eventType = EventType(1, "rock", "rocks are fun", 1),
-                startDate = LocalDateTime.parse("1970-01-01T00:00:01"),
-                endDate = LocalDateTime.parse("1970-01-02T00:00:01")
+            eventId = 2L,
+            organization = "orgggg",
+            eventName = "red",
+            eventType = EventType(1, "rock", "rocks are fun", 1),
+            startDate = LocalDateTime.parse("1970-01-01T00:00:01"),
+            endDate = LocalDateTime.parse("1970-01-02T00:00:01")
         )
         every { mockEventService.getEventById(2) } returns eventDTO
         assertEquals(subject.getEventById(2), eventDTO)
         verifySequence { mockEventService.getEventById(2) }
+    }
+
+    @Test
+    fun `getEventsByUserId returns list of events created by a user`() {
+        val userEvent = EventDTO(
+            eventId = 1L,
+            eventName = "first",
+            organization = "org1",
+            startDate = LocalDateTime.parse("1975-01-01T00:00:01"),
+            endDate = LocalDateTime.parse("1975-01-01T00:00:01"),
+            createdBy = "123"
+        )
+        every { mockEventService.getEventsByUserId("123") } returns listOf(userEvent)
+
+        assertThat(subject.getEventsByUserId("123")).containsExactlyInAnyOrderElementsOf(listOf(userEvent))
+        verifySequence {
+            mockEventService.getEventsByUserId("123")
+        }
     }
 }

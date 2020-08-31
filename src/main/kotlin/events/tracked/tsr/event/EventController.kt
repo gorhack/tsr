@@ -9,6 +9,7 @@ class EventController(private val eventService: EventService) {
     fun saveEvent(@RequestBody eventDTO: EventDTO): EventDTO {
         return eventService.saveEvent(eventDTO)
     }
+
     @GetMapping(value = [""])
     fun getAllEvents(): List<EventDTO> {
         return eventService.getAllEvents()
@@ -22,5 +23,10 @@ class EventController(private val eventService: EventService) {
     @GetMapping(value = ["/{eventId}"])
     fun getEventById(@PathVariable eventId: Int): EventDTO {
         return eventService.getEventById(eventId)
+    }
+
+    @GetMapping(value = ["/{userId}"])
+    fun getEventsByUserId(@PathVariable userId: String): List<EventDTO> {
+        return eventService.getEventsByUserId(userId)
     }
 }

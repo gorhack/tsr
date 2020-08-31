@@ -6,8 +6,8 @@ import org.springframework.stereotype.Service
 
 @Service
 class EventService(
-        private val eventRepository: EventRepository,
-        private val eventTypeRepository: EventTypeRepository
+    private val eventRepository: EventRepository,
+    private val eventTypeRepository: EventTypeRepository
 ) {
     fun saveEvent(eventDTO: EventDTO): EventDTO {
         val savedEvent = eventRepository.save(eventDTO.toEvent())
@@ -25,7 +25,13 @@ class EventService(
 
     fun getEventById(eventId: Int): EventDTO {
         val event: Event = eventRepository.findByIdOrNull(eventId.toLong())
-                ?: throw EmptyResultDataAccessException(1)
+            ?: throw EmptyResultDataAccessException(1)
         return event.toEventDTO()
+    }
+
+    fun getEventsByUserId(userId: String): List<EventDTO> {
+        return eventRepository.findAllByCreatedBy(userId).map { e ->
+            e.toEventDTO()
+        }
     }
 }
