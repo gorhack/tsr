@@ -25,7 +25,7 @@ class EventController(private val eventService: EventService) {
         return eventService.getEventById(eventId)
     }
 
-    @GetMapping(value = ["/{userId}"])
+    @GetMapping(value = ["/user/{userId}"])
     fun getEventsByUserId(@PathVariable userId: String): List<EventDTO> {
         return eventService.getEventsByUserId(userId)
     }
