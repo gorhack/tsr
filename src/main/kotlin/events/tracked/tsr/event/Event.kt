@@ -43,7 +43,13 @@ data class Event(
             createdBy = createdBy,
             lastModifiedDate = lastModifiedDate,
             lastModifiedBy = lastModifiedBy,
+        )
+    }
 
-            )
+    fun toEventDTO(createdByDisplayName: String?, lastModifiedByDisplayName: String?): EventDTO {
+        return this.toEventDTO().copy(
+            createdByDisplayName = createdByDisplayName,
+            lastModifiedByDisplayName = lastModifiedByDisplayName
+        )
     }
 }

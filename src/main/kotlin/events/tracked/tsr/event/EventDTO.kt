@@ -11,8 +11,10 @@ data class EventDTO(
     val eventType: EventType? = null,
     val createdDate: LocalDateTime? = null,
     val createdBy: String? = null,
+    val createdByDisplayName: String? = null,
     val lastModifiedDate: LocalDateTime? = null,
-    val lastModifiedBy: String? = null
+    val lastModifiedBy: String? = null,
+    val lastModifiedByDisplayName: String? = null
 ) {
     constructor(event: Event) :
         this(
@@ -24,8 +26,10 @@ data class EventDTO(
             event.eventType,
             event.createdDate,
             event.createdBy,
+            null,
             event.lastModifiedDate,
-            event.lastModifiedBy
+            event.lastModifiedBy,
+            null
         )
 
     private fun copyInto(event: Event): Event {

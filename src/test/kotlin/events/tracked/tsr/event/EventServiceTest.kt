@@ -1,5 +1,8 @@
 package events.tracked.tsr.event
 
+import events.tracked.tsr.user.TsrUser
+import events.tracked.tsr.user.TsrUserRepository
+import events.tracked.tsr.user.UserRole
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verifySequence
@@ -14,16 +17,19 @@ class EventServiceTest {
     private lateinit var subject: EventService
     private lateinit var mockEventRepository: EventRepository
     private lateinit var mockEventTypeRepository: EventTypeRepository
+    private lateinit var mockTsrUserRepository: TsrUserRepository
     private lateinit var eventWithoutId: Event
     private lateinit var eventDTOWithoutId: EventDTO
     private lateinit var eventWithId: Event
     private lateinit var eventDTOWithId: EventDTO
+    private lateinit var eventDTOWithIdAndDisplayNames: EventDTO
 
     @BeforeEach
     fun setup() {
         mockEventRepository = mockk(relaxUnitFun = true)
         mockEventTypeRepository = mockk(relaxUnitFun = true)
-        subject = EventService(mockEventRepository, mockEventTypeRepository)
+        mockTsrUserRepository = mockk(relaxUnitFun = true)
+        subject = EventService(mockEventRepository, mockEventTypeRepository, mockTsrUserRepository)
 
         eventWithoutId = Event(
             eventName = "blue",
@@ -48,11 +54,12 @@ class EventServiceTest {
             startDate = LocalDateTime.parse("1970-01-01T00:00:01"),
             endDate = LocalDateTime.parse("1970-01-02T00:00:01"),
             eventType = EventType(1, "rock", "rocks are fun", 1),
-            lastModifiedBy = "1234",
+            lastModifiedBy = "6789",
             lastModifiedDate = LocalDateTime.parse("1970-01-02T00:00:01"),
-            createdBy = "6789",
+            createdBy = "1234",
             createdDate = LocalDateTime.parse("1970-01-02T00:00:01")
         )
+
 
         eventDTOWithId = EventDTO(
             eventId = 1L,
@@ -61,10 +68,15 @@ class EventServiceTest {
             startDate = LocalDateTime.parse("1970-01-01T00:00:01"),
             endDate = LocalDateTime.parse("1970-01-02T00:00:01"),
             eventType = EventType(1, "rock", "rocks are fun", 1),
-            lastModifiedBy = "1234",
+            lastModifiedBy = "6789",
             lastModifiedDate = LocalDateTime.parse("1970-01-02T00:00:01"),
-            createdBy = "6789",
+            createdBy = "1234",
             createdDate = LocalDateTime.parse("1970-01-02T00:00:01")
+        )
+
+        eventDTOWithIdAndDisplayNames = eventDTOWithId.copy(
+            createdByDisplayName = "user",
+            lastModifiedByDisplayName = "user_2"
         )
     }
 
@@ -84,7 +96,7 @@ class EventServiceTest {
     @Test
     fun `getAllEvents returns EventDTO list of all events`() {
         val event2 = Event(
-            eventId = 1L,
+            eventId = 2L,
             eventName = "blue",
             organization = "company",
             eventType = EventType(1, "rock", "rocks are fun", 1),
@@ -96,10 +108,10 @@ class EventServiceTest {
             createdDate = LocalDateTime.parse("1970-01-02T00:00:01")
         )
         val event2DTO = EventDTO(
-            eventId = 1L,
+            eventId = 2L,
             eventName = "blue",
             organization = "company",
-            eventType = EventType(1, "rock", "rocks are fun", 1),
+            eventType = EventType(1L, "rock", "rocks are fun", 1),
             startDate = LocalDateTime.parse("1970-01-01T00:00:01"),
             endDate = LocalDateTime.parse("1970-01-02T00:00:01"),
             lastModifiedBy = "user",
@@ -129,9 +141,16 @@ class EventServiceTest {
     }
 
     @Test
-    fun `getEventById returns an event`() {
+    fun `getEventById returns an event with display names`() {
         every { mockEventRepository.findByIdOrNull(1L) } returns eventWithId
-        assertEquals(eventDTOWithId, subject.getEventById(1))
+        every { mockTsrUserRepository.findByUserId("1234") } returns TsrUser(1L, "1234", "user", UserRole.USER)
+        every { mockTsrUserRepository.findByUserId("6789") } returns TsrUser(2L, "6789", "user_2", UserRole.USER)
+        assertEquals(eventDTOWithIdAndDisplayNames, subject.getEventById(1))
+        verifySequence {
+            mockEventRepository.findByIdOrNull(1L)
+            mockTsrUserRepository.findByUserId("1234")
+            mockTsrUserRepository.findByUserId("6789")
+        }
     }
 
     @Test
