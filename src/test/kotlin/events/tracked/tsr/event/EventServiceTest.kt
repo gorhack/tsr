@@ -2,12 +2,12 @@ package events.tracked.tsr.event
 
 import io.mockk.every
 import io.mockk.mockk
-import io.mockk.verify
 import io.mockk.verifySequence
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.springframework.data.repository.findByIdOrNull
 import java.time.LocalDateTime
 
 class EventServiceTest {
@@ -36,13 +36,26 @@ class EventServiceTest {
                 organization = "company",
                 eventType = EventType(1, "rock", "rocks are fun", 1),
                 startDate = LocalDateTime.parse("1970-01-01T00:00:01"),
-                endDate = LocalDateTime.parse("1970-01-02T00:00:01")
+                endDate = LocalDateTime.parse("1970-01-02T00:00:01"),
         )
-        val savedEvent = unsavedEvent.copy(
-                eventId = 1
+        val savedEvent = Event(
+                eventId = 1L,
+                eventName = "blue",
+                organization = "company",
+                startDate = LocalDateTime.parse("1970-01-01T00:00:01"),
+                endDate = LocalDateTime.parse("1970-01-02T00:00:01"),
+                eventType = EventType(1, "rock", "rocks are fun", 1),
+                lastModifiedBy = "user",
+                lastModifiedDate = LocalDateTime.parse("1970-01-02T00:00:01"),
+                createdBy = "user",
+                createdDate = LocalDateTime.parse("1970-01-02T00:00:01")
         )
         val savedEventDTO = unsavedEventDTO.copy(
-                eventId = 1
+                eventId = 1L,
+                lastModifiedBy = "user",
+                lastModifiedDate = LocalDateTime.parse("1970-01-02T00:00:01"),
+                createdBy = "user",
+                createdDate = LocalDateTime.parse("1970-01-02T00:00:01")
         )
         every { mockEventRepository.save(unsavedEvent) } returns savedEvent
         assertEquals(savedEventDTO, subject.saveEvent(unsavedEventDTO))
@@ -54,24 +67,31 @@ class EventServiceTest {
     @Test
     fun `getAllEvents returns EventDTO list of all events`() {
         val event1 = Event(
-                eventId = 1,
+                eventId = 1L,
                 eventName = "blue",
                 organization = "company",
                 eventType = EventType(1, "rock", "rocks are fun", 1),
                 startDate = LocalDateTime.parse("1970-01-01T00:00:01"),
-                endDate = LocalDateTime.parse("1970-01-02T00:00:01")
+                endDate = LocalDateTime.parse("1970-01-02T00:00:01"),
+                lastModifiedBy = "user",
+                lastModifiedDate = LocalDateTime.parse("1970-01-02T00:00:01"),
+                createdBy = "another user",
+                createdDate = LocalDateTime.parse("1970-01-02T00:00:01")
         )
         val event1DTO = EventDTO(
-                eventId = 1,
+                eventId = 1L,
                 eventName = "blue",
                 organization = "company",
                 eventType = EventType(1, "rock", "rocks are fun", 1),
                 startDate = LocalDateTime.parse("1970-01-01T00:00:01"),
-                endDate = LocalDateTime.parse("1970-01-02T00:00:01")
+                endDate = LocalDateTime.parse("1970-01-02T00:00:01"),
+                lastModifiedBy = "user",
+                lastModifiedDate = LocalDateTime.parse("1970-01-02T00:00:01"),
+                createdBy = "another user",
+                createdDate = LocalDateTime.parse("1970-01-02T00:00:01")
         )
-        val allEvents: List<Event> = listOf(event1)
 
-        every { mockEventRepository.findAll() } returns allEvents
+        every { mockEventRepository.findAll() } returns listOf(event1)
         assertEquals(listOf(event1DTO), subject.getAllEvents())
         verifySequence {
             mockEventRepository.findAll()
@@ -80,8 +100,8 @@ class EventServiceTest {
 
     @Test
     fun `getEventTypes returns list of all event_types`() {
-        val eventType1 = EventType(1, "first", "first event", 1)
-        val eventType2 = EventType(2, "second", "second event", 2)
+        val eventType1 = EventType(1L, "first", "first event", 1)
+        val eventType2 = EventType(2L, "second", "second event", 2)
 
         every { mockEventTypeRepository.findAll() } returns listOf(eventType1, eventType2)
 
@@ -89,5 +109,24 @@ class EventServiceTest {
         verifySequence {
             mockEventTypeRepository.findAll()
         }
+    }
+
+    @Test
+    fun `getEventById returns an event`() {
+        val event = Event(
+                eventId = 2L,
+                eventName = "an event",
+                organization = "an org",
+                startDate = LocalDateTime.parse("1970-01-01T00:00:01"),
+                endDate = LocalDateTime.parse("1970-01-02T00:00:01"),
+                eventType = null,
+                lastModifiedDate = LocalDateTime.parse("1970-01-02T00:00:01"),
+                lastModifiedBy = "a user",
+                createdDate = LocalDateTime.parse("1970-01-02T00:00:01"),
+                createdBy = "another user"
+        )
+        val eventDTO = EventDTO(event)
+        every { mockEventRepository.findByIdOrNull(2L) } returns event
+        assertEquals(eventDTO, subject.getEventById(2))
     }
 }

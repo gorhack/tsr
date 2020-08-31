@@ -4,9 +4,9 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verifySequence
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.Before
 import org.junit.Test
-import org.junit.jupiter.api.Assertions
 import java.time.LocalDateTime
 
 internal class EventControllerTest {
@@ -29,10 +29,10 @@ internal class EventControllerTest {
                 endDate = LocalDateTime.parse("1970-01-02T00:00:01")
         )
         val savedEventDTO = unsavedEventDTO.copy(
-                eventId = 1
+                eventId = 1L
         )
         every { mockEventService.saveEvent(unsavedEventDTO) } returns savedEventDTO
-        Assertions.assertEquals(savedEventDTO, subject.saveEvent(unsavedEventDTO))
+        assertEquals(savedEventDTO, subject.saveEvent(unsavedEventDTO))
         verifySequence {
             mockEventService.saveEvent(unsavedEventDTO)
         }
@@ -74,5 +74,20 @@ internal class EventControllerTest {
         verifySequence {
             mockEventService.getAllEvents()
         }
+    }
+
+    @Test
+    fun `getEventById returns an event`() {
+        val eventDTO = EventDTO(
+                eventId = 2L,
+                organization = "orgggg",
+                eventName = "red",
+                eventType = EventType(1, "rock", "rocks are fun", 1),
+                startDate = LocalDateTime.parse("1970-01-01T00:00:01"),
+                endDate = LocalDateTime.parse("1970-01-02T00:00:01")
+        )
+        every { mockEventService.getEventById(2) } returns eventDTO
+        assertEquals(subject.getEventById(2), eventDTO)
+        verifySequence { mockEventService.getEventById(2) }
     }
 }

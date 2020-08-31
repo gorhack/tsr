@@ -10,7 +10,9 @@ data class EventDTO(
         val endDate: LocalDateTime,
         val eventType: EventType? = null,
         val createdDate: LocalDateTime? = null,
-        val lastModifiedDate: LocalDateTime? = null
+        val createdBy: String? = null,
+        val lastModifiedDate: LocalDateTime? = null,
+        val lastModifiedBy: String? = null
 ) {
     constructor(event: Event) :
             this(
@@ -21,7 +23,9 @@ data class EventDTO(
                     event.endDate,
                     event.eventType,
                     event.createdDate,
-                    event.lastModifiedDate
+                    event.createdBy,
+                    event.lastModifiedDate,
+                    event.lastModifiedBy
             )
 
     private fun copyInto(event: Event) : Event {
@@ -32,8 +36,10 @@ data class EventDTO(
                 endDate = this.endDate,
                 eventType = this.eventType
         )
-        eventCopy.createdBy = event.createdBy
+        eventCopy.lastModifiedDate = event.lastModifiedDate
+        eventCopy.lastModifiedBy = event.lastModifiedBy
         eventCopy.createdDate = event.createdDate
+        eventCopy.createdBy = event.createdBy
         return eventCopy
     }
 
