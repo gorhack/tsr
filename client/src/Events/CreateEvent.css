@@ -1,11 +1,26 @@
-.CreateEvent-form {
-    display: flex;
-    flex-direction: column;
-    text-align: center;
-
+.CreateEvent-Content {
     border: 2px solid var(--action-color);
     border-radius: .5rem;
 
-    margin-left: 12.5%;
-    max-width: 75%;
+    margin-left: 25%;
+    max-width: 50%;
+
+    padding: 2rem;
 }
+
+/*.CreateEvent-Content {*/
+/*    width: 85%;*/
+/*}*/
+
+/*.CreateEvent-Form {*/
+/*    width: 100%;*/
+/*    align-items: start;*/
+/*}*/
+
+/*.form-group-vertical {*/
+/*    text-align: initial;*/
+/*    display: flex;*/
+/*    justify-content: space-between;*/
+/*    align-items: flex-start;*/
+/*    flex-direction: column;*/
+/*}*/

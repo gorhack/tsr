@@ -25,7 +25,7 @@ describe("create an event", () => {
         await renderCreateEvent();
 
         expect(screen.getByText("create an event")).toBeInTheDocument();
-        expect(screen.getByLabelText("input the event name")).toBeInTheDocument();
+        expect(screen.getByLabelText("event name")).toBeInTheDocument();
         expect(screen.getByLabelText("input your organization")).toBeInTheDocument();
         expect(screen.getByLabelText("select the start date")).toBeInTheDocument();
         expect(screen.getByLabelText("select the end date")).toBeInTheDocument();
@@ -59,7 +59,7 @@ describe("create an event", () => {
             ...tsrEvent,
         });
         const result = await renderCreateEvent(history);
-        fillInInputValueInForm(result, "name", "input the event name");
+        fillInInputValueInForm(result, "name", "event name");
         fillInInputValueInForm(result, "org", "input your organization");
         fillInInputValueInForm(result, dateToInput, undefined, "start date", false);
         fillInInputValueInForm(result, dateToInput, undefined, "end date", false);

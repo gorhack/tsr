@@ -75,15 +75,15 @@ export const CreateEvent: React.FC = () => {
     };
 
     return (
-        <div>
+        <div className={"CreateEvent-Content"}>
             <h1>create an event</h1>
             <form
-                className={"CreateEvent-form"}
+                className={"CreateEvent-Form"}
                 title="createEventForm"
                 onSubmit={handleSubmit(onSubmit)}
             >
                 <LabeledInput
-                    label={"input the event name"}
+                    label={"event name"}
                     error={errors.eventName && "event name is required"}
                     inputProps={{
                         placeholder: "event name...",
@@ -93,6 +93,10 @@ export const CreateEvent: React.FC = () => {
                         }),
                     }}
                 />
+                <span className={"space-2"} />
+
+                <label></label>
+
                 <LabeledInput
                     label={"input your organization"}
                     error={errors.organization && "organization is required"}
