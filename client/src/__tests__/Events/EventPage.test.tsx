@@ -6,12 +6,16 @@ import * as Api from "../../api";
 import { EventPage } from "../../Events/EventPage";
 import { createMemoryHistory, MemoryHistory } from "history";
 import { Route, Router } from "react-router-dom";
-import { makeEvent } from "../TestHelpers";
+import { makeAudit, makeEvent } from "../TestHelpers";
 import { TsrEvent } from "../../Events/EventApi";
 import moment from "moment";
 
 describe("displays event details", () => {
     let mockGetEventById: typeof EventApi.getEventById;
+    /*
+        Front end displays LOCAL time. Tests use regex to match possible outputs based on developer location...
+        UTCs: -12:00 to +14:00
+     */
     let mockUserTimeZone: typeof Api.userTimeZone;
     let mockCurrentTime: typeof Api.currentTime;
 
@@ -33,31 +37,39 @@ describe("displays event details", () => {
                     displayName: "big",
                     eventTypeName: "BIG_GUY",
                 },
-                startDate: "2020-08-18T14:15:59",
-                endDate: "2020-08-20T01:00:01",
+                startDate: "2020-08-18T14:15:59Z",
+                endDate: "2020-08-20T01:00:01Z",
                 organization: "ragnar",
-                createdBy: "1234",
-                createdByDisplayName: "test_user",
-                createdDate: "2020-07-18T06:15:59",
-                lastModifiedBy: "6789",
-                lastModifiedByDisplayName: "test_user_2",
-                lastModifiedDate: "2020-07-18T10:00:00",
+                audit: {
+                    createdBy: "1234",
+                    createdByDisplayName: "test_user",
+                    createdDate: "2020-07-18T06:15:59Z",
+                    lastModifiedBy: "6789",
+                    lastModifiedByDisplayName: "test_user_2",
+                    lastModifiedDate: "2020-07-18T10:00:00Z",
+                },
             };
 
             await renderEventDetails({ event });
             const title = screen.getByText("first event details");
             expect(title.tagName).toEqual("H1");
-            const subheading = screen.getByText("Tue Aug 18, 2020 - Thu Aug 20, 2020");
+            const subheading = screen.getByText(
+                /(Tue|Wed) Aug (18|19), 2020 - (Thu|Fri) Aug (19|20), 2020/,
+            );
             expect(subheading.tagName).toEqual("H2");
             expect(screen.getByText("type: big")).toBeInTheDocument();
             expect(
-                screen.getByText("start date: Tuesday, August 18th 2020, 1415 (TIMEZONE/timezone)"),
+                screen.getByText(
+                    /^start date: (Tuesday|Wednesday), August (18th|19th) 2020, [0-9]{4} \(TIMEZONE\/timezone\)$/,
+                ),
             ).toBeInTheDocument();
             expect(
-                screen.getByText("end date: Thursday, August 20th 2020, 0100 (TIMEZONE/timezone)"),
+                screen.getByText(
+                    /end date: (Thursday|Wednesday), August (19th|20th) 2020, [0-9]{4} \(TIMEZONE\/timezone\)/,
+                ),
             ).toBeInTheDocument();
             expect(screen.getByText("organization: ragnar")).toBeInTheDocument();
-            expect(screen.getByText("created by test_user (7/18/20)")).toBeInTheDocument();
+            expect(screen.getByText(/created by test_user \(7\/(17|18)\/20\)/)).toBeInTheDocument();
             expect(screen.getByText("last modified by test_user_2 2 days ago")).toBeInTheDocument();
         });
 
@@ -65,13 +77,15 @@ describe("displays event details", () => {
             const event = makeEvent({
                 eventId: 2,
                 eventName: "another event",
-                startDate: "2020-08-18T14:15:59",
-                endDate: "2020-08-18T14:15:59",
+                startDate: "2020-08-18T01:01:01",
+                endDate: "2020-08-18T01:01:01",
             });
             await renderEventDetails({ event });
-            expect(screen.getByText("Tue Aug 18, 2020").tagName).toEqual("H2");
+            expect(screen.getByText(/(Mon|Tue) Aug (17|18), 2020/).tagName).toEqual("H2");
             expect(
-                screen.getByText("date: Tuesday, August 18th 2020, 1415 (TIMEZONE/timezone)"),
+                screen.getByText(
+                    /date: (Monday|Tuesday), August (17th|18th) 2020, [0-9]{4} \(TIMEZONE\/timezone\)/,
+                ),
             ).toBeInTheDocument();
         });
     });
@@ -80,8 +94,10 @@ describe("displays event details", () => {
         it("last modified in the last 5 minutes displays just now", async () => {
             const event = makeEvent({
                 eventId: 1,
-                lastModifiedByDisplayName: "user",
-                lastModifiedDate: "2020-07-18T10:00:00",
+                audit: makeAudit({
+                    lastModifiedByDisplayName: "user",
+                    lastModifiedDate: "2020-07-18T10:00:00",
+                }),
             });
             await renderEventDetails({ event, currentTime: "2020-07-18T10:05:59" });
             expect(screen.getByText("last modified by user just now...")).toBeInTheDocument();
@@ -90,8 +106,10 @@ describe("displays event details", () => {
         it("last modified displays minutes if minutes ago", async () => {
             const event = makeEvent({
                 eventId: 1,
-                lastModifiedByDisplayName: "user",
-                lastModifiedDate: "2020-07-18T10:00:00",
+                audit: makeAudit({
+                    lastModifiedByDisplayName: "user",
+                    lastModifiedDate: "2020-07-18T10:00:00",
+                }),
             });
             await renderEventDetails({ event, currentTime: "2020-07-18T10:06:00" });
             expect(screen.getByText("last modified by user 6 minutes ago")).toBeInTheDocument();
@@ -100,8 +118,10 @@ describe("displays event details", () => {
         it("last modified displays hour if 1 hour ago", async () => {
             const event = makeEvent({
                 eventId: 1,
-                lastModifiedByDisplayName: "user",
-                lastModifiedDate: "2020-07-18T10:00:00",
+                audit: makeAudit({
+                    lastModifiedByDisplayName: "user",
+                    lastModifiedDate: "2020-07-18T10:00:00",
+                }),
             });
             await renderEventDetails({ event, currentTime: "2020-07-18T11:59:59" });
             expect(screen.getByText("last modified by user 1 hour ago")).toBeInTheDocument();
@@ -110,8 +130,10 @@ describe("displays event details", () => {
         it("last modified displays hours if hours ago", async () => {
             const event = makeEvent({
                 eventId: 1,
-                lastModifiedByDisplayName: "user",
-                lastModifiedDate: "2020-07-18T10:00:00",
+                audit: makeAudit({
+                    lastModifiedByDisplayName: "user",
+                    lastModifiedDate: "2020-07-18T10:00:00",
+                }),
             });
             await renderEventDetails({ event, currentTime: "2020-07-18T12:00:00" });
             expect(screen.getByText("last modified by user 2 hours ago")).toBeInTheDocument();
@@ -120,8 +142,10 @@ describe("displays event details", () => {
         it("last modified displays day if 1 day ago", async () => {
             const event = makeEvent({
                 eventId: 1,
-                lastModifiedByDisplayName: "user",
-                lastModifiedDate: "2020-07-17T10:00:00",
+                audit: makeAudit({
+                    lastModifiedByDisplayName: "user",
+                    lastModifiedDate: "2020-07-17T10:00:00",
+                }),
             });
             await renderEventDetails({ event, currentTime: "2020-07-19T09:59:59" });
             expect(screen.getByText("last modified by user 1 day ago")).toBeInTheDocument();

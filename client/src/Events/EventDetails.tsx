@@ -26,10 +26,10 @@ export const EventDetails = React.memo(
         };
 
         const longDateFormat = (date: Moment): string =>
-            `${date.format(LONG_DATE_TIME_FORMAT)} (${userTimeZone()})`;
+            `${date.local().format(LONG_DATE_TIME_FORMAT)} (${userTimeZone()})`;
 
-        const dateLastModifiedFormat = (date: Moment): string => {
-            const diffMoment = moment.duration(currentTime().diff(date));
+        const dateLastModifiedFormat = (dateLastModified: Moment): string => {
+            const diffMoment = moment.duration(currentTime().utc(true).diff(dateLastModified));
             let numOfTime = 0;
             let unitOfTime = "";
             if (diffMoment.days() > 0) {
@@ -55,16 +55,17 @@ export const EventDetails = React.memo(
                 <span>
                     {tsrEvent.eventType ? `type: ${tsrEvent.eventType.displayName}` : "type: none"}
                 </span>
-                {startEndDate(moment(tsrEvent.startDate), moment(tsrEvent.endDate))}
+                {startEndDate(moment.utc(tsrEvent.startDate), moment.utc(tsrEvent.endDate))}
                 <span>{"organization: " + tsrEvent.organization}</span>
                 <span>
-                    {`created by ${tsrEvent.createdByDisplayName} (${moment(
-                        tsrEvent.createdDate,
-                    ).format(SHORT_DATE_FORMAT)})`}
+                    {`created by ${tsrEvent.audit.createdByDisplayName} (${moment
+                        .utc(tsrEvent.audit.createdDate)
+                        .local()
+                        .format(SHORT_DATE_FORMAT)})`}
                 </span>
                 <span>{`last modified by ${
-                    tsrEvent.lastModifiedByDisplayName
-                } ${dateLastModifiedFormat(moment(tsrEvent.lastModifiedDate))}`}</span>
+                    tsrEvent.audit.lastModifiedByDisplayName
+                } ${dateLastModifiedFormat(moment.utc(tsrEvent.audit.lastModifiedDate))}`}</span>
             </>
         );
     },

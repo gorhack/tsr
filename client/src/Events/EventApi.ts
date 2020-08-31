@@ -72,6 +72,10 @@ export interface TsrEvent {
     startDate: string;
     endDate: string;
     eventType?: EventType;
+    audit: Auditable;
+}
+
+export interface Auditable {
     createdDate: string;
     createdBy: string;
     createdByDisplayName?: string;

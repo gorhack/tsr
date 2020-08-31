@@ -1,5 +1,9 @@
 package events.tracked.tsr.event
 
+import events.tracked.tsr.makeEventDTOWithId
+import events.tracked.tsr.makeEventDTOWithoutId
+import events.tracked.tsr.makeEventWithId
+import events.tracked.tsr.makeEventWithoutId
 import events.tracked.tsr.user.TsrUser
 import events.tracked.tsr.user.TsrUserRepository
 import events.tracked.tsr.user.UserRole
@@ -11,7 +15,7 @@ import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.data.repository.findByIdOrNull
-import java.time.LocalDateTime
+import java.time.OffsetDateTime
 
 class EventServiceTest {
     private lateinit var subject: EventService
@@ -31,52 +35,15 @@ class EventServiceTest {
         mockTsrUserRepository = mockk(relaxUnitFun = true)
         subject = EventService(mockEventRepository, mockEventTypeRepository, mockTsrUserRepository)
 
-        eventWithoutId = Event(
-            eventName = "blue",
-            organization = "company",
-            eventType = EventType(1, "rock", "rocks are fun", 1),
-            startDate = LocalDateTime.parse("1970-01-01T00:00:01"),
-            endDate = LocalDateTime.parse("1970-01-02T00:00:01")
-        )
-
-        eventDTOWithoutId = EventDTO(
-            eventName = "blue",
-            organization = "company",
-            eventType = EventType(1, "rock", "rocks are fun", 1),
-            startDate = LocalDateTime.parse("1970-01-01T00:00:01"),
-            endDate = LocalDateTime.parse("1970-01-02T00:00:01")
-        )
-
-        eventWithId = Event(
-            eventId = 1L,
-            eventName = "blue",
-            organization = "company",
-            startDate = LocalDateTime.parse("1970-01-01T00:00:01"),
-            endDate = LocalDateTime.parse("1970-01-02T00:00:01"),
-            eventType = EventType(1, "rock", "rocks are fun", 1),
-            lastModifiedBy = "6789",
-            lastModifiedDate = LocalDateTime.parse("1970-01-02T00:00:01"),
-            createdBy = "1234",
-            createdDate = LocalDateTime.parse("1970-01-02T00:00:01")
-        )
-
-
-        eventDTOWithId = EventDTO(
-            eventId = 1L,
-            eventName = "blue",
-            organization = "company",
-            startDate = LocalDateTime.parse("1970-01-01T00:00:01"),
-            endDate = LocalDateTime.parse("1970-01-02T00:00:01"),
-            eventType = EventType(1, "rock", "rocks are fun", 1),
-            lastModifiedBy = "6789",
-            lastModifiedDate = LocalDateTime.parse("1970-01-02T00:00:01"),
-            createdBy = "1234",
-            createdDate = LocalDateTime.parse("1970-01-02T00:00:01")
-        )
-
+        eventWithoutId = makeEventWithoutId()
+        eventDTOWithoutId = makeEventDTOWithoutId()
+        eventWithId = makeEventWithId()
+        eventDTOWithId = makeEventDTOWithId()
         eventDTOWithIdAndDisplayNames = eventDTOWithId.copy(
-            createdByDisplayName = "user",
-            lastModifiedByDisplayName = "user_2"
+            audit = eventDTOWithId.audit?.copy(
+                createdByDisplayName = "user",
+                lastModifiedByDisplayName = "user_2"
+            )
         )
     }
 
@@ -100,24 +67,25 @@ class EventServiceTest {
             eventName = "blue",
             organization = "company",
             eventType = EventType(1, "rock", "rocks are fun", 1),
-            startDate = LocalDateTime.parse("1970-01-01T00:00:01"),
-            endDate = LocalDateTime.parse("1970-01-02T00:00:01"),
+            startDate = OffsetDateTime.parse("1970-01-01T00:00:01-08:00"),
+            endDate = OffsetDateTime.parse("1970-01-02T00:00:01-08:00"),
             lastModifiedBy = "user",
-            lastModifiedDate = LocalDateTime.parse("1970-01-02T00:00:01"),
+            lastModifiedDate = OffsetDateTime.parse("1970-01-02T00:00:01-08:00"),
             createdBy = "another user",
-            createdDate = LocalDateTime.parse("1970-01-02T00:00:01")
+            createdDate = OffsetDateTime.parse("1970-01-02T00:00:01-08:00")
         )
         val event2DTO = EventDTO(
             eventId = 2L,
             eventName = "blue",
             organization = "company",
             eventType = EventType(1L, "rock", "rocks are fun", 1),
-            startDate = LocalDateTime.parse("1970-01-01T00:00:01"),
-            endDate = LocalDateTime.parse("1970-01-02T00:00:01"),
-            lastModifiedBy = "user",
-            lastModifiedDate = LocalDateTime.parse("1970-01-02T00:00:01"),
-            createdBy = "another user",
-            createdDate = LocalDateTime.parse("1970-01-02T00:00:01")
+            startDate = OffsetDateTime.parse("1970-01-01T00:00:01-08:00"),
+            endDate = OffsetDateTime.parse("1970-01-02T00:00:01-08:00"),
+            audit = AuditDTO(lastModifiedBy = "user",
+                lastModifiedDate = OffsetDateTime.parse("1970-01-02T00:00:01-08:00"),
+                createdBy = "another user",
+                createdDate = OffsetDateTime.parse("1970-01-02T00:00:01-08:00")
+            )
         )
 
         every { mockEventRepository.findAll() } returns listOf(eventWithId, event2)

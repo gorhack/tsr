@@ -1,37 +1,25 @@
 package events.tracked.tsr.event
 
-import java.time.LocalDateTime
+import java.time.OffsetDateTime
+
+data class AuditDTO(
+    val createdDate: OffsetDateTime = OffsetDateTime.parse("1970-01-01T00:00:01-08:00"),
+    val createdBy: String = "",
+    val createdByDisplayName: String? = null,
+    val lastModifiedDate: OffsetDateTime = OffsetDateTime.parse("1970-01-01T00:00:01-08:00"),
+    val lastModifiedBy: String = "",
+    val lastModifiedByDisplayName: String? = null
+)
 
 data class EventDTO(
     val eventId: Long? = null,
     val eventName: String = "",
     val organization: String,
-    val startDate: LocalDateTime,
-    val endDate: LocalDateTime,
+    val startDate: OffsetDateTime,
+    val endDate: OffsetDateTime,
     val eventType: EventType? = null,
-    val createdDate: LocalDateTime? = null,
-    val createdBy: String? = null,
-    val createdByDisplayName: String? = null,
-    val lastModifiedDate: LocalDateTime? = null,
-    val lastModifiedBy: String? = null,
-    val lastModifiedByDisplayName: String? = null
+    val audit: AuditDTO? = null
 ) {
-    constructor(event: Event) :
-        this(
-            event.eventId,
-            event.eventName,
-            event.organization,
-            event.startDate,
-            event.endDate,
-            event.eventType,
-            event.createdDate,
-            event.createdBy,
-            null,
-            event.lastModifiedDate,
-            event.lastModifiedBy,
-            null
-        )
-
     private fun copyInto(event: Event): Event {
         val eventCopy = event.copy(
             eventName = this.eventName,

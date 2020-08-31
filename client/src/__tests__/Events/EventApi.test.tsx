@@ -28,10 +28,12 @@ describe("event data", () => {
             },
             startDate: "2020-08-18T14:15:59",
             endDate: "2020-08-20T01:00:01",
-            createdBy: "user",
-            createdDate: "2020-08-18T14:15:59",
-            lastModifiedBy: "user_2",
-            lastModifiedDate: "2020-08-18T14:15:59",
+            audit: {
+                createdBy: "user",
+                createdDate: "2020-08-18T14:15:59",
+                lastModifiedBy: "user_2",
+                lastModifiedDate: "2020-08-18T14:15:59",
+            },
         };
         user2Event = {
             eventId: 2,
@@ -45,10 +47,12 @@ describe("event data", () => {
             },
             startDate: "2020-08-18T14:16:59",
             endDate: "2020-08-20T01:01:01",
-            createdBy: "user",
-            createdDate: "2020-08-18T14:15:59",
-            lastModifiedBy: "user_2",
-            lastModifiedDate: "2020-08-18T14:15:59",
+            audit: {
+                createdBy: "user",
+                createdDate: "2020-08-18T14:15:59",
+                lastModifiedBy: "user_2",
+                lastModifiedDate: "2020-08-18T14:15:59",
+            },
         };
     });
 

@@ -1,5 +1,5 @@
 import { act, fireEvent, RenderResult } from "@testing-library/react";
-import { EventType, TsrEvent } from "../Events/EventApi";
+import { Auditable, EventType, TsrEvent } from "../Events/EventApi";
 
 // Define a NockBody any to avoid linter warnings. Nock can take objects of any type.
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -51,6 +51,17 @@ export function makeEventType(partial: Partial<EventType>): EventType {
     };
 }
 
+export const makeAudit = (partial: Partial<Auditable>): Auditable => {
+    return {
+        lastModifiedDate: partial.lastModifiedDate || "",
+        lastModifiedBy: partial.lastModifiedBy || "",
+        lastModifiedByDisplayName: partial.lastModifiedByDisplayName || "",
+        createdDate: partial.createdDate || "",
+        createdBy: partial.createdBy || "",
+        createdByDisplayName: partial.createdByDisplayName || "",
+    };
+};
+
 export const makeEvent = (partial: Partial<TsrEvent>): TsrEvent => {
     if (!partial.eventId) {
         throw Error("events must have an id");
@@ -62,12 +73,7 @@ export const makeEvent = (partial: Partial<TsrEvent>): TsrEvent => {
         endDate: partial.endDate || "",
         organization: partial.organization || "",
         eventType: partial.eventType || undefined,
-        lastModifiedDate: partial.lastModifiedDate || "",
-        lastModifiedBy: partial.lastModifiedBy || "",
-        lastModifiedByDisplayName: partial.lastModifiedByDisplayName || "",
-        createdDate: partial.createdDate || "",
-        createdBy: partial.createdBy || "",
-        createdByDisplayName: partial.createdByDisplayName || "",
+        audit: partial.audit || makeAudit({}),
     };
 };
 

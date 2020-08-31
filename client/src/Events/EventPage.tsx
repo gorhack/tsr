@@ -27,8 +27,8 @@ export const EventPage: React.FC = () => {
     }, [eventId, setTsrEvent]);
 
     if (!tsrEvent) return <></>;
-    const startDate = moment(tsrEvent.startDate);
-    const endDate = moment(tsrEvent.endDate);
+    const startDate = moment.utc(tsrEvent.startDate);
+    const endDate = moment.utc(tsrEvent.endDate);
 
     const headerEventName = (): string => {
         if (tsrEvent.eventName === "") {
@@ -40,9 +40,11 @@ export const EventPage: React.FC = () => {
 
     const headerDates = (): string => {
         if (startDate.isSame(endDate)) {
-            return startDate.format(LONG_DATE_FORMAT);
+            return startDate.local().format(LONG_DATE_FORMAT);
         } else {
-            return `${startDate.format(LONG_DATE_FORMAT)} - ${endDate.format(LONG_DATE_FORMAT)}`;
+            return `${startDate.local().format(LONG_DATE_FORMAT)} - ${endDate.format(
+                LONG_DATE_FORMAT,
+            )}`;
         }
     };
 

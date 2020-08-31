@@ -52,10 +52,12 @@ describe("create an event", () => {
         };
         const saveEventPromise: Promise<TsrEvent> = Promise.resolve({
             eventId: 1,
-            createdBy: "user",
-            createdDate: "2020-08-18T14:15:59",
-            lastModifiedBy: "user",
-            lastModifiedDate: "2020-08-18T14:15:59",
+            audit: {
+                createdBy: "user",
+                createdDate: "2020-08-18T14:15:59",
+                lastModifiedBy: "user",
+                lastModifiedDate: "2020-08-18T14:15:59",
+            },
             ...tsrEvent,
         });
         const result = await renderCreateEvent(history);
