@@ -24,7 +24,7 @@ export const EventPage: React.FC = () => {
                     console.error(`error getting event by id ${eventId}, ${error.message.value}`);
                 });
         })();
-    }, [setTsrEvent]);
+    }, [eventId, setTsrEvent]);
 
     if (!tsrEvent) return <></>;
     const startDate = moment(tsrEvent.startDate);
