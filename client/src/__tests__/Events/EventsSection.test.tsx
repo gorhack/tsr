@@ -4,7 +4,6 @@ import td from "testdouble";
 import { EventsSection } from "../../Events/EventsSection";
 import { TsrEvent } from "../../Events/EventApi";
 import { makeEvent } from "../TestHelpers";
-
 import * as EventApi from "../../Events/EventApi";
 
 describe("home page of the application", () => {

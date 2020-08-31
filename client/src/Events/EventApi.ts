@@ -29,13 +29,24 @@ export const getEventTypes = async (): Promise<EventType[]> => {
 };
 
 export const getAllEvents = async (): Promise<TsrEvent[]> => {
-    const uri = "/api/v1/event";
     try {
-        const response = await axios.get(uri);
+        const response = await axios.get(baseUri);
         return response.data;
     } catch (error) {
         throw new Error(error.response.message);
     }
+};
+
+export const getEventsByUserId = async (userId: string): Promise<TsrEvent[]> => {
+    const uri = baseUri + "/user/" + userId;
+    return await axios
+        .get(uri)
+        .then((response) => {
+            return response.data;
+        })
+        .catch((error) => {
+            throw new Error(error.response.message);
+        });
 };
 
 export interface EventType {
