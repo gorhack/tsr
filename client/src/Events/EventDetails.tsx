@@ -58,13 +58,13 @@ export const EventDetails = React.memo(
                 {startEndDate(moment(tsrEvent.startDate), moment(tsrEvent.endDate))}
                 <span>{"organization: " + tsrEvent.organization}</span>
                 <span>
-                    {`created by ${tsrEvent.createdBy} (${moment(tsrEvent.createdDate).format(
-                        SHORT_DATE_FORMAT,
-                    )})`}
+                    {`created by ${tsrEvent.createdByDisplayName} (${moment(
+                        tsrEvent.createdDate,
+                    ).format(SHORT_DATE_FORMAT)})`}
                 </span>
-                <span>{`last modified by ${tsrEvent.lastModifiedBy} ${dateLastModifiedFormat(
-                    moment(tsrEvent.lastModifiedDate),
-                )}`}</span>
+                <span>{`last modified by ${
+                    tsrEvent.lastModifiedByDisplayName
+                } ${dateLastModifiedFormat(moment(tsrEvent.lastModifiedDate))}`}</span>
             </>
         );
     },

@@ -36,9 +36,11 @@ describe("displays event details", () => {
                 startDate: "2020-08-18T14:15:59",
                 endDate: "2020-08-20T01:00:01",
                 organization: "ragnar",
-                createdBy: "test_user",
+                createdBy: "1234",
+                createdByDisplayName: "test_user",
                 createdDate: "2020-07-18T06:15:59",
-                lastModifiedBy: "test_user_2",
+                lastModifiedBy: "6789",
+                lastModifiedByDisplayName: "test_user_2",
                 lastModifiedDate: "2020-07-18T10:00:00",
             };
 
@@ -78,7 +80,7 @@ describe("displays event details", () => {
         it("last modified in the last 5 minutes displays just now", async () => {
             const event = makeEvent({
                 eventId: 1,
-                lastModifiedBy: "user",
+                lastModifiedByDisplayName: "user",
                 lastModifiedDate: "2020-07-18T10:00:00",
             });
             await renderEventDetails({ event, currentTime: "2020-07-18T10:05:59" });
@@ -88,7 +90,7 @@ describe("displays event details", () => {
         it("last modified displays minutes if minutes ago", async () => {
             const event = makeEvent({
                 eventId: 1,
-                lastModifiedBy: "user",
+                lastModifiedByDisplayName: "user",
                 lastModifiedDate: "2020-07-18T10:00:00",
             });
             await renderEventDetails({ event, currentTime: "2020-07-18T10:06:00" });
@@ -98,7 +100,7 @@ describe("displays event details", () => {
         it("last modified displays hour if 1 hour ago", async () => {
             const event = makeEvent({
                 eventId: 1,
-                lastModifiedBy: "user",
+                lastModifiedByDisplayName: "user",
                 lastModifiedDate: "2020-07-18T10:00:00",
             });
             await renderEventDetails({ event, currentTime: "2020-07-18T11:59:59" });
@@ -108,7 +110,7 @@ describe("displays event details", () => {
         it("last modified displays hours if hours ago", async () => {
             const event = makeEvent({
                 eventId: 1,
-                lastModifiedBy: "user",
+                lastModifiedByDisplayName: "user",
                 lastModifiedDate: "2020-07-18T10:00:00",
             });
             await renderEventDetails({ event, currentTime: "2020-07-18T12:00:00" });
@@ -118,7 +120,7 @@ describe("displays event details", () => {
         it("last modified displays day if 1 day ago", async () => {
             const event = makeEvent({
                 eventId: 1,
-                lastModifiedBy: "user",
+                lastModifiedByDisplayName: "user",
                 lastModifiedDate: "2020-07-17T10:00:00",
             });
             await renderEventDetails({ event, currentTime: "2020-07-19T09:59:59" });

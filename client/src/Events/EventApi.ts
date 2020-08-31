@@ -63,6 +63,8 @@ export interface TsrEvent {
     eventType?: EventType;
     createdDate: string;
     createdBy: string;
+    createdByDisplayName?: string;
     lastModifiedDate: string;
     lastModifiedBy: string;
+    lastModifiedByDisplayName?: string;
 }

@@ -64,8 +64,10 @@ export const makeEvent = (partial: Partial<TsrEvent>): TsrEvent => {
         eventType: partial.eventType || undefined,
         lastModifiedDate: partial.lastModifiedDate || "",
         lastModifiedBy: partial.lastModifiedBy || "",
+        lastModifiedByDisplayName: partial.lastModifiedByDisplayName || "",
         createdDate: partial.createdDate || "",
         createdBy: partial.createdBy || "",
+        createdByDisplayName: partial.createdByDisplayName || "",
     };
 };
 
