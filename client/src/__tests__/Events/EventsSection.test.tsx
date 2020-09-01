@@ -1,12 +1,13 @@
-import { act, render, RenderResult, screen } from "@testing-library/react";
+import { act, render, RenderResult, screen, fireEvent } from "@testing-library/react";
 import React from "react";
 import td from "testdouble";
 import { EventsSection } from "../../Events/EventsSection";
-import { MemoryHistory } from "history";
+import { createMemoryHistory, MemoryHistory } from "history";
 import { TsrEvent } from "../../Events/EventApi";
 import { makeAudit, makeEvent } from "../TestHelpers";
 import * as EventApi from "../../Events/EventApi";
 import { TsrUser } from "../../Users/UserApi";
+import { Route, Router } from "react-router-dom";
 
 describe("home page of the application", () => {
     let mockGetAllEvents: typeof EventApi.getAllEvents;
@@ -58,6 +59,16 @@ describe("home page of the application", () => {
         expect(screen.getByTestId("user-event-2")).toHaveTextContent("my second event");
     });
 
+    it("clicking on an event goes to event details", async () => {
+        const history = createMemoryHistory();
+        await renderEventsSection({
+            events: [makeEvent({ eventId: 1, eventName: "this event" })],
+            history,
+        });
+        fireEvent.click(screen.getByText("this event"));
+        expect(history.location.pathname).toEqual("/event/1");
+    });
+
     interface RenderEventsSectionProps {
         events: TsrEvent[];
         user?: TsrUser;
@@ -67,10 +78,18 @@ describe("home page of the application", () => {
     const renderEventsSection = async ({
         events = [],
         user = { userId: "", username: "", role: "USER" },
+        history = createMemoryHistory(),
     }: RenderEventsSectionProps): Promise<RenderResult> => {
         const eventListPromise = Promise.resolve(events);
         td.when(mockGetAllEvents()).thenDo(() => Promise.resolve(eventListPromise));
-        const result = render(<EventsSection user={user} />);
+        history.push("/");
+        const result = render(
+            <Router history={history}>
+                <Route path="/">
+                    <EventsSection user={user} />
+                </Route>
+            </Router>,
+        );
         await act(async () => {
             await eventListPromise;
         });

@@ -2,6 +2,7 @@ import React, { ReactElement, useEffect, useState } from "react";
 import { getAllEvents, TsrEvent } from "./EventApi";
 import "./EventsSection.css";
 import { TsrUser } from "../Users/UserApi";
+import { useHistory } from "react-router-dom";
 
 interface EventsSectionProps {
     user: TsrUser;
@@ -27,31 +28,20 @@ export const EventsSection = ({ user }: EventsSectionProps): ReactElement => {
                 {eventList
                     .filter((e) => e.audit.createdBy === user.userId)
                     .map((e) => (
-                        <div
-                            key={e.eventId}
-                            className={"EventsSection-SingleEvent"}
-                            data-testid={`user-event-${e.eventId}`}
-                        >
-                            {e.eventName}
-                        </div>
+                        <SingleEvent key={`key-${e.eventId}`} event={e} dataTestId="user-event" />
                     ))}
             </>
         );
     };
 
+    // TODO add filter by user org
     const showOrgEvents = (): ReactElement => {
         return (
             <>
                 {eventList
                     .filter((e) => e.audit.createdBy !== user.userId)
                     .map((e) => (
-                        <div
-                            key={e.eventId}
-                            className={"EventsSection-SingleEvent"}
-                            data-testid={`org-event-${e.eventId}`}
-                        >
-                            {e.eventName}
-                        </div>
+                        <SingleEvent key={`key-${e.eventId}`} event={e} dataTestId="org-event" />
                     ))}
             </>
         );
@@ -67,6 +57,25 @@ export const EventsSection = ({ user }: EventsSectionProps): ReactElement => {
                 <h2>My Organization Events</h2>
                 {showOrgEvents()}
             </div>
+        </div>
+    );
+};
+
+interface SingleEventProps {
+    event: TsrEvent;
+    className?: string;
+    dataTestId?: string;
+}
+
+const SingleEvent = ({ event, className, dataTestId }: SingleEventProps): ReactElement => {
+    const history = useHistory();
+    return (
+        <div
+            className={"EventsSection-SingleEvent " + className}
+            data-testid={`${dataTestId}-${event.eventId}`}
+            onClick={() => history.push(`/event/${event.eventId}`)}
+        >
+            {event.eventName}
         </div>
     );
 };
