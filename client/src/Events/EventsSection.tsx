@@ -3,13 +3,14 @@ import { getAllEvents, TsrEvent } from "./EventApi";
 import "./EventsSection.css";
 import { TsrUser } from "../Users/UserApi";
 import { useHistory } from "react-router-dom";
+import { emptyPage, PageDTO } from "../api";
 
 interface EventsSectionProps {
     user: TsrUser;
 }
 
 export const EventsSection = ({ user }: EventsSectionProps): ReactElement => {
-    const [eventList, setEventList] = useState<TsrEvent[]>([]);
+    const [eventList, setEventList] = useState<PageDTO<TsrEvent>>(emptyPage);
 
     useEffect(() => {
         (async () => {
@@ -25,7 +26,7 @@ export const EventsSection = ({ user }: EventsSectionProps): ReactElement => {
     const showMyEvents = (): ReactElement => {
         return (
             <>
-                {eventList
+                {eventList.items
                     .filter((e) => e.audit.createdBy === user.userId)
                     .map((e) => (
                         <SingleEvent key={`key-${e.eventId}`} event={e} dataTestId="user-event" />
@@ -38,7 +39,7 @@ export const EventsSection = ({ user }: EventsSectionProps): ReactElement => {
     const showOrgEvents = (): ReactElement => {
         return (
             <>
-                {eventList
+                {eventList.items
                     .filter((e) => e.audit.createdBy !== user.userId)
                     .map((e) => (
                         <SingleEvent key={`key-${e.eventId}`} event={e} dataTestId="org-event" />

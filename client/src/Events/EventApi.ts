@@ -1,4 +1,5 @@
 import axios from "axios";
+import { PageDTO, PageParams } from "../api";
 
 const baseUri = "/api/v1/event";
 
@@ -28,9 +29,9 @@ export const getEventTypes = async (): Promise<EventType[]> => {
     }
 };
 
-export const getAllEvents = async (): Promise<TsrEvent[]> => {
+export const getAllEvents = async (pageParams: PageParams = {}): Promise<PageDTO<TsrEvent>> => {
     try {
-        const response = await axios.get(baseUri);
+        const response = await axios.get(baseUri, { params: pageParams });
         return response.data;
     } catch (error) {
         throw new Error(error.response.message);

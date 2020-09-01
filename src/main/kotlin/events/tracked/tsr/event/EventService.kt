@@ -1,7 +1,12 @@
 package events.tracked.tsr.event
 
+import events.tracked.tsr.PageDTO
 import events.tracked.tsr.user.TsrUserRepository
 import org.springframework.dao.EmptyResultDataAccessException
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.PageRequest
+import org.springframework.data.domain.Pageable
+import org.springframework.data.domain.Sort
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 
@@ -16,9 +21,15 @@ class EventService(
         return savedEvent.toEventDTO()
     }
 
-    fun getAllEvents(): List<EventDTO> {
-        val allEvents: List<Event> = eventRepository.findAll()
-        return allEvents.map { e -> e.toEventDTO() }
+    fun getAllEvents(page: Int, size: Int, sortBy: String): PageDTO<EventDTO> {
+        val paging: Pageable = PageRequest.of(page, size, Sort.by(sortBy))
+        val pagedEventResults: Page<Event> = eventRepository.findAll(paging)
+
+        return if (pagedEventResults.hasContent()) {
+            PageDTO(pagedEventResults.map { e -> e.toEventDTO() })
+        } else {
+            PageDTO(Page.empty())
+        }
     }
 
     fun getAllEventTypes(): List<EventType> {

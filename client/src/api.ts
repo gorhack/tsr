@@ -8,6 +8,32 @@ export enum HttpStatus {
     INTERNAL_SERVER_ERROR = 500,
 }
 
+export interface PageDTO<T> {
+    items: T[];
+    totalResults: number;
+    totalPages: number;
+    pageSize: number;
+    pageNumber: number;
+    first: boolean;
+    last: boolean;
+}
+
+export const emptyPage: PageDTO<never> = {
+    items: [],
+    totalResults: 0,
+    totalPages: 0,
+    pageSize: 0,
+    pageNumber: 0,
+    first: false,
+    last: false,
+};
+
+export type PageParams = {
+    page?: number;
+    size?: number;
+    sortBy?: string;
+};
+
 export interface SelectOption {
     id: number;
     label: string;
