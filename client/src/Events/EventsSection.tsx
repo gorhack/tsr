@@ -1,8 +1,13 @@
 import React, { ReactElement, useEffect, useState } from "react";
 import { getAllEvents, TsrEvent } from "./EventApi";
 import "./EventsSection.css";
+import { TsrUser } from "../Users/UserApi";
 
-export const EventsSection = (): ReactElement => {
+interface EventsSectionProps {
+    user: TsrUser;
+}
+
+export const EventsSection = ({ user }: EventsSectionProps): ReactElement => {
     const [eventList, setEventList] = useState<TsrEvent[]>([]);
 
     useEffect(() => {
@@ -16,14 +21,38 @@ export const EventsSection = (): ReactElement => {
         })();
     }, [setEventList]);
 
-    const showEvents = (): ReactElement => {
+    const showMyEvents = (): ReactElement => {
         return (
             <>
-                {eventList.map((e) => (
-                    <div className={"EventsSection-SingleEvent"} key={e.eventId}>
-                        {e.eventName}
-                    </div>
-                ))}
+                {eventList
+                    .filter((e) => e.audit.createdBy === user.userId)
+                    .map((e) => (
+                        <div
+                            key={e.eventId}
+                            className={"EventsSection-SingleEvent"}
+                            data-testid={`user-event-${e.eventId}`}
+                        >
+                            {e.eventName}
+                        </div>
+                    ))}
+            </>
+        );
+    };
+
+    const showOrgEvents = (): ReactElement => {
+        return (
+            <>
+                {eventList
+                    .filter((e) => e.audit.createdBy !== user.userId)
+                    .map((e) => (
+                        <div
+                            key={e.eventId}
+                            className={"EventsSection-SingleEvent"}
+                            data-testid={`org-event-${e.eventId}`}
+                        >
+                            {e.eventName}
+                        </div>
+                    ))}
             </>
         );
     };
@@ -32,10 +61,11 @@ export const EventsSection = (): ReactElement => {
         <div className={"EventsSection-Content"}>
             <div className={"EventsSection-Events"}>
                 <h2>My Created Events</h2>
-                {showEvents()}
+                {showMyEvents()}
             </div>
             <div className={"EventsSection-Events"}>
                 <h2>My Organization Events</h2>
+                {showOrgEvents()}
             </div>
         </div>
     );

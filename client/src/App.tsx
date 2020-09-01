@@ -1,6 +1,5 @@
 import React from "react";
 import "./App.css";
-import { User } from "./Users/User";
 import { Route, Switch } from "react-router";
 import { BrowserRouter } from "react-router-dom";
 import { Home } from "./Home";
@@ -13,16 +12,9 @@ const App: React.FC = () => {
             <div className="App">
                 <main className="App-content">
                     <Switch>
-                        <Route path="/createEvent">
-                            <CreateEvent />
-                        </Route>
-                        <Route path="/event/:eventId">
-                            <EventPage />
-                        </Route>
-                        <Route path="/">
-                            <User />
-                            <Home />
-                        </Route>
+                        <Route path="/createEvent" component={CreateEvent} />
+                        <Route path="/event/:eventId" component={EventPage} />
+                        <Route path="/" component={Home} />
                     </Switch>
                 </main>
             </div>
