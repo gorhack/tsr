@@ -86,7 +86,7 @@ export const CreateEvent: React.FC = () => {
                     label={"event name"}
                     error={errors.eventName && "event name is required"}
                     inputProps={{
-                        placeholder: "event name...",
+                        placeholder: "Enter Event Name...",
                         name: "eventName",
                         ref: register({
                             required: true,
@@ -95,33 +95,35 @@ export const CreateEvent: React.FC = () => {
                 />
                 <span className={"space-2"} />
 
-                <label></label>
-
                 <LabeledInput
-                    label={"input your organization"}
+                    label={"organization"}
                     error={errors.organization && "organization is required"}
                     inputProps={{
-                        placeholder: "organization...",
+                        placeholder: "Enter the Organization...",
                         name: "organization",
                         ref: register({
                             required: true,
                         }),
                     }}
                 />
+                <span className={"space-2"} />
+
                 <FormDatePicker
                     control={control}
                     name={"startDate"}
-                    label={"select the start date"}
-                    placeholder={"start date"}
+                    label={"start date"}
+                    placeholder={"Choose the Start Date..."}
                     minDate={TODAYS_DATE}
                     maxDate={DATE_IN_10_YEARS}
                     error={errors.startDate && "start date is required MM/dd/YYYY"}
                 />
+                <span className={"space-2"} />
+
                 <FormDatePicker
                     control={control}
                     name={"endDate"}
-                    label={"select the end date"}
-                    placeholder={"end date"}
+                    label={"end date"}
+                    placeholder={"Choose the End Date..."}
                     minDate={dateWatch.startDate ? dateWatch.startDate : TODAYS_DATE}
                     maxDate={
                         dateWatch.startDate
@@ -138,7 +140,12 @@ export const CreateEvent: React.FC = () => {
                             : undefined
                     }
                 />
+                <span className={"space-2"} />
+
                 <label data-testid="event-type-select" htmlFor="eventType">
+                    <div className={"space-1"} style={{ textAlign: "initial" }}>
+                        event type
+                    </div>
                     <Controller
                         name="eventTypeOption"
                         control={control}
@@ -147,7 +154,7 @@ export const CreateEvent: React.FC = () => {
                             <Select
                                 options={eventTypeOptions}
                                 isClearable={true}
-                                placeholder="select event type"
+                                placeholder="Select an Event..."
                                 inputId="eventType"
                                 onChange={(selection): void => {
                                     props.onChange(selection);
@@ -160,6 +167,8 @@ export const CreateEvent: React.FC = () => {
                         })}
                     />
                 </label>
+                <span className={"space-2"} />
+
                 <div>
                     <button className={"basic-button"}>submit</button>
                     <button className={"basic-button"} onClick={onCancel}>

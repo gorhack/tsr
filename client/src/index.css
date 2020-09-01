@@ -17,8 +17,43 @@ code {
   background-color: #e69a3d;
   border-color: var(--background-color);
   border-radius: 5px;
+  box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.50);
   text-transform: uppercase;
   font-family: var(--font-family-bold);
+  cursor: pointer;
+  letter-spacing: .05rem;
+  min-height: 2rem;
+  padding: 0 1.5rem 0 1.5rem;
+  margin: 0 2rem 0 2rem;
+  font-size: 16px;
+  line-height: 21px;
+}
+
+.Labeled-Input {
+  display: flex;
+  flex-direction: column;
+  text-align: initial;
+}
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:active,
+input:-webkit-autofill:focus {
+  background-color: var(--background-color) !important;
+  color: var(--text-color) !important;
+  -webkit-box-shadow: 0 0 0 1000px var(--background-color) inset !important;
+  -webkit-text-fill-color: var(--text-color) !important;
+}
+
+input[type=text],input[type=number],input[type=search] {
+  min-height: 45px;
+  min-width: 220px;
+  border-radius: 3px;
+  font-size: 16px;
+  text-indent: 16px;
+  border: 1px solid var(--action-color);
+  color: var(--text-color);
+  background-color: var(--background-color);
 }
 
 .space-1 {
@@ -48,9 +83,41 @@ code {
   --text-color: #afafb1;
   --error-color: #FF4D55;
 
+  --level-one-color: #1E222C;
+  --level-two-color: #282D3A;
+  --base-accent-color: #242933;
+
+  --level-one-accent: #303744;
+  --level-two-accent: #383D4D;
+
   /*fonts*/
   --font-family-regular: Roboto, Arial, sans-serif;
   --font-family-bold: Roboto-Bold, Arial, sans-serif;
   --font-family-light: Roboto-Light, Arial, sans-serif;
   --font-family-italic: Roboto-Italic, Arial, sans-serif;
+}
+
+@font-face {
+  font-family: 'Roboto';
+  src: url('fonts/Roboto-Regular.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'Roboto-Light';
+  src: url('fonts/Roboto-Light.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'Roboto-Medium';
+  src: url('fonts/Roboto-Medium.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'Roboto-Bold';
+  src: url('fonts/Roboto-Bold.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'Roboto-Italic';
+  src: url('fonts/Roboto-Italic.ttf') format('truetype');
 }
