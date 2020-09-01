@@ -29,10 +29,15 @@ export const EventDetails = React.memo(
             `${date.local().format(LONG_DATE_TIME_FORMAT)} (${userTimeZone()})`;
 
         const dateLastModifiedFormat = (dateLastModified: Moment): string => {
-            const diffMoment = moment.duration(currentTime().utc(true).diff(dateLastModified));
+            const diffMoment = moment.duration(currentTime().diff(dateLastModified));
+            console.log(
+                `diff: ${diffMoment.days()} days ${diffMoment.hours()} hours ${diffMoment.minutes()} minutes ${diffMoment.seconds()} seconds`,
+            );
             let numOfTime = 0;
             let unitOfTime = "";
-            if (diffMoment.days() > 0) {
+            if (diffMoment.days() >= 7) {
+                return dateLastModified.format(SHORT_DATE_FORMAT);
+            } else if (diffMoment.days() > 0) {
                 numOfTime = diffMoment.days();
                 unitOfTime = " day";
             } else if (diffMoment.hours() > 0) {
@@ -65,7 +70,7 @@ export const EventDetails = React.memo(
                 </span>
                 <span>{`last modified by ${
                     tsrEvent.audit.lastModifiedByDisplayName
-                } ${dateLastModifiedFormat(moment.utc(tsrEvent.audit.lastModifiedDate))}`}</span>
+                } ${dateLastModifiedFormat(moment(tsrEvent.audit.lastModifiedDate))}`}</span>
             </>
         );
     },

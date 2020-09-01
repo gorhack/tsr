@@ -18,7 +18,7 @@ abstract class Auditable {
     var createdBy: String = ""
 
     @CreatedDate
-    @Column(name = "created_date", columnDefinition = "timestamp", updatable = false)
+    @Column(name = "created_date", columnDefinition = "TIMESTAMP WITH TIME ZONE", updatable = false)
     var createdDate: OffsetDateTime? = null
 
     @LastModifiedBy
@@ -26,6 +26,6 @@ abstract class Auditable {
     var lastModifiedBy: String = ""
 
     @LastModifiedDate
-    @Column(name = "last_modified_date", columnDefinition = "timestamp")
+    @Column(name = "last_modified_date", columnDefinition = "TIMESTAMP WITH TIME ZONE")
     var lastModifiedDate: OffsetDateTime? = null
 }

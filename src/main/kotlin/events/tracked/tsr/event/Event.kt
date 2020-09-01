@@ -12,8 +12,10 @@ data class Event(
     var eventId: Long = 0,
     var eventName: String = "",
     var organization: String = "",
-    var startDate: OffsetDateTime = OffsetDateTime.parse("1970-01-01T00:00:01-08:00"),
-    var endDate: OffsetDateTime = OffsetDateTime.parse("1970-01-01T00:00:01-08:00"),
+    @Column(columnDefinition= "TIMESTAMP WITH TIME ZONE")
+    var startDate: OffsetDateTime = OffsetDateTime.parse("1970-01-01T00:00:01-00:00"),
+    @Column(columnDefinition= "TIMESTAMP WITH TIME ZONE")
+    var endDate: OffsetDateTime = OffsetDateTime.parse("1970-01-01T00:00:01-00:00"),
 
     @ManyToOne(fetch = FetchType.LAZY, optional = true)
     @JoinColumn(name = "event_type_id", nullable = true)

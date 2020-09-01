@@ -150,6 +150,18 @@ describe("displays event details", () => {
             await renderEventDetails({ event, currentTime: "2020-07-19T09:59:59" });
             expect(screen.getByText("last modified by user 1 day ago")).toBeInTheDocument();
         });
+
+        it("last modified displays date if older than 1 week", async () => {
+            const event = makeEvent({
+                eventId: 1,
+                audit: makeAudit({
+                    lastModifiedByDisplayName: "user",
+                    lastModifiedDate: "2020-07-17T10:00:00",
+                }),
+            });
+            await renderEventDetails({ event, currentTime: "2020-07-24T10:00:00" });
+            expect(screen.getByText("last modified by user 7/17/20")).toBeInTheDocument();
+        });
     });
 
     interface RenderEventDetailsProps {

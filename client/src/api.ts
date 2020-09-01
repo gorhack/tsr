@@ -19,5 +19,5 @@ export const userTimeZone = (): string => {
 };
 
 export const currentTime = (): Moment => {
-    return moment();
+    return moment.utc();
 };
