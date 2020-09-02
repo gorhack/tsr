@@ -76,6 +76,25 @@ input[type=text],input[type=number],input[type=search] {
   margin-bottom: 50px;
 }
 
+dt {
+  font-family: var(--font-family-bold);
+  margin-right: 0.5rem;
+}
+dt::after {
+  content: ": ";
+}
+
+dd, dt {
+  font-weight: normal;
+  font-size: 16px;
+  display: inline-block;
+  padding: .5rem;
+}
+
+dd {
+  margin: 0;
+}
+
 :root {
   /*basics*/
   --background-color: #181c23;

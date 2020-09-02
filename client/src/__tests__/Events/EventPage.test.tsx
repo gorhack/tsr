@@ -27,6 +27,18 @@ describe("displays event details", () => {
     afterEach(td.reset);
 
     describe("headers", () => {
+        it("displays event details page's dt", async () => {
+            const event = makeEvent({
+                eventId: 2,
+                eventName: "another event",
+                startDate: "2020-08-18T01:01:01",
+                endDate: "2020-08-18T01:01:01",
+            });
+            await renderEventDetails({ event });
+            expect(screen.getByText("Last Modified By")).toBeInTheDocument();
+            expect(screen.getByText("Event Type")).toBeInTheDocument();
+        });
+
         it("displays event details", async () => {
             const event: TsrEvent = {
                 eventId: 4,
@@ -57,20 +69,25 @@ describe("displays event details", () => {
                 /(Tue|Wed) Aug (18|19), 2020 - (Thu|Fri) Aug (19|20), 2020/,
             );
             expect(subheading.tagName).toEqual("H2");
-            expect(screen.getByText("type: big")).toBeInTheDocument();
+            expect(screen.getByText("big")).toBeInTheDocument();
             expect(
                 screen.getByText(
-                    /^start date: (Tuesday|Wednesday), August (18th|19th) 2020, [0-9]{4} \(TIMEZONE\/timezone\)$/,
+                    /^(Wednesday), August (19th) 2020, [0-9]{4} \(TIMEZONE\/timezone\)$/,
                 ),
             ).toBeInTheDocument();
             expect(
                 screen.getByText(
-                    /end date: (Thursday|Wednesday), August (19th|20th) 2020, [0-9]{4} \(TIMEZONE\/timezone\)/,
+                    /^(Tuesday), August (18th) 2020, [0-9]{4} \(TIMEZONE\/timezone\)$/,
                 ),
             ).toBeInTheDocument();
-            expect(screen.getByText("organization: ragnar")).toBeInTheDocument();
-            expect(screen.getByText(/created by test_user \(7\/(17|18)\/20\)/)).toBeInTheDocument();
-            expect(screen.getByText("last modified by test_user_2 2 days ago")).toBeInTheDocument();
+            expect(
+                screen.getByText(
+                    /(Thursday|Wednesday), August (19th|20th) 2020, [0-9]{4} \(TIMEZONE\/timezone\)/,
+                ),
+            ).toBeInTheDocument();
+            expect(screen.getByText("ragnar")).toBeInTheDocument();
+            expect(screen.getByText(/test_user, \(7\/(17|18)\/20\)/)).toBeInTheDocument();
+            expect(screen.getByText("test_user_2, 2 days ago")).toBeInTheDocument();
         });
 
         it("only one date if start and end date are the exact same", async () => {
@@ -84,7 +101,7 @@ describe("displays event details", () => {
             expect(screen.getByText(/(Mon|Tue) Aug (17|18), 2020/).tagName).toEqual("H2");
             expect(
                 screen.getByText(
-                    /date: (Monday|Tuesday), August (17th|18th) 2020, [0-9]{4} \(TIMEZONE\/timezone\)/,
+                    /(Monday|Tuesday), August (17th|18th) 2020, [0-9]{4} \(TIMEZONE\/timezone\)/,
                 ),
             ).toBeInTheDocument();
         });
@@ -100,7 +117,7 @@ describe("displays event details", () => {
                 }),
             });
             await renderEventDetails({ event, currentTime: "2020-07-18T10:05:59" });
-            expect(screen.getByText("last modified by user just now...")).toBeInTheDocument();
+            expect(screen.getByText("user, just now...")).toBeInTheDocument();
         });
 
         it("last modified displays minutes if minutes ago", async () => {
@@ -112,7 +129,7 @@ describe("displays event details", () => {
                 }),
             });
             await renderEventDetails({ event, currentTime: "2020-07-18T10:06:00" });
-            expect(screen.getByText("last modified by user 6 minutes ago")).toBeInTheDocument();
+            expect(screen.getByText("user, 6 minutes ago")).toBeInTheDocument();
         });
 
         it("last modified displays hour if 1 hour ago", async () => {
@@ -124,7 +141,7 @@ describe("displays event details", () => {
                 }),
             });
             await renderEventDetails({ event, currentTime: "2020-07-18T11:59:59" });
-            expect(screen.getByText("last modified by user 1 hour ago")).toBeInTheDocument();
+            expect(screen.getByText("user, 1 hour ago")).toBeInTheDocument();
         });
 
         it("last modified displays hours if hours ago", async () => {
@@ -136,7 +153,7 @@ describe("displays event details", () => {
                 }),
             });
             await renderEventDetails({ event, currentTime: "2020-07-18T12:00:00" });
-            expect(screen.getByText("last modified by user 2 hours ago")).toBeInTheDocument();
+            expect(screen.getByText("user, 2 hours ago")).toBeInTheDocument();
         });
 
         it("last modified displays day if 1 day ago", async () => {
@@ -148,7 +165,7 @@ describe("displays event details", () => {
                 }),
             });
             await renderEventDetails({ event, currentTime: "2020-07-19T09:59:59" });
-            expect(screen.getByText("last modified by user 1 day ago")).toBeInTheDocument();
+            expect(screen.getByText("user, 1 day ago")).toBeInTheDocument();
         });
 
         it("last modified displays date if older than 1 week", async () => {
@@ -160,7 +177,7 @@ describe("displays event details", () => {
                 }),
             });
             await renderEventDetails({ event, currentTime: "2020-07-24T10:00:00" });
-            expect(screen.getByText("last modified by user 7/17/20")).toBeInTheDocument();
+            expect(screen.getByText("user, 7/17/20")).toBeInTheDocument();
         });
     });
 

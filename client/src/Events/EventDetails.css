@@ -1,0 +1,7 @@
+.EventDetails-Container {
+    border-top: 2px solid var(--action-color);
+    text-align: initial;
+    margin-right: 10%;
+    margin-left: 10%;
+    padding: 2rem;
+}

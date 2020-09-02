@@ -2,6 +2,7 @@ import React, { ReactElement } from "react";
 import moment, { Moment } from "moment";
 import { TsrEvent } from "./EventApi";
 import { currentTimeUtc, userTimeZone } from "../api";
+import "./EventDetails.css";
 
 const SHORT_DATE_FORMAT = "M/D/YY";
 const LONG_DATE_TIME_FORMAT = "dddd, MMMM Do YYYY, HHmm";
@@ -14,12 +15,23 @@ export const EventDetails = React.memo(
     ({ tsrEvent }: EventDetailsProps): ReactElement => {
         const startEndDate = (startDate: Moment, endDate: Moment): ReactElement => {
             if (startDate.isSame(endDate)) {
-                return <span>{`date: ${longDateFormat(startDate)}`}</span>;
+                return (
+                    <div>
+                        <dt>Date</dt>
+                        <dd>{longDateFormat(startDate)}</dd>
+                    </div>
+                );
             } else {
                 return (
                     <>
-                        <span>{`start date: ${longDateFormat(startDate)}`}</span>
-                        <span>{`end date: ${longDateFormat(endDate)}`}</span>
+                        <div>
+                            <dt>Start Date</dt>
+                            <dd>{longDateFormat(startDate)}</dd>
+                        </div>
+                        <div>
+                            <dt>End Date</dt>
+                            <dd>{longDateFormat(endDate)}</dd>
+                        </div>
                     </>
                 );
             }
@@ -53,22 +65,36 @@ export const EventDetails = React.memo(
         };
 
         return (
-            <>
-                <span>
-                    {tsrEvent.eventType ? `type: ${tsrEvent.eventType.displayName}` : "type: none"}
-                </span>
-                {startEndDate(moment.utc(tsrEvent.startDate), moment.utc(tsrEvent.endDate))}
-                <span>{"organization: " + tsrEvent.organization}</span>
-                <span>
-                    {`created by ${tsrEvent.audit.createdByDisplayName} (${moment
-                        .utc(tsrEvent.audit.createdDate)
-                        .local()
-                        .format(SHORT_DATE_FORMAT)})`}
-                </span>
-                <span>{`last modified by ${
-                    tsrEvent.audit.lastModifiedByDisplayName
-                } ${dateLastModifiedFormat(moment(tsrEvent.audit.lastModifiedDate))}`}</span>
-            </>
+            <div className={"EventDetails-Container"}>
+                <dl>
+                    <div>
+                        <dt>Event Type</dt>
+                        <dd>
+                            {tsrEvent.eventType ? tsrEvent.eventType.displayName : "No Event Type"}
+                        </dd>
+                    </div>
+                    {startEndDate(moment.utc(tsrEvent.startDate), moment.utc(tsrEvent.endDate))}
+                    <div>
+                        <dt>Organization</dt>
+                        <dd>{tsrEvent.organization}</dd>
+                    </div>
+                    <div>
+                        <dt>Event Created By</dt>
+                        <dd>
+                            {`${tsrEvent.audit.createdByDisplayName}, (${moment
+                                .utc(tsrEvent.audit.createdDate)
+                                .local()
+                                .format(SHORT_DATE_FORMAT)})`}
+                        </dd>
+                    </div>
+                    <div>
+                        <dt>Last Modified By</dt>
+                        <dd>{`${tsrEvent.audit.lastModifiedByDisplayName}, ${dateLastModifiedFormat(
+                            moment(tsrEvent.audit.lastModifiedDate),
+                        )}`}</dd>
+                    </div>
+                </dl>
+            </div>
         );
     },
 );
