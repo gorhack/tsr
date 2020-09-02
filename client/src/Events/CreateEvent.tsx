@@ -7,6 +7,7 @@ import { EventType, getEventTypes, saveEvent, EditableTsrEvent, TsrEvent } from 
 import { SelectOption } from "../api";
 import { FormDatePicker } from "../Inputs/FormDatePicker";
 import "./CreateEvent.css";
+import { selectStyles } from "../Styles";
 
 type FormData = {
     eventName: string;
@@ -152,6 +153,7 @@ export const CreateEvent: React.FC = () => {
                         defaultValue={initialEventType}
                         render={(props): ReactElement => (
                             <Select
+                                styles={selectStyles}
                                 options={eventTypeOptions}
                                 isClearable={true}
                                 placeholder="Select an Event..."
