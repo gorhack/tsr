@@ -7,15 +7,20 @@ import td from "testdouble";
 import { makeEvent } from "./TestHelpers";
 import * as EventApi from "../Events/EventApi";
 import * as UserApi from "../Users/UserApi";
+import * as Api from "../api";
 import { TsrUser } from "../Users/UserApi";
+import { TsrEvent } from "../Events/EventApi";
+import { PageDTO } from "../api";
 
 describe("home page of the application", () => {
     let mockGetUserInfo: typeof UserApi.getUserInfo;
     let mockGetAllEvents: typeof EventApi.getAllEvents;
+    let mockCurrentTimeLocal: typeof Api.currentTimeLocal;
 
     beforeEach(() => {
         mockGetUserInfo = td.replace(UserApi, "getUserInfo");
         mockGetAllEvents = td.replace(EventApi, "getAllEvents");
+        mockCurrentTimeLocal = td.replace(Api, "currentTimeLocal");
     });
 
     afterEach(td.reset);
@@ -36,9 +41,15 @@ describe("home page of the application", () => {
     const renderHomePage = async (
         history: MemoryHistory = createMemoryHistory(),
     ): Promise<RenderResult> => {
-        const allEventsPromise = Promise.resolve([
-            makeEvent({ eventId: 1, eventName: "first event!" }),
-        ]);
+        const allEventsPromise: Promise<PageDTO<TsrEvent>> = Promise.resolve({
+            items: [makeEvent({ eventId: 1, eventName: "first event!" })],
+            totalResults: 1,
+            pageNumber: 0,
+            last: true,
+            first: true,
+            pageSize: 10,
+            totalPages: 1,
+        });
         const userPromise: Promise<TsrUser> = Promise.resolve({
             username: "tsrUser1",
             userId: "123-123-123",
@@ -46,6 +57,7 @@ describe("home page of the application", () => {
         });
         td.when(mockGetUserInfo()).thenDo(() => userPromise);
         td.when(mockGetAllEvents()).thenDo(() => Promise.resolve(allEventsPromise));
+        td.when(mockCurrentTimeLocal()).thenReturn("1970-01-01T00:00:01-00:00");
 
         history.push("/");
         const result = render(

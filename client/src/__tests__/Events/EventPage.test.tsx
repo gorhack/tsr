@@ -17,12 +17,12 @@ describe("displays event details", () => {
         UTCs: -12:00 to +14:00
      */
     let mockUserTimeZone: typeof Api.userTimeZone;
-    let mockCurrentTime: typeof Api.currentTime;
+    let mockCurrentTime: typeof Api.currentTimeUtc;
 
     beforeEach(() => {
         mockGetEventById = td.replace(EventApi, "getEventById");
         mockUserTimeZone = td.replace(Api, "userTimeZone");
-        mockCurrentTime = td.replace(Api, "currentTime");
+        mockCurrentTime = td.replace(Api, "currentTimeUtc");
     });
     afterEach(td.reset);
 

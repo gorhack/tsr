@@ -9,6 +9,10 @@ import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
+import java.time.Clock
+import java.time.LocalDateTime
+import java.time.OffsetDateTime
+import java.time.ZoneOffset
 
 @Service
 class EventService(
@@ -21,8 +25,8 @@ class EventService(
         return savedEvent.toEventDTO()
     }
 
-    fun getAllEvents(page: Int, size: Int, sortBy: String): PageDTO<EventDTO> {
-        val paging: Pageable = PageRequest.of(page, size, Sort.by(sortBy))
+    fun getAllEvents(page: Int, size: Int, sortBy: Sort): PageDTO<EventDTO> {
+        val paging: Pageable = PageRequest.of(page, size, sortBy)
         val pagedEventResults: Page<Event> = eventRepository.findAll(paging)
 
         return if (pagedEventResults.hasContent()) {
@@ -32,8 +36,30 @@ class EventService(
         }
     }
 
+    fun getAllEventsEndingAfterToday(page: Int, size: Int, sortBy: Sort, date: String = OffsetDateTime.now().toString()): PageDTO<EventDTO> {
+        val paging: Pageable = PageRequest.of(page, size, sortBy)
+        val todayDateWithTime = OffsetDateTime.parse(date)
+        val todayDateOnly = OffsetDateTime.of(
+            todayDateWithTime.year,
+            todayDateWithTime.monthValue,
+            todayDateWithTime.dayOfMonth,
+            0, 0, 0, 0,
+            ZoneOffset.UTC
+        )
+        val pagedEventResults: Page<Event> = eventRepository.findByEndDateGreaterThanEqual(
+            todayDateOnly,
+            paging
+        )
+
+        return if (pagedEventResults.hasContent()) {
+            PageDTO(pagedEventResults.map { e -> e.toEventDTO() })
+        } else {
+            PageDTO(Page.empty())
+        }
+    }
+
     fun getAllEventTypes(): List<EventType> {
-        return eventTypeRepository.findAll();
+        return eventTypeRepository.findAll()
     }
 
     fun getEventById(eventId: Int): EventDTO {

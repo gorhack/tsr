@@ -1,5 +1,6 @@
 import axios from "axios";
 import nock from "nock";
+import td from "testdouble";
 import {
     EventType,
     getAllEvents,
@@ -10,12 +11,16 @@ import {
     getEventsByUserId,
 } from "../../Events/EventApi";
 import { NockBody } from "../TestHelpers";
-import { HttpStatus } from "../../api";
+import * as Api from "../../api";
+import { HttpStatus, PageDTO } from "../../api";
 
 describe("event data", () => {
+    let mockCurrentTimeLocal: typeof Api.currentTimeLocal;
     let userEvent: TsrEvent;
     let user2Event: TsrEvent;
     beforeEach(() => {
+        mockCurrentTimeLocal = td.replace(Api, "currentTimeLocal");
+        td.when(mockCurrentTimeLocal()).thenReturn("1970-01-01T00:00:01-00:00");
         userEvent = {
             eventId: 1,
             eventName: "first",
@@ -115,14 +120,46 @@ describe("event data", () => {
         const response = await getEventTypes();
         expect(response).toEqual(eventTypes);
     });
+    describe("getAllEvents", () => {
+        it("fetches all events with default params", async () => {
+            const events: PageDTO<TsrEvent> = {
+                items: [userEvent, user2Event],
+                totalPages: 0,
+                pageNumber: 0,
+                pageSize: 10,
+                totalResults: 2,
+                first: true,
+                last: false,
+            };
 
-    it("fetches all events", async () => {
-        const events = [userEvent, user2Event];
-        nock("http://example.com").get("/api/v1/event").reply(200, events);
+            nock("http://example.com")
+                .get("/api/v1/event?localDate=1970-01-01T00:00:01-00:00")
+                .reply(200, events);
 
-        const response = await getAllEvents();
+            const response = await getAllEvents();
 
-        expect(response).toEqual(events);
+            expect(response).toEqual(events);
+        });
+
+        it("fetches all events with page number", async () => {
+            const events: PageDTO<TsrEvent> = {
+                items: [userEvent, user2Event],
+                totalPages: 0,
+                pageNumber: 1,
+                pageSize: 10,
+                totalResults: 2,
+                first: true,
+                last: false,
+            };
+
+            nock("http://example.com")
+                .get("/api/v1/event?page=1&localDate=1970-01-01T00:00:01-00:00")
+                .reply(200, events);
+
+            const response = await getAllEvents({ page: 1 });
+
+            expect(response).toEqual(events);
+        });
     });
 
     it("fetches user events", async () => {

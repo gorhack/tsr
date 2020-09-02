@@ -1,7 +1,7 @@
 import React, { ReactElement } from "react";
 import moment, { Moment } from "moment";
 import { TsrEvent } from "./EventApi";
-import { currentTime, userTimeZone } from "../api";
+import { currentTimeUtc, userTimeZone } from "../api";
 
 const SHORT_DATE_FORMAT = "M/D/YY";
 const LONG_DATE_TIME_FORMAT = "dddd, MMMM Do YYYY, HHmm";
@@ -29,10 +29,7 @@ export const EventDetails = React.memo(
             `${date.local().format(LONG_DATE_TIME_FORMAT)} (${userTimeZone()})`;
 
         const dateLastModifiedFormat = (dateLastModified: Moment): string => {
-            const diffMoment = moment.duration(currentTime().diff(dateLastModified));
-            console.log(
-                `diff: ${diffMoment.days()} days ${diffMoment.hours()} hours ${diffMoment.minutes()} minutes ${diffMoment.seconds()} seconds`,
-            );
+            const diffMoment = moment.duration(currentTimeUtc().diff(dateLastModified));
             let numOfTime = 0;
             let unitOfTime = "";
             if (diffMoment.days() >= 7) {

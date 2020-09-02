@@ -1,5 +1,5 @@
 import axios from "axios";
-import { PageDTO, PageParams } from "../api";
+import { currentTimeLocal, PageDTO, PageParams } from "../api";
 
 const baseUri = "/api/v1/event";
 
@@ -30,8 +30,12 @@ export const getEventTypes = async (): Promise<EventType[]> => {
 };
 
 export const getAllEvents = async (pageParams: PageParams = {}): Promise<PageDTO<TsrEvent>> => {
+    const paramsWithDate = {
+        ...pageParams,
+        localDate: currentTimeLocal(),
+    };
     try {
-        const response = await axios.get(baseUri, { params: pageParams });
+        const response = await axios.get(baseUri, { params: paramsWithDate });
         return response.data;
     } catch (error) {
         throw new Error(error.response.message);

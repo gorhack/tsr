@@ -4,29 +4,37 @@ import "./EventsSection.css";
 import { TsrUser } from "../Users/UserApi";
 import { useHistory } from "react-router-dom";
 import { emptyPage, PageDTO } from "../api";
+import uniqBy from "lodash/uniqBy";
 
 interface EventsSectionProps {
     user: TsrUser;
 }
 
 export const EventsSection = ({ user }: EventsSectionProps): ReactElement => {
-    const [eventList, setEventList] = useState<PageDTO<TsrEvent>>(emptyPage);
+    const [userEventPage, setUserEventPage] = useState<PageDTO<TsrEvent>>(emptyPage);
+    const [userEvents, setUserEvents] = useState<TsrEvent[]>([]);
+    const [orgEventPage, setOrgEventPage] = useState<PageDTO<TsrEvent>>(emptyPage);
+    const [orgEvents, setOrgEvents] = useState<TsrEvent[]>([]);
 
     useEffect(() => {
         (async () => {
             try {
+                // TODO separate user vs org api
                 const newEventList = await getAllEvents();
-                setEventList(newEventList);
+                setUserEventPage(newEventList);
+                setUserEvents(newEventList.items);
+                setOrgEventPage(newEventList); // TODO separate call for org events
+                setOrgEvents(newEventList.items);
             } catch (e) {
                 console.error(`Error getting all events. ${e.message.error}`);
             }
         })();
-    }, [setEventList]);
+    }, [setUserEventPage, setUserEvents, setOrgEventPage, setOrgEvents]);
 
     const showMyEvents = (): ReactElement => {
         return (
             <>
-                {eventList.items
+                {userEvents
                     .filter((e) => e.audit.createdBy === user.userId)
                     .map((e) => (
                         <SingleEvent key={`key-${e.eventId}`} event={e} dataTestId="user-event" />
@@ -35,11 +43,11 @@ export const EventsSection = ({ user }: EventsSectionProps): ReactElement => {
         );
     };
 
-    // TODO add filter by user org
+    // TODO add filter by user org on backend
     const showOrgEvents = (): ReactElement => {
         return (
             <>
-                {eventList.items
+                {orgEvents
                     .filter((e) => e.audit.createdBy !== user.userId)
                     .map((e) => (
                         <SingleEvent key={`key-${e.eventId}`} event={e} dataTestId="org-event" />
@@ -48,15 +56,65 @@ export const EventsSection = ({ user }: EventsSectionProps): ReactElement => {
         );
     };
 
+    const loadOrgEvents = (page: number) => {
+        (async () => {
+            await getAllEvents({ page })
+                .then((results) => {
+                    setOrgEventPage(results);
+                    setOrgEvents(
+                        (prevState) => uniqBy([...prevState, ...results.items], (e) => e.eventId), // TODO possible real time update duplicates?
+                    );
+                })
+                .catch((error) => {
+                    console.error(error);
+                });
+        })();
+    };
+
+    const loadUserEvents = (page: number) => {
+        (async () => {
+            await getAllEvents({ page })
+                .then((results) => {
+                    setUserEventPage(results);
+                    setUserEvents(
+                        (prevState) => uniqBy([...prevState, ...results.items], (e) => e.eventId), // TODO possible real time update duplicates?
+                    );
+                })
+                .catch((error) => {
+                    console.error(error);
+                });
+        })();
+    };
+
     return (
         <div className={"EventsSection-Content"}>
             <div className={"EventsSection-Events"}>
                 <h2>My Created Events</h2>
                 {showMyEvents()}
+                {userEventPage.last ? (
+                    <></>
+                ) : (
+                    <button
+                        data-testid={"user-event-more"}
+                        onClick={() => loadUserEvents(userEventPage.pageNumber + 1)}
+                    >
+                        load more
+                    </button>
+                )}
             </div>
             <div className={"EventsSection-Events"}>
                 <h2>My Organization Events</h2>
                 {showOrgEvents()}
+                {orgEventPage.last ? (
+                    <></>
+                ) : (
+                    <button
+                        data-testid={"org-event-more"}
+                        onClick={() => loadOrgEvents(orgEventPage.pageNumber + 1)}
+                    >
+                        load more
+                    </button>
+                )}
             </div>
         </div>
     );
@@ -68,7 +126,7 @@ interface SingleEventProps {
     dataTestId?: string;
 }
 
-const SingleEvent = ({ event, className, dataTestId }: SingleEventProps): ReactElement => {
+const SingleEvent = ({ event, className = "", dataTestId }: SingleEventProps): ReactElement => {
     const history = useHistory();
     return (
         <div

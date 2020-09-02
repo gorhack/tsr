@@ -1,14 +1,20 @@
 package events.tracked.tsr.event
 
+import events.tracked.tsr.PageDTO
 import events.tracked.tsr.makeEventDTOWithId
 import events.tracked.tsr.makeEventDTOWithoutId
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verifySequence
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.Before
 import org.junit.Test
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.springframework.data.domain.PageRequest
+import org.springframework.data.domain.Sort
+import org.springframework.http.HttpStatus
+import org.springframework.http.ResponseEntity
+import java.time.OffsetDateTime
 
 internal class EventControllerTest {
     private lateinit var subject: EventController
@@ -55,17 +61,138 @@ internal class EventControllerTest {
     }
 
     @Test
-    fun `returns all events`() {
+    fun `returns page of events sorted by startDate then endDate that end after today`() {
         val event2 = eventDTOWithId.copy(
             eventId = 2L,
-            eventName = "second"
+            eventName = "second",
+            startDate = OffsetDateTime.parse("1970-01-03T00:00:01-08:00"),
+            endDate = OffsetDateTime.parse("1970-01-03T00:00:01-08:00"),
         )
 
-        every { mockEventService.getAllEvents() } returns listOf(eventDTOWithId, event2)
+        val sortBy = Sort.by("startDate").and(Sort.by("endDate"))
+        val expectedPageDTO = PageDTO(
+            items = listOf(eventDTOWithId, event2),
+            totalPages = 1,
+            totalResults = 2,
+            pageNumber = 0,
+            isFirst = true,
+            isLast = true,
+            pageSize = 10
+        )
 
-        assertThat(subject.getAllEvents()).containsExactlyInAnyOrderElementsOf(listOf(eventDTOWithId, event2))
+        val expectedResponse: ResponseEntity<PageDTO<EventDTO>> = ResponseEntity(
+            expectedPageDTO, HttpStatus.OK
+        )
+
+        every {
+            mockEventService.getAllEventsEndingAfterToday(0, 10, sortBy, any())
+        } returns expectedPageDTO
+
+        assertEquals(expectedResponse, subject.getAllEvents(0, 10, "startDate", "1970-01-01T00:00:01-00:00"))
         verifySequence {
-            mockEventService.getAllEvents()
+            mockEventService.getAllEventsEndingAfterToday(0, 10, sortBy, any())
+        }
+    }
+
+    @Test
+    fun `returns page of events sorted by endDate then startDate that end after today`() {
+        val event2 = eventDTOWithId.copy(
+            eventId = 2L,
+            eventName = "second",
+            startDate = OffsetDateTime.parse("1970-01-03T00:00:01-08:00"),
+            endDate = OffsetDateTime.parse("1970-01-03T00:00:01-08:00"),
+        )
+
+        val sortBy = Sort.by("endDate").and(Sort.by("startDate"))
+        val expectedPageDTO = PageDTO(
+            items = listOf(eventDTOWithId, event2),
+            totalPages = 1,
+            totalResults = 2,
+            pageNumber = 0,
+            isFirst = true,
+            isLast = true,
+            pageSize = 10
+        )
+
+        val expectedResponse: ResponseEntity<PageDTO<EventDTO>> = ResponseEntity(
+            expectedPageDTO, HttpStatus.OK
+        )
+
+        every {
+            mockEventService.getAllEventsEndingAfterToday(0, 10, sortBy, any())
+        } returns expectedPageDTO
+
+        assertEquals(expectedResponse, subject.getAllEvents(0, 10, "endDate", "1970-01-01T00:00:01-00:00"))
+        verifySequence {
+            mockEventService.getAllEventsEndingAfterToday(0, 10, sortBy, any())
+        }
+    }
+
+    @Test
+    fun `returns page of all events when sorted by createdDate`() {
+        val event2 = eventDTOWithId.copy(
+            eventId = 2L,
+            eventName = "second",
+            startDate = OffsetDateTime.parse("1970-01-03T00:00:01-08:00"),
+            endDate = OffsetDateTime.parse("1970-01-03T00:00:01-08:00"),
+        )
+
+        val sortBy = Sort.by("createdDate")
+        val expectedPageDTO = PageDTO(
+            items = listOf(eventDTOWithId, event2),
+            totalPages = 1,
+            totalResults = 2,
+            pageNumber = 0,
+            isFirst = true,
+            isLast = true,
+            pageSize = 10
+        )
+
+        val expectedResponse: ResponseEntity<PageDTO<EventDTO>> = ResponseEntity(
+            expectedPageDTO, HttpStatus.OK
+        )
+
+        every {
+            mockEventService.getAllEvents(0, 10, sortBy)
+        } returns expectedPageDTO
+
+        assertEquals(expectedResponse, subject.getAllEvents(0, 10, "createdDate", "1970-01-01T00:00:01-00:00"))
+        verifySequence {
+            mockEventService.getAllEvents(0, 10, sortBy)
+        }
+    }
+
+    @Test
+    fun `returns page of all events when sorted by lastModifiedDate`() {
+        val event2 = eventDTOWithId.copy(
+            eventId = 2L,
+            eventName = "second",
+            startDate = OffsetDateTime.parse("1970-01-03T00:00:01-08:00"),
+            endDate = OffsetDateTime.parse("1970-01-03T00:00:01-08:00"),
+        )
+
+        val sortBy = Sort.by("lastModifiedDate")
+        val expectedPageDTO = PageDTO(
+            items = listOf(eventDTOWithId, event2),
+            totalPages = 1,
+            totalResults = 2,
+            pageNumber = 0,
+            isFirst = true,
+            isLast = true,
+            pageSize = 10
+        )
+
+        val expectedResponse: ResponseEntity<PageDTO<EventDTO>> = ResponseEntity(
+            expectedPageDTO, HttpStatus.OK
+        )
+
+        every {
+            mockEventService.getAllEvents(0, 10, sortBy)
+        } returns expectedPageDTO
+
+        assertEquals(expectedResponse, subject.getAllEvents(0, 10, "lastModifiedDate", "1970-01-01T00:00:01-00:00"))
+        verifySequence {
+            mockEventService.getAllEvents(0, 10, sortBy)
         }
     }
 

@@ -24,8 +24,8 @@ export const emptyPage: PageDTO<never> = {
     totalPages: 0,
     pageSize: 0,
     pageNumber: 0,
-    first: false,
-    last: false,
+    first: true,
+    last: true,
 };
 
 export type PageParams = {
@@ -44,6 +44,10 @@ export const userTimeZone = (): string => {
     return Intl.DateTimeFormat().resolvedOptions().timeZone;
 };
 
-export const currentTime = (): Moment => {
+export const currentTimeUtc = (): Moment => {
     return moment.utc();
+};
+
+export const currentTimeLocal = (): string => {
+    return moment(new Date()).format("YYYY-MM-DDTHH:mm:ssZ");
 };

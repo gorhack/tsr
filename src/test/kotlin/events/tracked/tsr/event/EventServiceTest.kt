@@ -1,9 +1,6 @@
 package events.tracked.tsr.event
 
-import events.tracked.tsr.makeEventDTOWithId
-import events.tracked.tsr.makeEventDTOWithoutId
-import events.tracked.tsr.makeEventWithId
-import events.tracked.tsr.makeEventWithoutId
+import events.tracked.tsr.*
 import events.tracked.tsr.user.TsrUser
 import events.tracked.tsr.user.TsrUserRepository
 import events.tracked.tsr.user.UserRole
@@ -11,9 +8,13 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verifySequence
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.springframework.data.domain.PageImpl
+import org.springframework.data.domain.PageRequest
+import org.springframework.data.domain.Pageable
+import org.springframework.data.domain.Sort
 import org.springframework.data.repository.findByIdOrNull
 import java.time.OffsetDateTime
 
@@ -61,13 +62,13 @@ class EventServiceTest {
     }
 
     @Test
-    fun `getAllEvents returns EventDTO list of all events`() {
+    fun `getAllEvents returns PageDTO of EventDTOs list of all events`() {
         val event2 = Event(
             eventId = 2L,
-            eventName = "blue",
+            eventName = "red",
             organization = "company",
             eventType = EventType(1, "rock", "rocks are fun", 1),
-            startDate = OffsetDateTime.parse("1970-01-01T00:00:01-08:00"),
+            startDate = OffsetDateTime.parse("1970-01-02T00:00:01-08:00"),
             endDate = OffsetDateTime.parse("1970-01-02T00:00:01-08:00"),
             lastModifiedBy = "user",
             lastModifiedDate = OffsetDateTime.parse("1970-01-02T00:00:01-08:00"),
@@ -76,10 +77,10 @@ class EventServiceTest {
         )
         val event2DTO = EventDTO(
             eventId = 2L,
-            eventName = "blue",
+            eventName = "red",
             organization = "company",
             eventType = EventType(1L, "rock", "rocks are fun", 1),
-            startDate = OffsetDateTime.parse("1970-01-01T00:00:01-08:00"),
+            startDate = OffsetDateTime.parse("1970-01-02T00:00:01-08:00"),
             endDate = OffsetDateTime.parse("1970-01-02T00:00:01-08:00"),
             audit = AuditDTO(lastModifiedBy = "user",
                 lastModifiedDate = OffsetDateTime.parse("1970-01-02T00:00:01-08:00"),
@@ -87,11 +88,41 @@ class EventServiceTest {
                 createdDate = OffsetDateTime.parse("1970-01-02T00:00:01-08:00")
             )
         )
+        val expectedPageDTO = PageDTO(
+            items = listOf(eventDTOWithId, event2DTO),
+            totalPages = 1,
+            totalResults = 2,
+            pageNumber = 0,
+            isFirst = true,
+            isLast = true,
+            pageSize = 10
+        )
 
-        every { mockEventRepository.findAll() } returns listOf(eventWithId, event2)
-        assertThat(subject.getAllEvents()).containsExactlyInAnyOrderElementsOf(listOf(event2DTO, eventDTOWithId))
+        val paging: Pageable = PageRequest.of(0, 10, Sort.by("createdDate"))
+        every { mockEventRepository.findAll(paging) } returns PageImpl(listOf(eventWithId, event2), paging, 2)
+        assertEquals(expectedPageDTO, subject.getAllEvents(0, 10, Sort.by("createdDate")))
         verifySequence {
-            mockEventRepository.findAll()
+            mockEventRepository.findAll(paging)
+        }
+    }
+
+    @Test
+    fun `getAllEventsEndingAfterToday returns PageDTO of EventDTOs list of all events that end after today`() {
+        val expectedPageDTO = PageDTO(
+            items = listOf(eventDTOWithId),
+            totalPages = 1,
+            totalResults = 1,
+            pageNumber = 0,
+            isFirst = true,
+            isLast = true,
+            pageSize = 10
+        )
+
+        val paging: Pageable = PageRequest.of(0, 10, Sort.by("startDate"))
+        every { mockEventRepository.findByEndDateGreaterThanEqual(any(), paging) } returns PageImpl(listOf(eventWithId), paging, 1)
+        assertEquals(expectedPageDTO, subject.getAllEventsEndingAfterToday(0, 10, Sort.by("startDate")))
+        verifySequence {
+            mockEventRepository.findByEndDateGreaterThanEqual(any(), paging)
         }
     }
 
