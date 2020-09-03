@@ -1,7 +1,16 @@
-.EventDetails-Container {
+.Event-Details-Container {
     border-top: 2px solid var(--action-color);
     text-align: initial;
     margin-right: 10%;
     margin-left: 10%;
     padding: 2rem;
+}
+
+.Event-Detail-Row {
+    padding-bottom: 5px;
+}
+
+.Event-Detail-Row-Label {
+    font-family: var(--font-family-bold);
+    padding-right: 10px;
 }

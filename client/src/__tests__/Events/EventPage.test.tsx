@@ -6,7 +6,7 @@ import * as Api from "../../api";
 import { EventPage } from "../../Events/EventPage";
 import { createMemoryHistory, MemoryHistory } from "history";
 import { Route, Router } from "react-router-dom";
-import { makeAudit, makeEvent } from "../TestHelpers";
+import { findByAriaLabel, makeAudit, makeEvent } from "../TestHelpers";
 import { TsrEvent } from "../../Events/EventApi";
 import moment from "moment";
 
@@ -62,7 +62,7 @@ describe("displays event details", () => {
                 },
             };
 
-            await renderEventDetails({ event });
+            const result = await renderEventDetails({ event });
             const title = screen.getByText("first event details");
             expect(title.tagName).toEqual("H1");
             const subheading = screen.getByText(
@@ -70,21 +70,12 @@ describe("displays event details", () => {
             );
             expect(subheading.tagName).toEqual("H2");
             expect(screen.getByText("big")).toBeInTheDocument();
-            expect(
-                screen.getByText(
-                    /^(Wednesday), August (19th) 2020, [0-9]{4} \(TIMEZONE\/timezone\)$/,
-                ),
-            ).toBeInTheDocument();
-            expect(
-                screen.getByText(
-                    /^(Tuesday), August (18th) 2020, [0-9]{4} \(TIMEZONE\/timezone\)$/,
-                ),
-            ).toBeInTheDocument();
-            expect(
-                screen.getByText(
-                    /(Thursday|Wednesday), August (19th|20th) 2020, [0-9]{4} \(TIMEZONE\/timezone\)/,
-                ),
-            ).toBeInTheDocument();
+            expect(findByAriaLabel(result.container, "End Date")).toHaveTextContent(
+                /^(Thursday|Wednesday), August (19th|20th) 2020, [0-9]{4} \(TIMEZONE\/timezone\)$/,
+            );
+            expect(findByAriaLabel(result.container, "Start Date")).toHaveTextContent(
+                /^(Tuesday|Wednesday), August (18th|19th) 2020, [0-9]{4} \(TIMEZONE\/timezone\)$/,
+            );
             expect(screen.getByText("ragnar")).toBeInTheDocument();
             expect(screen.getByText(/test_user, \(7\/(17|18)\/20\)/)).toBeInTheDocument();
             expect(screen.getByText("test_user_2, 2 days ago")).toBeInTheDocument();
@@ -97,13 +88,11 @@ describe("displays event details", () => {
                 startDate: "2020-08-18T01:01:01",
                 endDate: "2020-08-18T01:01:01",
             });
-            await renderEventDetails({ event });
+            const result = await renderEventDetails({ event });
             expect(screen.getByText(/(Mon|Tue) Aug (17|18), 2020/).tagName).toEqual("H2");
-            expect(
-                screen.getByText(
-                    /(Monday|Tuesday), August (17th|18th) 2020, [0-9]{4} \(TIMEZONE\/timezone\)/,
-                ),
-            ).toBeInTheDocument();
+            expect(findByAriaLabel(result.container, "Date")).toHaveTextContent(
+                /(Monday|Tuesday), August (17th|18th) 2020, [0-9]{4} \(TIMEZONE\/timezone\)/,
+            );
         });
     });
 
@@ -116,8 +105,10 @@ describe("displays event details", () => {
                     lastModifiedDate: "2020-07-18T10:00:00",
                 }),
             });
-            await renderEventDetails({ event, currentTime: "2020-07-18T10:05:59" });
-            expect(screen.getByText("user, just now...")).toBeInTheDocument();
+            const result = await renderEventDetails({ event, currentTime: "2020-07-18T10:05:59" });
+            expect(findByAriaLabel(result.container, "Last Modified By")).toHaveTextContent(
+                "user, just now...",
+            );
         });
 
         it("last modified displays minutes if minutes ago", async () => {
@@ -128,8 +119,10 @@ describe("displays event details", () => {
                     lastModifiedDate: "2020-07-18T10:00:00",
                 }),
             });
-            await renderEventDetails({ event, currentTime: "2020-07-18T10:06:00" });
-            expect(screen.getByText("user, 6 minutes ago")).toBeInTheDocument();
+            const result = await renderEventDetails({ event, currentTime: "2020-07-18T10:06:00" });
+            expect(findByAriaLabel(result.container, "Last Modified By")).toHaveTextContent(
+                "user, 6 minutes ago",
+            );
         });
 
         it("last modified displays hour if 1 hour ago", async () => {
@@ -140,8 +133,10 @@ describe("displays event details", () => {
                     lastModifiedDate: "2020-07-18T10:00:00",
                 }),
             });
-            await renderEventDetails({ event, currentTime: "2020-07-18T11:59:59" });
-            expect(screen.getByText("user, 1 hour ago")).toBeInTheDocument();
+            const result = await renderEventDetails({ event, currentTime: "2020-07-18T11:59:59" });
+            expect(findByAriaLabel(result.container, "Last Modified By")).toHaveTextContent(
+                "user, 1 hour ago",
+            );
         });
 
         it("last modified displays hours if hours ago", async () => {
@@ -152,8 +147,10 @@ describe("displays event details", () => {
                     lastModifiedDate: "2020-07-18T10:00:00",
                 }),
             });
-            await renderEventDetails({ event, currentTime: "2020-07-18T12:00:00" });
-            expect(screen.getByText("user, 2 hours ago")).toBeInTheDocument();
+            const result = await renderEventDetails({ event, currentTime: "2020-07-18T12:00:00" });
+            expect(findByAriaLabel(result.container, "Last Modified By")).toHaveTextContent(
+                "user, 2 hours ago",
+            );
         });
 
         it("last modified displays day if 1 day ago", async () => {
@@ -164,8 +161,10 @@ describe("displays event details", () => {
                     lastModifiedDate: "2020-07-17T10:00:00",
                 }),
             });
-            await renderEventDetails({ event, currentTime: "2020-07-19T09:59:59" });
-            expect(screen.getByText("user, 1 day ago")).toBeInTheDocument();
+            const result = await renderEventDetails({ event, currentTime: "2020-07-19T09:59:59" });
+            expect(findByAriaLabel(result.container, "Last Modified By")).toHaveTextContent(
+                "user, 1 day ago",
+            );
         });
 
         it("last modified displays date if older than 1 week", async () => {
@@ -176,8 +175,10 @@ describe("displays event details", () => {
                     lastModifiedDate: "2020-07-17T10:00:00",
                 }),
             });
-            await renderEventDetails({ event, currentTime: "2020-07-24T10:00:00" });
-            expect(screen.getByText("user, 7/17/20")).toBeInTheDocument();
+            const result = await renderEventDetails({ event, currentTime: "2020-07-24T10:00:00" });
+            expect(findByAriaLabel(result.container, "Last Modified By")).toHaveTextContent(
+                "user, 7/17/20",
+            );
         });
     });
 

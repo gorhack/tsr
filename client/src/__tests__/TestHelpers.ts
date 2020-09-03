@@ -5,6 +5,14 @@ import { Auditable, EventType, TsrEvent } from "../Events/EventApi";
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type NockBody = any;
 
+export const findByAriaLabel = (container: HTMLElement, ariaLabel: string): Element => {
+    const element = container.querySelector(`[aria-label="${ariaLabel}"]`);
+    if (element === null) {
+        throw new Error(`Unable to find element with aria-label=${ariaLabel}`);
+    }
+    return element;
+};
+
 export const fillInInputValueInForm = (
     container: RenderResult,
     newValue: string | number,

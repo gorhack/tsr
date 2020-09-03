@@ -15,23 +15,12 @@ export const EventDetails = React.memo(
     ({ tsrEvent }: EventDetailsProps): ReactElement => {
         const startEndDate = (startDate: Moment, endDate: Moment): ReactElement => {
             if (startDate.isSame(endDate)) {
-                return (
-                    <div>
-                        <dt>Date</dt>
-                        <dd>{longDateFormat(startDate)}</dd>
-                    </div>
-                );
+                return <DetailRow label="Date" description={longDateFormat(startDate)} />;
             } else {
                 return (
                     <>
-                        <div>
-                            <dt>Start Date</dt>
-                            <dd>{longDateFormat(startDate)}</dd>
-                        </div>
-                        <div>
-                            <dt>End Date</dt>
-                            <dd>{longDateFormat(endDate)}</dd>
-                        </div>
+                        <DetailRow label="Start Date" description={longDateFormat(startDate)} />
+                        <DetailRow label="End Date" description={longDateFormat(endDate)} />
                     </>
                 );
             }
@@ -65,38 +54,46 @@ export const EventDetails = React.memo(
         };
 
         return (
-            <div className={"EventDetails-Container"}>
-                <dl>
-                    <div>
-                        <dt>Event Type</dt>
-                        <dd>
-                            {tsrEvent.eventType ? tsrEvent.eventType.displayName : "No Event Type"}
-                        </dd>
-                    </div>
-                    {startEndDate(moment.utc(tsrEvent.startDate), moment.utc(tsrEvent.endDate))}
-                    <div>
-                        <dt>Organization</dt>
-                        <dd>{tsrEvent.organization}</dd>
-                    </div>
-                    <div>
-                        <dt>Event Created By</dt>
-                        <dd>
-                            {`${tsrEvent.audit.createdByDisplayName}, (${moment
-                                .utc(tsrEvent.audit.createdDate)
-                                .local()
-                                .format(SHORT_DATE_FORMAT)})`}
-                        </dd>
-                    </div>
-                    <div>
-                        <dt>Last Modified By</dt>
-                        <dd>{`${tsrEvent.audit.lastModifiedByDisplayName}, ${dateLastModifiedFormat(
-                            moment(tsrEvent.audit.lastModifiedDate),
-                        )}`}</dd>
-                    </div>
-                </dl>
+            <div className="Event-Details-Container">
+                <DetailRow
+                    label="Event Type"
+                    description={
+                        tsrEvent.eventType ? tsrEvent.eventType.displayName : "No Event Type"
+                    }
+                />
+                {startEndDate(moment.utc(tsrEvent.startDate), moment.utc(tsrEvent.endDate))}
+                <DetailRow label="Organization" description={tsrEvent.organization} />
+                <DetailRow
+                    label="Event Created By"
+                    description={`${tsrEvent.audit.createdByDisplayName}, (${moment
+                        .utc(tsrEvent.audit.createdDate)
+                        .local()
+                        .format(SHORT_DATE_FORMAT)})`}
+                />
+                <DetailRow
+                    label="Last Modified By"
+                    description={`${
+                        tsrEvent.audit.lastModifiedByDisplayName
+                    }, ${dateLastModifiedFormat(moment(tsrEvent.audit.lastModifiedDate))}`}
+                />
             </div>
         );
     },
 );
+
+interface DetailRowProps {
+    label: string;
+    description: string;
+    className?: string;
+}
+
+const DetailRow = ({ label, description, className = "" }: DetailRowProps): ReactElement => {
+    return (
+        <div className={"Event-Detail-Row " + className}>
+            <span className={"Event-Detail-Row-Label"}>{label}</span>
+            <span aria-label={label}>{description}</span>
+        </div>
+    );
+};
 
 EventDetails.displayName = "EventDetails";
