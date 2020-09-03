@@ -10,14 +10,18 @@ Dynamic tracking management tool. _TSR_ is built on Spring and React.
 ## Project Goals
 Dynamically manage and track planning requirements in a collaborative space.
 - [x] CI/CD pipeline
-    - [x] testing
-    - [x] deploy (currently deploys to [aws eb](https://tracked.events))
+    - [x] test - back/front end
+    - [x] code quality - [sonarcloud](https://sonarcloud.io/dashboard?id=gorhack_tsr)
+    - [x] dependency scan - Github's Dependabot
+    - [x] deploy - [aws eb](https://tracked.events)
 - [ ] SSO
-    - [x] [keycloak](https://kc.tracked.events/auth/)
+    - [x] [keycloak](http://alcesleo.github.io/2020/01/30/setting-up-keycloak-on-aws/)
     - [ ] transition from dev/testing environment to deployment ready version of kc
     - [ ] third party SSO?
     - [x] user roles ("user" / "admin")
-- [ ] transition from [dev/testing rds](https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/using-features.managing.db.html?icmpid=docs_elasticbeanstalk_console) db to deployment db
+- [ ] [MVP](https://github.com/gorhack/tsr/projects/2) (target 30 SEP 2020)
+- [ ] transition from [dev/testing rds](https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/using-features.managing.db.html?icmpid=docs_elasticbeanstalk_console)
+db to deployment db
 - [ ] integrate with 3rd party systems
 - [ ] real time
 - [ ] notifications
@@ -54,7 +58,7 @@ local changes:
 1. `eb deploy tracked-events --label [name of deploy]`
 
 ### Auth
-A dev/testing keycloak environment deployed to EC2 at https://kc.tracked.events.
+A dev/testing keycloak environment deployed to EC2 at https://kc.tracked.events. Test user login test:password
 
 ### Certificate
 Route 53 for the domain alias mapping. Certificate Manager to create the TLS certificate.
