@@ -1,5 +1,5 @@
 import { act, fireEvent, RenderResult } from "@testing-library/react";
-import { Auditable, EventType, TsrEvent } from "../Events/EventApi";
+import { Auditable, EventType, Organization, TsrEvent } from "../Events/EventApi";
 
 // Define a NockBody any to avoid linter warnings. Nock can take objects of any type.
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -59,6 +59,21 @@ export function makeEventType(partial: Partial<EventType>): EventType {
     };
 }
 
+export function makeOrganization(partial: Partial<Organization>): Organization {
+    if (!partial.organizationId) {
+        throw Error("org names must have an id");
+    }
+    if (!partial.sortOrder) {
+        throw Error("org names must have a sort order");
+    }
+    return {
+        organizationId: partial.organizationId,
+        sortOrder: partial.sortOrder,
+        organizationDisplayName: partial.organizationDisplayName || "",
+        organizationName: partial.organizationName || "",
+    };
+}
+
 export const makeAudit = (partial: Partial<Auditable>): Auditable => {
     return {
         lastModifiedDate: partial.lastModifiedDate || "",
@@ -79,7 +94,7 @@ export const makeEvent = (partial: Partial<TsrEvent>): TsrEvent => {
         eventName: partial.eventName || "",
         startDate: partial.startDate || "",
         endDate: partial.endDate || "",
-        organization: partial.organization || "",
+        organization: makeOrganization({ organizationId: 1, sortOrder: 1 }),
         eventType: partial.eventType || undefined,
         audit: partial.audit || makeAudit({}),
     };

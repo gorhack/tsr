@@ -1,9 +1,6 @@
 package events.tracked.tsr
 
-import events.tracked.tsr.event.AuditDTO
-import events.tracked.tsr.event.Event
-import events.tracked.tsr.event.EventDTO
-import events.tracked.tsr.event.EventType
+import events.tracked.tsr.event.*
 import io.mockk.every
 import io.mockk.mockk
 import org.springframework.security.oauth2.core.oidc.IdTokenClaimNames
@@ -32,7 +29,7 @@ fun makeIdToken(claims: MutableMap<String, Any> = mutableMapOf()): OidcIdToken {
 fun makeEventWithoutId(): Event {
     return Event(
         eventName = "blue",
-        organization = "company",
+        organization = Organization(1, "hoorah devil dawg", "one shot one kill", 1),
         eventType = EventType(1, "rock", "rocks are fun", 1),
         startDate = OffsetDateTime.parse("1970-01-01T00:00:01-08:00"),
         endDate = OffsetDateTime.parse("1970-01-02T00:00:01-08:00")
@@ -42,7 +39,7 @@ fun makeEventWithoutId(): Event {
 fun makeEventDTOWithoutId(): EventDTO {
     return EventDTO(
         eventName = "blue",
-        organization = "company",
+        organization = Organization(1, "hoorah devil dawg", "one shot one kill", 1),
         eventType = EventType(1, "rock", "rocks are fun", 1),
         startDate = OffsetDateTime.parse("1970-01-01T00:00:01-08:00"),
         endDate = OffsetDateTime.parse("1970-01-02T00:00:01-08:00")
@@ -53,7 +50,7 @@ fun makeEventWithId(): Event {
     return Event(
         eventId = 1L,
         eventName = "blue",
-        organization = "company",
+        organization = Organization(1, "hoorah devil dawg", "one shot one kill", 1),
         startDate = OffsetDateTime.parse("1970-01-01T00:00:01-08:00"),
         endDate = OffsetDateTime.parse("1970-01-02T00:00:01-08:00"),
         eventType = EventType(1, "rock", "rocks are fun", 1),
@@ -68,7 +65,7 @@ fun makeEventDTOWithId(): EventDTO {
     return EventDTO(
         eventId = 1L,
         eventName = "blue",
-        organization = "company",
+        organization = Organization(1, "hoorah devil dawg", "one shot one kill", 1),
         startDate = OffsetDateTime.parse("1970-01-01T00:00:01-08:00"),
         endDate = OffsetDateTime.parse("1970-01-02T00:00:01-08:00"),
         eventType = EventType(1, "rock", "rocks are fun", 1),
@@ -85,7 +82,7 @@ fun makeEventWithId2(): Event {
     return Event(
         eventId = 2L,
         eventName = "second",
-        organization = "org",
+        organization = Organization(1, "hoorah devil dawg", "one shot one kill", 1),
         startDate = OffsetDateTime.parse("1970-01-03T00:00:01-08:00"),
         endDate = OffsetDateTime.parse("1970-01-03T00:00:01-08:00"),
         eventType = null,
@@ -102,7 +99,7 @@ fun makeEventDTOWithId2(): EventDTO {
         eventName = "second",
         startDate = OffsetDateTime.parse("1970-01-03T00:00:01-08:00"),
         endDate = OffsetDateTime.parse("1970-01-03T00:00:01-08:00"),
-        organization = "org",
+        organization = Organization(1, "hoorah devil dawg", "one shot one kill", 1),
         eventType = null,
         audit = AuditDTO(
             lastModifiedBy = "6789",

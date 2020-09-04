@@ -41,6 +41,11 @@ class EventController(private val eventService: EventService) {
         }
     }
 
+    @GetMapping(value = ["/organizations"])
+    fun allOrgNames(): List<Organization>? {
+        return eventService.getAllOrgNames()
+    }
+
     @GetMapping(value = ["/types"])
     fun allEventTypes(): List<EventType>? {
         return eventService.getAllEventTypes()

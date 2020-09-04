@@ -62,7 +62,10 @@ export const EventDetails = React.memo(
                     }
                 />
                 {startEndDate(moment.utc(tsrEvent.startDate), moment.utc(tsrEvent.endDate))}
-                <DetailRow label="Organization" description={tsrEvent.organization} />
+                <DetailRow
+                    label="Organization"
+                    description={tsrEvent.organization.organizationDisplayName}
+                />
                 <DetailRow
                     label="Event Created By"
                     description={`${tsrEvent.audit.createdByDisplayName}, (${moment

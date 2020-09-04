@@ -75,6 +75,19 @@ internal class EventControllerTest {
     }
 
     @Test
+    fun `returns all org names`() {
+        val orgName1 = Organization(1L, "org one", "org one name", 1)
+        val orgName2 = Organization(2L, "org two", "org two name", 2)
+
+        every { mockEventService.getAllOrgNames() } returns listOf(orgName1, orgName2)
+
+        assertThat(subject.allOrgNames()).containsExactlyInAnyOrderElementsOf(listOf(orgName1, orgName2))
+        verifySequence {
+            mockEventService.getAllOrgNames()
+        }
+    }
+
+    @Test
     fun `returns page of events sorted by startDate then endDate that end after today`() {
         val expectedResponse: ResponseEntity<PageDTO<EventDTO>> = ResponseEntity(
             expectedPageDTO, HttpStatus.OK

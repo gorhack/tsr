@@ -15,7 +15,8 @@ import java.time.OffsetDateTime
 class EventService(
     private val eventRepository: EventRepository,
     private val eventTypeRepository: EventTypeRepository,
-    private val userRepository: TsrUserRepository
+    private val userRepository: TsrUserRepository,
+    private val organizationRepository: OrganizationRepository
 ) {
     fun saveEvent(eventDTO: EventDTO): EventDTO {
         val savedEvent = eventRepository.save(eventDTO.toEvent())
@@ -46,6 +47,10 @@ class EventService(
         } else {
             PageDTO(Page.empty(paging))
         }
+    }
+
+    fun getAllOrgNames(): List<Organization> {
+        return organizationRepository.findAll()
     }
 
     fun getAllEventTypes(): List<EventType> {

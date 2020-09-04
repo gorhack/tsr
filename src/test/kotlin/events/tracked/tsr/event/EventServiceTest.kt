@@ -16,12 +16,14 @@ import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
 import org.springframework.data.repository.findByIdOrNull
+import java.time.OffsetDateTime
 
 class EventServiceTest {
     private lateinit var subject: EventService
     private lateinit var mockEventRepository: EventRepository
     private lateinit var mockEventTypeRepository: EventTypeRepository
     private lateinit var mockTsrUserRepository: TsrUserRepository
+    private lateinit var mockOrganizationRepository: OrganizationRepository
     private lateinit var eventWithoutId: Event
     private lateinit var eventDTOWithoutId: EventDTO
     private lateinit var eventWithId: Event
@@ -36,7 +38,8 @@ class EventServiceTest {
         mockEventRepository = mockk(relaxUnitFun = true)
         mockEventTypeRepository = mockk(relaxUnitFun = true)
         mockTsrUserRepository = mockk(relaxUnitFun = true)
-        subject = EventService(mockEventRepository, mockEventTypeRepository, mockTsrUserRepository)
+        mockOrganizationRepository = mockk(relaxUnitFun = true)
+        subject = EventService(mockEventRepository, mockEventTypeRepository, mockTsrUserRepository, mockOrganizationRepository)
 
         eventWithoutId = makeEventWithoutId()
         eventDTOWithoutId = makeEventDTOWithoutId()
@@ -106,6 +109,19 @@ class EventServiceTest {
         assertThat(subject.getAllEventTypes()).containsExactlyInAnyOrderElementsOf(listOf(eventType2, eventType1))
         verifySequence {
             mockEventTypeRepository.findAll()
+        }
+    }
+
+    @Test
+    fun `getOrgNames returns list of all org_names`() {
+        val orgName1 = Organization(1L, "org one", "org one name", 1)
+        val orgName2 = Organization(2L, "org two", "org two name", 2)
+
+        every { mockOrganizationRepository.findAll() } returns listOf(orgName1, orgName2)
+
+        assertThat(subject.getAllOrgNames()).containsExactlyInAnyOrderElementsOf(listOf(orgName1, orgName2))
+        verifySequence {
+            mockOrganizationRepository.findAll()
         }
     }
 

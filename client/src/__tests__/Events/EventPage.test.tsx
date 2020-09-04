@@ -6,7 +6,7 @@ import * as Api from "../../api";
 import { EventPage } from "../../Events/EventPage";
 import { createMemoryHistory, MemoryHistory } from "history";
 import { Route, Router } from "react-router-dom";
-import { findByAriaLabel, makeAudit, makeEvent } from "../TestHelpers";
+import { findByAriaLabel, makeAudit, makeEvent, makeOrganization } from "../TestHelpers";
 import { TsrEvent } from "../../Events/EventApi";
 import moment from "moment";
 
@@ -51,7 +51,12 @@ describe("displays event details", () => {
                 },
                 startDate: "2020-08-18T14:15:59Z",
                 endDate: "2020-08-20T01:00:01Z",
-                organization: "ragnar",
+                organization: makeOrganization({
+                    organizationId: 1,
+                    organizationName: "test_ragnar",
+                    organizationDisplayName: "ragnar",
+                    sortOrder: 1,
+                }),
                 audit: {
                     createdBy: "1234",
                     createdByDisplayName: "test_user",

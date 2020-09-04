@@ -3,30 +3,32 @@ import { render, fireEvent, RenderResult, screen, act } from "@testing-library/r
 import { CreateEvent } from "../../Events/CreateEvent";
 import React from "react";
 import { Route, Router } from "react-router-dom";
-import { createMemoryHistory } from "history";
-import { fillInInputValueInForm, makeEventType, reRender } from "../TestHelpers";
+import { createMemoryHistory, MemoryHistory } from "history";
+import { fillInInputValueInForm, makeEventType, makeOrganization, reRender } from "../TestHelpers";
 import td from "testdouble";
 import * as EventApi from "../../Events/EventApi";
-import { EventType, TsrEvent } from "../../Events/EventApi";
+import { EventType, Organization, TsrEvent } from "../../Events/EventApi";
 import selectEvent from "react-select-event";
 
 describe("create an event", () => {
     const dateToInput = new Date().toLocaleDateString();
     let mockSaveEvent: typeof EventApi.saveEvent;
     let mockGetEventTypes: typeof EventApi.getEventTypes;
+    let mockGetOrgNames: typeof EventApi.getOrganizationNames;
     beforeEach(() => {
         mockSaveEvent = td.replace(EventApi, "saveEvent");
         mockGetEventTypes = td.replace(EventApi, "getEventTypes");
+        mockGetOrgNames = td.replace(EventApi, "getOrganizationNames");
     });
 
     afterEach(td.reset);
 
     it("displays all required event fields", async () => {
-        await renderCreateEvent();
+        await renderCreateEvent({});
 
         expect(screen.getByText("create an event")).toBeInTheDocument();
         expect(screen.getByLabelText("event name")).toBeInTheDocument();
-        expect(screen.getByLabelText("organization")).toBeInTheDocument();
+        expect(screen.getByText("organization name")).toBeInTheDocument();
         expect(screen.getByLabelText("start date")).toBeInTheDocument();
         expect(screen.getByLabelText("end date")).toBeInTheDocument();
         expect(screen.getByText("event type")).toBeInTheDocument();
@@ -36,16 +38,28 @@ describe("create an event", () => {
 
     it("cancel create event goes back to home page", async () => {
         const history = createMemoryHistory();
-        await renderCreateEvent(history);
+        await renderCreateEvent({ history });
         screen.getByText("cancel").click();
         expect(history.location.pathname).toEqual("/");
     });
 
     it("submitting the form saves event and goes to /eventId", async () => {
         const history = createMemoryHistory();
+        const orgNames = [
+            makeOrganization({
+                organizationId: 2,
+                sortOrder: 2,
+                organizationDisplayName: "second",
+            }),
+        ];
+        const orgNamesPromise = Promise.resolve(orgNames);
         const tsrEvent = {
             eventName: "name",
-            organization: "org",
+            organization: makeOrganization({
+                organizationId: 2,
+                organizationDisplayName: "second",
+                sortOrder: 2,
+            }),
             startDate: new Date(dateToInput).toJSON(),
             endDate: new Date(dateToInput).toJSON(),
             eventType: undefined,
@@ -60,9 +74,9 @@ describe("create an event", () => {
             },
             ...tsrEvent,
         });
-        const result = await renderCreateEvent(history);
+        const result = await renderCreateEvent({ history, orgNamesPromise });
         fillInInputValueInForm(result, "name", "event name");
-        fillInInputValueInForm(result, "org", "organization");
+        await selectEvent.select(screen.getByText("Select Organizations..."), "second");
         fillInInputValueInForm(result, dateToInput, undefined, "Choose the Start Date...", false);
         fillInInputValueInForm(result, dateToInput, undefined, "Choose the End Date...", false);
 
@@ -83,7 +97,7 @@ describe("create an event", () => {
                 makeEventType({ eventTypeId: 2, sortOrder: 2, displayName: "second" }),
             ];
             const eventTypesPromise = Promise.resolve(eventTypes);
-            return await renderCreateEvent(undefined, eventTypesPromise);
+            return await renderCreateEvent({ eventTypesPromise });
         };
 
         it("gets all the event types in order", async () => {
@@ -103,10 +117,48 @@ describe("create an event", () => {
         });
     });
 
+    describe("org select", () => {
+        const setupOrgSelectPromise = async (): Promise<RenderResult> => {
+            const orgNames = [
+                makeOrganization({
+                    organizationId: 3,
+                    sortOrder: 3,
+                    organizationDisplayName: "third",
+                }),
+                makeOrganization({
+                    organizationId: 1,
+                    sortOrder: 1,
+                    organizationDisplayName: "first",
+                }),
+                makeOrganization({
+                    organizationId: 2,
+                    sortOrder: 2,
+                    organizationDisplayName: "second",
+                }),
+            ];
+            const orgNamesPromise = Promise.resolve(orgNames);
+            return await renderCreateEvent({ orgNamesPromise });
+        };
+
+        it("gets all org names in order", async () => {
+            await setupOrgSelectPromise();
+            await selectEvent.openMenu(screen.getByText("Select Organizations..."));
+            expect(screen.getByTestId("org-name-select")).toHaveTextContent(/first.*second.*third/);
+        });
+
+        it("can clear the org name", async () => {
+            await setupOrgSelectPromise();
+            await selectEvent.select(screen.getByText("Select Organizations..."), "second");
+            expect(screen.getByText("second")).toBeInTheDocument();
+            await selectEvent.clearAll(screen.getByText("second"));
+            expect(screen.queryByAltText("second")).toBeNull();
+        });
+    });
+
     describe("handle errors", () => {
         it("requires event name", async () => {
             const errorMsg = "event name is required";
-            await renderCreateEvent();
+            await renderCreateEvent({});
             expect(screen.queryByText(errorMsg)).toBeNull();
 
             await submitEventForm();
@@ -114,21 +166,40 @@ describe("create an event", () => {
         });
 
         it("requires event organization", async () => {
-            const errorMsg = "organization is required";
-            const result = await renderCreateEvent();
+            const errorMsg = "Must select an organization.";
+            const orgNames = [
+                makeOrganization({
+                    organizationId: 1,
+                    sortOrder: 1,
+                    organizationDisplayName: "2/75",
+                }),
+            ];
+            const orgNamesPromise = Promise.resolve(orgNames);
+            const result = await renderCreateEvent({ orgNamesPromise });
             expect(screen.queryByText(errorMsg)).toBeNull();
+
+            fillInInputValueInForm(result, "name", "event name");
+            fillInInputValueInForm(
+                result,
+                dateToInput,
+                undefined,
+                "Choose the Start Date...",
+                false,
+            );
+            fillInInputValueInForm(result, dateToInput, undefined, "Choose the End Date...", false);
 
             await submitEventForm();
             expect(screen.getByText(errorMsg)).toBeInTheDocument();
 
-            fillInInputValueInForm(result, "an org", "organization");
-            await submitEventForm();
+            await act(async () => {
+                await selectEvent.select(screen.getByText("Select Organizations..."), "2/75");
+            });
             expect(screen.queryByText(errorMsg)).toBeNull();
         });
 
         it("requires start date", async () => {
             const errorMsg = "start date is required MM/dd/YYYY";
-            const result = await renderCreateEvent();
+            const result = await renderCreateEvent({});
             expect(screen.queryByText(errorMsg)).toBeNull();
 
             await submitEventForm();
@@ -152,7 +223,7 @@ describe("create an event", () => {
 
         it("requires end date after start date", async () => {
             const errorMsg = "end date after the start date is required MM/dd/YYYY";
-            const result = await renderCreateEvent();
+            const result = await renderCreateEvent({});
             expect(screen.queryByText(errorMsg)).toBeNull();
 
             await submitEventForm();
@@ -181,13 +252,21 @@ describe("create an event", () => {
         await reRender();
     };
 
-    const renderCreateEvent = async (
+    interface RenderCreateEventProps {
+        history?: MemoryHistory;
+        eventTypesPromise?: Promise<EventType[]>;
+        orgNamesPromise?: Promise<Organization[]>;
+    }
+
+    const renderCreateEvent = async ({
         history = createMemoryHistory(),
-        eventTypesPromise: Promise<EventType[]> = Promise.resolve([]),
-    ): Promise<RenderResult> => {
+        eventTypesPromise = Promise.resolve([]),
+        orgNamesPromise = Promise.resolve([]),
+    }: RenderCreateEventProps): Promise<RenderResult> => {
         history.push("/createEvent");
 
         td.when(mockGetEventTypes()).thenDo(() => Promise.resolve(eventTypesPromise));
+        td.when(mockGetOrgNames()).thenDo(() => Promise.resolve(orgNamesPromise));
 
         const result = render(
             <Router history={history}>

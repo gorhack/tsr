@@ -3,7 +3,14 @@ import { LabeledInput } from "../Inputs/LabeledInput";
 import { useHistory } from "react-router";
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import Select, { createFilter } from "react-select";
-import { EventType, getEventTypes, saveEvent, EditableTsrEvent, TsrEvent } from "./EventApi";
+import {
+    EditableTsrEvent,
+    EventType,
+    getEventTypes,
+    getOrganizationNames,
+    Organization,
+    saveEvent,
+} from "./EventApi";
 import { SelectOption } from "../api";
 import { FormDatePicker } from "../Inputs/FormDatePicker";
 import "./CreateEvent.css";
@@ -11,7 +18,7 @@ import { selectStyles } from "../Styles";
 
 type FormData = {
     eventName: string;
-    organization: string;
+    orgNameOption: SelectOption;
     startDate: Date;
     endDate: Date;
     eventTypeOption?: SelectOption;
@@ -23,11 +30,18 @@ const DATE_IN_10_YEARS = new Date(new Date().setFullYear(new Date().getFullYear(
 export const CreateEvent: React.FC = () => {
     const history = useHistory();
     const initialEventType = { id: 0, label: "" };
+    const initialOrgName = { id: 0, label: "" };
+
     const [eventTypes, setEventTypes] = useState<EventType[]>([]);
     const [eventTypeOptions, setEventTypeOptions] = useState<SelectOption[]>([]);
-    const { handleSubmit, register, errors, control, watch } = useForm<FormData>({
+
+    const [orgNames, setOrgNames] = useState<Organization[]>([]);
+    const [orgNameOptions, setOrgNameOptions] = useState<SelectOption[]>([]);
+
+    const { handleSubmit, register, errors, control, watch, setError } = useForm<FormData>({
         defaultValues: {
             eventTypeOption: initialEventType,
+            orgNameOption: initialOrgName,
         },
     });
     const dateWatch = watch(["startDate", "endDate"]);
@@ -35,6 +49,17 @@ export const CreateEvent: React.FC = () => {
     useEffect(() => {
         (async () => {
             try {
+                const newOrgNames = await getOrganizationNames();
+                setOrgNames(newOrgNames);
+                const newOrgNameOptions: SelectOption[] = newOrgNames
+                    .sort((e, e2) => e.sortOrder - e2.sortOrder)
+                    .map((orgName) => {
+                        return {
+                            id: orgName.organizationId,
+                            label: orgName.organizationDisplayName,
+                        };
+                    });
+                setOrgNameOptions(newOrgNameOptions);
                 const newEventTypes = await getEventTypes();
                 setEventTypes(newEventTypes);
                 const newEventTypeOptions: SelectOption[] = newEventTypes
@@ -50,29 +75,39 @@ export const CreateEvent: React.FC = () => {
                 console.error("error getting event types", e.message);
             }
         })();
-    }, [setEventTypes, setEventTypeOptions]);
+    }, [setEventTypes, setEventTypeOptions, setOrgNames, setOrgNameOptions]);
 
     const onCancel = (e: React.MouseEvent<HTMLButtonElement>): void => {
         e.preventDefault();
         history.push("/");
     };
+
     const onSubmit: SubmitHandler<FormData> = async (data) => {
-        const { eventName, organization, startDate, endDate, eventTypeOption } = data;
-        const event: EditableTsrEvent = {
+        const { eventName, orgNameOption, startDate, endDate, eventTypeOption } = data;
+        console.log(orgNameOption);
+        const foundOrg = orgNames.find((orgNames) => orgNames.organizationId === orgNameOption.id);
+        console.log(foundOrg);
+        if (!foundOrg) {
+            setError("orgNameOption", { message: "must select an organization", type: "required" });
+            return;
+        }
+
+        const tsrEvent: EditableTsrEvent = {
             eventName,
-            organization,
+            organization: foundOrg,
             startDate: startDate.toJSON(),
             endDate: endDate.toJSON(),
             eventType: eventTypes.find(
                 (eventType) => eventType.eventTypeId === eventTypeOption?.id,
             ),
         };
-        try {
-            const savedEvent: TsrEvent = await saveEvent(event);
-            history.push(`/event/${savedEvent.eventId}`);
-        } catch (e) {
-            console.error("error saving the event", e.message);
-        }
+        await saveEvent(tsrEvent)
+            .then((result) => {
+                history.push(`/event/${result.eventId}`);
+            })
+            .catch((error) => {
+                console.error("error saving the event", error.message);
+            });
     };
 
     return (
@@ -96,17 +131,42 @@ export const CreateEvent: React.FC = () => {
                 />
                 <span className={"space-2"} />
 
-                <LabeledInput
-                    label={"organization"}
-                    error={errors.organization && "organization is required"}
-                    inputProps={{
-                        placeholder: "Enter the Organization...",
-                        name: "organization",
-                        ref: register({
-                            required: true,
-                        }),
-                    }}
-                />
+                <label data-testid="org-name-select" htmlFor="orgName">
+                    <div className={"space-1"} style={{ textAlign: "initial" }}>
+                        organization name
+                    </div>
+                    <Controller
+                        name="orgNameOption"
+                        control={control}
+                        defaultValue={initialOrgName}
+                        rules={{ required: true }}
+                        render={(props): ReactElement => (
+                            <>
+                                <Select
+                                    styles={selectStyles}
+                                    options={orgNameOptions}
+                                    isClearable={true}
+                                    placeholder="Select Organizations..."
+                                    inputId="organizationName"
+                                    onChange={(selection): void => {
+                                        props.onChange(selection);
+                                    }}
+                                />
+                                {errors.orgNameOption ? (
+                                    <div className={"error-message React-Select-Error"}>
+                                        {"Must select an organization."}
+                                    </div>
+                                ) : (
+                                    <></>
+                                )}
+                            </>
+                        )}
+                        filterOption={createFilter({
+                            ignoreCase: true,
+                            matchFrom: "any",
+                        })}
+                    />
+                </label>
                 <span className={"space-2"} />
 
                 <FormDatePicker
