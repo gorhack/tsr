@@ -132,9 +132,7 @@ describe("event data", () => {
     });
     describe("getAllEvents", () => {
         it("fetches all events with default params", async () => {
-            nock("http://example.com")
-                .get("/api/v1/event?localDate=1970-01-01T00:00:01-00:00")
-                .reply(200, eventsPage);
+            nock("http://example.com").get("/api/v1/event").reply(200, eventsPage);
 
             const response = await getCurrentAndFutureEvents();
 
@@ -147,9 +145,7 @@ describe("event data", () => {
                 pageNumber: 1,
             };
 
-            nock("http://example.com")
-                .get("/api/v1/event?page=1&localDate=1970-01-01T00:00:01-00:00")
-                .reply(200, events);
+            nock("http://example.com").get("/api/v1/event?page=1").reply(200, events);
 
             const response = await getCurrentAndFutureEvents({ page: 1 });
 
@@ -158,9 +154,7 @@ describe("event data", () => {
     });
 
     it("fetches a page of a user's ongoing and future events with default parameters", async () => {
-        nock("http://example.com")
-            .get("/api/v1/event/user/1234?localDate=1970-01-01T00:00:01-00:00")
-            .reply(200, eventsPage);
+        nock("http://example.com").get("/api/v1/event/user/1234").reply(200, eventsPage);
         const response = await getCurrentAndFutureEventsByUserId("1234");
         expect(response).toEqual(eventsPage);
     });

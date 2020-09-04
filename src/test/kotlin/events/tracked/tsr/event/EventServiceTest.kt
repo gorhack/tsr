@@ -16,7 +16,6 @@ import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
 import org.springframework.data.repository.findByIdOrNull
-import java.time.OffsetDateTime
 
 class EventServiceTest {
     private lateinit var subject: EventService
@@ -26,8 +25,11 @@ class EventServiceTest {
     private lateinit var eventWithoutId: Event
     private lateinit var eventDTOWithoutId: EventDTO
     private lateinit var eventWithId: Event
+    private lateinit var eventWithId2: Event
     private lateinit var eventDTOWithId: EventDTO
+    private lateinit var eventDTOWithId2: EventDTO
     private lateinit var eventDTOWithIdAndDisplayNames: EventDTO
+    private lateinit var expectedPageDTO: PageDTO<EventDTO>
 
     @BeforeEach
     fun setup() {
@@ -38,13 +40,26 @@ class EventServiceTest {
 
         eventWithoutId = makeEventWithoutId()
         eventDTOWithoutId = makeEventDTOWithoutId()
+
         eventWithId = makeEventWithId()
+        eventWithId2 = makeEventWithId2()
         eventDTOWithId = makeEventDTOWithId()
+        eventDTOWithId2 = makeEventDTOWithId2()
+
         eventDTOWithIdAndDisplayNames = eventDTOWithId.copy(
             audit = eventDTOWithId.audit?.copy(
                 createdByDisplayName = "user",
                 lastModifiedByDisplayName = "user_2"
             )
+        )
+        expectedPageDTO = PageDTO(
+            items = listOf(eventDTOWithId, eventDTOWithId2),
+            totalPages = 1,
+            totalResults = 2,
+            pageNumber = 0,
+            isFirst = true,
+            isLast = true,
+            pageSize = 10
         )
     }
 
@@ -63,43 +78,8 @@ class EventServiceTest {
 
     @Test
     fun `getAllEvents returns PageDTO of EventDTOs list of all events`() {
-        val event2 = Event(
-            eventId = 2L,
-            eventName = "red",
-            organization = "company",
-            eventType = EventType(1, "rock", "rocks are fun", 1),
-            startDate = OffsetDateTime.parse("1970-01-02T00:00:01-08:00"),
-            endDate = OffsetDateTime.parse("1970-01-02T00:00:01-08:00"),
-            lastModifiedBy = "user",
-            lastModifiedDate = OffsetDateTime.parse("1970-01-02T00:00:01-08:00"),
-            createdBy = "another user",
-            createdDate = OffsetDateTime.parse("1970-01-02T00:00:01-08:00")
-        )
-        val event2DTO = EventDTO(
-            eventId = 2L,
-            eventName = "red",
-            organization = "company",
-            eventType = EventType(1L, "rock", "rocks are fun", 1),
-            startDate = OffsetDateTime.parse("1970-01-02T00:00:01-08:00"),
-            endDate = OffsetDateTime.parse("1970-01-02T00:00:01-08:00"),
-            audit = AuditDTO(lastModifiedBy = "user",
-                lastModifiedDate = OffsetDateTime.parse("1970-01-02T00:00:01-08:00"),
-                createdBy = "another user",
-                createdDate = OffsetDateTime.parse("1970-01-02T00:00:01-08:00")
-            )
-        )
-        val expectedPageDTO = PageDTO(
-            items = listOf(eventDTOWithId, event2DTO),
-            totalPages = 1,
-            totalResults = 2,
-            pageNumber = 0,
-            isFirst = true,
-            isLast = true,
-            pageSize = 10
-        )
-
         val paging: Pageable = PageRequest.of(0, 10, Sort.by("createdDate"))
-        every { mockEventRepository.findAll(paging) } returns PageImpl(listOf(eventWithId, event2), paging, 2)
+        every { mockEventRepository.findAll(paging) } returns PageImpl(listOf(eventWithId, eventWithId2), paging, 2)
         assertEquals(expectedPageDTO, subject.getAllEvents(0, 10, Sort.by("createdDate")))
         verifySequence {
             mockEventRepository.findAll(paging)
@@ -108,18 +88,8 @@ class EventServiceTest {
 
     @Test
     fun `getAllEventsEndingAfterToday returns PageDTO of EventDTOs list of all events that end after today`() {
-        val expectedPageDTO = PageDTO(
-            items = listOf(eventDTOWithId),
-            totalPages = 1,
-            totalResults = 1,
-            pageNumber = 0,
-            isFirst = true,
-            isLast = true,
-            pageSize = 10
-        )
-
         val paging: Pageable = PageRequest.of(0, 10, Sort.by("startDate"))
-        every { mockEventRepository.findByEndDateGreaterThanEqual(any(), paging) } returns PageImpl(listOf(eventWithId), paging, 1)
+        every { mockEventRepository.findByEndDateGreaterThanEqual(any(), paging) } returns PageImpl(listOf(eventWithId, eventWithId2), paging, 1)
         assertEquals(expectedPageDTO, subject.getAllEventsEndingAfterToday(0, 10, Sort.by("startDate")))
         verifySequence {
             mockEventRepository.findByEndDateGreaterThanEqual(any(), paging)
@@ -153,8 +123,9 @@ class EventServiceTest {
     }
 
     @Test
-    fun `getEventsByUserId returns list of events by that user`() {
-        every { mockEventRepository.findAllByCreatedBy("1234") } returns listOf(eventWithId)
-        assertThat(subject.getEventsByUserId("1234")).containsExactlyInAnyOrderElementsOf(listOf(eventDTOWithId))
+    fun `getAllEventsEndingAfterTodayByUserId returns page of events created by a user`() {
+        val paging: Pageable = PageRequest.of(0, 10, Sort.by("startDate"))
+        every { mockEventRepository.findByCreatedByAndEndDateGreaterThanEqual("1234", any(), paging) } returns PageImpl(listOf(eventWithId, eventWithId2), paging, 2)
+        assertEquals(expectedPageDTO, subject.getAllEventsEndingAfterTodayByUserId("1234", 0, 10, Sort.by("startDate")))
     }
 }

@@ -10,5 +10,5 @@ import java.time.OffsetDateTime
 @Repository
 interface EventRepository : JpaRepository<Event, Long>, PagingAndSortingRepository<Event, Long> {
     fun findByEndDateGreaterThanEqual(date: OffsetDateTime, paging: Pageable): Page<Event>
-    fun findAllByCreatedBy(userId: String): List<Event>
+    fun findByCreatedByAndEndDateGreaterThanEqual(userId: String, date: OffsetDateTime, paging: Pageable): Page<Event>
 }

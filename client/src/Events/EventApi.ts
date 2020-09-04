@@ -1,5 +1,5 @@
 import axios, { AxiosResponse } from "axios";
-import { currentTimeLocal, PageDTO, PageParams } from "../api";
+import { PageDTO, PageParams } from "../api";
 
 const baseUri = "/api/v1/event";
 
@@ -34,7 +34,6 @@ export const getCurrentAndFutureEvents = async (
 ): Promise<PageDTO<TsrEvent>> => {
     const paramsWithDate = {
         ...pageParams,
-        localDate: currentTimeLocal(),
     };
     try {
         return (await axios.get(baseUri, { params: paramsWithDate })).data;
@@ -50,7 +49,6 @@ export const getCurrentAndFutureEventsByUserId = async (
     const uri = `${baseUri}/user/${userId}`;
     const paramsWithDate = {
         ...pageParams,
-        localDate: currentTimeLocal(),
     };
     return await axios
         .get(uri, { params: paramsWithDate })

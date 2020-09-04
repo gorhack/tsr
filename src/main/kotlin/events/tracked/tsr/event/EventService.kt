@@ -9,10 +9,7 @@ import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
-import java.time.Clock
-import java.time.LocalDateTime
 import java.time.OffsetDateTime
-import java.time.ZoneOffset
 
 @Service
 class EventService(
@@ -36,25 +33,18 @@ class EventService(
         }
     }
 
-    fun getAllEventsEndingAfterToday(page: Int, size: Int, sortBy: Sort, date: String = OffsetDateTime.now().toString()): PageDTO<EventDTO> {
+    fun getAllEventsEndingAfterToday(page: Int, size: Int, sortBy: Sort): PageDTO<EventDTO> {
         val paging: Pageable = PageRequest.of(page, size, sortBy)
-        val todayDateWithTime = OffsetDateTime.parse(date)
-        val todayDateOnly = OffsetDateTime.of(
-            todayDateWithTime.year,
-            todayDateWithTime.monthValue,
-            todayDateWithTime.dayOfMonth,
-            0, 0, 0, 0,
-            ZoneOffset.UTC
-        )
+        val dateUtc = OffsetDateTime.now()
         val pagedEventResults: Page<Event> = eventRepository.findByEndDateGreaterThanEqual(
-            todayDateOnly,
+            dateUtc,
             paging
         )
 
         return if (pagedEventResults.hasContent()) {
             PageDTO(pagedEventResults.map { e -> e.toEventDTO() })
         } else {
-            PageDTO(Page.empty())
+            PageDTO(Page.empty(paging))
         }
     }
 
@@ -76,9 +66,12 @@ class EventService(
         return event.toEventDTO(createdByDisplayName = createdByUser, lastModifiedByDisplayName = lastModifiedByUser)
     }
 
-    fun getEventsByUserId(userId: String): List<EventDTO> {
-        return eventRepository.findAllByCreatedBy(userId).map { e ->
-            e.toEventDTO()
-        }
+    fun getAllEventsEndingAfterTodayByUserId(userId: String, page: Int, size: Int, sortBy: Sort): PageDTO<EventDTO> {
+        val paging: Pageable = PageRequest.of(page, size, sortBy)
+        val dateUtc = OffsetDateTime.now()
+        val events = eventRepository.findByCreatedByAndEndDateGreaterThanEqual(userId, dateUtc, paging)
+        return PageDTO(
+            events.map { e -> e.toEventDTO() }
+        )
     }
 }

@@ -2,14 +2,11 @@ package events.tracked.tsr.event
 
 import events.tracked.tsr.PageDTO
 import org.springframework.data.domain.Page
-import org.springframework.data.domain.PageRequest
-import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
-import java.time.LocalDateTime
 
 @RestController
 @RequestMapping(value = ["/api/v1/event"])
@@ -20,19 +17,18 @@ class EventController(private val eventService: EventService) {
     }
 
     @GetMapping(value = [""])
-    fun getAllEvents(@RequestParam("page", defaultValue = "0") page: Int,
-                     @RequestParam("size", defaultValue = "10") size: Int,
-                     @RequestParam("sortBy", defaultValue = "startDate") sortBy: String,
-                     @RequestParam("localDate") localDate: String
+    fun getCurrentAndFutureEventsPage(@RequestParam("page", defaultValue = "0") page: Int,
+                                      @RequestParam("size", defaultValue = "10") size: Int,
+                                      @RequestParam("sortBy", defaultValue = "startDate") sortBy: String
     ): ResponseEntity<PageDTO<EventDTO>> {
         return when (sortBy) {
             "startDate" -> ResponseEntity<PageDTO<EventDTO>>(
-                eventService.getAllEventsEndingAfterToday(page, size, Sort.by(sortBy).and(Sort.by("endDate")), localDate),
+                eventService.getAllEventsEndingAfterToday(page, size, Sort.by(sortBy).and(Sort.by("endDate"))),
                 HttpHeaders(),
                 HttpStatus.OK
             )
             "endDate" -> ResponseEntity<PageDTO<EventDTO>>(
-                eventService.getAllEventsEndingAfterToday(page, size, Sort.by(sortBy).and(Sort.by("startDate")), localDate),
+                eventService.getAllEventsEndingAfterToday(page, size, Sort.by(sortBy).and(Sort.by("startDate"))),
                 HttpHeaders(),
                 HttpStatus.OK
             )
@@ -56,7 +52,28 @@ class EventController(private val eventService: EventService) {
     }
 
     @GetMapping(value = ["/user/{userId}"])
-    fun getEventsByUserId(@PathVariable userId: String): List<EventDTO> {
-        return eventService.getEventsByUserId(userId)
+    fun getAllEventsEndingAfterTodayByUserId(@PathVariable userId: String,
+                                             @RequestParam("page", defaultValue = "0") page: Int,
+                                             @RequestParam("size", defaultValue = "10") size: Int,
+                                             @RequestParam("sortBy", defaultValue = "startDate") sortBy: String
+    ): ResponseEntity<PageDTO<EventDTO>> {
+        return when (sortBy) {
+            "startDate" -> ResponseEntity<PageDTO<EventDTO>>(
+                eventService.getAllEventsEndingAfterTodayByUserId(userId, page, size, Sort.by(sortBy).and(Sort.by("endDate"))),
+                HttpHeaders(),
+                HttpStatus.OK
+            )
+            "endDate" -> ResponseEntity<PageDTO<EventDTO>>(
+                eventService.getAllEventsEndingAfterTodayByUserId(userId, page, size, Sort.by(sortBy).and(Sort.by("startDate"))),
+                HttpHeaders(),
+                HttpStatus.OK
+            )
+            "createdDate", "lastModifiedDate" -> ResponseEntity<PageDTO<EventDTO>>(
+                eventService.getAllEventsEndingAfterTodayByUserId(userId, page, size, Sort.by(sortBy)),
+                HttpHeaders(),
+                HttpStatus.OK
+            )
+            else -> ResponseEntity(PageDTO(Page.empty()), HttpHeaders(), HttpStatus.BAD_REQUEST)
+        }
     }
 }

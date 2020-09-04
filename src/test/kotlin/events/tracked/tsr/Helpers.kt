@@ -80,3 +80,35 @@ fun makeEventDTOWithId(): EventDTO {
         )
     )
 }
+
+fun makeEventWithId2(): Event {
+    return Event(
+        eventId = 2L,
+        eventName = "second",
+        organization = "org",
+        startDate = OffsetDateTime.parse("1970-01-03T00:00:01-08:00"),
+        endDate = OffsetDateTime.parse("1970-01-03T00:00:01-08:00"),
+        eventType = null,
+        lastModifiedBy = "6789",
+        lastModifiedDate = OffsetDateTime.parse("1970-01-02T00:00:01-08:00"),
+        createdBy = "1234",
+        createdDate = OffsetDateTime.parse("1970-01-02T00:00:01-08:00")
+    )
+}
+
+fun makeEventDTOWithId2(): EventDTO {
+    return EventDTO(
+        eventId = 2L,
+        eventName = "second",
+        startDate = OffsetDateTime.parse("1970-01-03T00:00:01-08:00"),
+        endDate = OffsetDateTime.parse("1970-01-03T00:00:01-08:00"),
+        organization = "org",
+        eventType = null,
+        audit = AuditDTO(
+            lastModifiedBy = "6789",
+            lastModifiedDate = OffsetDateTime.parse("1970-01-02T00:00:01-08:00"),
+            createdBy = "1234",
+            createdDate = OffsetDateTime.parse("1970-01-02T00:00:01-08:00")
+        )
+    )
+}
