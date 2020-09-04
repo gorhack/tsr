@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios, { AxiosResponse } from "axios";
 import { currentTimeLocal, PageDTO, PageParams } from "../api";
 
 const baseUri = "/api/v1/event";
@@ -12,7 +12,7 @@ export const saveEvent = async (event: EditableTsrEvent): Promise<TsrEvent> => {
 };
 
 export const getEventById = async (eventId: number): Promise<TsrEvent> => {
-    const uri = baseUri + `/${eventId}`;
+    const uri = `${baseUri}/${eventId}`;
     try {
         return (await axios.get(uri)).data;
     } catch (error) {
@@ -29,24 +29,32 @@ export const getEventTypes = async (): Promise<EventType[]> => {
     }
 };
 
-export const getAllEvents = async (pageParams: PageParams = {}): Promise<PageDTO<TsrEvent>> => {
+export const getCurrentAndFutureEvents = async (
+    pageParams: PageParams = {},
+): Promise<PageDTO<TsrEvent>> => {
     const paramsWithDate = {
         ...pageParams,
         localDate: currentTimeLocal(),
     };
     try {
-        const response = await axios.get(baseUri, { params: paramsWithDate });
-        return response.data;
+        return (await axios.get(baseUri, { params: paramsWithDate })).data;
     } catch (error) {
         throw new Error(error.response.message);
     }
 };
 
-export const getEventsByUserId = async (userId: string): Promise<TsrEvent[]> => {
-    const uri = baseUri + "/user/" + userId;
+export const getCurrentAndFutureEventsByUserId = async (
+    userId: string,
+    pageParams: PageParams = {},
+): Promise<PageDTO<TsrEvent>> => {
+    const uri = `${baseUri}/user/${userId}`;
+    const paramsWithDate = {
+        ...pageParams,
+        localDate: currentTimeLocal(),
+    };
     return await axios
-        .get(uri)
-        .then((response) => {
+        .get(uri, { params: paramsWithDate })
+        .then((response: AxiosResponse<PageDTO<TsrEvent>>) => {
             return response.data;
         })
         .catch((error) => {

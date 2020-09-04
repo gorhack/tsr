@@ -1,5 +1,5 @@
 import React, { ReactElement, useEffect, useState } from "react";
-import { getAllEvents, TsrEvent } from "./EventApi";
+import { getCurrentAndFutureEvents, getCurrentAndFutureEventsByUserId, TsrEvent } from "./EventApi";
 import "./EventsSection.css";
 import { TsrUser } from "../Users/UserApi";
 import { useHistory } from "react-router-dom";
@@ -17,28 +17,33 @@ export const EventsSection = ({ user }: EventsSectionProps): ReactElement => {
     const [orgEvents, setOrgEvents] = useState<TsrEvent[]>([]);
 
     useEffect(() => {
+        if (user.userId === "") return;
         (async () => {
-            try {
-                // TODO separate user vs org api
-                const newEventList = await getAllEvents();
-                setUserEventPage(newEventList);
-                setUserEvents(newEventList.items);
-                setOrgEventPage(newEventList); // TODO separate call for org events
-                setOrgEvents(newEventList.items);
-            } catch (e) {
-                console.error(`Error getting all events. ${e.message.error}`);
-            }
+            await getCurrentAndFutureEventsByUserId(user.userId)
+                .then((result) => {
+                    setUserEventPage(result);
+                    setUserEvents(result.items);
+                })
+                .catch((e) => {
+                    console.error(`Error getting user events: ${e.message}`);
+                });
+            await getCurrentAndFutureEvents()
+                .then((result) => {
+                    setOrgEventPage(result); // TODO separate call for org events
+                    setOrgEvents(result.items);
+                })
+                .catch((e) => {
+                    console.error(`Error getting org events: ${e.message}`);
+                });
         })();
-    }, [setUserEventPage, setUserEvents, setOrgEventPage, setOrgEvents]);
+    }, [setUserEventPage, setUserEvents, setOrgEventPage, setOrgEvents, user]);
 
     const showMyEvents = (): ReactElement => {
         return (
             <>
-                {userEvents
-                    .filter((e) => e.audit.createdBy === user.userId)
-                    .map((e) => (
-                        <SingleEvent key={`key-${e.eventId}`} event={e} dataTestId="user-event" />
-                    ))}
+                {userEvents.map((e) => (
+                    <SingleEvent key={`key-${e.eventId}`} event={e} dataTestId="user-event" />
+                ))}
             </>
         );
     };
@@ -48,7 +53,7 @@ export const EventsSection = ({ user }: EventsSectionProps): ReactElement => {
         return (
             <>
                 {orgEvents
-                    .filter((e) => e.audit.createdBy !== user.userId)
+                    .filter((e) => e.audit.createdBy !== user.userId) // TODO backend returns filtered results
                     .map((e) => (
                         <SingleEvent key={`key-${e.eventId}`} event={e} dataTestId="org-event" />
                     ))}
@@ -58,7 +63,7 @@ export const EventsSection = ({ user }: EventsSectionProps): ReactElement => {
 
     const loadOrgEvents = (page: number) => {
         (async () => {
-            await getAllEvents({ page })
+            await getCurrentAndFutureEvents({ page })
                 .then((results) => {
                     setOrgEventPage(results);
                     setOrgEvents(
@@ -73,7 +78,7 @@ export const EventsSection = ({ user }: EventsSectionProps): ReactElement => {
 
     const loadUserEvents = (page: number) => {
         (async () => {
-            await getAllEvents({ page })
+            await getCurrentAndFutureEventsByUserId(user.userId, { page })
                 .then((results) => {
                     setUserEventPage(results);
                     setUserEvents(

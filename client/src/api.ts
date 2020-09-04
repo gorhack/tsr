@@ -18,7 +18,7 @@ export interface PageDTO<T> {
     last: boolean;
 }
 
-export const emptyPage: PageDTO<never> = {
+export const emptyPage: PageDTO<unknown> = {
     items: [],
     totalResults: 0,
     totalPages: 0,

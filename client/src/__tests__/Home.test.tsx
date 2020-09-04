@@ -1,10 +1,10 @@
 import { act, render, RenderResult, screen } from "@testing-library/react";
+import td from "testdouble";
 import { Home } from "../Home";
 import { createMemoryHistory, MemoryHistory } from "history";
 import { Route, Router } from "react-router-dom";
 import React from "react";
-import td from "testdouble";
-import { makeEvent } from "./TestHelpers";
+import { makeAudit, makeEvent } from "./TestHelpers";
 import * as EventApi from "../Events/EventApi";
 import * as UserApi from "../Users/UserApi";
 import * as Api from "../api";
@@ -14,12 +14,17 @@ import { PageDTO } from "../api";
 
 describe("home page of the application", () => {
     let mockGetUserInfo: typeof UserApi.getUserInfo;
-    let mockGetAllEvents: typeof EventApi.getAllEvents;
+    let mockGetCurrentAndFutureEvents: typeof EventApi.getCurrentAndFutureEvents;
+    let mockGetCurrentAndFutureEventsByUserId: typeof EventApi.getCurrentAndFutureEventsByUserId;
     let mockCurrentTimeLocal: typeof Api.currentTimeLocal;
 
     beforeEach(() => {
         mockGetUserInfo = td.replace(UserApi, "getUserInfo");
-        mockGetAllEvents = td.replace(EventApi, "getAllEvents");
+        mockGetCurrentAndFutureEvents = td.replace(EventApi, "getCurrentAndFutureEvents");
+        mockGetCurrentAndFutureEventsByUserId = td.replace(
+            EventApi,
+            "getCurrentAndFutureEventsByUserId",
+        );
         mockCurrentTimeLocal = td.replace(Api, "currentTimeLocal");
     });
 
@@ -41,22 +46,36 @@ describe("home page of the application", () => {
     const renderHomePage = async (
         history: MemoryHistory = createMemoryHistory(),
     ): Promise<RenderResult> => {
-        const allEventsPromise: Promise<PageDTO<TsrEvent>> = Promise.resolve({
-            items: [makeEvent({ eventId: 1, eventName: "first event!" })],
+        const userPage: PageDTO<TsrEvent> = {
+            items: [
+                makeEvent({
+                    eventId: 1,
+                    eventName: "first event!",
+                    audit: makeAudit({ createdBy: "123-123-123" }),
+                }),
+            ],
             totalResults: 1,
             pageNumber: 0,
             last: true,
             first: true,
             pageSize: 10,
             totalPages: 1,
+        };
+        const userEventsPromise: Promise<PageDTO<TsrEvent>> = Promise.resolve(userPage);
+        const orgEventsPromise: Promise<PageDTO<TsrEvent>> = Promise.resolve({
+            ...userPage,
+            items: [makeEvent({ eventId: 2, eventName: "another org event" })],
         });
         const userPromise: Promise<TsrUser> = Promise.resolve({
             username: "tsrUser1",
             userId: "123-123-123",
             role: "USER",
         });
-        td.when(mockGetUserInfo()).thenDo(() => userPromise);
-        td.when(mockGetAllEvents()).thenDo(() => Promise.resolve(allEventsPromise));
+        td.when(mockGetUserInfo()).thenDo(() => Promise.resolve(userPromise));
+        td.when(mockGetCurrentAndFutureEvents()).thenDo(() => Promise.resolve(orgEventsPromise));
+        td.when(mockGetCurrentAndFutureEventsByUserId("123-123-123")).thenDo(() =>
+            Promise.resolve(userEventsPromise),
+        );
         td.when(mockCurrentTimeLocal()).thenReturn("1970-01-01T00:00:01-00:00");
 
         history.push("/");
@@ -68,8 +87,9 @@ describe("home page of the application", () => {
             </Router>,
         );
         await act(async () => {
-            await allEventsPromise;
             await userPromise;
+            await userEventsPromise;
+            await orgEventsPromise;
         });
         return result;
     };

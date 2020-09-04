@@ -3,12 +3,12 @@ import nock from "nock";
 import td from "testdouble";
 import {
     EventType,
-    getAllEvents,
+    getCurrentAndFutureEvents,
     getEventTypes,
     saveEvent,
     EditableTsrEvent,
     TsrEvent,
-    getEventsByUserId,
+    getCurrentAndFutureEventsByUserId,
 } from "../../Events/EventApi";
 import { NockBody } from "../TestHelpers";
 import * as Api from "../../api";
@@ -18,6 +18,7 @@ describe("event data", () => {
     let mockCurrentTimeLocal: typeof Api.currentTimeLocal;
     let userEvent: TsrEvent;
     let user2Event: TsrEvent;
+    let eventsPage: PageDTO<TsrEvent>;
     beforeEach(() => {
         mockCurrentTimeLocal = td.replace(Api, "currentTimeLocal");
         td.when(mockCurrentTimeLocal()).thenReturn("1970-01-01T00:00:01-00:00");
@@ -34,9 +35,9 @@ describe("event data", () => {
             startDate: "2020-08-18T14:15:59",
             endDate: "2020-08-20T01:00:01",
             audit: {
-                createdBy: "user",
+                createdBy: "1234",
                 createdDate: "2020-08-18T14:15:59",
-                lastModifiedBy: "user_2",
+                lastModifiedBy: "6789",
                 lastModifiedDate: "2020-08-18T14:15:59",
             },
         };
@@ -53,11 +54,20 @@ describe("event data", () => {
             startDate: "2020-08-18T14:16:59",
             endDate: "2020-08-20T01:01:01",
             audit: {
-                createdBy: "user",
+                createdBy: "1234",
                 createdDate: "2020-08-18T14:15:59",
-                lastModifiedBy: "user_2",
+                lastModifiedBy: "6789",
                 lastModifiedDate: "2020-08-18T14:15:59",
             },
+        };
+        eventsPage = {
+            items: [userEvent, user2Event],
+            totalPages: 1,
+            pageNumber: 0,
+            pageSize: 10,
+            totalResults: 2,
+            first: true,
+            last: false,
         };
     });
 
@@ -122,49 +132,36 @@ describe("event data", () => {
     });
     describe("getAllEvents", () => {
         it("fetches all events with default params", async () => {
-            const events: PageDTO<TsrEvent> = {
-                items: [userEvent, user2Event],
-                totalPages: 0,
-                pageNumber: 0,
-                pageSize: 10,
-                totalResults: 2,
-                first: true,
-                last: false,
-            };
-
             nock("http://example.com")
                 .get("/api/v1/event?localDate=1970-01-01T00:00:01-00:00")
-                .reply(200, events);
+                .reply(200, eventsPage);
 
-            const response = await getAllEvents();
+            const response = await getCurrentAndFutureEvents();
 
-            expect(response).toEqual(events);
+            expect(response).toEqual(eventsPage);
         });
 
         it("fetches all events with page number", async () => {
-            const events: PageDTO<TsrEvent> = {
-                items: [userEvent, user2Event],
-                totalPages: 0,
+            const events = {
+                ...eventsPage,
                 pageNumber: 1,
-                pageSize: 10,
-                totalResults: 2,
-                first: true,
-                last: false,
             };
 
             nock("http://example.com")
                 .get("/api/v1/event?page=1&localDate=1970-01-01T00:00:01-00:00")
                 .reply(200, events);
 
-            const response = await getAllEvents({ page: 1 });
+            const response = await getCurrentAndFutureEvents({ page: 1 });
 
             expect(response).toEqual(events);
         });
     });
 
-    it("fetches user events", async () => {
-        nock("http://example.com").get("/api/v1/event/user/1234").reply(200, [userEvent]);
-        const response = await getEventsByUserId("1234");
-        expect(response).toEqual([userEvent]);
+    it("fetches a page of a user's ongoing and future events with default parameters", async () => {
+        nock("http://example.com")
+            .get("/api/v1/event/user/1234?localDate=1970-01-01T00:00:01-00:00")
+            .reply(200, eventsPage);
+        const response = await getCurrentAndFutureEventsByUserId("1234");
+        expect(response).toEqual(eventsPage);
     });
 });
