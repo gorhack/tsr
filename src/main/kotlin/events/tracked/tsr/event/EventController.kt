@@ -27,17 +27,7 @@ class EventController(private val eventService: EventService) {
                 HttpHeaders(),
                 HttpStatus.OK
             )
-            "endDate" -> ResponseEntity<PageDTO<EventDTO>>(
-                eventService.getAllEventsEndingAfterToday(page, size, Sort.by(sortBy).and(Sort.by("startDate"))),
-                HttpHeaders(),
-                HttpStatus.OK
-            )
-            "createdDate", "lastModifiedDate" -> ResponseEntity<PageDTO<EventDTO>>(
-                eventService.getAllEvents(page, size, Sort.by(sortBy)),
-                HttpHeaders(),
-                HttpStatus.OK
-            )
-            else -> ResponseEntity(PageDTO(Page.empty()), HttpHeaders(), HttpStatus.BAD_REQUEST)
+            else -> ResponseEntity(PageDTO(), HttpHeaders(), HttpStatus.BAD_REQUEST)
         }
     }
 
@@ -68,17 +58,7 @@ class EventController(private val eventService: EventService) {
                 HttpHeaders(),
                 HttpStatus.OK
             )
-            "endDate" -> ResponseEntity<PageDTO<EventDTO>>(
-                eventService.getAllEventsEndingAfterTodayByUserId(userId, page, size, Sort.by(sortBy).and(Sort.by("startDate"))),
-                HttpHeaders(),
-                HttpStatus.OK
-            )
-            "createdDate", "lastModifiedDate" -> ResponseEntity<PageDTO<EventDTO>>(
-                eventService.getAllEventsEndingAfterTodayByUserId(userId, page, size, Sort.by(sortBy)),
-                HttpHeaders(),
-                HttpStatus.OK
-            )
-            else -> ResponseEntity(PageDTO(Page.empty()), HttpHeaders(), HttpStatus.BAD_REQUEST)
+            else -> ResponseEntity(PageDTO(), HttpHeaders(), HttpStatus.BAD_REQUEST)
         }
     }
 }

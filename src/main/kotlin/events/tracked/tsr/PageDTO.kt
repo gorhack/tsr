@@ -11,6 +11,7 @@ data class PageDTO<T>(
         val isFirst: Boolean,
         val isLast: Boolean
 ) {
+    constructor() : this(listOf<T>(), 0L, 0, 0, 0, false, false)
     constructor(page: Page<T>) : this(
             page.content,
             page.totalElements,
