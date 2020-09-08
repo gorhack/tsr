@@ -1,5 +1,6 @@
 package events.tracked.tsr.event
 
+import events.tracked.tsr.organization.Organization
 import java.time.OffsetDateTime
 
 data class AuditDTO(
@@ -12,13 +13,13 @@ data class AuditDTO(
 )
 
 data class EventDTO(
-        val eventId: Long? = null,
-        val eventName: String = "",
-        val organization: Organization,
-        val startDate: OffsetDateTime,
-        val endDate: OffsetDateTime,
-        val eventType: EventType? = null,
-        val audit: AuditDTO? = null
+    val eventId: Long? = null,
+    val eventName: String = "",
+    val organization: Organization,
+    val startDate: OffsetDateTime,
+    val endDate: OffsetDateTime,
+    val eventType: EventType? = null,
+    val audit: AuditDTO? = null
 ) {
     private fun copyInto(event: Event): Event {
         val eventCopy = event.copy(

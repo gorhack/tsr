@@ -14,7 +14,6 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.springframework.data.domain.Sort
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
-import java.time.OffsetDateTime
 
 internal class EventControllerTest {
     private lateinit var subject: EventController
@@ -71,19 +70,6 @@ internal class EventControllerTest {
         assertThat(subject.allEventTypes()).containsExactlyInAnyOrderElementsOf(listOf(eventType2, eventType1))
         verifySequence {
             mockEventService.getAllEventTypes()
-        }
-    }
-
-    @Test
-    fun `returns all org names`() {
-        val orgName1 = Organization(1L, "org one", "org one name", 1)
-        val orgName2 = Organization(2L, "org two", "org two name", 2)
-
-        every { mockEventService.getAllOrgNames() } returns listOf(orgName1, orgName2)
-
-        assertThat(subject.allOrgNames()).containsExactlyInAnyOrderElementsOf(listOf(orgName1, orgName2))
-        verifySequence {
-            mockEventService.getAllOrgNames()
         }
     }
 

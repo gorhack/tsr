@@ -10,7 +10,9 @@ import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping(value = ["/api/v1/event"])
-class EventController(private val eventService: EventService) {
+class EventController(
+    private val eventService: EventService
+) {
     @PostMapping(value = [""])
     fun saveEvent(@RequestBody eventDTO: EventDTO): EventDTO {
         return eventService.saveEvent(eventDTO)
@@ -29,11 +31,6 @@ class EventController(private val eventService: EventService) {
             )
             else -> ResponseEntity(PageDTO(), HttpHeaders(), HttpStatus.BAD_REQUEST)
         }
-    }
-
-    @GetMapping(value = ["/organizations"])
-    fun allOrgNames(): List<Organization>? {
-        return eventService.getAllOrgNames()
     }
 
     @GetMapping(value = ["/types"])
