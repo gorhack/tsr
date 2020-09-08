@@ -1,4 +1,4 @@
-package events.tracked.tsr.event
+package events.tracked.tsr.event.type
 
 import javax.persistence.*
 

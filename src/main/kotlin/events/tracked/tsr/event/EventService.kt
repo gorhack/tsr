@@ -1,7 +1,6 @@
 package events.tracked.tsr.event
 
 import events.tracked.tsr.PageDTO
-import events.tracked.tsr.organization.OrganizationRepository
 import events.tracked.tsr.user.TsrUserRepository
 import org.springframework.dao.EmptyResultDataAccessException
 import org.springframework.data.domain.Page
@@ -15,7 +14,6 @@ import java.time.OffsetDateTime
 @Service
 class EventService(
     private val eventRepository: EventRepository,
-    private val eventTypeRepository: EventTypeRepository,
     private val userRepository: TsrUserRepository,
 ) {
     fun saveEvent(eventDTO: EventDTO): EventDTO {
@@ -47,10 +45,6 @@ class EventService(
         } else {
             PageDTO(Page.empty(paging))
         }
-    }
-
-    fun getAllEventTypes(): List<EventType> {
-        return eventTypeRepository.findAll()
     }
 
     fun getEventById(eventId: Int): EventDTO {

@@ -1,14 +1,12 @@
 package events.tracked.tsr.event
 
 import events.tracked.tsr.*
-import events.tracked.tsr.organization.OrganizationRepository
 import events.tracked.tsr.user.TsrUser
 import events.tracked.tsr.user.TsrUserRepository
 import events.tracked.tsr.user.UserRole
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verifySequence
-import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -21,7 +19,6 @@ import org.springframework.data.repository.findByIdOrNull
 class EventServiceTest {
     private lateinit var subject: EventService
     private lateinit var mockEventRepository: EventRepository
-    private lateinit var mockEventTypeRepository: EventTypeRepository
     private lateinit var mockTsrUserRepository: TsrUserRepository
     private lateinit var eventWithoutId: Event
     private lateinit var eventDTOWithoutId: EventDTO
@@ -35,9 +32,8 @@ class EventServiceTest {
     @BeforeEach
     fun setup() {
         mockEventRepository = mockk(relaxUnitFun = true)
-        mockEventTypeRepository = mockk(relaxUnitFun = true)
         mockTsrUserRepository = mockk(relaxUnitFun = true)
-        subject = EventService(mockEventRepository, mockEventTypeRepository, mockTsrUserRepository)
+        subject = EventService(mockEventRepository, mockTsrUserRepository)
 
         eventWithoutId = makeEventWithoutId()
         eventDTOWithoutId = makeEventDTOWithoutId()
@@ -94,19 +90,6 @@ class EventServiceTest {
         assertEquals(expectedPageDTO, subject.getAllEventsEndingAfterToday(0, 10, Sort.by("startDate")))
         verifySequence {
             mockEventRepository.findByEndDateGreaterThanEqual(any(), paging)
-        }
-    }
-
-    @Test
-    fun `getEventTypes returns list of all event_types`() {
-        val eventType1 = EventType(1L, "first", "first event", 1)
-        val eventType2 = EventType(2L, "second", "second event", 2)
-
-        every { mockEventTypeRepository.findAll() } returns listOf(eventType1, eventType2)
-
-        assertThat(subject.getAllEventTypes()).containsExactlyInAnyOrderElementsOf(listOf(eventType2, eventType1))
-        verifySequence {
-            mockEventTypeRepository.findAll()
         }
     }
 

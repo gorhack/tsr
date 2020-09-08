@@ -1,7 +1,6 @@
 package events.tracked.tsr.event
 
 import events.tracked.tsr.PageDTO
-import org.springframework.data.domain.Page
 import org.springframework.data.domain.Sort
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
@@ -31,11 +30,6 @@ class EventController(
             )
             else -> ResponseEntity(PageDTO(), HttpHeaders(), HttpStatus.BAD_REQUEST)
         }
-    }
-
-    @GetMapping(value = ["/types"])
-    fun allEventTypes(): List<EventType>? {
-        return eventService.getAllEventTypes()
     }
 
     @GetMapping(value = ["/{eventId}"])

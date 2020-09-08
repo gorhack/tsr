@@ -1,6 +1,7 @@
 package events.tracked.tsr
 
 import events.tracked.tsr.event.*
+import events.tracked.tsr.event.type.EventType
 import events.tracked.tsr.organization.Organization
 import io.mockk.every
 import io.mockk.mockk

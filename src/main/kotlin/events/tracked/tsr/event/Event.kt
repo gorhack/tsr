@@ -1,5 +1,6 @@
 package events.tracked.tsr.event
 
+import events.tracked.tsr.event.type.EventType
 import events.tracked.tsr.jpa_ext.Auditable
 import events.tracked.tsr.organization.Organization
 import java.time.OffsetDateTime

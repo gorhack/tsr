@@ -7,7 +7,6 @@ import events.tracked.tsr.makeEventDTOWithoutId
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verifySequence
-import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -57,19 +56,6 @@ internal class EventControllerTest {
         assertEquals(eventDTOWithId, subject.saveEvent(eventDTOWithoutId))
         verifySequence {
             mockEventService.saveEvent(eventDTOWithoutId)
-        }
-    }
-
-    @Test
-    fun `returns all event types`() {
-        val eventType1 = EventType(1L, "first", "first event", 1)
-        val eventType2 = EventType(2L, "second", "second event", 2)
-
-        every { mockEventService.getAllEventTypes() } returns listOf(eventType1, eventType2)
-
-        assertThat(subject.allEventTypes()).containsExactlyInAnyOrderElementsOf(listOf(eventType2, eventType1))
-        verifySequence {
-            mockEventService.getAllEventTypes()
         }
     }
 
