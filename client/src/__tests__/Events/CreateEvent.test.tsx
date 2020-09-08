@@ -10,6 +10,12 @@ import * as EventApi from "../../Events/EventApi";
 import { EventType, Organization, TsrEvent } from "../../Events/EventApi";
 import selectEvent from "react-select-event";
 
+const selectDropdownOrderRegex = /first.*second.*third/;
+const ORGANIZATION_PLACEHOLDER_TEXT = "Select Organizations...";
+const EVENT_TYPE_PLACEHOLDER_TEXT = "Select an Event Type...";
+const START_DATE_PLACEHOLDER_TEXT = "Choose the Start Date...";
+const END_DATE_PLACEHOLDER_TEXT = "Choose the End Date...";
+
 describe("create an event", () => {
     const dateToInput = new Date().toLocaleDateString();
     let mockSaveEvent: typeof EventApi.saveEvent;
@@ -76,9 +82,9 @@ describe("create an event", () => {
         });
         const result = await renderCreateEvent({ history, orgNamesPromise });
         fillInInputValueInForm(result, "name", "event name");
-        await selectEvent.select(screen.getByText("Select Organizations..."), "second");
-        fillInInputValueInForm(result, dateToInput, undefined, "Choose the Start Date...", false);
-        fillInInputValueInForm(result, dateToInput, undefined, "Choose the End Date...", false);
+        await selectEvent.select(screen.getByText(ORGANIZATION_PLACEHOLDER_TEXT), "second");
+        fillInInputValueInForm(result, dateToInput, undefined, START_DATE_PLACEHOLDER_TEXT, false);
+        fillInInputValueInForm(result, dateToInput, undefined, END_DATE_PLACEHOLDER_TEXT, false);
 
         td.when(mockSaveEvent(tsrEvent)).thenDo(() => saveEventPromise);
 
@@ -102,15 +108,15 @@ describe("create an event", () => {
 
         it("gets all the event types in order", async () => {
             await setupEventSelectPromise();
-            await selectEvent.openMenu(screen.getByText("Select an Event..."));
+            await selectEvent.openMenu(screen.getByText(EVENT_TYPE_PLACEHOLDER_TEXT));
             expect(screen.getByTestId("event-type-select")).toHaveTextContent(
-                /first.*second.*third/,
+                selectDropdownOrderRegex,
             );
         });
 
         it("can clear the event types", async () => {
             await setupEventSelectPromise();
-            await selectEvent.select(screen.getByText("Select an Event..."), "second");
+            await selectEvent.select(screen.getByText(EVENT_TYPE_PLACEHOLDER_TEXT), "second");
             expect(screen.getByText("second")).toBeInTheDocument();
             await selectEvent.clearAll(screen.getByText("second"));
             expect(screen.queryByAltText("second")).toBeNull();
@@ -142,13 +148,15 @@ describe("create an event", () => {
 
         it("gets all org names in order", async () => {
             await setupOrgSelectPromise();
-            await selectEvent.openMenu(screen.getByText("Select Organizations..."));
-            expect(screen.getByTestId("org-name-select")).toHaveTextContent(/first.*second.*third/);
+            await selectEvent.openMenu(screen.getByText(ORGANIZATION_PLACEHOLDER_TEXT));
+            expect(screen.getByTestId("org-name-select")).toHaveTextContent(
+                selectDropdownOrderRegex,
+            );
         });
 
         it("can clear the org name", async () => {
             await setupOrgSelectPromise();
-            await selectEvent.select(screen.getByText("Select Organizations..."), "second");
+            await selectEvent.select(screen.getByText(ORGANIZATION_PLACEHOLDER_TEXT), "second");
             expect(screen.getByText("second")).toBeInTheDocument();
             await selectEvent.clearAll(screen.getByText("second"));
             expect(screen.queryByAltText("second")).toBeNull();
@@ -183,16 +191,22 @@ describe("create an event", () => {
                 result,
                 dateToInput,
                 undefined,
-                "Choose the Start Date...",
+                START_DATE_PLACEHOLDER_TEXT,
                 false,
             );
-            fillInInputValueInForm(result, dateToInput, undefined, "Choose the End Date...", false);
+            fillInInputValueInForm(
+                result,
+                dateToInput,
+                undefined,
+                END_DATE_PLACEHOLDER_TEXT,
+                false,
+            );
 
             await submitEventForm();
             expect(screen.getByText(errorMsg)).toBeInTheDocument();
 
             await act(async () => {
-                await selectEvent.select(screen.getByText("Select Organizations..."), "2/75");
+                await selectEvent.select(screen.getByText(ORGANIZATION_PLACEHOLDER_TEXT), "2/75");
             });
             expect(screen.queryByText(errorMsg)).toBeNull();
         });
@@ -205,7 +219,7 @@ describe("create an event", () => {
             await submitEventForm();
             expect(screen.getByText(errorMsg)).toBeInTheDocument();
 
-            fillInInputValueInForm(result, "1234", undefined, "Choose the Start Date...");
+            fillInInputValueInForm(result, "1234", undefined, START_DATE_PLACEHOLDER_TEXT);
             await submitEventForm();
             expect(screen.getByText(errorMsg)).toBeInTheDocument();
 
@@ -213,7 +227,7 @@ describe("create an event", () => {
                 result,
                 dateToInput,
                 undefined,
-                "Choose the Start Date...",
+                START_DATE_PLACEHOLDER_TEXT,
                 false,
             );
             await submitEventForm();
@@ -229,18 +243,24 @@ describe("create an event", () => {
             await submitEventForm();
             expect(screen.getByText(errorMsg)).toBeInTheDocument();
 
-            fillInInputValueInForm(result, "1234", undefined, "Choose the End Date...");
+            fillInInputValueInForm(result, "1234", undefined, END_DATE_PLACEHOLDER_TEXT);
             await submitEventForm();
             expect(screen.getByText(errorMsg)).toBeInTheDocument();
 
             const yesterday = new Date(dateToInput)
                 .setDate(new Date(dateToInput).getDate() - 1)
                 .toLocaleString();
-            fillInInputValueInForm(result, yesterday, undefined, "Choose the End Date...");
+            fillInInputValueInForm(result, yesterday, undefined, END_DATE_PLACEHOLDER_TEXT);
             await submitEventForm();
             expect(screen.getByText(errorMsg)).toBeInTheDocument();
 
-            fillInInputValueInForm(result, dateToInput, undefined, "Choose the End Date...", false);
+            fillInInputValueInForm(
+                result,
+                dateToInput,
+                undefined,
+                END_DATE_PLACEHOLDER_TEXT,
+                false,
+            );
             await submitEventForm();
 
             expect(screen.queryByText(errorMsg)).toBeNull();

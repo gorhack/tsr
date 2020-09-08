@@ -220,7 +220,7 @@ export const CreateEvent: React.FC = () => {
                                 styles={selectStyles}
                                 options={eventTypeOptions}
                                 isClearable={true}
-                                placeholder="Select an Event..."
+                                placeholder="Select an Event Type..."
                                 inputId="eventType"
                                 onChange={(selection): void => {
                                     props.onChange(selection);

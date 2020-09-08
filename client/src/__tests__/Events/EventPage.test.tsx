@@ -27,18 +27,6 @@ describe("displays event details", () => {
     afterEach(td.reset);
 
     describe("headers", () => {
-        it("displays event details page's dt", async () => {
-            const event = makeEvent({
-                eventId: 2,
-                eventName: "another event",
-                startDate: "2020-08-18T01:01:01",
-                endDate: "2020-08-18T01:01:01",
-            });
-            await renderEventDetails({ event });
-            expect(screen.getByText("Last Modified By")).toBeInTheDocument();
-            expect(screen.getByText("Event Type")).toBeInTheDocument();
-        });
-
         it("displays event details", async () => {
             const event: TsrEvent = {
                 eventId: 4,
@@ -102,14 +90,17 @@ describe("displays event details", () => {
     });
 
     describe("last modified", () => {
-        it("last modified in the last 5 minutes displays just now", async () => {
-            const event = makeEvent({
+        const makeEventWithLastModified = (lastModifiedDate: string): TsrEvent => {
+            return makeEvent({
                 eventId: 1,
                 audit: makeAudit({
                     lastModifiedByDisplayName: "user",
-                    lastModifiedDate: "2020-07-18T10:00:00",
+                    lastModifiedDate,
                 }),
             });
+        };
+        it("last modified in the last 5 minutes displays just now", async () => {
+            const event = makeEventWithLastModified("2020-07-18T10:00:00");
             const result = await renderEventDetails({ event, currentTime: "2020-07-18T10:05:59" });
             expect(findByAriaLabel(result.container, "Last Modified By")).toHaveTextContent(
                 "user, just now...",
@@ -117,13 +108,7 @@ describe("displays event details", () => {
         });
 
         it("last modified displays minutes if minutes ago", async () => {
-            const event = makeEvent({
-                eventId: 1,
-                audit: makeAudit({
-                    lastModifiedByDisplayName: "user",
-                    lastModifiedDate: "2020-07-18T10:00:00",
-                }),
-            });
+            const event = makeEventWithLastModified("2020-07-18T10:00:00");
             const result = await renderEventDetails({ event, currentTime: "2020-07-18T10:06:00" });
             expect(findByAriaLabel(result.container, "Last Modified By")).toHaveTextContent(
                 "user, 6 minutes ago",
@@ -131,13 +116,7 @@ describe("displays event details", () => {
         });
 
         it("last modified displays hour if 1 hour ago", async () => {
-            const event = makeEvent({
-                eventId: 1,
-                audit: makeAudit({
-                    lastModifiedByDisplayName: "user",
-                    lastModifiedDate: "2020-07-18T10:00:00",
-                }),
-            });
+            const event = makeEventWithLastModified("2020-07-18T10:00:00");
             const result = await renderEventDetails({ event, currentTime: "2020-07-18T11:59:59" });
             expect(findByAriaLabel(result.container, "Last Modified By")).toHaveTextContent(
                 "user, 1 hour ago",
@@ -145,13 +124,7 @@ describe("displays event details", () => {
         });
 
         it("last modified displays hours if hours ago", async () => {
-            const event = makeEvent({
-                eventId: 1,
-                audit: makeAudit({
-                    lastModifiedByDisplayName: "user",
-                    lastModifiedDate: "2020-07-18T10:00:00",
-                }),
-            });
+            const event = makeEventWithLastModified("2020-07-18T10:00:00");
             const result = await renderEventDetails({ event, currentTime: "2020-07-18T12:00:00" });
             expect(findByAriaLabel(result.container, "Last Modified By")).toHaveTextContent(
                 "user, 2 hours ago",
@@ -159,13 +132,7 @@ describe("displays event details", () => {
         });
 
         it("last modified displays day if 1 day ago", async () => {
-            const event = makeEvent({
-                eventId: 1,
-                audit: makeAudit({
-                    lastModifiedByDisplayName: "user",
-                    lastModifiedDate: "2020-07-17T10:00:00",
-                }),
-            });
+            const event = makeEventWithLastModified("2020-07-17T10:00:00");
             const result = await renderEventDetails({ event, currentTime: "2020-07-19T09:59:59" });
             expect(findByAriaLabel(result.container, "Last Modified By")).toHaveTextContent(
                 "user, 1 day ago",
@@ -173,13 +140,7 @@ describe("displays event details", () => {
         });
 
         it("last modified displays date if older than 1 week", async () => {
-            const event = makeEvent({
-                eventId: 1,
-                audit: makeAudit({
-                    lastModifiedByDisplayName: "user",
-                    lastModifiedDate: "2020-07-17T10:00:00",
-                }),
-            });
+            const event = makeEventWithLastModified("2020-07-17T10:00:00");
             const result = await renderEventDetails({ event, currentTime: "2020-07-24T10:00:00" });
             expect(findByAriaLabel(result.container, "Last Modified By")).toHaveTextContent(
                 "user, 7/17/20",

@@ -7,5 +7,5 @@ import org.springframework.boot.runApplication
 class TsrApplication
 
 fun main(args: Array<String>) {
-	runApplication<TsrApplication>(*args)
+    runApplication<TsrApplication>(*args)
 }

@@ -37,7 +37,7 @@ class TsrUserServiceTest {
     }
 
     @Test
-    fun `assertUserExists creates a new user if it doesn't exist`() {
+    fun `assertUserExists creates a new user if it doesnt exist`() {
         val user = makeOidcUser(userId, "username")
         every { mockTsrUserRepository.count() } returns 1
         every { mockTsrUserRepository.findByUserId(userId) } returns null
@@ -95,7 +95,7 @@ class TsrUserServiceTest {
     }
 
     @Test
-    fun `assertUserExists creates a new user with role 'admin' if there are no users`() {
+    fun `assertUserExists creates a new user with role admin if there are no users`() {
         val user = makeOidcUser(userId, "username")
         every { mockTsrUserRepository.findByUserId(userId) } returns null
         every { mockTsrUserRepository.count() } returns 0
@@ -116,7 +116,7 @@ class TsrUserServiceTest {
     }
 
     @Test
-    fun `assertUserExists creates a new user with role 'user' if there are users and user does not have tsradmin role`() {
+    fun `assertUserExists creates a new user with role user if there are users and user does not have tsradmin role`() {
         val user = makeOidcUser(userId, "username")
         every { mockTsrUserRepository.findByUserId(userId) } returns null
         every { mockTsrUserRepository.count() } returns 1
@@ -136,7 +136,7 @@ class TsrUserServiceTest {
     }
 
     @Test
-    fun `assertUserExists creates a new user with role 'admin' if there are users and user is a tsradmin role`() {
+    fun `assertUserExists creates a new user with role admin if there are users and user is a tsradmin role`() {
         val user = makeOidcUser(userId, "username")
         every { mockTsrUserRepository.findByUserId(userId) } returns null
         every { mockTsrUserRepository.count() } returns 1
@@ -156,7 +156,7 @@ class TsrUserServiceTest {
     }
 
     @Test
-    fun `updateUserRole updates a user's role`() {
+    fun `updateUserRole updates a users role`() {
         val userId = "222222"
 
         every { mockTsrUserRepository.findByUserId(userId) } returns aTsrUser
