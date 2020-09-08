@@ -1,14 +1,18 @@
 import "mutationobserver-shim";
-import { render, fireEvent, RenderResult, screen, act } from "@testing-library/react";
-import { CreateEvent } from "../../Events/CreateEvent";
+import { act, fireEvent, render, RenderResult, screen } from "@testing-library/react";
+import { CreateEvent } from "../../Event/CreateEvent";
 import React from "react";
 import { Route, Router } from "react-router-dom";
 import { createMemoryHistory, MemoryHistory } from "history";
 import { fillInInputValueInForm, makeEventType, makeOrganization, reRender } from "../TestHelpers";
 import td from "testdouble";
-import * as EventApi from "../../Events/EventApi";
-import { EventType, Organization, TsrEvent } from "../../Events/EventApi";
+import * as EventApi from "../../Event/EventApi";
+import * as EventTypeApi from "../../Event/Type/EventTypeApi";
+import * as OrganizationApi from "../../Organization/OrganizationApi";
+import { TsrEvent } from "../../Event/EventApi";
 import selectEvent from "react-select-event";
+import { Organization } from "../../Organization/OrganizationApi";
+import { EventType } from "../../Event/Type/EventTypeApi";
 
 const selectDropdownOrderRegex = /first.*second.*third/;
 const ORGANIZATION_PLACEHOLDER_TEXT = "Select Organizations...";
@@ -19,12 +23,12 @@ const END_DATE_PLACEHOLDER_TEXT = "Choose the End Date...";
 describe("create an event", () => {
     const dateToInput = new Date().toLocaleDateString();
     let mockSaveEvent: typeof EventApi.saveEvent;
-    let mockGetEventTypes: typeof EventApi.getEventTypes;
-    let mockGetOrgNames: typeof EventApi.getOrganizationNames;
+    let mockGetEventTypes: typeof EventTypeApi.getEventTypes;
+    let mockGetOrgNames: typeof OrganizationApi.getOrganizationNames;
     beforeEach(() => {
         mockSaveEvent = td.replace(EventApi, "saveEvent");
-        mockGetEventTypes = td.replace(EventApi, "getEventTypes");
-        mockGetOrgNames = td.replace(EventApi, "getOrganizationNames");
+        mockGetEventTypes = td.replace(EventTypeApi, "getEventTypes");
+        mockGetOrgNames = td.replace(OrganizationApi, "getOrganizationNames");
     });
 
     afterEach(td.reset);

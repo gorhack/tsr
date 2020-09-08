@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
-import { EventsSection } from "./Events/EventsSection";
+import { EventsSection } from "./Event/EventsSection";
 import { getUserInfo, TsrUser } from "./Users/UserApi";
 
 export const Home: React.FC = () => {

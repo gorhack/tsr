@@ -1,13 +1,13 @@
 import { act, render, screen } from "@testing-library/react";
 import React from "react";
 import td from "testdouble";
-import * as EventApi from "../../Events/EventApi";
+import * as EventApi from "../../Event/EventApi";
 import * as Api from "../../api";
-import { EventPage } from "../../Events/EventPage";
+import { EventPage } from "../../Event/EventPage";
 import { createMemoryHistory, MemoryHistory } from "history";
 import { Route, Router } from "react-router-dom";
 import { findByAriaLabel, makeAudit, makeEvent, makeOrganization } from "../TestHelpers";
-import { TsrEvent } from "../../Events/EventApi";
+import { TsrEvent } from "../../Event/EventApi";
 import moment from "moment";
 
 describe("displays event details", () => {

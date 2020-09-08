@@ -1,5 +1,6 @@
 import { act, fireEvent, RenderResult } from "@testing-library/react";
-import { Auditable, EventType, Organization, TsrEvent } from "../Events/EventApi";
+import { Auditable, Organization, TsrEvent } from "../Event/EventApi";
+import { EventType } from "../Event/Type/EventTypeApi";
 
 // Define a NockBody any to avoid linter warnings. Nock can take objects of any type.
 // eslint-disable-next-line @typescript-eslint/no-explicit-any

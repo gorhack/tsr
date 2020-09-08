@@ -3,18 +3,13 @@ import { LabeledInput } from "../Inputs/LabeledInput";
 import { useHistory } from "react-router";
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import Select, { createFilter } from "react-select";
-import {
-    EditableTsrEvent,
-    EventType,
-    getEventTypes,
-    getOrganizationNames,
-    Organization,
-    saveEvent,
-} from "./EventApi";
+import { EditableTsrEvent, saveEvent } from "./EventApi";
 import { SelectOption } from "../api";
 import { FormDatePicker } from "../Inputs/FormDatePicker";
 import "./CreateEvent.css";
 import { selectStyles } from "../Styles";
+import { getOrganizationNames, Organization } from "../Organization/OrganizationApi";
+import { EventType, getEventTypes } from "./Type/EventTypeApi";
 
 type FormData = {
     eventName: string;

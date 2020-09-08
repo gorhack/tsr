@@ -2,30 +2,36 @@ import axios from "axios";
 import nock from "nock";
 import td from "testdouble";
 import {
-    EventType,
-    getCurrentAndFutureEvents,
-    getEventTypes,
-    saveEvent,
     EditableTsrEvent,
-    TsrEvent,
+    getCurrentAndFutureEvents,
     getCurrentAndFutureEventsByUserId,
-} from "../../Events/EventApi";
+    saveEvent,
+    TsrEvent,
+} from "../../Event/EventApi";
 import { NockBody } from "../TestHelpers";
 import * as Api from "../../api";
 import { HttpStatus, PageDTO } from "../../api";
+import { Organization } from "../../Organization/OrganizationApi";
 
 describe("event data", () => {
     let mockCurrentTimeLocal: typeof Api.currentTimeLocal;
     let userEvent: TsrEvent;
     let user2Event: TsrEvent;
     let eventsPage: PageDTO<TsrEvent>;
+    let organization: Organization;
     beforeEach(() => {
         mockCurrentTimeLocal = td.replace(Api, "currentTimeLocal");
         td.when(mockCurrentTimeLocal()).thenReturn("1970-01-01T00:00:01-00:00");
+        organization = {
+            organizationId: 1,
+            organizationName: "organization",
+            organizationDisplayName: "org name",
+            sortOrder: 1,
+        };
         userEvent = {
             eventId: 1,
             eventName: "first",
-            organization: "the one",
+            organization,
             eventType: {
                 eventTypeId: 1,
                 displayName: "run",
@@ -44,7 +50,7 @@ describe("event data", () => {
         user2Event = {
             eventId: 2,
             eventName: "second",
-            organization: "the two",
+            organization,
             eventType: {
                 eventTypeId: 2,
                 displayName: "walk",
@@ -76,7 +82,7 @@ describe("event data", () => {
     it("saves an event", async () => {
         const event: EditableTsrEvent = {
             eventName: "first",
-            organization: "the one",
+            organization,
             eventType: {
                 eventTypeId: 1,
                 displayName: "run",
@@ -95,41 +101,6 @@ describe("event data", () => {
         expect(response).toEqual({ eventId: 1, ...event });
     });
 
-    it("gets event types", async () => {
-        const eventTypes: EventType[] = [
-            {
-                eventTypeId: 1,
-                eventTypeName: "first",
-                displayName: "first name",
-                sortOrder: 1,
-            },
-            {
-                eventTypeId: 2,
-                eventTypeName: "second",
-                displayName: "second name",
-                sortOrder: 2,
-            },
-        ];
-
-        nock("http://example.com")
-            .get("/api/v1/event/types")
-            .reply(HttpStatus.OK, [
-                {
-                    eventTypeId: 1,
-                    eventTypeName: "first",
-                    displayName: "first name",
-                    sortOrder: 1,
-                },
-                {
-                    eventTypeId: 2,
-                    eventTypeName: "second",
-                    displayName: "second name",
-                    sortOrder: 2,
-                },
-            ]);
-        const response = await getEventTypes();
-        expect(response).toEqual(eventTypes);
-    });
     describe("getAllEvents", () => {
         it("fetches all events with default params", async () => {
             nock("http://example.com").get("/api/v1/event").reply(200, eventsPage);

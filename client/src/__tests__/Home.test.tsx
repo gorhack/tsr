@@ -5,11 +5,11 @@ import { createMemoryHistory, MemoryHistory } from "history";
 import { Route, Router } from "react-router-dom";
 import React from "react";
 import { makeAudit, makeEvent } from "./TestHelpers";
-import * as EventApi from "../Events/EventApi";
+import * as EventApi from "../Event/EventApi";
 import * as UserApi from "../Users/UserApi";
 import * as Api from "../api";
 import { TsrUser } from "../Users/UserApi";
-import { TsrEvent } from "../Events/EventApi";
+import { TsrEvent } from "../Event/EventApi";
 import { PageDTO } from "../api";
 
 describe("home page of the application", () => {
