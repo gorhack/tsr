@@ -17,14 +17,30 @@ class EventController(
         return eventService.saveEvent(eventDTO)
     }
 
-    @GetMapping(value = [""])
-    fun getCurrentAndFutureEventsPage(@RequestParam("page", defaultValue = "0") page: Int,
-                                      @RequestParam("size", defaultValue = "10") size: Int,
-                                      @RequestParam("sortBy", defaultValue = "startDate") sortBy: String
+    @GetMapping(value = ["/active"])
+    fun getActiveEvents(@RequestParam("page", defaultValue = "0") page: Int,
+                        @RequestParam("size", defaultValue = "10") size: Int,
+                        @RequestParam("sortBy", defaultValue = "startDate") sortBy: String
     ): ResponseEntity<PageDTO<EventDTO>> {
         return when (sortBy) {
             "startDate" -> ResponseEntity<PageDTO<EventDTO>>(
-                eventService.getAllEventsEndingAfterToday(page, size, Sort.by(sortBy).and(Sort.by("endDate"))),
+                eventService.getActiveEvents(page, size, Sort.by(sortBy).and(Sort.by("endDate"))),
+                HttpHeaders(),
+                HttpStatus.OK
+            )
+            else -> ResponseEntity(PageDTO(), HttpHeaders(), HttpStatus.BAD_REQUEST)
+        }
+    }
+
+    @GetMapping(value = ["/active/user/{userId}"])
+    fun getActiveEventsByUserId(@PathVariable userId: String,
+                                @RequestParam("page", defaultValue = "0") page: Int,
+                                @RequestParam("size", defaultValue = "10") size: Int,
+                                @RequestParam("sortBy", defaultValue = "startDate") sortBy: String
+    ): ResponseEntity<PageDTO<EventDTO>> {
+        return when (sortBy) {
+            "startDate" -> ResponseEntity<PageDTO<EventDTO>>(
+                eventService.getActiveEventsByUserId(userId, page, size, Sort.by(sortBy).and(Sort.by("endDate"))),
                 HttpHeaders(),
                 HttpStatus.OK
             )
@@ -35,21 +51,5 @@ class EventController(
     @GetMapping(value = ["/{eventId}"])
     fun getEventById(@PathVariable eventId: Int): EventDTO {
         return eventService.getEventById(eventId)
-    }
-
-    @GetMapping(value = ["/user/{userId}"])
-    fun getAllEventsEndingAfterTodayByUserId(@PathVariable userId: String,
-                                             @RequestParam("page", defaultValue = "0") page: Int,
-                                             @RequestParam("size", defaultValue = "10") size: Int,
-                                             @RequestParam("sortBy", defaultValue = "startDate") sortBy: String
-    ): ResponseEntity<PageDTO<EventDTO>> {
-        return when (sortBy) {
-            "startDate" -> ResponseEntity<PageDTO<EventDTO>>(
-                eventService.getAllEventsEndingAfterTodayByUserId(userId, page, size, Sort.by(sortBy).and(Sort.by("endDate"))),
-                HttpHeaders(),
-                HttpStatus.OK
-            )
-            else -> ResponseEntity(PageDTO(), HttpHeaders(), HttpStatus.BAD_REQUEST)
-        }
     }
 }

@@ -11,19 +11,16 @@ import { Route, Router } from "react-router-dom";
 import { PageDTO } from "../../api";
 
 describe("home page of the application", () => {
-    let mockGetCurrentAndFutureEvents: typeof EventApi.getCurrentAndFutureEvents;
-    let mockGetCurrentAndFutureEventsByUserId: typeof EventApi.getCurrentAndFutureEventsByUserId;
+    let mockGetCurrentAndFutureEvents: typeof EventApi.getActiveEvents;
+    let mockGetCurrentAndFutureEventsByUserId: typeof EventApi.getActiveEventsByUserId;
     let userEventList: TsrEvent[];
     let userPage1: PageDTO<TsrEvent>;
     let userPage2: PageDTO<TsrEvent>;
     let orgPage1: PageDTO<TsrEvent>;
     let orgPage2: PageDTO<TsrEvent>;
     beforeEach(() => {
-        mockGetCurrentAndFutureEvents = td.replace(EventApi, "getCurrentAndFutureEvents");
-        mockGetCurrentAndFutureEventsByUserId = td.replace(
-            EventApi,
-            "getCurrentAndFutureEventsByUserId",
-        );
+        mockGetCurrentAndFutureEvents = td.replace(EventApi, "getActiveEvents");
+        mockGetCurrentAndFutureEventsByUserId = td.replace(EventApi, "getActiveEventsByUserId");
         userEventList = [
             makeEvent({
                 eventId: 1,

@@ -1,5 +1,5 @@
 import React, { ReactElement, useEffect, useState } from "react";
-import { getCurrentAndFutureEvents, getCurrentAndFutureEventsByUserId, TsrEvent } from "./EventApi";
+import { getActiveEvents, getActiveEventsByUserId, TsrEvent } from "./EventApi";
 import "./EventsSection.css";
 import { TsrUser } from "../Users/UserApi";
 import { useHistory } from "react-router-dom";
@@ -21,7 +21,7 @@ export const EventsSection = ({ user }: EventsSectionProps): ReactElement => {
             return;
         }
         (async () => {
-            await getCurrentAndFutureEventsByUserId(user.userId)
+            await getActiveEventsByUserId(user.userId)
                 .then((result) => {
                     setUserEventPage(result);
                     setUserEvents(result.items);
@@ -29,7 +29,7 @@ export const EventsSection = ({ user }: EventsSectionProps): ReactElement => {
                 .catch((e) => {
                     console.error(`Error getting user events: ${e.message}`);
                 });
-            await getCurrentAndFutureEvents()
+            await getActiveEvents()
                 .then((result) => {
                     setOrgEventPage(result); // TODO separate call for org events
                     setOrgEvents(result.items);
@@ -65,7 +65,7 @@ export const EventsSection = ({ user }: EventsSectionProps): ReactElement => {
 
     const loadOrgEvents = (page: number) => {
         (async () => {
-            await getCurrentAndFutureEvents({ page })
+            await getActiveEvents({ page })
                 .then((results) => {
                     setOrgEventPage(results);
                     setOrgEvents(
@@ -80,7 +80,7 @@ export const EventsSection = ({ user }: EventsSectionProps): ReactElement => {
 
     const loadUserEvents = (page: number) => {
         (async () => {
-            await getCurrentAndFutureEventsByUserId(user.userId, { page })
+            await getActiveEventsByUserId(user.userId, { page })
                 .then((results) => {
                     setUserEventPage(results);
                     setUserEvents(
@@ -96,7 +96,7 @@ export const EventsSection = ({ user }: EventsSectionProps): ReactElement => {
     return (
         <div className={"EventsSection-Content"}>
             <div className={"EventsSection-Events"}>
-                <h2>My Created Events</h2>
+                <h2>My Active Events</h2>
                 {showMyEvents()}
                 {userEventPage.last ? (
                     <></>
@@ -110,7 +110,7 @@ export const EventsSection = ({ user }: EventsSectionProps): ReactElement => {
                 )}
             </div>
             <div className={"EventsSection-Events"}>
-                <h2>My Organization Events</h2>
+                <h2>{"My Organization's Active Events"}</h2>
                 {showOrgEvents()}
                 {orgEventPage.last ? (
                     <></>

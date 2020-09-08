@@ -60,18 +60,33 @@ internal class EventControllerTest {
     }
 
     @Test
-    fun `returns page of events sorted by startDate then endDate that end after today`() {
+    fun `getActiveEvents returns page of events sorted by startDate then endDate that end after today`() {
         val expectedResponse: ResponseEntity<PageDTO<EventDTO>> = ResponseEntity(
             expectedPageDTO, HttpStatus.OK
         )
 
         every {
-            mockEventService.getAllEventsEndingAfterToday(0, 10, defaultSortBy)
+            mockEventService.getActiveEvents(0, 10, defaultSortBy)
         } returns expectedPageDTO
 
-        assertEquals(expectedResponse, subject.getCurrentAndFutureEventsPage(0, 10, "startDate"))
+        assertEquals(expectedResponse, subject.getActiveEvents(0, 10, "startDate"))
         verifySequence {
-            mockEventService.getAllEventsEndingAfterToday(0, 10, defaultSortBy)
+            mockEventService.getActiveEvents(0, 10, defaultSortBy)
+        }
+    }
+
+    @Test
+    fun `getActiveEventsByUserId returns list of events created by a user`() {
+        val expectedResponse: ResponseEntity<PageDTO<EventDTO>> = ResponseEntity(
+            expectedPageDTO, HttpStatus.OK
+        )
+        every {
+            mockEventService.getActiveEventsByUserId("1234", 0, 10, defaultSortBy)
+        } returns expectedPageDTO
+
+        assertEquals(expectedResponse, subject.getActiveEventsByUserId("1234", 0, 10, "startDate"))
+        verifySequence {
+            mockEventService.getActiveEventsByUserId("1234", 0, 10, defaultSortBy)
         }
     }
 
@@ -81,21 +96,6 @@ internal class EventControllerTest {
         assertEquals(subject.getEventById(1), eventDTOWithId)
         verifySequence {
             mockEventService.getEventById(1)
-        }
-    }
-
-    @Test
-    fun `getAllEventsEndingAfterTodayByUserId returns list of events created by a user`() {
-        val expectedResponse: ResponseEntity<PageDTO<EventDTO>> = ResponseEntity(
-            expectedPageDTO, HttpStatus.OK
-        )
-        every {
-            mockEventService.getAllEventsEndingAfterTodayByUserId("1234", 0, 10, defaultSortBy)
-        } returns expectedPageDTO
-
-        assertEquals(expectedResponse, subject.getAllEventsEndingAfterTodayByUserId("1234", 0, 10, "startDate"))
-        verifySequence {
-            mockEventService.getAllEventsEndingAfterTodayByUserId("1234", 0, 10, defaultSortBy)
         }
     }
 }

@@ -14,23 +14,21 @@ import { PageDTO } from "../api";
 
 describe("home page of the application", () => {
     let mockGetUserInfo: typeof UserApi.getUserInfo;
-    let mockGetCurrentAndFutureEvents: typeof EventApi.getCurrentAndFutureEvents;
-    let mockGetCurrentAndFutureEventsByUserId: typeof EventApi.getCurrentAndFutureEventsByUserId;
+    let mockGetCurrentAndFutureEvents: typeof EventApi.getActiveEvents;
+    let mockGetCurrentAndFutureEventsByUserId: typeof EventApi.getActiveEventsByUserId;
     let mockCurrentTimeLocal: typeof Api.currentTimeLocal;
 
     beforeEach(() => {
         mockGetUserInfo = td.replace(UserApi, "getUserInfo");
-        mockGetCurrentAndFutureEvents = td.replace(EventApi, "getCurrentAndFutureEvents");
-        mockGetCurrentAndFutureEventsByUserId = td.replace(
-            EventApi,
-            "getCurrentAndFutureEventsByUserId",
-        );
+        mockGetCurrentAndFutureEvents = td.replace(EventApi, "getActiveEvents");
+        mockGetCurrentAndFutureEventsByUserId = td.replace(EventApi, "getActiveEventsByUserId");
         mockCurrentTimeLocal = td.replace(Api, "currentTimeLocal");
     });
 
     afterEach(td.reset);
     it("Calls getUserInfo on load", async () => {
         await renderHomePage();
+        expect(screen.getByText("TSR").tagName).toEqual("H1");
         expect(screen.getByText("tsrUser1")).toBeInTheDocument();
         expect(screen.getByText("123-123-123")).toBeInTheDocument();
     });

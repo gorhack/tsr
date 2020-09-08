@@ -1,27 +1,22 @@
 import axios from "axios";
 import nock from "nock";
-import td from "testdouble";
 import {
     EditableTsrEvent,
-    getCurrentAndFutureEvents,
-    getCurrentAndFutureEventsByUserId,
+    getActiveEvents,
+    getActiveEventsByUserId,
     saveEvent,
     TsrEvent,
 } from "../../Event/EventApi";
 import { NockBody } from "../TestHelpers";
-import * as Api from "../../api";
 import { HttpStatus, PageDTO } from "../../api";
 import { Organization } from "../../Organization/OrganizationApi";
 
 describe("event data", () => {
-    let mockCurrentTimeLocal: typeof Api.currentTimeLocal;
     let userEvent: TsrEvent;
     let user2Event: TsrEvent;
     let eventsPage: PageDTO<TsrEvent>;
     let organization: Organization;
     beforeEach(() => {
-        mockCurrentTimeLocal = td.replace(Api, "currentTimeLocal");
-        td.when(mockCurrentTimeLocal()).thenReturn("1970-01-01T00:00:01-00:00");
         organization = {
             organizationId: 1,
             organizationName: "organization",
@@ -101,32 +96,45 @@ describe("event data", () => {
         expect(response).toEqual({ eventId: 1, ...event });
     });
 
-    describe("getAllEvents", () => {
-        it("fetches all events with default params", async () => {
-            nock("http://example.com").get("/api/v1/event").reply(200, eventsPage);
+    describe("get active events", () => {
+        it("gets page of events with default params", async () => {
+            nock("http://example.com").get("/api/v1/event/active").reply(200, eventsPage);
 
-            const response = await getCurrentAndFutureEvents();
+            const response = await getActiveEvents();
 
             expect(response).toEqual(eventsPage);
         });
 
-        it("fetches all events with page number", async () => {
+        it("gets page of events events with page number as parameter", async () => {
             const events = {
                 ...eventsPage,
                 pageNumber: 1,
             };
 
-            nock("http://example.com").get("/api/v1/event?page=1").reply(200, events);
+            nock("http://example.com").get("/api/v1/event/active?page=1").reply(200, events);
 
-            const response = await getCurrentAndFutureEvents({ page: 1 });
+            const response = await getActiveEvents({ page: 1 });
 
             expect(response).toEqual(events);
         });
-    });
 
-    it("fetches a page of a user's ongoing and future events with default parameters", async () => {
-        nock("http://example.com").get("/api/v1/event/user/1234").reply(200, eventsPage);
-        const response = await getCurrentAndFutureEventsByUserId("1234");
-        expect(response).toEqual(eventsPage);
+        it("gets page of events by user", async () => {
+            nock("http://example.com").get("/api/v1/event/active/user/1234").reply(200, eventsPage);
+            const response = await getActiveEventsByUserId("1234");
+            expect(response).toEqual(eventsPage);
+        });
+
+        it("gets page of events by user with page number as parameter", async () => {
+            const events = {
+                ...eventsPage,
+                pageNumber: 1,
+            };
+
+            nock("http://example.com")
+                .get("/api/v1/event/active/user/1234?page=1")
+                .reply(200, events);
+            const response = await getActiveEventsByUserId("1234", { page: 1 });
+            expect(response).toEqual(events);
+        });
     });
 });

@@ -22,29 +22,25 @@ export const getEventById = async (eventId: number): Promise<TsrEvent> => {
     }
 };
 
-export const getCurrentAndFutureEvents = async (
-    pageParams: PageParams = {},
-): Promise<PageDTO<TsrEvent>> => {
-    const paramsWithDate = {
-        ...pageParams,
-    };
-    try {
-        return (await axios.get(baseUri, { params: paramsWithDate })).data;
-    } catch (error) {
-        throw new Error(error.response.message);
-    }
+export const getActiveEvents = async (pageParams: PageParams = {}): Promise<PageDTO<TsrEvent>> => {
+    const uri = `${baseUri}/active`;
+    return axios
+        .get(uri, { params: pageParams })
+        .then((response: AxiosResponse<PageDTO<TsrEvent>>) => {
+            return response.data;
+        })
+        .catch((error) => {
+            throw new Error(error.response.message);
+        });
 };
 
-export const getCurrentAndFutureEventsByUserId = async (
+export const getActiveEventsByUserId = async (
     userId: string,
     pageParams: PageParams = {},
 ): Promise<PageDTO<TsrEvent>> => {
-    const uri = `${baseUri}/user/${userId}`;
-    const paramsWithDate = {
-        ...pageParams,
-    };
+    const uri = `${baseUri}/active/user/${userId}`;
     return axios
-        .get(uri, { params: paramsWithDate })
+        .get(uri, { params: pageParams })
         .then((response: AxiosResponse<PageDTO<TsrEvent>>) => {
             return response.data;
         })

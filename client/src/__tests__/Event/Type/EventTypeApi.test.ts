@@ -22,22 +22,7 @@ describe("event type", () => {
             },
         ];
 
-        nock("http://example.com")
-            .get("/api/v1/event/type")
-            .reply(HttpStatus.OK, [
-                {
-                    eventTypeId: 1,
-                    eventTypeName: "first",
-                    displayName: "first name",
-                    sortOrder: 1,
-                },
-                {
-                    eventTypeId: 2,
-                    eventTypeName: "second",
-                    displayName: "second name",
-                    sortOrder: 2,
-                },
-            ]);
+        nock("http://example.com").get("/api/v1/event/type").reply(HttpStatus.OK, eventTypes);
         const response = await getEventTypes();
         expect(response).toEqual(eventTypes);
     });

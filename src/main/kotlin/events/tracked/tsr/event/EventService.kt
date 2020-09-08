@@ -21,18 +21,7 @@ class EventService(
         return savedEvent.toEventDTO()
     }
 
-    fun getAllEvents(page: Int, size: Int, sortBy: Sort): PageDTO<EventDTO> {
-        val paging: Pageable = PageRequest.of(page, size, sortBy)
-        val pagedEventResults: Page<Event> = eventRepository.findAll(paging)
-
-        return if (pagedEventResults.hasContent()) {
-            PageDTO(pagedEventResults.map { e -> e.toEventDTO() })
-        } else {
-            PageDTO(Page.empty())
-        }
-    }
-
-    fun getAllEventsEndingAfterToday(page: Int, size: Int, sortBy: Sort): PageDTO<EventDTO> {
+    fun getActiveEvents(page: Int, size: Int, sortBy: Sort): PageDTO<EventDTO> {
         val paging: Pageable = PageRequest.of(page, size, sortBy)
         val dateUtc = OffsetDateTime.now()
         val pagedEventResults: Page<Event> = eventRepository.findByEndDateGreaterThanEqual(
@@ -43,9 +32,22 @@ class EventService(
         return if (pagedEventResults.hasContent()) {
             PageDTO(pagedEventResults.map { e -> e.toEventDTO() })
         } else {
-            PageDTO(Page.empty(paging))
+            PageDTO()
         }
     }
+
+    fun getActiveEventsByUserId(userId: String, page: Int, size: Int, sortBy: Sort): PageDTO<EventDTO> {
+        val paging: Pageable = PageRequest.of(page, size, sortBy)
+        val dateUtc = OffsetDateTime.now()
+        val pagedEvents = eventRepository.findByCreatedByAndEndDateGreaterThanEqual(userId, dateUtc, paging)
+        return if (pagedEvents.hasContent()) {
+            PageDTO(pagedEvents.map { e -> e.toEventDTO() })
+        } else {
+            PageDTO()
+        }
+    }
+
+    // TODO getActiveEventsByOrganizations
 
     fun getEventById(eventId: Int): EventDTO {
         val event: Event = eventRepository.findByIdOrNull(eventId.toLong())
@@ -59,14 +61,5 @@ class EventService(
                 ?: "[deleted]"
         }
         return event.toEventDTO(createdByDisplayName = createdByUser, lastModifiedByDisplayName = lastModifiedByUser)
-    }
-
-    fun getAllEventsEndingAfterTodayByUserId(userId: String, page: Int, size: Int, sortBy: Sort): PageDTO<EventDTO> {
-        val paging: Pageable = PageRequest.of(page, size, sortBy)
-        val dateUtc = OffsetDateTime.now()
-        val events = eventRepository.findByCreatedByAndEndDateGreaterThanEqual(userId, dateUtc, paging)
-        return PageDTO(
-            events.map { e -> e.toEventDTO() }
-        )
     }
 }
