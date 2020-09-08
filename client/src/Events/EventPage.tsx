@@ -26,7 +26,9 @@ export const EventPage: React.FC = () => {
         })();
     }, [eventId, setTsrEvent]);
 
-    if (!tsrEvent) return <></>;
+    if (!tsrEvent) {
+        return <></>;
+    }
     const startDate = moment.utc(tsrEvent.startDate);
     const endDate = moment.utc(tsrEvent.endDate);
 
@@ -34,7 +36,7 @@ export const EventPage: React.FC = () => {
         if (tsrEvent.eventName === "") {
             return "event details";
         } else {
-            return tsrEvent.eventName + " details";
+            return `${tsrEvent.eventName} details`;
         }
     };
 

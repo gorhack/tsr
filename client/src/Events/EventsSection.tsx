@@ -17,7 +17,9 @@ export const EventsSection = ({ user }: EventsSectionProps): ReactElement => {
     const [orgEvents, setOrgEvents] = useState<TsrEvent[]>([]);
 
     useEffect(() => {
-        if (user.userId === "") return;
+        if (user.userId === "") {
+            return;
+        }
         (async () => {
             await getCurrentAndFutureEventsByUserId(user.userId)
                 .then((result) => {
@@ -135,7 +137,7 @@ const SingleEvent = ({ event, className = "", dataTestId }: SingleEventProps): R
     const history = useHistory();
     return (
         <div
-            className={"EventsSection-SingleEvent " + className}
+            className={`EventsSection-SingleEvent ${className}`}
             data-testid={`${dataTestId}-${event.eventId}`}
             onClick={() => history.push(`/event/${event.eventId}`)}
         >

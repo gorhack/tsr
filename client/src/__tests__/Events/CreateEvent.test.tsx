@@ -97,7 +97,7 @@ describe("create an event", () => {
                 makeEventType({ eventTypeId: 2, sortOrder: 2, displayName: "second" }),
             ];
             const eventTypesPromise = Promise.resolve(eventTypes);
-            return await renderCreateEvent({ eventTypesPromise });
+            return renderCreateEvent({ eventTypesPromise });
         };
 
         it("gets all the event types in order", async () => {
@@ -137,7 +137,7 @@ describe("create an event", () => {
                 }),
             ];
             const orgNamesPromise = Promise.resolve(orgNames);
-            return await renderCreateEvent({ orgNamesPromise });
+            return renderCreateEvent({ orgNamesPromise });
         };
 
         it("gets all org names in order", async () => {

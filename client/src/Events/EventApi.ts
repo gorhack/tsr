@@ -21,7 +21,7 @@ export const getEventById = async (eventId: number): Promise<TsrEvent> => {
 };
 
 export const getOrganizationNames = async (): Promise<Organization[]> => {
-    const uri = baseUri + "/organizations";
+    const uri = `${baseUri}/organizations`;
     try {
         return (await axios.get(uri)).data;
     } catch (error) {
@@ -30,7 +30,7 @@ export const getOrganizationNames = async (): Promise<Organization[]> => {
 };
 
 export const getEventTypes = async (): Promise<EventType[]> => {
-    const uri = baseUri + "/types";
+    const uri = `${baseUri}/types`;
     try {
         return (await axios.get(uri)).data;
     } catch (error) {
@@ -59,7 +59,7 @@ export const getCurrentAndFutureEventsByUserId = async (
     const paramsWithDate = {
         ...pageParams,
     };
-    return await axios
+    return axios
         .get(uri, { params: paramsWithDate })
         .then((response: AxiosResponse<PageDTO<TsrEvent>>) => {
             return response.data;

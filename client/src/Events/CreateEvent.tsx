@@ -48,32 +48,38 @@ export const CreateEvent: React.FC = () => {
 
     useEffect(() => {
         (async () => {
-            try {
-                const newOrgNames = await getOrganizationNames();
-                setOrgNames(newOrgNames);
-                const newOrgNameOptions: SelectOption[] = newOrgNames
-                    .sort((e, e2) => e.sortOrder - e2.sortOrder)
-                    .map((orgName) => {
-                        return {
-                            id: orgName.organizationId,
-                            label: orgName.organizationDisplayName,
-                        };
-                    });
-                setOrgNameOptions(newOrgNameOptions);
-                const newEventTypes = await getEventTypes();
-                setEventTypes(newEventTypes);
-                const newEventTypeOptions: SelectOption[] = newEventTypes
-                    .sort((e, e2) => e.sortOrder - e2.sortOrder)
-                    .map((eventType) => {
-                        return {
-                            id: eventType.eventTypeId,
-                            label: eventType.displayName,
-                        };
-                    });
-                setEventTypeOptions(newEventTypeOptions);
-            } catch (e) {
-                console.error("error getting event types", e.message);
-            }
+            await getOrganizationNames()
+                .then((result) => {
+                    setOrgNames(result);
+                    const newOrgNameOptions: SelectOption[] = [...result]
+                        .sort((e, e2) => e.sortOrder - e2.sortOrder)
+                        .map((orgName) => {
+                            return {
+                                id: orgName.organizationId,
+                                label: orgName.organizationDisplayName,
+                            };
+                        });
+                    setOrgNameOptions(newOrgNameOptions);
+                })
+                .catch((error) => {
+                    console.error("error getting organization names ", error.message);
+                });
+            await getEventTypes()
+                .then((result) => {
+                    setEventTypes(result);
+                    const newEventTypeOptions: SelectOption[] = [...result]
+                        .sort((e, e2) => e.sortOrder - e2.sortOrder)
+                        .map((eventType) => {
+                            return {
+                                id: eventType.eventTypeId,
+                                label: eventType.displayName,
+                            };
+                        });
+                    setEventTypeOptions(newEventTypeOptions);
+                })
+                .catch((error) => {
+                    console.error("error getting event types ", error.message);
+                });
         })();
     }, [setEventTypes, setEventTypeOptions, setOrgNames, setOrgNameOptions]);
 
@@ -84,9 +90,7 @@ export const CreateEvent: React.FC = () => {
 
     const onSubmit: SubmitHandler<FormData> = async (data) => {
         const { eventName, orgNameOption, startDate, endDate, eventTypeOption } = data;
-        console.log(orgNameOption);
-        const foundOrg = orgNames.find((orgNames) => orgNames.organizationId === orgNameOption.id);
-        console.log(foundOrg);
+        const foundOrg = orgNames.find((orgName) => orgName.organizationId === orgNameOption.id);
         if (!foundOrg) {
             setError("orgNameOption", { message: "must select an organization", type: "required" });
             return;

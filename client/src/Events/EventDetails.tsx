@@ -37,20 +37,20 @@ export const EventDetails = React.memo(
                 return dateLastModified.format(SHORT_DATE_FORMAT);
             } else if (diffMoment.days() > 0) {
                 numOfTime = diffMoment.days();
-                unitOfTime = " day";
+                unitOfTime = "day";
             } else if (diffMoment.hours() > 0) {
                 numOfTime = diffMoment.hours();
-                unitOfTime = " hour";
+                unitOfTime = "hour";
             } else if (diffMoment.minutes() > 5) {
                 numOfTime = diffMoment.minutes();
-                unitOfTime = " minute";
+                unitOfTime = "minute";
             } else {
                 return "just now...";
             }
             if (numOfTime > 1) {
-                unitOfTime = unitOfTime + "s";
+                unitOfTime = `${unitOfTime}s`;
             }
-            return numOfTime + unitOfTime + " ago";
+            return `${numOfTime} ${unitOfTime} ago`;
         };
 
         return (
@@ -92,7 +92,7 @@ interface DetailRowProps {
 
 const DetailRow = ({ label, description, className = "" }: DetailRowProps): ReactElement => {
     return (
-        <div className={"Event-Detail-Row " + className}>
+        <div className={`Event-Detail-Row ${className}`}>
             <span className={"Event-Detail-Row-Label"}>{label}</span>
             <span aria-label={label}>{description}</span>
         </div>
