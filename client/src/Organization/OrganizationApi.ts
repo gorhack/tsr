@@ -13,6 +13,14 @@ export const getOrganizationNames = async (): Promise<Organization[]> => {
         });
 };
 
+export const saveOrganization = async (organizationName: string): Promise<Organization> => {
+    try {
+        return (await axios.post(baseUri, organizationName)).data;
+    } catch (error) {
+        throw new Error(error.response.message);
+    }
+};
+
 export interface Organization {
     organizationId: number;
     organizationName: string;

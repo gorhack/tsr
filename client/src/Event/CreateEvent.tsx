@@ -168,7 +168,7 @@ export const CreateEvent: React.FC = () => {
                         rules={{ required: true }}
                         render={(props): ReactElement => (
                             <>
-                                <Select
+                                <AsyncCreatable
                                     styles={selectStyles}
                                     options={orgNameOptions}
                                     isClearable={true}
