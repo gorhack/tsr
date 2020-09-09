@@ -1,11 +1,14 @@
 import axios, { AxiosResponse } from "axios";
+import { PageDTO, PageParams } from "../api";
 
 const baseUri = "/api/v1/organization";
 
-export const getOrganizationNames = async (): Promise<Organization[]> => {
+export const getOrganizationNames = async (
+    pageParams: PageParams = {},
+): Promise<PageDTO<Organization>> => {
     return axios
-        .get(baseUri)
-        .then((response: AxiosResponse<Organization[]>) => {
+        .get(baseUri, { params: pageParams })
+        .then((response: AxiosResponse<PageDTO<Organization>>) => {
             return response.data;
         })
         .catch((error) => {
@@ -19,6 +22,19 @@ export const saveOrganization = async (organizationName: string): Promise<Organi
     } catch (error) {
         throw new Error(error.response.message);
     }
+};
+
+export const getOrganizationContains = async (
+    searchTerm: string,
+): Promise<PageDTO<Organization>> => {
+    return axios
+        .get(`${baseUri}/search`, { params: { searchTerm } })
+        .then((response: AxiosResponse<PageDTO<Organization>>) => {
+            return response.data;
+        })
+        .catch((error) => {
+            throw new Error(error.message);
+        });
 };
 
 export interface Organization {

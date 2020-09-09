@@ -11,6 +11,12 @@ import "./CreateEvent.css";
 import { selectStyles } from "../Styles";
 import { getOrganizationNames, Organization } from "../Organization/OrganizationApi";
 import { createEventType, EventType, getEventTypeContains } from "./Type/EventTypeApi";
+import {
+    getOrganizationContains,
+    getOrganizationNames,
+    Organization,
+} from "../Organization/OrganizationApi";
+import { EventType, getEventTypeContains, getEventTypes } from "./Type/EventTypeApi";
 import sortedUniqBy from "lodash/sortedUniqBy";
 
 type FormData = {
@@ -29,10 +35,8 @@ export const CreateEvent: React.FC = () => {
     const initialEventType = { id: 0, label: "" };
     const initialOrgName = { id: 0, label: "" };
 
+    const [organizationsCache, setOrganizationsCache] = useState<Organization[]>([]);
     const [eventTypesCache, setEventTypesCache] = useState<EventType[]>([]);
-
-    const [orgNames, setOrgNames] = useState<Organization[]>([]);
-    const [orgNameOptions, setOrgNameOptions] = useState<SelectOption[]>([]);
 
     const { handleSubmit, register, errors, control, watch, setError } = useForm<FormData>({
         defaultValues: {
@@ -42,27 +46,6 @@ export const CreateEvent: React.FC = () => {
     });
     const dateWatch = watch(["startDate", "endDate"]);
 
-    useEffect(() => {
-        (async () => {
-            await getOrganizationNames()
-                .then((result) => {
-                    setOrgNames(result);
-                    const newOrgNameOptions: SelectOption[] = [...result]
-                        .sort((e, e2) => e.sortOrder - e2.sortOrder)
-                        .map((orgName) => {
-                            return {
-                                id: orgName.organizationId,
-                                label: orgName.organizationDisplayName,
-                            };
-                        });
-                    setOrgNameOptions(newOrgNameOptions);
-                })
-                .catch((error) => {
-                    console.error("error getting organization names ", error.message);
-                });
-        })();
-    }, [setEventTypesCache, setOrgNames, setOrgNameOptions]);
-
     const onCancel = (e: React.MouseEvent<HTMLButtonElement>): void => {
         e.preventDefault();
         history.push("/");
@@ -70,7 +53,9 @@ export const CreateEvent: React.FC = () => {
 
     const onSubmit: SubmitHandler<FormData> = async (data) => {
         const { eventName, orgNameOption, startDate, endDate, eventTypeOption } = data;
-        const foundOrg = orgNames.find((orgName) => orgName.organizationId === orgNameOption.id);
+        const foundOrg = organizationsCache.find(
+            (orgName) => orgName.organizationId === orgNameOption.id,
+        );
         if (!foundOrg) {
             setError("orgNameOption", { message: "must select an organization", type: "required" });
             return;
@@ -136,6 +121,46 @@ export const CreateEvent: React.FC = () => {
                 }))();
     };
 
+    const mapOrganizationsToOptions = (organizations: Organization[]): SelectOption[] => {
+        return organizations.map((organizations) => {
+            return {
+                id: organizations.organizationId,
+                label: organizations.organizationDisplayName,
+            };
+        });
+    };
+
+    const loadOrganizationSearchTerm = async (searchTerm: string): Promise<SelectOption[]> => {
+        if (searchTerm === "") {
+            return getOrganizationNames()
+                .then((result) => {
+                    setOrganizationsCache(result.items);
+                    return Promise.resolve(mapOrganizationsToOptions(result.items));
+                })
+                .catch((error) => {
+                    console.error("error loading default event types ", error.message);
+                    return Promise.resolve([]);
+                });
+        } else {
+            return getOrganizationContains(searchTerm)
+                .then((result) => {
+                    setOrganizationsCache((oldCache) => {
+                        return sortedUniqBy<Organization>(
+                            [...oldCache, ...result.items],
+                            (e) => e.sortOrder,
+                        );
+                    });
+                    return Promise.resolve(mapOrganizationsToOptions(result.items));
+                })
+                .catch((error) => {
+                    console.error(
+                        `error loading organizations with search term ${searchTerm} ${error.message}`,
+                    );
+                    return Promise.resolve([]);
+                });
+        }
+    };
+
     return (
         <div className={"CreateEvent-Content"}>
             <h1>create an event</h1>
@@ -170,7 +195,8 @@ export const CreateEvent: React.FC = () => {
                             <>
                                 <AsyncCreatable
                                     styles={selectStyles}
-                                    options={orgNameOptions}
+                                    loadOptions={loadOrganizationSearchTerm}
+                                    defaultOptions
                                     isClearable={true}
                                     placeholder="Select Organizations..."
                                     inputId="organizationName"

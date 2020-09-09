@@ -71,7 +71,7 @@ describe("create an event", () => {
                 organizationDisplayName: "second",
             }),
         ];
-        const orgNamesPromise = Promise.resolve(orgNames);
+        const orgNamesPromise = Promise.resolve(makePage({ items: orgNames }));
         const tsrEvent = {
             eventName: "name",
             organization: makeOrganization({
@@ -180,11 +180,6 @@ describe("create an event", () => {
         const setupOrgSelectPromise = async (): Promise<RenderResult> => {
             const orgNames = [
                 makeOrganization({
-                    organizationId: 3,
-                    sortOrder: 3,
-                    organizationDisplayName: "third",
-                }),
-                makeOrganization({
                     organizationId: 1,
                     sortOrder: 1,
                     organizationDisplayName: "first",
@@ -194,8 +189,13 @@ describe("create an event", () => {
                     sortOrder: 2,
                     organizationDisplayName: "second",
                 }),
+                makeOrganization({
+                    organizationId: 3,
+                    sortOrder: 3,
+                    organizationDisplayName: "third",
+                }),
             ];
-            const orgNamesPromise = Promise.resolve(orgNames);
+            const orgNamesPromise = Promise.resolve(makePage({ items: orgNames }));
             return renderCreateEvent({ orgNamesPromise });
         };
 
@@ -235,7 +235,7 @@ describe("create an event", () => {
                     organizationDisplayName: "2/75",
                 }),
             ];
-            const orgNamesPromise = Promise.resolve(orgNames);
+            const orgNamesPromise = Promise.resolve(makePage({ items: orgNames }));
             const result = await renderCreateEvent({ orgNamesPromise });
             expect(screen.queryByText(errorMsg)).toBeNull();
 
@@ -328,13 +328,13 @@ describe("create an event", () => {
     interface RenderCreateEventProps {
         history?: MemoryHistory;
         eventTypesPromise?: Promise<PageDTO<unknown>>;
-        orgNamesPromise?: Promise<Organization[]>;
+        orgNamesPromise?: Promise<PageDTO<unknown>>;
     }
 
     const renderCreateEvent = async ({
         history = createMemoryHistory(),
         eventTypesPromise = Promise.resolve(makePage({})),
-        orgNamesPromise = Promise.resolve([]),
+        orgNamesPromise = Promise.resolve(makePage({})),
     }: RenderCreateEventProps): Promise<RenderResult> => {
         history.push("/createEvent");
 
