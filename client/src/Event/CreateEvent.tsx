@@ -94,15 +94,6 @@ export const CreateEvent: React.FC = () => {
             });
     };
 
-    const mapEventTypeToOptions = (eventTypes: EventType[]): SelectOption[] => {
-        return eventTypes.map((eventType) => {
-            return {
-                id: eventType.eventTypeId,
-                label: eventType.displayName,
-            };
-        });
-    };
-
     const loadEventTypeSearchTerm = async (searchTerm: string): Promise<SelectOption[]> => {
         return getEventTypeContains(searchTerm)
             .then((result) => {
@@ -112,7 +103,14 @@ export const CreateEvent: React.FC = () => {
                         (e) => e.sortOrder,
                     );
                 });
-                return Promise.resolve(mapEventTypeToOptions(result.items));
+                return Promise.resolve(
+                    result.items.map((eventType) => {
+                        return {
+                            id: eventType.eventTypeId,
+                            label: eventType.displayName,
+                        };
+                    }),
+                );
             })
             .catch((error) => {
                 console.error(
