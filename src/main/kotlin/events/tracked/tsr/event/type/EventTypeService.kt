@@ -16,7 +16,7 @@ class EventTypeService(
         return if (eventPage.hasContent()) {
             PageDTO(eventPage)
         } else {
-            PageDTO();
+            PageDTO()
         }
     }
 }

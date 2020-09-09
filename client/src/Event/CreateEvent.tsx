@@ -61,8 +61,8 @@ export const CreateEvent: React.FC = () => {
                 });
             await getEventTypes()
                 .then((result) => {
-                    setEventTypes(result);
-                    const newEventTypeOptions: SelectOption[] = [...result]
+                    setEventTypes(result.items); // TODO only handles first page of event types
+                    const newEventTypeOptions: SelectOption[] = [...result.items]
                         .sort((e, e2) => e.sortOrder - e2.sortOrder)
                         .map((eventType) => {
                             return {

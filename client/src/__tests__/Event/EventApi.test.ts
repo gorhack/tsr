@@ -7,14 +7,14 @@ import {
     saveEvent,
     TsrEvent,
 } from "../../Event/EventApi";
-import { NockBody } from "../TestHelpers";
+import { makePage, NockBody } from "../TestHelpers";
 import { HttpStatus, PageDTO } from "../../api";
 import { Organization } from "../../Organization/OrganizationApi";
 
 describe("event data", () => {
     let userEvent: TsrEvent;
     let user2Event: TsrEvent;
-    let eventsPage: PageDTO<TsrEvent>;
+    let eventsPage: PageDTO<unknown>;
     let organization: Organization;
     beforeEach(() => {
         organization = {
@@ -61,15 +61,10 @@ describe("event data", () => {
                 lastModifiedDate: "2020-08-18T14:15:59",
             },
         };
-        eventsPage = {
+        eventsPage = makePage({
             items: [userEvent, user2Event],
-            totalPages: 1,
-            pageNumber: 0,
-            pageSize: 10,
-            totalResults: 2,
             first: true,
-            last: false,
-        };
+        });
     });
 
     axios.defaults.baseURL = "http://example.com";

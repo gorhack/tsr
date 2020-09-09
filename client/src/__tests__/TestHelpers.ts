@@ -1,6 +1,8 @@
 import { act, fireEvent, RenderResult } from "@testing-library/react";
-import { Auditable, Organization, TsrEvent } from "../Event/EventApi";
+import { Auditable, TsrEvent } from "../Event/EventApi";
 import { EventType } from "../Event/Type/EventTypeApi";
+import { PageDTO } from "../api";
+import { Organization } from "../Organization/OrganizationApi";
 
 // Define a NockBody any to avoid linter warnings. Nock can take objects of any type.
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -98,6 +100,20 @@ export const makeEvent = (partial: Partial<TsrEvent>): TsrEvent => {
         organization: makeOrganization({ organizationId: 1, sortOrder: 1 }),
         eventType: partial.eventType || undefined,
         audit: partial.audit || makeAudit({}),
+    };
+};
+
+export const makePage = (partial: Partial<PageDTO<unknown>>): PageDTO<unknown> => {
+    // warning, type must be unknown if using helper...
+    const items = partial.items || [];
+    return {
+        items,
+        totalPages: partial.totalPages || 1,
+        pageNumber: partial.pageNumber || 0,
+        pageSize: partial.pageSize || 10,
+        totalResults: items.length,
+        first: !!partial.first,
+        last: !!partial.last,
     };
 };
 

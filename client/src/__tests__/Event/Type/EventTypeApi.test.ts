@@ -2,6 +2,7 @@ import nock from "nock";
 import { HttpStatus } from "../../../api";
 import { EventType, getEventTypes } from "../../../Event/Type/EventTypeApi";
 import axios from "axios";
+import { makePage } from "../../TestHelpers";
 
 describe("event type", () => {
     axios.defaults.baseURL = "http://example.com";
@@ -22,8 +23,10 @@ describe("event type", () => {
             },
         ];
 
-        nock("http://example.com").get("/api/v1/event/type").reply(HttpStatus.OK, eventTypes);
+        const eventTypePage = makePage({ items: eventTypes });
+
+        nock("http://example.com").get("/api/v1/event/type").reply(HttpStatus.OK, eventTypePage);
         const response = await getEventTypes();
-        expect(response).toEqual(eventTypes);
+        expect(response).toEqual(eventTypePage);
     });
 });

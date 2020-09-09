@@ -4,15 +4,21 @@ import { CreateEvent } from "../../Event/CreateEvent";
 import React from "react";
 import { Route, Router } from "react-router-dom";
 import { createMemoryHistory, MemoryHistory } from "history";
-import { fillInInputValueInForm, makeEventType, makeOrganization, reRender } from "../TestHelpers";
+import {
+    fillInInputValueInForm,
+    makeEventType,
+    makeOrganization,
+    makePage,
+    reRender,
+} from "../TestHelpers";
 import td from "testdouble";
 import * as EventApi from "../../Event/EventApi";
+import { TsrEvent } from "../../Event/EventApi";
 import * as EventTypeApi from "../../Event/Type/EventTypeApi";
 import * as OrganizationApi from "../../Organization/OrganizationApi";
-import { TsrEvent } from "../../Event/EventApi";
-import selectEvent from "react-select-event";
 import { Organization } from "../../Organization/OrganizationApi";
-import { EventType } from "../../Event/Type/EventTypeApi";
+import selectEvent from "react-select-event";
+import { PageDTO } from "../../api";
 
 const selectDropdownOrderRegex = /first.*second.*third/;
 const ORGANIZATION_PLACEHOLDER_TEXT = "Select Organizations...";
@@ -99,14 +105,14 @@ describe("create an event", () => {
         expect(history.location.pathname).toEqual("/event/1");
     });
 
-    describe("event select", () => {
+    describe("event type select", () => {
         const setupEventSelectPromise = async (): Promise<RenderResult> => {
             const eventTypes = [
                 makeEventType({ eventTypeId: 3, sortOrder: 3, displayName: "third" }),
                 makeEventType({ eventTypeId: 1, sortOrder: 1, displayName: "first" }),
                 makeEventType({ eventTypeId: 2, sortOrder: 2, displayName: "second" }),
             ];
-            const eventTypesPromise = Promise.resolve(eventTypes);
+            const eventTypesPromise = Promise.resolve(makePage({ items: eventTypes }));
             return renderCreateEvent({ eventTypesPromise });
         };
 
@@ -278,13 +284,13 @@ describe("create an event", () => {
 
     interface RenderCreateEventProps {
         history?: MemoryHistory;
-        eventTypesPromise?: Promise<EventType[]>;
+        eventTypesPromise?: Promise<PageDTO<unknown>>;
         orgNamesPromise?: Promise<Organization[]>;
     }
 
     const renderCreateEvent = async ({
         history = createMemoryHistory(),
-        eventTypesPromise = Promise.resolve([]),
+        eventTypesPromise = Promise.resolve(makePage({})),
         orgNamesPromise = Promise.resolve([]),
     }: RenderCreateEventProps): Promise<RenderResult> => {
         history.push("/createEvent");
