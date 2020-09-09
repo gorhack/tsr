@@ -1,5 +1,6 @@
 package events.tracked.tsr.organization
 
+import events.tracked.tsr.PageDTO
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verifySequence
@@ -7,25 +8,29 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.assertj.core.api.Assertions
 import org.junit.Before
 import org.junit.Test
+import org.springframework.data.domain.*
+import kotlin.math.exp
 
 class OrganizationServiceTest {
     private lateinit var subject: OrganizationService
     private lateinit var mockOrganizationRepository: OrganizationRepository
+    private lateinit var organization1: Organization
+    private lateinit var organization2: Organization
+    private lateinit var expectedPageDTO: PageDTO<Organization>
 
     @Before
     fun setup() {
         mockOrganizationRepository = mockk(relaxUnitFun = true)
         subject = OrganizationService(mockOrganizationRepository)
+        organization1 = Organization(1L, "org one", "org one name", 1)
+        organization2 = Organization(2L, "org two", "org two name", 2)
     }
 
     @Test
     fun `getOrgNames returns list of all org_names`() {
-        val orgName1 = Organization(1L, "org one", "org one name", 1)
-        val orgName2 = Organization(2L, "org two", "org two name", 2)
+        every { mockOrganizationRepository.findAll() } returns listOf(organization1, organization2)
 
-        every { mockOrganizationRepository.findAll() } returns listOf(orgName1, orgName2)
-
-        Assertions.assertThat(subject.getAllOrgNames()).containsExactlyInAnyOrderElementsOf(listOf(orgName1, orgName2))
+        Assertions.assertThat(subject.getAllOrgNames()).containsExactlyInAnyOrderElementsOf(listOf(organization1, organization2))
         verifySequence {
             mockOrganizationRepository.findAll()
         }
@@ -45,4 +50,22 @@ class OrganizationServiceTest {
         }
 
     }
+
+    /*@Test
+    fun `getOrganizationContaining returns PageDTO of organizations`() {
+        val paging: Pageable = PageRequest.of(0, 10)
+        expectedPageDTO = PageDTO(
+                items = listOf(organization1, organization2),
+                totalPages = 1,
+                totalResults = 2,
+                pageNumber = 0,
+                isFirst = true,
+                isLast = true,
+                pageSize = 10
+        )
+
+        every { mockOrganizationRepository.findByOrganizationDisplayNameContaining("org", paging) } returns PageImpl(listOf(organization1, organization2))
+        assertEquals(expectedPageDTO, subject.getOrganizationsContaining("org", 0, 10))
+        verifySequence { mockOrganizationRepository.findByOrganizationDisplayNameContaining("org", paging) }
+    }*/
 }

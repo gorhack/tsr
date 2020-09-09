@@ -1,4 +1,4 @@
-import React, { ReactElement, useEffect, useState } from "react";
+import React, { ReactElement, useState } from "react";
 import { LabeledInput } from "../Inputs/LabeledInput";
 import { useHistory } from "react-router";
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
@@ -9,6 +9,7 @@ import { SelectOption, SelectOptionOG } from "../api";
 import { FormDatePicker } from "../Inputs/FormDatePicker";
 import "./CreateEvent.css";
 import { selectStyles } from "../Styles";
+import { getOrganizationContains, Organization } from "../Organization/OrganizationApi";
 import { getOrganizationNames, Organization } from "../Organization/OrganizationApi";
 import { createEventType, EventType, getEventTypeContains } from "./Type/EventTypeApi";
 import {
@@ -131,34 +132,22 @@ export const CreateEvent: React.FC = () => {
     };
 
     const loadOrganizationSearchTerm = async (searchTerm: string): Promise<SelectOption[]> => {
-        if (searchTerm === "") {
-            return getOrganizationNames()
-                .then((result) => {
-                    setOrganizationsCache(result.items);
-                    return Promise.resolve(mapOrganizationsToOptions(result.items));
-                })
-                .catch((error) => {
-                    console.error("error loading default event types ", error.message);
-                    return Promise.resolve([]);
-                });
-        } else {
-            return getOrganizationContains(searchTerm)
-                .then((result) => {
-                    setOrganizationsCache((oldCache) => {
-                        return sortedUniqBy<Organization>(
-                            [...oldCache, ...result.items],
-                            (e) => e.sortOrder,
-                        );
-                    });
-                    return Promise.resolve(mapOrganizationsToOptions(result.items));
-                })
-                .catch((error) => {
-                    console.error(
-                        `error loading organizations with search term ${searchTerm} ${error.message}`,
+        return getOrganizationContains(searchTerm)
+            .then((result) => {
+                setOrganizationsCache((oldCache) => {
+                    return sortedUniqBy<Organization>(
+                        [...oldCache, ...result.items],
+                        (e) => e.sortOrder,
                     );
-                    return Promise.resolve([]);
                 });
-        }
+                return Promise.resolve(mapOrganizationsToOptions(result.items));
+            })
+            .catch((error) => {
+                console.error(
+                    `error loading organizations with search term ${searchTerm} ${error.message}`,
+                );
+                return Promise.resolve([]);
+            });
     };
 
     return (
