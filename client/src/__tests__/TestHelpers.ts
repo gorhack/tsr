@@ -1,4 +1,5 @@
-import { act, fireEvent, RenderResult } from "@testing-library/react";
+import { act, RenderResult } from "@testing-library/react";
+import { fireEvent } from "@testing-library/dom";
 import { Auditable, TsrEvent } from "../Event/EventApi";
 import { EventType } from "../Event/Type/EventTypeApi";
 import { PageDTO } from "../api";
@@ -103,17 +104,17 @@ export const makeEvent = (partial: Partial<TsrEvent>): TsrEvent => {
     };
 };
 
-export const makePage = (partial: Partial<PageDTO<unknown>>): PageDTO<unknown> => {
+export const makePage = (partial?: Partial<PageDTO<unknown>>): PageDTO<unknown> => {
     // warning, type must be unknown if using helper...
-    const items = partial.items || [];
+    const items = partial?.items || [];
     return {
         items,
-        totalPages: partial.totalPages || 1,
-        pageNumber: partial.pageNumber || 0,
-        pageSize: partial.pageSize || 10,
+        totalPages: partial?.totalPages || 1,
+        pageNumber: partial?.pageNumber || 0,
+        pageSize: partial?.pageSize || 10,
         totalResults: items.length,
-        first: !!partial.first,
-        last: !!partial.last,
+        first: !!partial?.first,
+        last: !!partial?.last,
     };
 };
 

@@ -39,6 +39,11 @@ export interface SelectOption {
     label: string;
 }
 
+export interface SelectOptionOG {
+    value: string;
+    label: string;
+}
+
 // TODO user pref, then use user-set timezone with moment-timezome
 export const userTimeZone = (): string => {
     return Intl.DateTimeFormat().resolvedOptions().timeZone;

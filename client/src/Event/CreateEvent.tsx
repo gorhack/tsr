@@ -3,14 +3,14 @@ import { LabeledInput } from "../Inputs/LabeledInput";
 import { useHistory } from "react-router";
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import AsyncCreatable from "react-select/async-creatable";
-import Select, { createFilter } from "react-select";
+import Select, { createFilter, ValueType } from "react-select";
 import { EditableTsrEvent, saveEvent } from "./EventApi";
-import { SelectOption } from "../api";
+import { SelectOption, SelectOptionOG } from "../api";
 import { FormDatePicker } from "../Inputs/FormDatePicker";
 import "./CreateEvent.css";
 import { selectStyles } from "../Styles";
 import { getOrganizationNames, Organization } from "../Organization/OrganizationApi";
-import { EventType, getEventTypeContains, getEventTypes } from "./Type/EventTypeApi";
+import { createEventType, EventType, getEventTypeContains } from "./Type/EventTypeApi";
 import sortedUniqBy from "lodash/sortedUniqBy";
 
 type FormData = {
@@ -104,34 +104,33 @@ export const CreateEvent: React.FC = () => {
     };
 
     const loadEventTypeSearchTerm = async (searchTerm: string): Promise<SelectOption[]> => {
-        if (searchTerm === "") {
-            return getEventTypes()
-                .then((result) => {
-                    setEventTypesCache(result.items);
-                    return Promise.resolve(mapEventTypeToOptions(result.items));
-                })
-                .catch((error) => {
-                    console.error("error loading default event types ", error.message);
-                    return Promise.resolve([]);
-                });
-        } else {
-            return getEventTypeContains(searchTerm)
-                .then((result) => {
-                    setEventTypesCache((oldCache) => {
-                        return sortedUniqBy<EventType>(
-                            [...oldCache, ...result.items],
-                            (e) => e.sortOrder,
-                        );
-                    });
-                    return Promise.resolve(mapEventTypeToOptions(result.items));
-                })
-                .catch((error) => {
-                    console.error(
-                        `error loading event types with search term ${searchTerm} ${error.message}`,
+        return getEventTypeContains(searchTerm)
+            .then((result) => {
+                setEventTypesCache((oldCache) => {
+                    return sortedUniqBy<EventType>(
+                        [...oldCache, ...result.items],
+                        (e) => e.sortOrder,
                     );
-                    return Promise.resolve([]);
                 });
-        }
+                return Promise.resolve(mapEventTypeToOptions(result.items));
+            })
+            .catch((error) => {
+                console.error(
+                    `error loading event types with search term ${searchTerm} ${error.message}`,
+                );
+                return Promise.resolve([]);
+            });
+    };
+
+    const createAndMapEventType = (inputVal: string): void => {
+        (async () =>
+            await createEventType(inputVal)
+                .then((result) => {
+                    setEventTypesCache((oldCache) => [...oldCache, result]);
+                })
+                .catch((error) => {
+                    console.error(`unable to create event type ${inputVal}: ${error.message}`);
+                }))();
     };
 
     return (
@@ -227,34 +226,47 @@ export const CreateEvent: React.FC = () => {
                 />
                 <span className={"space-2"} />
 
-                <label data-testid="event-type-select" htmlFor="eventType">
-                    <div className={"space-1"} style={{ textAlign: "initial" }}>
-                        event type
-                    </div>
-                    <Controller
-                        name="eventTypeOption"
-                        control={control}
-                        defaultValue={initialEventType}
-                        render={(props): ReactElement => (
+                <Controller
+                    name="eventTypeOption"
+                    control={control}
+                    defaultValue={initialEventType}
+                    render={(props): ReactElement => (
+                        <>
+                            <label
+                                data-testid="event-type-select"
+                                htmlFor="eventType"
+                                style={{ textAlign: "initial" }}
+                            >
+                                event type
+                            </label>
                             <AsyncCreatable
-                                onCreateOption={(val) => console.log("TODO create ", val)} // TODO create eventType
                                 styles={selectStyles}
+                                isClearable
                                 defaultOptions
                                 loadOptions={loadEventTypeSearchTerm}
-                                isClearable={true}
+                                getOptionValue={(option) => option.label}
                                 placeholder="Select an Event Type..."
+                                name="eventType"
                                 inputId="eventType"
-                                onChange={(selection): void => {
+                                onChange={(
+                                    selection: ValueType<SelectOptionOG>,
+                                    actionType,
+                                ): void => {
+                                    if (selection && actionType.action === "create-option") {
+                                        if ("label" in selection) {
+                                            createAndMapEventType(selection.label);
+                                        }
+                                    }
                                     props.onChange(selection);
                                 }}
                             />
-                        )}
-                        filterOption={createFilter({
-                            ignoreCase: true,
-                            matchFrom: "any",
-                        })}
-                    />
-                </label>
+                        </>
+                    )}
+                    filterOption={createFilter({
+                        ignoreCase: true,
+                        matchFrom: "any",
+                    })}
+                />
                 <span className={"space-2"} />
 
                 <div>

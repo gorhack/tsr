@@ -1,6 +1,11 @@
 import nock from "nock";
 import { HttpStatus } from "../../../api";
-import { EventType, getEventTypeContains, getEventTypes } from "../../../Event/Type/EventTypeApi";
+import {
+    createEventType,
+    EventType,
+    getEventTypeContains,
+    getEventTypes,
+} from "../../../Event/Type/EventTypeApi";
 import axios from "axios";
 import { makePage } from "../../TestHelpers";
 
@@ -43,9 +48,23 @@ describe("event type", () => {
     it("gets event types that contain search term", async () => {
         const eventTypePage = makePage({ items: [firstEventType] });
         nock("http://example.com")
-            .get("/api/v1/event/type/search?searchTerm=first")
+            .get("/api/v1/event/type/search?searchTerm=fir")
             .reply(HttpStatus.OK, eventTypePage);
-        const response = await getEventTypeContains("first");
+        const response = await getEventTypeContains("fir");
         expect(response).toEqual(eventTypePage);
+    });
+
+    it("creates an event type", async () => {
+        const newEventType: EventType = {
+            eventTypeId: 1,
+            eventTypeName: "one",
+            displayName: "one",
+            sortOrder: 1,
+        };
+        nock("http://example.com")
+            .post("/api/v1/event/type", { typeName: "one" })
+            .reply(HttpStatus.CREATED, newEventType);
+        const response = await createEventType("one");
+        expect(response).toEqual(newEventType);
     });
 });

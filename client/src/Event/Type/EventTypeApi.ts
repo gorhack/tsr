@@ -25,6 +25,17 @@ export const getEventTypeContains = async (searchTerm: string): Promise<PageDTO<
         });
 };
 
+export const createEventType = async (typeName: string): Promise<EventType> => {
+    return axios
+        .post(baseUri, { typeName: typeName })
+        .then((response: AxiosResponse<EventType>) => {
+            return response.data;
+        })
+        .catch((error) => {
+            throw new Error(error.message);
+        });
+};
+
 export interface EventType {
     eventTypeId: number;
     eventTypeName: string;

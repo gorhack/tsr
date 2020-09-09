@@ -1,5 +1,6 @@
 import "mutationobserver-shim";
-import { act, fireEvent, render, RenderResult, screen } from "@testing-library/react";
+import { act, render, RenderResult, screen } from "@testing-library/react";
+import { fireEvent } from "@testing-library/dom";
 import { CreateEvent } from "../../Event/CreateEvent";
 import React from "react";
 import { Route, Router } from "react-router-dom";
@@ -19,6 +20,7 @@ import * as OrganizationApi from "../../Organization/OrganizationApi";
 import { Organization } from "../../Organization/OrganizationApi";
 import selectEvent from "react-select-event";
 import { PageDTO } from "../../api";
+import { EventType } from "../../Event/Type/EventTypeApi";
 
 const selectDropdownOrderRegex = /first.*second.*third/;
 const ORGANIZATION_PLACEHOLDER_TEXT = "Select Organizations...";
@@ -29,11 +31,13 @@ const END_DATE_PLACEHOLDER_TEXT = "Choose the End Date...";
 describe("create an event", () => {
     const dateToInput = new Date().toLocaleDateString();
     let mockSaveEvent: typeof EventApi.saveEvent;
-    let mockGetEventTypes: typeof EventTypeApi.getEventTypes;
+    let mockCreateEventType: typeof EventTypeApi.createEventType;
+    let mockGetEventTypeContains: typeof EventTypeApi.getEventTypeContains;
     let mockGetOrgNames: typeof OrganizationApi.getOrganizationNames;
     beforeEach(() => {
         mockSaveEvent = td.replace(EventApi, "saveEvent");
-        mockGetEventTypes = td.replace(EventTypeApi, "getEventTypes");
+        mockCreateEventType = td.replace(EventTypeApi, "createEventType");
+        mockGetEventTypeContains = td.replace(EventTypeApi, "getEventTypeContains");
         mockGetOrgNames = td.replace(OrganizationApi, "getOrganizationNames");
     });
 
@@ -108,9 +112,9 @@ describe("create an event", () => {
     describe("event type select", () => {
         const setupEventSelectPromise = async (): Promise<RenderResult> => {
             const eventTypes = [
-                makeEventType({ eventTypeId: 3, sortOrder: 3, displayName: "third" }),
                 makeEventType({ eventTypeId: 1, sortOrder: 1, displayName: "first" }),
                 makeEventType({ eventTypeId: 2, sortOrder: 2, displayName: "second" }),
+                makeEventType({ eventTypeId: 3, sortOrder: 3, displayName: "third" }),
             ];
             const eventTypesPromise = Promise.resolve(makePage({ items: eventTypes }));
             return renderCreateEvent({ eventTypesPromise });
@@ -118,10 +122,51 @@ describe("create an event", () => {
 
         it("can clear the event types", async () => {
             await setupEventSelectPromise();
-            await selectEvent.select(screen.getByText(EVENT_TYPE_PLACEHOLDER_TEXT), "second");
+            await selectEvent.select(screen.getByLabelText("event type"), "second");
             expect(screen.getByText("second")).toBeInTheDocument();
-            await selectEvent.clearAll(screen.getByText("second"));
-            expect(screen.queryByAltText("second")).toBeNull();
+            await selectEvent.clearAll(screen.getByLabelText("event type"));
+            expect(screen.queryByText("second")).toBeNull();
+        });
+
+        it("can create and select an event type", async () => {
+            await setupEventSelectPromise();
+            td.when(mockGetEventTypeContains(td.matchers.anything())).thenResolve(
+                makePage() as PageDTO<EventType>,
+            );
+            td.when(mockCreateEventType("fourth")).thenResolve({
+                eventTypeId: 4,
+                displayName: "fourth",
+                eventTypeName: "fourth",
+                sortOrder: 4,
+            });
+            await act(async () => {
+                await selectEvent.create(screen.getByLabelText("event type"), "fourth", {
+                    waitForElement: false,
+                });
+            });
+            expect(screen.getByText("fourth")).toBeInTheDocument();
+        });
+
+        it("can search for event types", async () => {
+            await setupEventSelectPromise();
+
+            td.when(mockGetEventTypeContains("fou")).thenResolve(
+                makePage({
+                    items: [
+                        makeEventType({
+                            eventTypeId: 4,
+                            eventTypeName: "fourth",
+                            displayName: "fourth",
+                            sortOrder: 4,
+                        }),
+                    ],
+                }) as PageDTO<EventType>,
+            );
+            await act(async () => {
+                fireEvent.change(screen.getByLabelText("event type"), { target: { value: "fou" } });
+            });
+            await selectEvent.select(screen.getByLabelText("event type"), "fourth");
+            expect(screen.getByText("fourth")).toBeInTheDocument();
         });
     });
 
@@ -287,7 +332,7 @@ describe("create an event", () => {
     }: RenderCreateEventProps): Promise<RenderResult> => {
         history.push("/createEvent");
 
-        td.when(mockGetEventTypes()).thenDo(() => Promise.resolve(eventTypesPromise));
+        td.when(mockGetEventTypeContains("")).thenDo(() => Promise.resolve(eventTypesPromise));
         td.when(mockGetOrgNames()).thenDo(() => Promise.resolve(orgNamesPromise));
 
         const result = render(
