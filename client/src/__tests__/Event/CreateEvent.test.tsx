@@ -116,14 +116,6 @@ describe("create an event", () => {
             return renderCreateEvent({ eventTypesPromise });
         };
 
-        it("gets all the event types in order", async () => {
-            await setupEventSelectPromise();
-            await selectEvent.openMenu(screen.getByText(EVENT_TYPE_PLACEHOLDER_TEXT));
-            expect(screen.getByTestId("event-type-select")).toHaveTextContent(
-                selectDropdownOrderRegex,
-            );
-        });
-
         it("can clear the event types", async () => {
             await setupEventSelectPromise();
             await selectEvent.select(screen.getByText(EVENT_TYPE_PLACEHOLDER_TEXT), "second");
