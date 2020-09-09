@@ -63,11 +63,11 @@ internal class EventTypeControllerTest {
             expectedPageDTO, HttpStatus.OK
         )
 
-        every { mockEventTypeService.getEventTypeContains(null, 0, 10, Sort.by("sortOrder")) } returns expectedPageDTO
+        every { mockEventTypeService.getEventTypeContains("", 0, 10, Sort.by("sortOrder")) } returns expectedPageDTO
 
-        assertEquals(expectedResponse, subject.getEventTypeContains(null, 0, 10, "sortOrder"))
+        assertEquals(expectedResponse, subject.getEventTypeContains("", 0, 10, "sortOrder"))
         verifySequence {
-            mockEventTypeService.getEventTypeContains(null, 0, 10, Sort.by("sortOrder"))
+            mockEventTypeService.getEventTypeContains("", 0, 10, Sort.by("sortOrder"))
         }
     }
 }

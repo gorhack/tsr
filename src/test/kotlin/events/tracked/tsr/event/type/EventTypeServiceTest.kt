@@ -67,7 +67,7 @@ class EventTypeServiceTest {
 
         every { mockEventTypeRepository.findByDisplayNameContains("", paging) } returns PageImpl(listOf(eventType1, eventType2), paging, 2)
 
-        assertEquals(expectedPageDTO, subject.getEventTypeContains(null, 0, 10, Sort.by("sortOrder")))
+        assertEquals(expectedPageDTO, subject.getEventTypeContains("", 0, 10, Sort.by("sortOrder")))
         verifySequence {
             mockEventTypeRepository.findByDisplayNameContains("", paging)
         }

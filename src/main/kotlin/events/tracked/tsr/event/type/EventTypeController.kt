@@ -29,9 +29,9 @@ class EventTypeController(
 
     @GetMapping(value = ["/search"])
     fun getEventTypeContains(
-        @RequestBody(required = false) searchTerm: String?,
+        @RequestParam("searchTerm", defaultValue = "") searchTerm: String,
         @RequestParam("page", defaultValue = "0") page: Int,
-        @RequestParam("size", defaultValue = "10") size: Int,
+        @RequestParam("size", defaultValue = "1") size: Int,
         @RequestParam("sortBy", defaultValue = "sortOrder") sortBy: String
     ): ResponseEntity<PageDTO<EventType>> {
         return when (sortBy) {

@@ -20,9 +20,10 @@ class EventTypeService(
         }
     }
 
-    fun getEventTypeContains(searchTerm: String?, page: Int, size: Int, sortBy: Sort): PageDTO<EventType> {
+    fun getEventTypeContains(searchTerm: String, page: Int, size: Int, sortBy: Sort): PageDTO<EventType> {
+        println(searchTerm)
         val paging: Pageable = PageRequest.of(page, size, sortBy)
-        val eventPage = eventTypeRepository.findByDisplayNameContains(searchTerm ?: "", paging)
+        val eventPage = eventTypeRepository.findByDisplayNameContains(searchTerm, paging)
         return if (eventPage.hasContent()) {
             PageDTO(eventPage)
         } else {
