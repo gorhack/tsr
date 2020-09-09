@@ -76,7 +76,7 @@ class EventServiceTest {
     @Test
     fun `getActiveEvents returns PageDTO of EventDTOs list of all events that end after today`() {
         val paging: Pageable = PageRequest.of(0, 10, Sort.by("startDate"))
-        every { mockEventRepository.findByEndDateGreaterThanEqual(any(), paging) } returns PageImpl(listOf(eventWithId, eventWithId2), paging, 1)
+        every { mockEventRepository.findByEndDateGreaterThanEqual(any(), paging) } returns PageImpl(listOf(eventWithId, eventWithId2), paging, 2)
         assertEquals(expectedPageDTO, subject.getActiveEvents(0, 10, Sort.by("startDate")))
         verifySequence {
             mockEventRepository.findByEndDateGreaterThanEqual(any(), paging)
