@@ -14,19 +14,21 @@ import org.springframework.http.ResponseEntity
 internal class EventTypeControllerTest {
     private lateinit var subject: EventTypeController
     private lateinit var mockEventTypeService: EventTypeService
+    private lateinit var firstEventType: EventType
+    private lateinit var secondEventType: EventType
 
     @Before
     fun setup() {
         mockEventTypeService = mockk(relaxUnitFun = true)
         subject = EventTypeController(mockEventTypeService)
+        firstEventType = EventType(1L, "first", "first event", 1)
+        secondEventType = EventType(2L, "second", "second event", 2)
     }
 
     @Test
     fun `returns page of event types`() {
-        val eventType1 = EventType(1L, "first", "first event", 1)
-        val eventType2 = EventType(2L, "second", "second event", 2)
         val expectedPageDTO = PageDTO(
-            items = listOf(eventType1, eventType2),
+            items = listOf(firstEventType, secondEventType),
             totalPages = 1,
             totalResults = 2,
             pageNumber = 0,
@@ -48,10 +50,8 @@ internal class EventTypeControllerTest {
 
     @Test
     fun `without search terms, returns page of event types`() {
-        val eventType1 = EventType(1L, "first", "first event", 1)
-        val eventType2 = EventType(2L, "second", "second event", 2)
         val expectedPageDTO = PageDTO(
-            items = listOf(eventType1, eventType2),
+            items = listOf(firstEventType, secondEventType),
             totalPages = 1,
             totalResults = 2,
             pageNumber = 0,
@@ -63,11 +63,20 @@ internal class EventTypeControllerTest {
             expectedPageDTO, HttpStatus.OK
         )
 
-        every { mockEventTypeService.getEventTypeContains("", 0, 10, Sort.by("sortOrder")) } returns expectedPageDTO
+        every { mockEventTypeService.getEventTypeContains("event", 0, 10, Sort.by("sortOrder")) } returns expectedPageDTO
 
-        assertEquals(expectedResponse, subject.getEventTypeContains("", 0, 10, "sortOrder"))
+        assertEquals(expectedResponse, subject.getEventTypeContains("event", 0, 10, "sortOrder"))
         verifySequence {
-            mockEventTypeService.getEventTypeContains("", 0, 10, Sort.by("sortOrder"))
+            mockEventTypeService.getEventTypeContains("event", 0, 10, Sort.by("sortOrder"))
         }
+    }
+
+    @Test
+    fun `creates an event type`() {
+        val eventTypeDTO = EventType(displayName = "third", eventTypeName = "third")
+        val savedEventTypeDTO = EventType(eventTypeId = 3L, eventTypeName = "third", displayName = "third", sortOrder = 3)
+        every { mockEventTypeService.createEventType(eventTypeDTO) } returns savedEventTypeDTO
+        assertEquals(ResponseEntity(savedEventTypeDTO, HttpStatus.CREATED), subject.createEventType(eventTypeDTO))
+        verifySequence { mockEventTypeService.createEventType(eventTypeDTO) }
     }
 }

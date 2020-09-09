@@ -43,4 +43,11 @@ class EventTypeController(
             else -> ResponseEntity(PageDTO(), HttpHeaders(), HttpStatus.BAD_REQUEST)
         }
     }
+
+    @PostMapping(value = [""])
+    fun createEventType(
+        @RequestBody eventType: EventType
+    ): ResponseEntity<EventType> {
+        return ResponseEntity<EventType>(eventTypeService.createEventType(eventType), HttpHeaders(), HttpStatus.CREATED)
+    }
 }
