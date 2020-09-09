@@ -2,6 +2,7 @@ import React, { ReactElement, useEffect, useState } from "react";
 import { LabeledInput } from "../Inputs/LabeledInput";
 import { useHistory } from "react-router";
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
+import AsyncCreatable from "react-select/async-creatable";
 import Select, { createFilter } from "react-select";
 import { EditableTsrEvent, saveEvent } from "./EventApi";
 import { SelectOption } from "../api";
@@ -9,7 +10,8 @@ import { FormDatePicker } from "../Inputs/FormDatePicker";
 import "./CreateEvent.css";
 import { selectStyles } from "../Styles";
 import { getOrganizationNames, Organization } from "../Organization/OrganizationApi";
-import { EventType, getEventTypes } from "./Type/EventTypeApi";
+import { EventType, getEventTypeContains, getEventTypes } from "./Type/EventTypeApi";
+import sortedUniqBy from "lodash/sortedUniqBy";
 
 type FormData = {
     eventName: string;
@@ -27,8 +29,7 @@ export const CreateEvent: React.FC = () => {
     const initialEventType = { id: 0, label: "" };
     const initialOrgName = { id: 0, label: "" };
 
-    const [eventTypes, setEventTypes] = useState<EventType[]>([]);
-    const [eventTypeOptions, setEventTypeOptions] = useState<SelectOption[]>([]);
+    const [eventTypesCache, setEventTypesCache] = useState<EventType[]>([]);
 
     const [orgNames, setOrgNames] = useState<Organization[]>([]);
     const [orgNameOptions, setOrgNameOptions] = useState<SelectOption[]>([]);
@@ -59,24 +60,8 @@ export const CreateEvent: React.FC = () => {
                 .catch((error) => {
                     console.error("error getting organization names ", error.message);
                 });
-            await getEventTypes()
-                .then((result) => {
-                    setEventTypes(result.items); // TODO only handles first page of event types
-                    const newEventTypeOptions: SelectOption[] = [...result.items]
-                        .sort((e, e2) => e.sortOrder - e2.sortOrder)
-                        .map((eventType) => {
-                            return {
-                                id: eventType.eventTypeId,
-                                label: eventType.displayName,
-                            };
-                        });
-                    setEventTypeOptions(newEventTypeOptions);
-                })
-                .catch((error) => {
-                    console.error("error getting event types ", error.message);
-                });
         })();
-    }, [setEventTypes, setEventTypeOptions, setOrgNames, setOrgNameOptions]);
+    }, [setEventTypesCache, setOrgNames, setOrgNameOptions]);
 
     const onCancel = (e: React.MouseEvent<HTMLButtonElement>): void => {
         e.preventDefault();
@@ -96,7 +81,7 @@ export const CreateEvent: React.FC = () => {
             organization: foundOrg,
             startDate: startDate.toJSON(),
             endDate: endDate.toJSON(),
-            eventType: eventTypes.find(
+            eventType: eventTypesCache.find(
                 (eventType) => eventType.eventTypeId === eventTypeOption?.id,
             ),
         };
@@ -107,6 +92,46 @@ export const CreateEvent: React.FC = () => {
             .catch((error) => {
                 console.error("error saving the event", error.message);
             });
+    };
+
+    const mapEventTypeToOptions = (eventTypes: EventType[]): SelectOption[] => {
+        return eventTypes.map((eventType) => {
+            return {
+                id: eventType.eventTypeId,
+                label: eventType.displayName,
+            };
+        });
+    };
+
+    const loadEventTypeSearchTerm = async (searchTerm: string): Promise<SelectOption[]> => {
+        if (searchTerm === "") {
+            return getEventTypes()
+                .then((result) => {
+                    setEventTypesCache(result.items);
+                    return Promise.resolve(mapEventTypeToOptions(result.items));
+                })
+                .catch((error) => {
+                    console.error("error loading default event types ", error.message);
+                    return Promise.resolve([]);
+                });
+        } else {
+            return getEventTypeContains(searchTerm)
+                .then((result) => {
+                    setEventTypesCache((oldCache) => {
+                        return sortedUniqBy<EventType>(
+                            [...oldCache, ...result.items],
+                            (e) => e.sortOrder,
+                        );
+                    });
+                    return Promise.resolve(mapEventTypeToOptions(result.items));
+                })
+                .catch((error) => {
+                    console.error(
+                        `error loading event types with search term ${searchTerm} ${error.message}`,
+                    );
+                    return Promise.resolve([]);
+                });
+        }
     };
 
     return (
@@ -211,9 +236,11 @@ export const CreateEvent: React.FC = () => {
                         control={control}
                         defaultValue={initialEventType}
                         render={(props): ReactElement => (
-                            <Select
+                            <AsyncCreatable
+                                onCreateOption={(val) => console.log("TODO create ", val)} // TODO create eventType
                                 styles={selectStyles}
-                                options={eventTypeOptions}
+                                defaultOptions
+                                loadOptions={loadEventTypeSearchTerm}
                                 isClearable={true}
                                 placeholder="Select an Event Type..."
                                 inputId="eventType"

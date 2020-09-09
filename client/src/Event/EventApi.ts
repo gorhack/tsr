@@ -9,7 +9,7 @@ export const saveEvent = async (event: EditableTsrEvent): Promise<TsrEvent> => {
     try {
         return (await axios.post(baseUri, event)).data;
     } catch (error) {
-        throw new Error(error.response.message);
+        throw new Error(error.message);
     }
 };
 
@@ -18,7 +18,7 @@ export const getEventById = async (eventId: number): Promise<TsrEvent> => {
     try {
         return (await axios.get(uri)).data;
     } catch (error) {
-        throw new Error(error.response.message);
+        throw new Error(error.message);
     }
 };
 
@@ -30,7 +30,7 @@ export const getActiveEvents = async (pageParams: PageParams = {}): Promise<Page
             return response.data;
         })
         .catch((error) => {
-            throw new Error(error.response.message);
+            throw new Error(error.message);
         });
 };
 
@@ -45,7 +45,7 @@ export const getActiveEventsByUserId = async (
             return response.data;
         })
         .catch((error) => {
-            throw new Error(error.response.message);
+            throw new Error(error.message);
         });
 };
 
