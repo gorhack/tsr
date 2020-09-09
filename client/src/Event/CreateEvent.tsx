@@ -237,6 +237,7 @@ export const CreateEvent: React.FC = () => {
                             >
                                 event type
                             </label>
+                            <div className={"space-1"} />
                             <AsyncCreatable
                                 styles={selectStyles}
                                 isClearable
