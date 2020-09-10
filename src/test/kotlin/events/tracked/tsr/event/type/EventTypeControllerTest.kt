@@ -14,20 +14,20 @@ import org.springframework.http.ResponseEntity
 internal class EventTypeControllerTest {
     private lateinit var subject: EventTypeController
     private lateinit var mockEventTypeService: EventTypeService
-    private lateinit var firstEventType: EventType
-    private lateinit var secondEventType: EventType
+    private lateinit var firstEventType: EventTypeDTO
+    private lateinit var secondEventType: EventTypeDTO
 
     @Before
     fun setup() {
         mockEventTypeService = mockk(relaxUnitFun = true)
         subject = EventTypeController(mockEventTypeService)
-        firstEventType = EventType(1L, "first", "first event", 1)
-        secondEventType = EventType(2L, "second", "second event", 2)
+        firstEventType = EventTypeDTO(1L, "first", "first event", 1)
+        secondEventType = EventTypeDTO(2L, "second", "second event", 2)
     }
 
     @Test
     fun `returns page of event types`() {
-        val expectedPageDTO = PageDTO(
+        val expectedPageDTO: PageDTO<EventTypeDTO> = PageDTO(
             items = listOf(firstEventType, secondEventType),
             totalPages = 1,
             totalResults = 2,
@@ -36,7 +36,7 @@ internal class EventTypeControllerTest {
             isLast = true,
             pageSize = 10
         )
-        val expectedResponse: ResponseEntity<PageDTO<EventType>> = ResponseEntity(
+        val expectedResponse: ResponseEntity<PageDTO<EventTypeDTO>> = ResponseEntity(
             expectedPageDTO, HttpStatus.OK
         )
 
@@ -59,7 +59,7 @@ internal class EventTypeControllerTest {
             isLast = true,
             pageSize = 10
         )
-        val expectedResponse: ResponseEntity<PageDTO<EventType>> = ResponseEntity(
+        val expectedResponse: ResponseEntity<PageDTO<EventTypeDTO>> = ResponseEntity(
             expectedPageDTO, HttpStatus.OK
         )
 

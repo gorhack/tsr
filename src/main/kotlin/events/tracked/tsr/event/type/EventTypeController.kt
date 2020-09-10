@@ -16,9 +16,9 @@ class EventTypeController(
     fun allEventTypes(@RequestParam("page", defaultValue = "0") page: Int,
                       @RequestParam("size", defaultValue = "10") size: Int,
                       @RequestParam("sortBy", defaultValue = "sortOrder") sortBy: String
-    ): ResponseEntity<PageDTO<EventType>> {
+    ): ResponseEntity<PageDTO<EventTypeDTO>> {
         return when (sortBy) {
-            "sortOrder" -> ResponseEntity<PageDTO<EventType>>(
+            "sortOrder" -> ResponseEntity<PageDTO<EventTypeDTO>>(
                 eventTypeService.getAllEventTypes(page, size, Sort.by(sortBy)),
                 HttpHeaders(),
                 HttpStatus.OK
@@ -31,11 +31,11 @@ class EventTypeController(
     fun getEventTypeContains(
         @RequestParam("searchTerm", defaultValue = "") searchTerm: String,
         @RequestParam("page", defaultValue = "0") page: Int,
-        @RequestParam("size", defaultValue = "1") size: Int,
+        @RequestParam("size", defaultValue = "10") size: Int,
         @RequestParam("sortBy", defaultValue = "sortOrder") sortBy: String
-    ): ResponseEntity<PageDTO<EventType>> {
+    ): ResponseEntity<PageDTO<EventTypeDTO>> {
         return when (sortBy) {
-            "sortOrder" -> ResponseEntity<PageDTO<EventType>>(
+            "sortOrder" -> ResponseEntity<PageDTO<EventTypeDTO>>(
                 eventTypeService.getEventTypeContains(searchTerm, page, size, Sort.by(sortBy)),
                 HttpHeaders(),
                 HttpStatus.OK
