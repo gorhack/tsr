@@ -76,3 +76,7 @@ export interface Auditable {
     lastModifiedBy: string;
     lastModifiedByDisplayName?: string;
 }
+
+export enum SocketSubscriptionTopics {
+    EVENT_CREATED = "/topic/newEvent/",
+}
