@@ -1,5 +1,7 @@
 package events.tracked.tsr.organization
 
+import events.tracked.tsr.jpa_ext.Auditable
+import java.time.OffsetDateTime
 import javax.persistence.*
 
 @Entity
@@ -11,4 +13,16 @@ data class Organization(
     var organizationName: String = "",
     var organizationDisplayName: String = "",
     var sortOrder: Int = 0
-)
+) : Auditable() {
+    constructor(organizationId: Long, organizationName: String, organizationDisplayName: String, sortOrder: Int, lastModifiedDate: OffsetDateTime, lastModifiedBy: String, createdDate: OffsetDateTime, createdBy: String) :
+        this(organizationId = organizationId, organizationName = organizationName, organizationDisplayName = organizationDisplayName, sortOrder = sortOrder) {
+        this.lastModifiedDate = lastModifiedDate
+        this.lastModifiedBy = lastModifiedBy
+        this.createdDate = createdDate
+        this.createdBy = createdBy
+    }
+
+    fun toOrganizationDTO(): OrganizationDTO{
+        return OrganizationDTO(this)
+    }
+}
