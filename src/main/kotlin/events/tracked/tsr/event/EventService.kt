@@ -1,7 +1,7 @@
 package events.tracked.tsr.event
 
 import events.tracked.tsr.PageDTO
-import events.tracked.tsr.TsrEventSaveEvent
+import events.tracked.tsr.NewTsrEventSaveEvent
 import events.tracked.tsr.user.TsrUserRepository
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.dao.EmptyResultDataAccessException
@@ -23,7 +23,7 @@ class EventService(
     @Transactional
     fun saveEvent(eventDTO: EventDTO): EventDTO {
         val savedEvent = eventRepository.saveAndFlush(eventDTO.toEvent())
-        applicationEventPublisher.publishEvent(TsrEventSaveEvent(this, savedEvent))
+        applicationEventPublisher.publishEvent(NewTsrEventSaveEvent(this, savedEvent))
         return savedEvent.toEventDTO()
     }
 

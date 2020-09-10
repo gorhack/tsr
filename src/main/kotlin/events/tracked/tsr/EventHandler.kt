@@ -11,7 +11,7 @@ import org.springframework.transaction.event.TransactionalEventListener
 class EventHandler(private val websocket: SimpMessagingTemplate) {
     @Async
     @TransactionalEventListener
-    fun tsrEventSaveEvent(event: Event) {
+    fun newTsrEventSaveEvent(event: Event) {
         val orgId = event.organization.organizationId
         val dto = event.toEventDTO()
         // TODO map over all event organzations and convertAndSend to each org
@@ -19,5 +19,5 @@ class EventHandler(private val websocket: SimpMessagingTemplate) {
     }
 }
 
-class TsrEventSaveEvent(source: Any, val event: Event)
+class NewTsrEventSaveEvent(source: Any, val event: Event)
     : ApplicationEvent(source)

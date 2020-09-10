@@ -4,6 +4,10 @@ import { Auditable, TsrEvent } from "../Event/EventApi";
 import { EventType } from "../Event/Type/EventTypeApi";
 import { PageDTO } from "../api";
 import { Organization } from "../Organization/OrganizationApi";
+import td from "testdouble";
+import { SocketService, SocketStatus } from "../SocketService";
+import { messageCallbackType } from "@stomp/stompjs";
+import { Client, StompHeaders, StompSubscription } from "@stomp/stompjs";
 
 // Define a NockBody any to avoid linter warnings. Nock can take objects of any type.
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -116,6 +120,52 @@ export const makePage = (partial?: Partial<PageDTO<unknown>>): PageDTO<unknown> 
         first: !!partial?.first,
         last: !!partial?.last,
     };
+};
+
+export const mockSocketService = (): SocketService => {
+    const socketService = new SocketService({ create: false, status: SocketStatus.CONNECTED });
+    const readyCall = td.replace(socketService, "ready");
+    td.when(readyCall()).thenReturn(true);
+
+    td.replace(socketService, "client");
+    socketService.client = {
+        subscribe: (
+            subscribeTopic: string,
+            callback: messageCallbackType,
+            headers?: StompHeaders,
+        ): StompSubscription => {
+            const subscriptionId = headers
+                ? headers.id
+                : "generated-subscription-id-" + Math.random() * 100;
+            return {
+                id: subscriptionId,
+                unsubscribe: (): void => {
+                    // do nothing
+                },
+            };
+        },
+    } as Client;
+    const shutdown = td.replace(socketService, "shutdown");
+    td.when(shutdown()).thenDo(() => Promise.resolve());
+    const unsubscribe = td.replace(socketService, "unsubscribe");
+    td.when(unsubscribe()).thenDo(() => Promise.resolve());
+
+    return socketService;
+};
+
+export const callSocketSubscriptionHandler = (
+    mockedSocketService: SocketService,
+    topic: string,
+    subscriptionId: string,
+    expectedServerMessage: unknown,
+): void => {
+    act((): void => {
+        mockedSocketService.sendMessageToTopicIdHandler(
+            topic,
+            subscriptionId,
+            JSON.stringify(expectedServerMessage),
+        );
+    });
 };
 
 export const reRender = async (): Promise<void> => {

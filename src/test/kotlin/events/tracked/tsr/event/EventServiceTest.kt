@@ -21,7 +21,7 @@ class EventServiceTest {
     private lateinit var mockTsrUserRepository: TsrUserRepository
     private lateinit var mockApplicationEventPublisher: ApplicationEventPublisher
 
-    private var capturedTsrEventSaveEvent = slot<TsrEventSaveEvent>()
+    private var capturedTsrEventSaveEvent = slot<NewTsrEventSaveEvent>()
 
     // test data
     private lateinit var eventWithoutId: Event
