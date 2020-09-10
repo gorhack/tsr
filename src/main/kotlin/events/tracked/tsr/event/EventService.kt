@@ -1,7 +1,9 @@
 package events.tracked.tsr.event
 
 import events.tracked.tsr.PageDTO
+import events.tracked.tsr.TsrEventSaveEvent
 import events.tracked.tsr.user.TsrUserRepository
+import org.springframework.context.ApplicationEventPublisher
 import org.springframework.dao.EmptyResultDataAccessException
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
@@ -9,15 +11,19 @@ import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import java.time.OffsetDateTime
 
 @Service
 class EventService(
     private val eventRepository: EventRepository,
     private val userRepository: TsrUserRepository,
+    private val applicationEventPublisher: ApplicationEventPublisher
 ) {
+    @Transactional
     fun saveEvent(eventDTO: EventDTO): EventDTO {
-        val savedEvent = eventRepository.save(eventDTO.toEvent())
+        val savedEvent = eventRepository.saveAndFlush(eventDTO.toEvent())
+        applicationEventPublisher.publishEvent(TsrEventSaveEvent(this, savedEvent))
         return savedEvent.toEventDTO()
     }
 

@@ -4,12 +4,11 @@ import events.tracked.tsr.*
 import events.tracked.tsr.user.TsrUser
 import events.tracked.tsr.user.TsrUserRepository
 import events.tracked.tsr.user.UserRole
-import io.mockk.every
-import io.mockk.mockk
-import io.mockk.verifySequence
+import io.mockk.*
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.springframework.context.ApplicationEventPublisher
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
@@ -20,6 +19,11 @@ class EventServiceTest {
     private lateinit var subject: EventService
     private lateinit var mockEventRepository: EventRepository
     private lateinit var mockTsrUserRepository: TsrUserRepository
+    private lateinit var mockApplicationEventPublisher: ApplicationEventPublisher
+
+    private var capturedTsrEventSaveEvent = slot<TsrEventSaveEvent>()
+
+    // test data
     private lateinit var eventWithoutId: Event
     private lateinit var eventDTOWithoutId: EventDTO
     private lateinit var eventWithId: Event
@@ -33,7 +37,12 @@ class EventServiceTest {
     fun setup() {
         mockEventRepository = mockk(relaxUnitFun = true)
         mockTsrUserRepository = mockk(relaxUnitFun = true)
-        subject = EventService(mockEventRepository, mockTsrUserRepository)
+        mockApplicationEventPublisher = mockk()
+        subject = EventService(mockEventRepository, mockTsrUserRepository, mockApplicationEventPublisher)
+
+        every {
+            mockApplicationEventPublisher.publishEvent(capture(capturedTsrEventSaveEvent))
+        } just Runs
 
         eventWithoutId = makeEventWithoutId()
         eventDTOWithoutId = makeEventDTOWithoutId()
@@ -66,11 +75,12 @@ class EventServiceTest {
         val unsavedEventDTO = eventDTOWithoutId
         val savedEvent = eventWithId
         val savedEventDTO = eventDTOWithId
-        every { mockEventRepository.save(unsavedEvent) } returns savedEvent
+        every { mockEventRepository.saveAndFlush(unsavedEvent) } returns savedEvent
         assertEquals(savedEventDTO, subject.saveEvent(unsavedEventDTO))
         verifySequence {
-            mockEventRepository.save(unsavedEvent)
+            mockEventRepository.saveAndFlush(unsavedEvent)
         }
+        assertEquals(savedEvent, capturedTsrEventSaveEvent.captured.event)
     }
 
     @Test
