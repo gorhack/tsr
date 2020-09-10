@@ -14,7 +14,7 @@ class UserController(private val tsrUserService: TsrUserService) {
         return TsrUserDTO(tsrUser)
     }
 
-    @PostMapping("/role")
+    @PutMapping("/role")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     fun saveUserRole(
             @AuthenticationPrincipal user: OidcUser,

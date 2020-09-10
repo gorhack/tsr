@@ -1,4 +1,4 @@
-import { act, render, RenderResult, screen, waitFor } from "@testing-library/react";
+import { act, render, RenderResult, screen } from "@testing-library/react";
 import td from "testdouble";
 import { Home } from "../Home";
 import { createMemoryHistory, MemoryHistory } from "history";
