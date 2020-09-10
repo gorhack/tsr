@@ -76,15 +76,16 @@ class EventTypeServiceTest {
 
     @Test
     fun `createEventType returns event type`() {
-        val eventTypeDTO = EventType(displayName = "third", eventTypeName = "third")
+        val eventTypeDTO = EventTypeDTO(eventTypeId = 0, displayName = "third", eventTypeName = "third", sortOrder = 0)
         val eventTypeToSave = EventType(eventTypeId = 0L, eventTypeName = "third", displayName = "third", sortOrder = 3)
         val expectedEventType = EventType(eventTypeId = 3L, displayName = "third", eventTypeName = "third", sortOrder = 3)
+        val expectedSavedDTO = EventTypeDTO(eventTypeId = 3L, displayName = "third", eventTypeName = "third", sortOrder = 3)
         every { mockEventTypeRepository.count() } returns 2
         every {
             mockEventTypeRepository.save(eventTypeToSave)
         } returns expectedEventType
 
-        assertEquals(expectedEventType, subject.createEventType(eventTypeDTO))
+        assertEquals(expectedSavedDTO, subject.createEventType(eventTypeDTO))
         verify {
             mockEventTypeRepository.count()
             mockEventTypeRepository.save(eventTypeToSave)

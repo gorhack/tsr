@@ -4,7 +4,6 @@ import events.tracked.tsr.PageDTO
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
-import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
 
 @Service
@@ -31,8 +30,9 @@ class EventTypeService(
         }
     }
 
-    fun createEventType(eventType: EventType): EventType {
+    fun createEventType(eventTypeDTO: EventTypeDTO): EventTypeDTO {
         val totalEventTypes = eventTypeRepository.count()
-        return eventTypeRepository.save(eventType.copy(sortOrder = (totalEventTypes + 1).toInt()))
+        val savedEventType = eventTypeRepository.save(eventTypeDTO.toEventType().copy(sortOrder = (totalEventTypes + 1).toInt()))
+        return EventTypeDTO(savedEventType)
     }
 }

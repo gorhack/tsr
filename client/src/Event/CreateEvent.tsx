@@ -122,7 +122,12 @@ export const CreateEvent: React.FC = () => {
 
     const createAndMapEventType = (inputVal: string): void => {
         (async () =>
-            await createEventType(inputVal)
+            await createEventType({
+                eventTypeId: 0,
+                eventTypeName: inputVal,
+                displayName: inputVal,
+                sortOrder: 0,
+            })
                 .then((result) => {
                     setEventTypesCache((oldCache) => [...oldCache, result]);
                 })

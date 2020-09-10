@@ -1,5 +1,6 @@
 package events.tracked.tsr.event.type
 
+import events.tracked.tsr.jpa_ext.Auditable
 import javax.persistence.*
 
 @Entity
@@ -11,4 +12,8 @@ data class EventType(
         var eventTypeName: String = "",
         var displayName: String = "",
         var sortOrder: Int = 0
-)
+) : Auditable()
+//{
+//        constructor(eventTypeId: Long, yeventTypeName: String, displayName: String, sortOrder: Int) :
+//            this(eventTypeId = eventTypeId, eventTypeName = eventTypeName, displayName = displayName, sortOrder = sortOrder)
+//}

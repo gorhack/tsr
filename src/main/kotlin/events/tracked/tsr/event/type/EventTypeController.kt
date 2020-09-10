@@ -46,8 +46,8 @@ class EventTypeController(
 
     @PostMapping(value = [""])
     fun createEventType(
-        @RequestBody eventType: EventType
-    ): ResponseEntity<EventType> {
-        return ResponseEntity<EventType>(eventTypeService.createEventType(eventType), HttpHeaders(), HttpStatus.CREATED)
+        @RequestBody eventType: EventTypeDTO
+    ): ResponseEntity<EventTypeDTO> {
+        return ResponseEntity<EventTypeDTO>(eventTypeService.createEventType(eventType), HttpHeaders(), HttpStatus.CREATED)
     }
 }

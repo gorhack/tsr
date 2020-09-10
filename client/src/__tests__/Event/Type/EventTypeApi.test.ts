@@ -61,10 +61,16 @@ describe("event type", () => {
             displayName: "one",
             sortOrder: 1,
         };
+        const eventToSave = {
+            eventTypeId: 0,
+            displayName: "one",
+            eventTypeName: "one",
+            sortOrder: 0,
+        };
         nock("http://example.com")
-            .post("/api/v1/event/type", { typeName: "one" })
+            .post("/api/v1/event/type", eventToSave)
             .reply(HttpStatus.CREATED, newEventType);
-        const response = await createEventType("one");
+        const response = await createEventType(eventToSave);
         expect(response).toEqual(newEventType);
     });
 });

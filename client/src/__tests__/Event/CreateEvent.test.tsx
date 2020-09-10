@@ -24,7 +24,6 @@ import { EventType } from "../../Event/Type/EventTypeApi";
 
 const selectDropdownOrderRegex = /first.*second.*third/;
 const ORGANIZATION_PLACEHOLDER_TEXT = "Select Organizations...";
-const EVENT_TYPE_PLACEHOLDER_TEXT = "Select an Event Type...";
 const START_DATE_PLACEHOLDER_TEXT = "Choose the Start Date...";
 const END_DATE_PLACEHOLDER_TEXT = "Choose the End Date...";
 
@@ -133,7 +132,14 @@ describe("create an event", () => {
             td.when(mockGetEventTypeContains(td.matchers.anything())).thenResolve(
                 makePage() as PageDTO<EventType>,
             );
-            td.when(mockCreateEventType("fourth")).thenResolve({
+            td.when(
+                mockCreateEventType({
+                    eventTypeId: 0,
+                    eventTypeName: "fourth",
+                    displayName: "fourth",
+                    sortOrder: 0,
+                }),
+            ).thenResolve({
                 eventTypeId: 4,
                 displayName: "fourth",
                 eventTypeName: "fourth",

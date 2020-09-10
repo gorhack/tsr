@@ -73,8 +73,8 @@ internal class EventTypeControllerTest {
 
     @Test
     fun `creates an event type`() {
-        val eventTypeDTO = EventType(displayName = "third", eventTypeName = "third")
-        val savedEventTypeDTO = EventType(eventTypeId = 3L, eventTypeName = "third", displayName = "third", sortOrder = 3)
+        val eventTypeDTO = EventTypeDTO(eventTypeId = 0, displayName = "third", eventTypeName = "third", sortOrder = 0)
+        val savedEventTypeDTO = EventTypeDTO(eventTypeId = 3L, eventTypeName = "third", displayName = "third", sortOrder = 3)
         every { mockEventTypeService.createEventType(eventTypeDTO) } returns savedEventTypeDTO
         assertEquals(ResponseEntity(savedEventTypeDTO, HttpStatus.CREATED), subject.createEventType(eventTypeDTO))
         verifySequence { mockEventTypeService.createEventType(eventTypeDTO) }
