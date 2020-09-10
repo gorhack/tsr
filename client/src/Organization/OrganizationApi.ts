@@ -16,9 +16,9 @@ export const getOrganizationNames = async (
         });
 };
 
-export const saveOrganization = async (organizationName: string): Promise<Organization> => {
+export const createOrganization = async (organizationName: string): Promise<Organization> => {
     try {
-        return (await axios.post(baseUri, organizationName)).data;
+        return (await axios.post(baseUri, { displayName: organizationName })).data;
     } catch (error) {
         throw new Error(error.response.message);
     }

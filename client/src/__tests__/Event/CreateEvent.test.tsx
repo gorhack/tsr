@@ -22,7 +22,6 @@ import selectEvent from "react-select-event";
 import { PageDTO } from "../../api";
 import { EventType } from "../../Event/Type/EventTypeApi";
 
-const selectDropdownOrderRegex = /first.*second.*third/;
 const ORGANIZATION_PLACEHOLDER_TEXT = "Select Organizations...";
 const START_DATE_PLACEHOLDER_TEXT = "Choose the Start Date...";
 const END_DATE_PLACEHOLDER_TEXT = "Choose the End Date...";
@@ -32,12 +31,14 @@ describe("create an event", () => {
     let mockSaveEvent: typeof EventApi.saveEvent;
     let mockCreateEventType: typeof EventTypeApi.createEventType;
     let mockGetEventTypeContains: typeof EventTypeApi.getEventTypeContains;
-    let mockGetOrgNames: typeof OrganizationApi.getOrganizationNames;
+    let mockCreateOrganization: typeof OrganizationApi.createOrganization;
+    let mockGetOrganizationContains: typeof OrganizationApi.getOrganizationContains;
     beforeEach(() => {
         mockSaveEvent = td.replace(EventApi, "saveEvent");
         mockCreateEventType = td.replace(EventTypeApi, "createEventType");
         mockGetEventTypeContains = td.replace(EventTypeApi, "getEventTypeContains");
-        mockGetOrgNames = td.replace(OrganizationApi, "getOrganizationNames");
+        mockGetOrganizationContains = td.replace(OrganizationApi, "getOrganizationContains");
+        mockCreateOrganization = td.replace(OrganizationApi, "createOrganization");
     });
 
     afterEach(td.reset);
@@ -47,7 +48,7 @@ describe("create an event", () => {
 
         expect(screen.getByText("create an event")).toBeInTheDocument();
         expect(screen.getByLabelText("event name")).toBeInTheDocument();
-        expect(screen.getByText("organization name")).toBeInTheDocument();
+        expect(screen.getByLabelText("organization")).toBeInTheDocument();
         expect(screen.getByLabelText("start date")).toBeInTheDocument();
         expect(screen.getByLabelText("end date")).toBeInTheDocument();
         expect(screen.getByText("event type")).toBeInTheDocument();
@@ -199,17 +200,52 @@ describe("create an event", () => {
             return renderCreateEvent({ orgNamesPromise });
         };
 
-        it("gets all org names in order", async () => {
+        it("can create and select an organization", async () => {
             await setupOrgSelectPromise();
-            await selectEvent.openMenu(screen.getByText(ORGANIZATION_PLACEHOLDER_TEXT));
-            expect(screen.getByTestId("org-name-select")).toHaveTextContent(
-                selectDropdownOrderRegex,
+            td.when(mockGetOrganizationContains(td.matchers.anything())).thenResolve(
+                makePage() as PageDTO<Organization>,
             );
+            td.when(mockCreateOrganization("fourth")).thenResolve({
+                organizationId: 4,
+                organizationDisplayName: "fourth",
+                organizationName: "fourth",
+                sortOrder: 4,
+            });
+            await act(async () => {
+                await selectEvent.create(screen.getByLabelText("organization"), "fourth", {
+                    waitForElement: false,
+                });
+            });
+            expect(screen.getByText("fourth")).toBeInTheDocument();
+        });
+
+        it("can search for organizations", async () => {
+            await setupOrgSelectPromise();
+
+            td.when(mockGetOrganizationContains("fou")).thenResolve(
+                makePage({
+                    items: [
+                        makeOrganization({
+                            organizationId: 4,
+                            organizationDisplayName: "fourth",
+                            organizationName: "fourth",
+                            sortOrder: 4,
+                        }),
+                    ],
+                }) as PageDTO<Organization>,
+            );
+            await act(async () => {
+                fireEvent.change(screen.getByLabelText("organization"), {
+                    target: { value: "fou" },
+                });
+            });
+            await selectEvent.select(screen.getByLabelText("organization"), "fourth");
+            expect(screen.getByText("fourth")).toBeInTheDocument();
         });
 
         it("can clear the org name", async () => {
             await setupOrgSelectPromise();
-            await selectEvent.select(screen.getByText(ORGANIZATION_PLACEHOLDER_TEXT), "second");
+            await selectEvent.select(screen.getByLabelText("organization"), "second");
             expect(screen.getByText("second")).toBeInTheDocument();
             await selectEvent.clearAll(screen.getByText("second"));
             expect(screen.queryByAltText("second")).toBeNull();
@@ -339,7 +375,7 @@ describe("create an event", () => {
         history.push("/createEvent");
 
         td.when(mockGetEventTypeContains("")).thenDo(() => Promise.resolve(eventTypesPromise));
-        td.when(mockGetOrgNames()).thenDo(() => Promise.resolve(orgNamesPromise));
+        td.when(mockGetOrganizationContains("")).thenDo(() => Promise.resolve(orgNamesPromise));
 
         const result = render(
             <Router history={history}>

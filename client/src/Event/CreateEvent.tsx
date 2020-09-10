@@ -3,21 +3,18 @@ import { LabeledInput } from "../Inputs/LabeledInput";
 import { useHistory } from "react-router";
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import AsyncCreatable from "react-select/async-creatable";
-import Select, { createFilter, ValueType } from "react-select";
+import { createFilter, ValueType } from "react-select";
 import { EditableTsrEvent, saveEvent } from "./EventApi";
 import { SelectOption, SelectOptionOG } from "../api";
 import { FormDatePicker } from "../Inputs/FormDatePicker";
 import "./CreateEvent.css";
 import { selectStyles } from "../Styles";
-import { getOrganizationContains, Organization } from "../Organization/OrganizationApi";
-import { getOrganizationNames, Organization } from "../Organization/OrganizationApi";
 import { createEventType, EventType, getEventTypeContains } from "./Type/EventTypeApi";
 import {
     getOrganizationContains,
-    getOrganizationNames,
     Organization,
+    createOrganization,
 } from "../Organization/OrganizationApi";
-import { EventType, getEventTypeContains, getEventTypes } from "./Type/EventTypeApi";
 import sortedUniqBy from "lodash/sortedUniqBy";
 
 type FormData = {
@@ -122,15 +119,6 @@ export const CreateEvent: React.FC = () => {
                 }))();
     };
 
-    const mapOrganizationsToOptions = (organizations: Organization[]): SelectOption[] => {
-        return organizations.map((organizations) => {
-            return {
-                id: organizations.organizationId,
-                label: organizations.organizationDisplayName,
-            };
-        });
-    };
-
     const loadOrganizationSearchTerm = async (searchTerm: string): Promise<SelectOption[]> => {
         return getOrganizationContains(searchTerm)
             .then((result) => {
@@ -140,7 +128,14 @@ export const CreateEvent: React.FC = () => {
                         (e) => e.sortOrder,
                     );
                 });
-                return Promise.resolve(mapOrganizationsToOptions(result.items));
+                return Promise.resolve(
+                    result.items.map((organization) => {
+                        return {
+                            id: organization.organizationId,
+                            label: organization.organizationDisplayName,
+                        };
+                    }),
+                );
             })
             .catch((error) => {
                 console.error(
@@ -148,6 +143,17 @@ export const CreateEvent: React.FC = () => {
                 );
                 return Promise.resolve([]);
             });
+    };
+
+    const createAndMapOrganization = (inputVal: string): void => {
+        (async () =>
+            await createOrganization(inputVal)
+                .then((result) => {
+                    setOrganizationsCache((oldCache) => [...oldCache, result]);
+                })
+                .catch((error) => {
+                    console.error(`unable to create organization ${inputVal}: ${error.message}`);
+                }))();
     };
 
     return (
@@ -171,43 +177,55 @@ export const CreateEvent: React.FC = () => {
                 />
                 <span className={"space-2"} />
 
-                <label data-testid="org-name-select" htmlFor="orgName">
-                    <div className={"space-1"} style={{ textAlign: "initial" }}>
-                        organization name
-                    </div>
-                    <Controller
-                        name="orgNameOption"
-                        control={control}
-                        defaultValue={initialOrgName}
-                        rules={{ required: true }}
-                        render={(props): ReactElement => (
-                            <>
-                                <AsyncCreatable
-                                    styles={selectStyles}
-                                    loadOptions={loadOrganizationSearchTerm}
-                                    defaultOptions
-                                    isClearable={true}
-                                    placeholder="Select Organizations..."
-                                    inputId="organizationName"
-                                    onChange={(selection): void => {
-                                        props.onChange(selection);
-                                    }}
-                                />
-                                {errors.orgNameOption ? (
-                                    <div className={"error-message React-Select-Error"}>
-                                        {"Must select an organization."}
-                                    </div>
-                                ) : (
-                                    <></>
-                                )}
-                            </>
-                        )}
-                        filterOption={createFilter({
-                            ignoreCase: true,
-                            matchFrom: "any",
-                        })}
-                    />
-                </label>
+                <Controller
+                    name="orgNameOption"
+                    control={control}
+                    defaultValue={initialOrgName}
+                    rules={{ required: true }}
+                    render={(props): ReactElement => (
+                        <>
+                            <label
+                                data-testid="organization-select"
+                                htmlFor="organization"
+                                style={{ textAlign: "initial" }}
+                            >
+                                organization
+                            </label>
+                            <AsyncCreatable
+                                styles={selectStyles}
+                                loadOptions={loadOrganizationSearchTerm}
+                                defaultOptions
+                                isClearable
+                                placeholder="Select Organizations..."
+                                name={"organization"}
+                                inputId="organization"
+                                getOptionValue={(option) => option.label}
+                                onChange={(
+                                    selection: ValueType<SelectOptionOG>,
+                                    actionType,
+                                ): void => {
+                                    if (selection && actionType.action === "create-option") {
+                                        if ("label" in selection) {
+                                            createAndMapOrganization(selection.label);
+                                        }
+                                    }
+                                    props.onChange(selection);
+                                }}
+                            />
+                            {errors.orgNameOption ? (
+                                <div className={"error-message React-Select-Error"}>
+                                    {"Must select an organization."}
+                                </div>
+                            ) : (
+                                <></>
+                            )}
+                        </>
+                    )}
+                    filterOption={createFilter({
+                        ignoreCase: true,
+                        matchFrom: "any",
+                    })}
+                />
                 <span className={"space-2"} />
 
                 <FormDatePicker

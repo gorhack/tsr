@@ -7,5 +7,5 @@ import org.springframework.stereotype.Repository
 
 @Repository
 interface EventTypeRepository : PagingAndSortingRepository<EventType, Long> {
-    fun findByDisplayNameContains(searchVal: String, paging: Pageable): Page<EventType>
+    fun findByDisplayNameContainsIgnoreCase(searchVal: String, paging: Pageable): Page<EventType>
 }

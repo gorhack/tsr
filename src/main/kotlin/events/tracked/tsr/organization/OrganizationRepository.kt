@@ -8,5 +8,5 @@ import org.springframework.data.domain.Page
 
 @Repository
 interface OrganizationRepository: JpaRepository<Organization, Long>  {
-    fun findByOrganizationDisplayNameContaining(searchParam: String, paging: Pageable): Page<Organization>
+    fun findByOrganizationDisplayNameContainsIgnoreCase(searchParam: String, paging: Pageable): Page<Organization>
 }

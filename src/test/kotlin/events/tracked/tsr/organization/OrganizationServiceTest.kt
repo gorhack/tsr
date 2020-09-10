@@ -9,7 +9,6 @@ import org.assertj.core.api.Assertions
 import org.junit.Before
 import org.junit.Test
 import org.springframework.data.domain.*
-import kotlin.math.exp
 
 class OrganizationServiceTest {
     private lateinit var subject: OrganizationService
@@ -51,9 +50,9 @@ class OrganizationServiceTest {
 
     }
 
-    /*@Test
+    @Test
     fun `getOrganizationContaining returns PageDTO of organizations`() {
-        val paging: Pageable = PageRequest.of(0, 10)
+        val paging: Pageable = PageRequest.of(0, 10, Sort.by( "sortOrder"))
         expectedPageDTO = PageDTO(
                 items = listOf(organization1, organization2),
                 totalPages = 1,
@@ -64,8 +63,10 @@ class OrganizationServiceTest {
                 pageSize = 10
         )
 
-        every { mockOrganizationRepository.findByOrganizationDisplayNameContaining("org", paging) } returns PageImpl(listOf(organization1, organization2))
-        assertEquals(expectedPageDTO, subject.getOrganizationsContaining("org", 0, 10))
-        verifySequence { mockOrganizationRepository.findByOrganizationDisplayNameContaining("org", paging) }
-    }*/
+        every { mockOrganizationRepository.findByOrganizationDisplayNameContainsIgnoreCase("org", paging)
+        } returns PageImpl(listOf(organization1, organization2), paging, 2)
+
+        assertEquals(expectedPageDTO, subject.getOrganizationsContains("org", 0, 10, Sort.by("sortOrder")))
+        verifySequence { mockOrganizationRepository.findByOrganizationDisplayNameContainsIgnoreCase("org", paging) }
+    }
 }

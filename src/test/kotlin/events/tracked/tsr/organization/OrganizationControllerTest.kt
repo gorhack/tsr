@@ -1,21 +1,22 @@
 package events.tracked.tsr.organization
 
 import events.tracked.tsr.PageDTO
-import events.tracked.tsr.event.EventDTO
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verifySequence
-import org.junit.jupiter.api.Assertions.assertEquals
 import org.assertj.core.api.Assertions
-import org.junit.Test
 import org.junit.Before
+import org.junit.Test
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.springframework.data.domain.Sort
+import org.springframework.http.HttpStatus
+import org.springframework.http.ResponseEntity
 
 internal class OrganizationControllerTest {
     private lateinit var subject: OrganizationController
     private lateinit var mockOrganizationService: OrganizationService
     private lateinit var organizationWithId: Organization
     private lateinit var organizationWithId2: Organization
-    private lateinit var expectedPageDTO: PageDTO<Organization>
 
     @Before
     fun setup() {
@@ -37,14 +38,18 @@ internal class OrganizationControllerTest {
 
     @Test
     fun `saves new organization`() {
+        val expectedResponse: ResponseEntity<Organization> = ResponseEntity(
+            organizationWithId, HttpStatus.CREATED
+        )
+
         every { mockOrganizationService.saveOrganization("first org") } returns organizationWithId
-        assertEquals(organizationWithId, subject.saveOrganization("first org"))
+        assertEquals(expectedResponse, subject.saveOrganization("first org"))
         verifySequence { mockOrganizationService.saveOrganization("first org") }
     }
 
     @Test
-    fun `returns Page DTO of org names with search feature`() {
-        expectedPageDTO = PageDTO(
+    fun `without search terms, returns page of organizations`() {
+        val expectedPageDTO = PageDTO(
                 items = listOf(organizationWithId, organizationWithId2),
                 totalPages = 1,
                 totalResults = 2,
@@ -53,11 +58,16 @@ internal class OrganizationControllerTest {
                 isLast = true,
                 pageSize = 10
         )
+        val expectedResponse: ResponseEntity<PageDTO<Organization>> = ResponseEntity(
+                expectedPageDTO, HttpStatus.OK
+        )
 
-        every {mockOrganizationService.getOrganizationsContaining("org", 0, 10) } returns expectedPageDTO
-        assertEquals(expectedPageDTO, subject.getOrganizationsContaining("org", 0 ,10))
+        every { mockOrganizationService.getOrganizationsContains("event", 0, 10, Sort.by("sortOrder")) } returns expectedPageDTO
+
+        assertEquals(expectedResponse, subject.getOrganizationsContains("event", 0, 10, "sortOrder"))
         verifySequence {
-            mockOrganizationService.getOrganizationsContaining("org",0,10)
+            mockOrganizationService.getOrganizationsContains("event", 0, 10, Sort.by("sortOrder"))
         }
     }
+
 }

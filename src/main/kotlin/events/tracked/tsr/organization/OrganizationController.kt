@@ -1,6 +1,10 @@
 package events.tracked.tsr.organization
 
 import events.tracked.tsr.PageDTO
+import org.springframework.data.domain.Sort
+import org.springframework.http.HttpHeaders
+import org.springframework.http.HttpStatus
+import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 
 @RestController
@@ -13,15 +17,23 @@ class OrganizationController(
         return organizationService.getAllOrgNames()
     }
     @PostMapping(value = [""])
-    fun saveOrganization(@PathVariable("displayName") displayName: String): Organization {
-        return organizationService.saveOrganization(displayName)
+    fun saveOrganization(@RequestBody displayName: String): ResponseEntity<Organization> {
+        return ResponseEntity(organizationService.saveOrganization(displayName), HttpHeaders(), HttpStatus.CREATED)
     }
     @GetMapping(value = ["/search"])
-    fun getOrganizationsContaining(@RequestParam("search", defaultValue = "") search: String,
-                                       @RequestParam("page", defaultValue = "0") page: Int,
-                                       @RequestParam("size", defaultValue = "10") size: Int,
-    ): PageDTO<Organization>{
-        return organizationService.getOrganizationsContaining(search, page, size)
+    fun getOrganizationsContains(@RequestParam("searchTerm", defaultValue = "") search: String,
+                                 @RequestParam("page", defaultValue = "0") page: Int,
+                                 @RequestParam("size", defaultValue = "10") size: Int,
+                                 @RequestParam("sortBy", defaultValue = "sortOrder") sortBy: String
+    ): ResponseEntity<PageDTO<Organization>> {
+        return when (sortBy) {
+            "sortOrder" -> ResponseEntity<PageDTO<Organization>>(
+                    organizationService.getOrganizationsContains(search, page, size, Sort.by(sortBy)),
+                    HttpHeaders(),
+                    HttpStatus.OK
+            )
+            else -> ResponseEntity(PageDTO(), HttpHeaders(), HttpStatus.BAD_REQUEST)
+        }
     }
 }
 
