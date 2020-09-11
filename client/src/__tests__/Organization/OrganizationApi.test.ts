@@ -5,6 +5,7 @@ import {
     createOrganization,
     getOrganizationContains,
     getOrganizationNames,
+    Organization,
 } from "../../Organization/OrganizationApi";
 import { makePage } from "../TestHelpers";
 
@@ -41,10 +42,22 @@ describe("organization", () => {
     });
 
     it("creates and organization", async () => {
+        const createdOrganization: Organization = {
+            organizationId: 1,
+            organizationDisplayName: "first",
+            organizationName: "first",
+            sortOrder: 1,
+        };
+        const organizationToCreate = {
+            organizationId: 0,
+            organizationDisplayName: "first",
+            organizationName: "first",
+            sortOrder: 0,
+        };
         nock("http://example.com")
-            .post("/api/v1/organization", { displayName: "first org" })
-            .reply(HttpStatus.CREATED, organization1);
-        const response = await createOrganization("first org");
-        expect(response).toEqual(organization1);
+            .post("/api/v1/organization", organizationToCreate)
+            .reply(HttpStatus.CREATED, createdOrganization);
+        const response = await createOrganization(organizationToCreate);
+        expect(response).toEqual(createdOrganization);
     });
 });

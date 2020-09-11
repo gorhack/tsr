@@ -5,7 +5,6 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verifySequence
 import org.junit.jupiter.api.Assertions.assertEquals
-import org.assertj.core.api.Assertions
 import org.junit.Before
 import org.junit.Test
 import org.springframework.data.domain.*
@@ -52,13 +51,14 @@ class OrganizationServiceTest {
 
     @Test
     fun `saveOrganization returns OrganizationDTO with ID and auditable filled out`() {
-        val organizationToCreate = Organization(organizationName = "second org", organizationDisplayName = "second org", sortOrder = 2)
-        val expectedOrganization = organizationToCreate.copy(organizationId = 2L)
+        val organizationToCreate = Organization(organizationName = "org three", organizationDisplayName = "org three", sortOrder = 3)
+        val expectedOrganization = organizationToCreate.copy(organizationId = 3L)
+        val organizationToCreateDTO = organizationToCreate.toOrganizationDTO()
         val expectedOrganizationDTO = expectedOrganization.toOrganizationDTO()
 
-        every { mockOrganizationRepository.count() } returns 1
+        every { mockOrganizationRepository.count() } returns 2
         every { mockOrganizationRepository.save(organizationToCreate)} returns expectedOrganization
-        assertEquals(expectedOrganizationDTO, subject.saveOrganization("second org"))
+        assertEquals(expectedOrganizationDTO, subject.saveOrganization(organizationToCreateDTO))
         verifySequence {
             mockOrganizationRepository.count()
             mockOrganizationRepository.save(organizationToCreate)

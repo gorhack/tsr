@@ -205,7 +205,14 @@ describe("create an event", () => {
             td.when(mockGetOrganizationContains(td.matchers.anything())).thenResolve(
                 makePage() as PageDTO<Organization>,
             );
-            td.when(mockCreateOrganization("fourth")).thenResolve({
+            td.when(
+                mockCreateOrganization({
+                    organizationId: 0,
+                    organizationDisplayName: "fourth",
+                    organizationName: "fourth",
+                    sortOrder: 0,
+                }),
+            ).thenResolve({
                 organizationId: 4,
                 organizationDisplayName: "fourth",
                 organizationName: "fourth",

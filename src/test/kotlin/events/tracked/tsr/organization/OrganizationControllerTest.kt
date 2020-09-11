@@ -51,13 +51,11 @@ internal class OrganizationControllerTest {
 
     @Test
     fun `creates new organization`() {
-        val expectedResponse: ResponseEntity<OrganizationDTO> = ResponseEntity(
-            organizationWithId, HttpStatus.CREATED
-        )
-
-        every { mockOrganizationService.saveOrganization("first org") } returns organizationWithId
-        assertEquals(expectedResponse, subject.saveOrganization("first org"))
-        verifySequence { mockOrganizationService.saveOrganization("first org") }
+        val organizationToCreateDTO = OrganizationDTO(organizationId = 0L, organizationDisplayName = "third org", organizationName = "third org", sortOrder = 0)
+        val createdOrganizationDTO = organizationToCreateDTO.copy(organizationId = 3L, sortOrder = 3)
+        every { mockOrganizationService.saveOrganization(organizationToCreateDTO) } returns createdOrganizationDTO
+        assertEquals(ResponseEntity(createdOrganizationDTO, HttpStatus.CREATED), subject.saveOrganization(organizationToCreateDTO))
+        verifySequence { mockOrganizationService.saveOrganization(organizationToCreateDTO) }
     }
 
     @Test

@@ -147,7 +147,12 @@ export const CreateEvent: React.FC = () => {
 
     const createAndMapOrganization = (inputVal: string): void => {
         (async () =>
-            await createOrganization(inputVal)
+            await createOrganization({
+                organizationId: 0,
+                organizationName: inputVal,
+                organizationDisplayName: inputVal,
+                sortOrder: 0,
+            })
                 .then((result) => {
                     setOrganizationsCache((oldCache) => [...oldCache, result]);
                 })

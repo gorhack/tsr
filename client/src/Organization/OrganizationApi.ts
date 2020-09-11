@@ -16,12 +16,15 @@ export const getOrganizationNames = async (
         });
 };
 
-export const createOrganization = async (organizationName: string): Promise<Organization> => {
-    try {
-        return (await axios.post(baseUri, { displayName: organizationName })).data;
-    } catch (error) {
-        throw new Error(error.response.message);
-    }
+export const createOrganization = async (organization: Organization): Promise<Organization> => {
+    return axios
+        .post(baseUri, organization)
+        .then((response: AxiosResponse<Organization>) => {
+            return response.data;
+        })
+        .catch((error) => {
+            throw new Error(error.message);
+        });
 };
 
 export const getOrganizationContains = async (

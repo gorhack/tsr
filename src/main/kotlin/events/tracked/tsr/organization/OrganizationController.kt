@@ -25,10 +25,14 @@ class OrganizationController(
             else -> ResponseEntity(PageDTO(), HttpHeaders(), HttpStatus.BAD_REQUEST)
         }
     }
+
     @PostMapping(value = [""])
-    fun saveOrganization(@RequestBody displayName: OrgRequestDTO): ResponseEntity<OrganizationDTO> {
-        return ResponseEntity<OrganizationDTO>(organizationService.saveOrganization(displayName.displayName), HttpHeaders(), HttpStatus.CREATED)
+    fun saveOrganization(
+        @RequestBody organizationDTO: OrganizationDTO
+    ): ResponseEntity<OrganizationDTO> {
+        return ResponseEntity<OrganizationDTO>(organizationService.saveOrganization(organizationDTO), HttpHeaders(), HttpStatus.CREATED)
     }
+
     @GetMapping(value = ["/search"])
     fun getOrganizationsContains(@RequestParam("searchTerm", defaultValue = "") searchTerm: String,
                                  @RequestParam("page", defaultValue = "0") page: Int,
@@ -45,7 +49,4 @@ class OrganizationController(
         }
     }
 }
-data class OrgRequestDTO (
-    val displayName: String = ""
-)
 

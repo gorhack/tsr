@@ -19,10 +19,10 @@ class OrganizationService(
             PageDTO()
         }
     }
-    fun saveOrganization(displayName: String): OrganizationDTO {
+    fun saveOrganization(organizationDTO: OrganizationDTO): OrganizationDTO {
         val orgCount = organizationRepository.count()
-        val org = Organization(organizationName = displayName, organizationDisplayName = displayName, sortOrder = orgCount.toInt() +1 )
-        return organizationRepository.save(org).toOrganizationDTO()
+        val createdOrganization = organizationRepository.save(organizationDTO.toOrganization().copy(sortOrder = (orgCount + 1).toInt()))
+        return OrganizationDTO(createdOrganization)
     }
     fun getOrganizationsContains(searchTerm: String, page: Int, size: Int, sortBy: Sort): PageDTO<OrganizationDTO> {
         val paging: Pageable = PageRequest.of(page, size, sortBy)
