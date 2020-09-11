@@ -52,7 +52,7 @@ export const CreateEvent: React.FC = () => {
     const onSubmit: SubmitHandler<FormData> = async (data) => {
         const { eventName, orgNameOption, startDate, endDate, eventTypeOption } = data;
         const foundOrg = organizationsCache.find(
-            (orgName) => orgName.organizationId === orgNameOption.id,
+            (orgName) => orgName.organizationDisplayName === orgNameOption.label,
         );
         if (!foundOrg) {
             setError("orgNameOption", { message: "must select an organization", type: "required" });

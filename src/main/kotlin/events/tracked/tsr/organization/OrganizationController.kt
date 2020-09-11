@@ -26,18 +26,18 @@ class OrganizationController(
         }
     }
     @PostMapping(value = [""])
-    fun saveOrganization(@RequestBody displayName: String): ResponseEntity<OrganizationDTO> {
-        return ResponseEntity<OrganizationDTO>(organizationService.saveOrganization(displayName), HttpHeaders(), HttpStatus.CREATED)
+    fun saveOrganization(@RequestBody displayName: OrgRequestDTO): ResponseEntity<OrganizationDTO> {
+        return ResponseEntity<OrganizationDTO>(organizationService.saveOrganization(displayName.displayName), HttpHeaders(), HttpStatus.CREATED)
     }
     @GetMapping(value = ["/search"])
-    fun getOrganizationsContains(@RequestParam("searchTerm", defaultValue = "") search: String,
+    fun getOrganizationsContains(@RequestParam("searchTerm", defaultValue = "") searchTerm: String,
                                  @RequestParam("page", defaultValue = "0") page: Int,
                                  @RequestParam("size", defaultValue = "10") size: Int,
                                  @RequestParam("sortBy", defaultValue = "sortOrder") sortBy: String
     ): ResponseEntity<PageDTO<OrganizationDTO>> {
         return when (sortBy) {
             "sortOrder" -> ResponseEntity<PageDTO<OrganizationDTO>>(
-                    organizationService.getOrganizationsContains(search, page, size, Sort.by(sortBy)),
+                    organizationService.getOrganizationsContains(searchTerm, page, size, Sort.by(sortBy)),
                     HttpHeaders(),
                     HttpStatus.OK
             )
@@ -45,5 +45,7 @@ class OrganizationController(
         }
     }
 }
-
+data class OrgRequestDTO (
+    val displayName: String = ""
+)
 
