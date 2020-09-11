@@ -15,7 +15,9 @@ class OrganizationServiceTest {
     private lateinit var mockOrganizationRepository: OrganizationRepository
     private lateinit var organization1: Organization
     private lateinit var organization2: Organization
-    private lateinit var expectedPageDTO: PageDTO<Organization>
+    private lateinit var organization1DTO: OrganizationDTO
+    private lateinit var organization2DTO: OrganizationDTO
+    private lateinit var expectedPageDTO: PageDTO<OrganizationDTO>
 
     @Before
     fun setup() {
@@ -23,29 +25,43 @@ class OrganizationServiceTest {
         subject = OrganizationService(mockOrganizationRepository)
         organization1 = Organization(1L, "org one", "org one name", 1)
         organization2 = Organization(2L, "org two", "org two name", 2)
+        organization1DTO = OrganizationDTO(1L, "org one", "org one name", 1)
+        organization2DTO = OrganizationDTO(2L, "org two", "org two name", 2)
+        expectedPageDTO = PageDTO(
+            items = listOf(organization1DTO, organization2DTO),
+            totalPages = 1,
+            totalResults = 2,
+            pageNumber = 0,
+            isFirst = true,
+            isLast = true,
+            pageSize = 10
+        )
     }
 
     @Test
-    fun `getOrgNames returns list of all org_names`() {
-        every { mockOrganizationRepository.findAll() } returns listOf(organization1, organization2)
+    fun `getOrgNames returns list of all org names`() {
+        val paging: Pageable = PageRequest.of(0, 10, Sort.by("sortOrder"))
 
-        Assertions.assertThat(subject.getAllOrgNames()).containsExactlyInAnyOrderElementsOf(listOf(organization1, organization2))
+        every { mockOrganizationRepository.findAll(paging) } returns PageImpl(listOf(organization1, organization2), paging, 2)
+
+        assertEquals(expectedPageDTO, subject.getAllOrgNames( 0, 10, Sort.by("sortOrder")))
         verifySequence {
-            mockOrganizationRepository.findAll()
+            mockOrganizationRepository.findAll(paging)
         }
     }
 
     @Test
-    fun `saveOrganization returns an organization with ID`() {
-        val organizationWithoutId = Organization(organizationName = "second org", organizationDisplayName = "second org", sortOrder = 2)
-        val organizationWithId = organizationWithoutId.copy(organizationId = 2L)
+    fun `saveOrganization returns OrganizationDTO with ID and auditable filled out`() {
+        val organizationToCreate = Organization(organizationName = "second org", organizationDisplayName = "second org", sortOrder = 2)
+        val expectedOrganization = organizationToCreate.copy(organizationId = 2L)
+        val expectedOrganizationDTO = expectedOrganization.toOrganizationDTO()
 
         every { mockOrganizationRepository.count() } returns 1
-        every { mockOrganizationRepository.save(organizationWithoutId)} returns organizationWithId
-        assertEquals(organizationWithId, subject.saveOrganization("second org"))
+        every { mockOrganizationRepository.save(organizationToCreate)} returns expectedOrganization
+        assertEquals(expectedOrganizationDTO, subject.saveOrganization("second org"))
         verifySequence {
             mockOrganizationRepository.count()
-            mockOrganizationRepository.save(organizationWithoutId)
+            mockOrganizationRepository.save(organizationToCreate)
         }
 
     }
@@ -53,15 +69,6 @@ class OrganizationServiceTest {
     @Test
     fun `getOrganizationContaining returns PageDTO of organizations`() {
         val paging: Pageable = PageRequest.of(0, 10, Sort.by( "sortOrder"))
-        expectedPageDTO = PageDTO(
-                items = listOf(organization1, organization2),
-                totalPages = 1,
-                totalResults = 2,
-                pageNumber = 0,
-                isFirst = true,
-                isLast = true,
-                pageSize = 10
-        )
 
         every { mockOrganizationRepository.findByOrganizationDisplayNameContainsIgnoreCase("org", paging)
         } returns PageImpl(listOf(organization1, organization2), paging, 2)
