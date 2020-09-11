@@ -28,14 +28,12 @@ export const Home: React.FC = () => {
     }, [setTsrUser]);
 
     useEffect(() => {
-        console.log("here");
         if (socketService.status !== SocketStatus.CONNECTED) {
             return;
         }
-        console.log("connected");
         // TODO set as the user's org(s)
         socketService.subscribe({
-            topic: `${SocketSubscriptionTopics.EVENT_CREATED}1`,
+            topic: `${SocketSubscriptionTopics.EVENT_CREATED}-1`,
             handler: (msg: IMessage): void => {
                 const message: TsrEvent = JSON.parse(msg.body);
                 window.alert(

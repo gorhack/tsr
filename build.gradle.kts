@@ -2,16 +2,16 @@ import com.moowork.gradle.node.yarn.YarnTask
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-	id("org.springframework.boot") version "2.4.0-SNAPSHOT"
+	id("org.springframework.boot") version "2.3.3.RELEASE"
 	id("io.spring.dependency-management") version "1.0.10.RELEASE"
 	id("com.moowork.node") version "1.3.1"
 	id("org.flywaydb.flyway") version "6.5.5"
 	id("org.sonarqube") version "3.0"
 
-	id ("org.jetbrains.kotlin.plugin.jpa") version "1.4.0"
-	id ("org.jetbrains.kotlin.plugin.noarg") version "1.4.0"
-	kotlin("jvm") version "1.4.0"
-	kotlin("plugin.spring") version "1.4.0"
+	id ("org.jetbrains.kotlin.plugin.jpa") version "1.4.10"
+	id ("org.jetbrains.kotlin.plugin.noarg") version "1.4.10"
+	kotlin("jvm") version "1.4.10"
+	kotlin("plugin.spring") version "1.4.10"
 
 	id("com.github.ben-manes.versions") version "0.31.0" // helps find latest dependency versions `./gradlew dependencyUpdates`
 }
@@ -40,17 +40,17 @@ repositories {
 	maven { url = uri("https://repo.spring.io/snapshot") }
 }
 
-var springSecurityVersion = "5.3.3.RELEASE"
+var springSecurityVersion = "5.3.4.RELEASE"
 var springBootVersion = "2.3.3.RELEASE"
 var keycloakVersion = "11.0.0"
 var jacksonVersion = "2.11.2"
-var jetBrainsKotlin = "1.4.0"
+var jetBrainsKotlin = "1.4.10"
 
 dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-data-jpa:${springBootVersion}")
 	implementation("org.springframework.boot:spring-boot-starter-web:${springBootVersion}")
 	implementation("org.springframework.boot:spring-boot-starter-actuator:${springBootVersion}")
-	implementation("org.springframework.boot:spring-boot-starter-websocket")
+	implementation("org.springframework.boot:spring-boot-starter-websocket:${springBootVersion}")
 	implementation("org.flywaydb:flyway-core:6.5.2")
 
 	// Deserialize json
@@ -63,7 +63,8 @@ dependencies {
 
 	// SSO - Security
 	implementation("org.springframework.boot:spring-boot-starter-security:${springBootVersion}")
-	implementation("org.springframework.boot:spring-boot-starter-oauth2-client:${springBootVersion}")
+
+	implementation("org.springframework.security:spring-security-oauth2-client:${springSecurityVersion}")
 	implementation("org.springframework.security:spring-security-web:${springSecurityVersion}")
 	implementation("org.springframework.security:spring-security-config:${springSecurityVersion}")
 	implementation("org.springframework.security:spring-security-core:${springSecurityVersion}")

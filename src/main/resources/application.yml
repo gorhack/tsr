@@ -39,6 +39,7 @@ spring:
           keycloak:
             clientId: tsr_keycloak
             clientSecret: ${TSR_KEYCLOAK_SECRET_KEY}
+            scope: openid,profile
         provider:
           keycloak:
             issuer-uri: ${TSR_KEYCLOAK_HOST}/auth/realms/tsr
