@@ -35,10 +35,9 @@ export const getActiveEvents = async (pageParams: PageParams = {}): Promise<Page
 };
 
 export const getActiveEventsByUserId = async (
-    userId: string,
     pageParams: PageParams = {},
 ): Promise<PageDTO<TsrEvent>> => {
-    const uri = `${baseUri}/active/user/${userId}`;
+    const uri = `${baseUri}/active/user`;
     return axios
         .get(uri, { params: pageParams })
         .then((response: AxiosResponse<PageDTO<TsrEvent>>) => {

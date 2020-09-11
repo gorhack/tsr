@@ -1,9 +1,9 @@
 package events.tracked.tsr.event
 
-import events.tracked.tsr.PageDTO
-import events.tracked.tsr.makeEventDTOWithId
-import events.tracked.tsr.makeEventDTOWithId2
-import events.tracked.tsr.makeEventDTOWithoutId
+import events.tracked.tsr.*
+import events.tracked.tsr.user.TsrUser
+import events.tracked.tsr.user.TsrUserService
+import events.tracked.tsr.user.UserRole
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verifySequence
@@ -13,10 +13,14 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.springframework.data.domain.Sort
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.security.oauth2.core.oidc.user.OidcUser
 
 internal class EventControllerTest {
     private lateinit var subject: EventController
     private lateinit var mockEventService: EventService
+    private lateinit var mockTsrUserService: TsrUserService
+    private lateinit var oidcUser: OidcUser
+    private lateinit var tsrUser: TsrUser
     private lateinit var eventDTOWithoutId: EventDTO
     private lateinit var eventDTOWithId: EventDTO
     private lateinit var eventDTOWithId2: EventDTO
@@ -27,8 +31,11 @@ internal class EventControllerTest {
     @Before
     fun setup() {
         mockEventService = mockk(relaxUnitFun = true)
-        subject = EventController(mockEventService)
+        mockTsrUserService = mockk(relaxUnitFun = true)
+        subject = EventController(mockEventService, mockTsrUserService)
 
+        oidcUser = makeOidcUser(userId = "1234", userName = "user")
+        tsrUser = TsrUser(id = 1L, userId = "1234", username = "user", role = UserRole.USER)
         eventDTOWithoutId = makeEventDTOWithoutId()
         eventDTOWithId = makeEventDTOWithId()
         eventDTOWithId2 = makeEventDTOWithId2()
@@ -80,12 +87,15 @@ internal class EventControllerTest {
         val expectedResponse: ResponseEntity<PageDTO<EventDTO>> = ResponseEntity(
             expectedPageDTO, HttpStatus.OK
         )
+
+        every { mockTsrUserService.assertUserExistsAndReturnUser(oidcUser) } returns tsrUser
         every {
             mockEventService.getActiveEventsByUserId("1234", 0, 10, defaultSortBy)
         } returns expectedPageDTO
 
-        assertEquals(expectedResponse, subject.getActiveEventsByUserId("1234", 0, 10, "startDate"))
+        assertEquals(expectedResponse, subject.getActiveEventsByUserId(oidcUser, 0, 10, "startDate"))
         verifySequence {
+            mockTsrUserService.assertUserExistsAndReturnUser(oidcUser)
             mockEventService.getActiveEventsByUserId("1234", 0, 10, defaultSortBy)
         }
     }

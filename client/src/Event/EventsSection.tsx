@@ -6,22 +6,15 @@ import { useHistory } from "react-router-dom";
 import { emptyPage, PageDTO } from "../api";
 import uniqBy from "lodash/uniqBy";
 
-interface EventsSectionProps {
-    user: TsrUser;
-}
-
-export const EventsSection = ({ user }: EventsSectionProps): ReactElement => {
+export const EventsSection = (): ReactElement => {
     const [userEventPage, setUserEventPage] = useState<PageDTO<TsrEvent>>(emptyPage);
     const [userEvents, setUserEvents] = useState<TsrEvent[]>([]);
     const [orgEventPage, setOrgEventPage] = useState<PageDTO<TsrEvent>>(emptyPage);
     const [orgEvents, setOrgEvents] = useState<TsrEvent[]>([]);
 
     useEffect(() => {
-        if (user.userId === "") {
-            return;
-        }
         (async () => {
-            await getActiveEventsByUserId(user.userId)
+            await getActiveEventsByUserId()
                 .then((result) => {
                     setUserEventPage(result);
                     setUserEvents(result.items);
@@ -38,7 +31,7 @@ export const EventsSection = ({ user }: EventsSectionProps): ReactElement => {
                     console.error(`Error getting org events: ${e.message}`);
                 });
         })();
-    }, [setUserEventPage, setUserEvents, setOrgEventPage, setOrgEvents, user]);
+    }, [setUserEventPage, setUserEvents, setOrgEventPage, setOrgEvents]);
 
     const showMyEvents = (): ReactElement => {
         return (
@@ -54,11 +47,9 @@ export const EventsSection = ({ user }: EventsSectionProps): ReactElement => {
     const showOrgEvents = (): ReactElement => {
         return (
             <>
-                {orgEvents
-                    .filter((e) => e.audit.createdBy !== user.userId) // TODO backend returns filtered results
-                    .map((e) => (
-                        <SingleEvent key={`key-${e.eventId}`} event={e} dataTestId="org-event" />
-                    ))}
+                {orgEvents.map((e) => (
+                    <SingleEvent key={`key-${e.eventId}`} event={e} dataTestId="org-event" />
+                ))}
             </>
         );
     };
@@ -80,7 +71,7 @@ export const EventsSection = ({ user }: EventsSectionProps): ReactElement => {
 
     const loadUserEvents = (page: number) => {
         (async () => {
-            await getActiveEventsByUserId(user.userId, { page })
+            await getActiveEventsByUserId({ page })
                 .then((results) => {
                     setUserEventPage(results);
                     setUserEvents(

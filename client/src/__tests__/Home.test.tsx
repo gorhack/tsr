@@ -11,34 +11,21 @@ import {
     mockSocketService,
 } from "./TestHelpers";
 import * as EventApi from "../Event/EventApi";
-import * as UserApi from "../Users/UserApi";
-import * as Api from "../api";
-import { TsrUser } from "../Users/UserApi";
 import { SocketSubscriptionTopics, TsrEvent } from "../Event/EventApi";
 import { PageDTO } from "../api";
 import { StompSocketProvider } from "../StompSocketContext";
 import { SocketService } from "../SocketService";
 
 describe("home page of the application", () => {
-    let mockGetUserInfo: typeof UserApi.getUserInfo;
     let mockGetCurrentAndFutureEvents: typeof EventApi.getActiveEvents;
     let mockGetCurrentAndFutureEventsByUserId: typeof EventApi.getActiveEventsByUserId;
-    let mockCurrentTimeLocal: typeof Api.currentTimeLocal;
 
     beforeEach(() => {
-        mockGetUserInfo = td.replace(UserApi, "getUserInfo");
         mockGetCurrentAndFutureEvents = td.replace(EventApi, "getActiveEvents");
         mockGetCurrentAndFutureEventsByUserId = td.replace(EventApi, "getActiveEventsByUserId");
-        mockCurrentTimeLocal = td.replace(Api, "currentTimeLocal");
     });
 
     afterEach(td.reset);
-    it("Calls getUserInfo on load", async () => {
-        await renderHomePage({});
-        expect(screen.getByText("TSR").tagName).toEqual("H1");
-        expect(screen.getByText("tsrUser1")).toBeInTheDocument();
-        expect(screen.getByText("123-123-123")).toBeInTheDocument();
-    });
 
     it("create an event button goes to create event page", async () => {
         const history = createMemoryHistory();
@@ -106,18 +93,10 @@ describe("home page of the application", () => {
             ...userPage,
             items: [makeEvent({ eventId: 2, eventName: "another org event" })],
         });
-        const userPromise: Promise<TsrUser> = Promise.resolve({
-            username: "tsrUser1",
-            userId: "123-123-123",
-            role: "USER",
-        });
-        td.when(mockGetUserInfo()).thenDo(() => Promise.resolve(userPromise));
         td.when(mockGetCurrentAndFutureEvents()).thenDo(() => Promise.resolve(orgEventsPromise));
-        td.when(mockGetCurrentAndFutureEventsByUserId("123-123-123")).thenDo(() =>
+        td.when(mockGetCurrentAndFutureEventsByUserId()).thenDo(() =>
             Promise.resolve(userEventsPromise),
         );
-        // TODO remove?
-        td.when(mockCurrentTimeLocal()).thenReturn("1970-01-01T00:00:01-00:00");
 
         history.push("/");
         const socketProps = {
@@ -133,7 +112,6 @@ describe("home page of the application", () => {
             </StompSocketProvider>,
         );
         await act(async () => {
-            await userPromise;
             await userEventsPromise;
             await orgEventsPromise;
         });

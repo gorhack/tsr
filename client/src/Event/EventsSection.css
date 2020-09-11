@@ -1,8 +1,9 @@
 .EventsSection-Events {
     border: 2px solid var(--action-color);
     border-radius: .5rem;
-    min-width: 47.5%;
+    min-width: 300px;
     max-width: 47.5%;
+    width: 47.5%;
 }
 
 .EventsSection-SingleEvent {
@@ -15,5 +16,6 @@
 
 .EventsSection-Content {
     display: flex;
-    justify-content: space-between;
+    justify-content: space-around;
+    flex-wrap: wrap;
 }

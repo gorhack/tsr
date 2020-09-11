@@ -114,8 +114,8 @@ describe("event data", () => {
         });
 
         it("gets page of events by user", async () => {
-            nock("http://example.com").get("/api/v1/event/active/user/1234").reply(200, eventsPage);
-            const response = await getActiveEventsByUserId("1234");
+            nock("http://example.com").get("/api/v1/event/active/user").reply(200, eventsPage);
+            const response = await getActiveEventsByUserId();
             expect(response).toEqual(eventsPage);
         });
 
@@ -125,10 +125,8 @@ describe("event data", () => {
                 pageNumber: 1,
             };
 
-            nock("http://example.com")
-                .get("/api/v1/event/active/user/1234?page=1")
-                .reply(200, events);
-            const response = await getActiveEventsByUserId("1234", { page: 1 });
+            nock("http://example.com").get("/api/v1/event/active/user?page=1").reply(200, events);
+            const response = await getActiveEventsByUserId({ page: 1 });
             expect(response).toEqual(events);
         });
     });

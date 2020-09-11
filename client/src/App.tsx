@@ -6,19 +6,23 @@ import { Home } from "./Home";
 import { CreateEvent } from "./Event/CreateEvent";
 import { EventPage } from "./Event/EventPage";
 import { StompSocketProvider } from "./StompSocketContext";
+import { PrimaryNavigation } from "./PrimaryNavigation";
 
 const App: React.FC = () => {
     return (
         <StompSocketProvider>
             <BrowserRouter>
                 <div className="App">
-                    <main className="App-content">
-                        <Switch>
-                            <Route path="/createEvent" component={CreateEvent} />
-                            <Route path="/event/:eventId" component={EventPage} />
-                            <Route path="/" component={Home} />
-                        </Switch>
-                    </main>
+                    <div className="App-header">
+                        <PrimaryNavigation />
+                        <main className="App-content">
+                            <Switch>
+                                <Route path="/createEvent" component={CreateEvent} />
+                                <Route path="/event/:eventId" component={EventPage} />
+                                <Route path="/" component={Home} />
+                            </Switch>
+                        </main>
+                    </div>
                 </div>
             </BrowserRouter>
         </StompSocketProvider>
