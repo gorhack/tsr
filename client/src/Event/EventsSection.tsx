@@ -1,7 +1,6 @@
 import React, { ReactElement, useEffect, useState } from "react";
 import { getActiveEvents, getActiveEventsByUserId, TsrEvent } from "./EventApi";
 import "./EventsSection.css";
-import { TsrUser } from "../Users/UserApi";
 import { useHistory } from "react-router-dom";
 import { emptyPage, PageDTO } from "../api";
 import uniqBy from "lodash/uniqBy";
