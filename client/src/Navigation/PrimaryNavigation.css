@@ -11,8 +11,6 @@
 
 .PrimaryNavigation button {
     padding: 15px;
-    background: var(--level-two-color);
-    border: none;
 }
 
 .PrimaryNavigationInfo span {

@@ -56,6 +56,7 @@ export const EventPage: React.FC = () => {
     return (
         <>
             {<LinkButton onClick={() => history.push("/")}>{"< back to events"}</LinkButton>}
+            <div className="space-3" />
             <h1 className="EventPage-Header">{headerEventName()}</h1>
             <h2 className="EventPage-Header">{headerDates()}</h2>
             <EventDetails tsrEvent={tsrEvent} />

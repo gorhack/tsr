@@ -30,7 +30,7 @@ export const Home: React.FC = () => {
 
     return (
         <>
-            <div className="Home-Header">
+            <div className="Home-Header flex-row">
                 <h1>events</h1>
                 <PrimaryButton
                     className={"CreateEvent-Button"}

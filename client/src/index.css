@@ -65,6 +65,7 @@ input[type=text],input[type=number],input[type=search] {
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
+  flex-wrap: wrap;
 }
 
 dt {

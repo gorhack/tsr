@@ -6,7 +6,7 @@
     margin-left: 25%;
     max-width: 50%;
     padding: 2rem;
-}
+}space-between
 
 .CreateEvent-Form {
     display: flex;
@@ -20,4 +20,5 @@
 .CreateEvent-Submit {
     display: flex;
     justify-content: space-around;
+    flex-wrap: wrap;
 }
