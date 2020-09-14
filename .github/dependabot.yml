@@ -1,0 +1,20 @@
+# https://help.github.com/github/administering-a-repository/configuration-options-for-dependency-updates
+
+version: 2
+updates:
+  - package-ecosystem: "gradle"
+    directory: "/"
+    schedule:
+      interval: "daily"
+  - package-ecosystem: "npm"
+    directory: "/client"
+    schedule:
+      interval: "daily"
+  - package-ecosystem: "docker"
+    directory: "/pipeline/eb"
+    schedule:
+      interval: "daily"
+  - package-ecosystem: "docker"
+    directory: "/pipeline/eb-cli"
+    schedule:
+      interval: "daily"
