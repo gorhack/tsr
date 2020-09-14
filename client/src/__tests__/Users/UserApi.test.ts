@@ -1,8 +1,15 @@
 import axios from "axios";
 import nock from "nock";
-import { getUserInfo, saveUserRole, TsrUser, UserRoleUpdate } from "../../Users/UserApi";
+import {
+    getUserInfo,
+    saveUserRole,
+    setUserOrganizations,
+    TsrUser,
+    UserRoleUpdate,
+} from "../../Users/UserApi";
 import { NockBody } from "../TestHelpers";
 import { HttpStatus } from "../../api";
+import { Organization } from "../../Organization/OrganizationApi";
 
 describe("user info", () => {
     axios.defaults.baseURL = "http://example.com";
@@ -36,5 +43,40 @@ describe("user info", () => {
             username: "just_a_regular_user",
             role: "ADMIN",
         } as TsrUser);
+    });
+
+    it("sets user organizations", async () => {
+        const organizations: Organization[] = [
+            {
+                organizationId: 1,
+                organizationName: "org1",
+                organizationDisplayName: "org 1",
+                sortOrder: 1,
+            },
+            {
+                organizationId: 2,
+                organizationName: "org2",
+                organizationDisplayName: "org 2",
+                sortOrder: 2,
+            },
+        ];
+
+        nock("http://example.com")
+            .put("/api/v1/user/organizations", JSON.stringify(organizations))
+            .reply(HttpStatus.OK, {
+                userId: 1,
+                username: "user",
+                role: "USER",
+                organizations: organizations,
+            });
+
+        const response = await setUserOrganizations(organizations);
+
+        expect(response).toEqual({
+            userId: 1,
+            username: "user",
+            role: "USER",
+            organizations: organizations,
+        });
     });
 });

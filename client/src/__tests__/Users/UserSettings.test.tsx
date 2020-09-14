@@ -19,6 +19,7 @@ describe("User settings", () => {
             userId: "1234",
             username: "user",
             role: "USER",
+            organizations: [],
         };
         td.when(mockGetUserInfo()).thenResolve(user);
         await act(async () => {

@@ -6,6 +6,7 @@ export const UserSettings: React.FC = (): ReactElement => {
         userId: "",
         username: "",
         role: "USER",
+        organizations: [],
     });
 
     useEffect(() => {
