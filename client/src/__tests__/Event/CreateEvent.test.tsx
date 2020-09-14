@@ -43,6 +43,13 @@ describe("create an event", () => {
 
     afterEach(td.reset);
 
+    it("shows back to events", async () => {
+        const history = createMemoryHistory();
+        await renderCreateEvent({ history });
+        fireEvent.click(screen.getByText("< back to events"));
+        expect(history.location.pathname).toEqual("/");
+    });
+
     it("displays all required event fields", async () => {
         await renderCreateEvent({});
 

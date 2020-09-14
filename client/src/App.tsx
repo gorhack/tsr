@@ -6,7 +6,7 @@ import { Home } from "./Home";
 import { CreateEvent } from "./Event/CreateEvent";
 import { EventPage } from "./Event/EventPage";
 import { StompSocketProvider } from "./StompSocketContext";
-import { PrimaryNavigation } from "./PrimaryNavigation";
+import { PrimaryNavigation } from "./Navigation/PrimaryNavigation";
 
 const App: React.FC = () => {
     return (

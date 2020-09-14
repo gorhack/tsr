@@ -1,4 +1,5 @@
 import { act, render, screen } from "@testing-library/react";
+import { fireEvent } from "@testing-library/dom";
 import React from "react";
 import td from "testdouble";
 import * as EventApi from "../../Event/EventApi";
@@ -25,6 +26,14 @@ describe("displays event details", () => {
         mockCurrentTime = td.replace(Api, "currentTimeUtc");
     });
     afterEach(td.reset);
+
+    it("shows text to go back to events", async () => {
+        const history = createMemoryHistory();
+        await renderEventDetails({ history });
+        expect(screen.getByRole("button", { name: "< back to events" })).toBeInTheDocument();
+        fireEvent.click(screen.getByRole("button", { name: "< back to events" }));
+        expect(history.location.pathname).toEqual("/");
+    });
 
     describe("headers", () => {
         it("displays event details", async () => {

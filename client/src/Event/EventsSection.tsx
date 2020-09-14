@@ -87,6 +87,7 @@ export const EventsSection = (): ReactElement => {
         <div className={"EventsSection-Content"}>
             <div className={"EventsSection-Events"}>
                 <h2>My Active Events</h2>
+                <div className="space-2" />
                 {showMyEvents()}
                 {userEventPage.last ? (
                     <></>
@@ -101,6 +102,7 @@ export const EventsSection = (): ReactElement => {
             </div>
             <div className={"EventsSection-Events"}>
                 <h2>{"My Organization's Active Events"}</h2>
+                <div className="space-2" />
                 {showOrgEvents()}
                 {orgEventPage.last ? (
                     <></>

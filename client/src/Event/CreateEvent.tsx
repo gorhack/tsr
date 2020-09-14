@@ -16,6 +16,7 @@ import {
     createOrganization,
 } from "../Organization/OrganizationApi";
 import sortedUniqBy from "lodash/sortedUniqBy";
+import { LinkButton, PrimaryButton, SecondaryButton } from "../Buttons/Buttons";
 
 type FormData = {
     eventName: string;
@@ -162,162 +163,163 @@ export const CreateEvent: React.FC = () => {
     };
 
     return (
-        <div className={"CreateEvent-Content"}>
-            <h1>create an event</h1>
-            <form
-                className={"CreateEvent-Form"}
-                title="createEventForm"
-                onSubmit={handleSubmit(onSubmit)}
-            >
-                <LabeledInput
-                    label={"event name"}
-                    error={errors.eventName && "event name is required"}
-                    inputProps={{
-                        placeholder: "Enter Event Name...",
-                        name: "eventName",
-                        ref: register({
-                            required: true,
-                        }),
-                    }}
-                />
-                <span className={"space-2"} />
+        <>
+            <LinkButton onClick={() => history.push("/")}>{"< back to events"}</LinkButton>
+            <h1 className="CreateEvent-Header">create an event</h1>
+            <div className={"CreateEvent-Content"}>
+                <form
+                    className={"CreateEvent-Form"}
+                    title="createEventForm"
+                    onSubmit={handleSubmit(onSubmit)}
+                >
+                    <LabeledInput
+                        label={"event name"}
+                        error={errors.eventName && "event name is required"}
+                        inputProps={{
+                            placeholder: "Enter Event Name...",
+                            name: "eventName",
+                            ref: register({
+                                required: true,
+                            }),
+                        }}
+                    />
+                    <span className={"space-2"} />
 
-                <Controller
-                    name="orgNameOption"
-                    control={control}
-                    defaultValue={initialOrgName}
-                    rules={{ required: true }}
-                    render={(props): ReactElement => (
-                        <>
-                            <label
-                                data-testid="organization-select"
-                                htmlFor="organization"
-                                style={{ textAlign: "initial" }}
-                            >
-                                organization
-                            </label>
-                            <AsyncCreatable
-                                styles={selectStyles}
-                                loadOptions={loadOrganizationSearchTerm}
-                                defaultOptions
-                                isClearable
-                                placeholder="Select Organizations..."
-                                name={"organization"}
-                                inputId="organization"
-                                getOptionValue={(option) => option.label}
-                                onChange={(
-                                    selection: ValueType<SelectOptionOG>,
-                                    actionType,
-                                ): void => {
-                                    if (selection && actionType.action === "create-option") {
-                                        if ("label" in selection) {
-                                            createAndMapOrganization(selection.label);
+                    <Controller
+                        name="orgNameOption"
+                        control={control}
+                        defaultValue={initialOrgName}
+                        rules={{ required: true }}
+                        render={(props): ReactElement => (
+                            <>
+                                <label
+                                    data-testid="organization-select"
+                                    htmlFor="organization"
+                                    style={{ textAlign: "initial" }}
+                                >
+                                    organization
+                                </label>
+                                <AsyncCreatable
+                                    styles={selectStyles}
+                                    loadOptions={loadOrganizationSearchTerm}
+                                    defaultOptions
+                                    isClearable
+                                    placeholder="Select Organizations..."
+                                    name={"organization"}
+                                    inputId="organization"
+                                    getOptionValue={(option) => option.label}
+                                    onChange={(
+                                        selection: ValueType<SelectOptionOG>,
+                                        actionType,
+                                    ): void => {
+                                        if (selection && actionType.action === "create-option") {
+                                            if ("label" in selection) {
+                                                createAndMapOrganization(selection.label);
+                                            }
                                         }
-                                    }
-                                    props.onChange(selection);
-                                }}
-                            />
-                            {errors.orgNameOption ? (
-                                <div className={"error-message React-Select-Error"}>
-                                    {"Must select an organization."}
-                                </div>
-                            ) : (
-                                <></>
-                            )}
-                        </>
-                    )}
-                    filterOption={createFilter({
-                        ignoreCase: true,
-                        matchFrom: "any",
-                    })}
-                />
-                <span className={"space-2"} />
+                                        props.onChange(selection);
+                                    }}
+                                />
+                                {errors.orgNameOption ? (
+                                    <div className={"error-message React-Select-Error"}>
+                                        {"Must select an organization."}
+                                    </div>
+                                ) : (
+                                    <></>
+                                )}
+                            </>
+                        )}
+                        filterOption={createFilter({
+                            ignoreCase: true,
+                            matchFrom: "any",
+                        })}
+                    />
+                    <span className={"space-2"} />
 
-                <FormDatePicker
-                    control={control}
-                    name={"startDate"}
-                    label={"start date"}
-                    placeholder={"Choose the Start Date..."}
-                    minDate={TODAYS_DATE}
-                    maxDate={DATE_IN_10_YEARS}
-                    error={errors.startDate && "start date is required MM/dd/YYYY"}
-                />
-                <span className={"space-2"} />
+                    <FormDatePicker
+                        control={control}
+                        name={"startDate"}
+                        label={"start date"}
+                        placeholder={"Choose the Start Date..."}
+                        minDate={TODAYS_DATE}
+                        maxDate={DATE_IN_10_YEARS}
+                        error={errors.startDate && "start date is required MM/dd/YYYY"}
+                    />
+                    <span className={"space-2"} />
 
-                <FormDatePicker
-                    control={control}
-                    name={"endDate"}
-                    label={"end date"}
-                    placeholder={"Choose the End Date..."}
-                    minDate={dateWatch.startDate ? dateWatch.startDate : TODAYS_DATE}
-                    maxDate={
-                        dateWatch.startDate
-                            ? new Date(
-                                  new Date(dateWatch.startDate.toString()).setFullYear(
-                                      dateWatch.startDate.getFullYear() + 10,
-                                  ),
-                              )
-                            : DATE_IN_10_YEARS
-                    }
-                    error={
-                        !!(errors.endDate || dateWatch.startDate > dateWatch.endDate)
-                            ? "end date after the start date is required MM/dd/YYYY"
-                            : undefined
-                    }
-                />
-                <span className={"space-2"} />
+                    <FormDatePicker
+                        control={control}
+                        name={"endDate"}
+                        label={"end date"}
+                        placeholder={"Choose the End Date..."}
+                        minDate={dateWatch.startDate ? dateWatch.startDate : TODAYS_DATE}
+                        maxDate={
+                            dateWatch.startDate
+                                ? new Date(
+                                      new Date(dateWatch.startDate.toString()).setFullYear(
+                                          dateWatch.startDate.getFullYear() + 10,
+                                      ),
+                                  )
+                                : DATE_IN_10_YEARS
+                        }
+                        error={
+                            !!(errors.endDate || dateWatch.startDate > dateWatch.endDate)
+                                ? "end date after the start date is required MM/dd/YYYY"
+                                : undefined
+                        }
+                    />
+                    <span className={"space-2"} />
 
-                <Controller
-                    name="eventTypeOption"
-                    control={control}
-                    defaultValue={initialEventType}
-                    render={(props): ReactElement => (
-                        <>
-                            <label
-                                data-testid="event-type-select"
-                                htmlFor="eventType"
-                                style={{ textAlign: "initial" }}
-                            >
-                                event type
-                            </label>
-                            <div className={"space-1"} />
-                            <AsyncCreatable
-                                styles={selectStyles}
-                                isClearable
-                                defaultOptions
-                                loadOptions={loadEventTypeSearchTerm}
-                                getOptionValue={(option) => option.label}
-                                placeholder="Select an Event Type..."
-                                name="eventType"
-                                inputId="eventType"
-                                onChange={(
-                                    selection: ValueType<SelectOptionOG>,
-                                    actionType,
-                                ): void => {
-                                    if (selection && actionType.action === "create-option") {
-                                        if ("label" in selection) {
-                                            createAndMapEventType(selection.label);
+                    <Controller
+                        name="eventTypeOption"
+                        control={control}
+                        defaultValue={initialEventType}
+                        render={(props): ReactElement => (
+                            <>
+                                <label
+                                    data-testid="event-type-select"
+                                    htmlFor="eventType"
+                                    style={{ textAlign: "initial" }}
+                                >
+                                    event type
+                                </label>
+                                <div className={"space-1"} />
+                                <AsyncCreatable
+                                    styles={selectStyles}
+                                    isClearable
+                                    defaultOptions
+                                    loadOptions={loadEventTypeSearchTerm}
+                                    getOptionValue={(option) => option.label}
+                                    placeholder="Select an Event Type..."
+                                    name="eventType"
+                                    inputId="eventType"
+                                    onChange={(
+                                        selection: ValueType<SelectOptionOG>,
+                                        actionType,
+                                    ): void => {
+                                        if (selection && actionType.action === "create-option") {
+                                            if ("label" in selection) {
+                                                createAndMapEventType(selection.label);
+                                            }
                                         }
-                                    }
-                                    props.onChange(selection);
-                                }}
-                            />
-                        </>
-                    )}
-                    filterOption={createFilter({
-                        ignoreCase: true,
-                        matchFrom: "any",
-                    })}
-                />
-                <span className={"space-2"} />
+                                        props.onChange(selection);
+                                    }}
+                                />
+                            </>
+                        )}
+                        filterOption={createFilter({
+                            ignoreCase: true,
+                            matchFrom: "any",
+                        })}
+                    />
+                    <span className={"space-2"} />
 
-                <div>
-                    <button className={"basic-button"}>submit</button>
-                    <button className={"basic-button"} onClick={onCancel}>
-                        cancel
-                    </button>
-                </div>
-            </form>
-        </div>
+                    <div className="CreateEvent-Submit">
+                        <PrimaryButton>submit</PrimaryButton>
+                        <SecondaryButton onClick={onCancel}>cancel</SecondaryButton>
+                    </div>
+                </form>
+            </div>
+        </>
     );
 };

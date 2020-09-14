@@ -1,0 +1,28 @@
+.LinkButton {
+    background: transparent;
+    box-shadow: none;
+    color: var(--action-color);
+    min-height: 0;
+    min-width: 0;
+    padding: 0;
+}
+
+.LinkButton svg {
+    fill: var(--action-color);
+}
+
+.LinkButton:hover {
+    color: var(--action-hover-color);
+    background: transparent;
+    box-shadow: none;
+}
+.LinkButton:hover svg {
+    fill: var(--action-hover-color);
+}
+
+.LinkButton:disabled {
+    color: var(--non-essential-hover-color);
+}
+.LinkButton:disabled svg {
+    fill: var(--non-essential-hover-color)
+}

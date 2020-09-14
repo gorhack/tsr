@@ -13,22 +13,6 @@ code {
     monospace;
 }
 
-.basic-button {
-  background-color: #e69a3d;
-  border-color: var(--background-color);
-  border-radius: 5px;
-  box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.50);
-  text-transform: uppercase;
-  font-family: var(--font-family-bold);
-  cursor: pointer;
-  letter-spacing: .05rem;
-  min-height: 2rem;
-  padding: 0 1.5rem 0 1.5rem;
-  margin: 0 2rem 0 2rem;
-  font-size: 16px;
-  line-height: 21px;
-}
-
 .Labeled-Input {
   display: flex;
   flex-direction: column;
@@ -76,6 +60,13 @@ input[type=text],input[type=number],input[type=search] {
   margin-bottom: 50px;
 }
 
+.flex-row {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+
 dt {
   font-family: var(--font-family-bold);
   margin-right: 0.5rem;
@@ -95,11 +86,67 @@ dd {
   margin: 0;
 }
 
+a {
+  color: var(--action-color);
+  font-size: 16px;
+  font-family: var(--font-family-bold);
+  text-transform: uppercase;
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+p, ul {
+  font-size: 16px;
+  letter-spacing: 0.44px;
+  line-height: 21px;
+  margin: 0;
+}
+
+.primary-subtitle, .secondary-subtitle {
+  font-family: var(--font-family-bold);
+}
+
+.primary-subtitle {
+  font-size: 16px;
+  letter-spacing: 0.15px;
+  line-height: 24px;
+}
+
+.secondary-subtitle {
+  font-size: 14px;
+  letter-spacing: 0.1px;
+  line-height: 19px;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  margin: 0;
+  font-weight: normal;
+}
+
+h1, h2 {
+  font-family: var(--font-family-light);
+}
+
+h1 {
+  font-size: 34px;
+  letter-spacing: 0.25px;
+  line-height: 46px;
+}
+
+h2 {
+  font-size: 24px;
+  line-height: 32px;
+}
+
 :root {
   /*basics*/
-  --background-color: #181c23;
-  --action-color: #e69a3d;
-  --text-color: #afafb1;
+  --background-color: #181C23;
+  --action-color: #E69A3D;
+  --action-hover-color: #AD742D;
+  --text-color: #AfAFB1;
   --error-color: #FF4D55;
 
   --level-one-color: #1E222C;
@@ -108,6 +155,9 @@ dd {
 
   --level-one-accent: #303744;
   --level-two-accent: #383D4D;
+
+  --non-essential-color: #B9BDC5;
+  --non-essential-hover-color: #9CA3B0;
 
   /*fonts*/
   --font-family-regular: Roboto, Arial, sans-serif;

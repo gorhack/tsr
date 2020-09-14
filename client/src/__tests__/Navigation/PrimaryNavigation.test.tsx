@@ -1,9 +1,9 @@
 import React from "react";
 import td from "testdouble";
-import * as UserApi from "../Users/UserApi";
+import * as UserApi from "../../Users/UserApi";
 import { act, render, RenderResult, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router";
-import { PrimaryNavigation } from "../PrimaryNavigation";
+import { PrimaryNavigation } from "../../Navigation/PrimaryNavigation";
 
 describe("Primary nav", () => {
     let mockGetUserInfo: typeof UserApi.getUserInfo;

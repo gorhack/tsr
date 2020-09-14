@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useHistory, useParams } from "react-router-dom";
 import { getEventById, TsrEvent } from "./EventApi";
 import moment from "moment";
 import { EventDetails } from "./EventDetails";
+import { LinkButton } from "../Buttons/Buttons";
+import "./EventPage.css";
 
 interface RouteParams {
     eventId: string;
@@ -11,6 +13,7 @@ interface RouteParams {
 const LONG_DATE_FORMAT = "ddd MMM D, YYYY";
 
 export const EventPage: React.FC = () => {
+    const history = useHistory();
     const { eventId } = useParams<RouteParams>();
     const [tsrEvent, setTsrEvent] = useState<TsrEvent | undefined>(undefined);
 
@@ -52,8 +55,9 @@ export const EventPage: React.FC = () => {
 
     return (
         <>
-            <h1>{headerEventName()}</h1>
-            <h2>{headerDates()}</h2>
+            {<LinkButton onClick={() => history.push("/")}>{"< back to events"}</LinkButton>}
+            <h1 className="EventPage-Header">{headerEventName()}</h1>
+            <h2 className="EventPage-Header">{headerDates()}</h2>
             <EventDetails tsrEvent={tsrEvent} />
         </>
     );

@@ -1,0 +1,29 @@
+.BaseButton {
+    display: inline;
+    border-radius: 3px;
+    border: 0;
+    box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.50);
+    cursor: pointer;
+
+    font-family: var(--font-family-bold);
+    font-size: 16px;
+    letter-spacing: 1.5px;
+    line-height: 21px;
+
+    min-height: 50px;
+    min-width: 300px;
+    padding-left: 20px;
+    padding-right: 20px;
+    text-transform: uppercase;
+}
+
+.BaseButton:disabled {
+    cursor: default;
+    box-shadow: none;
+}
+
+.BaseButton-content {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}

@@ -1,6 +1,7 @@
 import React, { ReactElement, ReactFragment, useEffect, useState } from "react";
-import { getUserInfo, TsrUser } from "./Users/UserApi";
+import { getUserInfo, TsrUser } from "../Users/UserApi";
 import "./PrimaryNavigation.css";
+import { DrawerMenu } from "./DrawerMenu";
 
 interface PrimaryNavigationProps {
     children?: ReactFragment;
@@ -11,7 +12,7 @@ export const PrimaryNavigation: React.FC<PrimaryNavigationProps> = ({
 }: PrimaryNavigationProps): ReactElement => {
     const [tsrUser, setTsrUser] = useState<TsrUser>({
         userId: "",
-        username: "[deleted]",
+        username: "",
         role: "USER",
     });
 
@@ -29,9 +30,9 @@ export const PrimaryNavigation: React.FC<PrimaryNavigationProps> = ({
 
     return (
         <nav className="PrimaryNavigation">
-            <div className="PrimaryNavigationInfo">
-                <span>{tsrUser.username}</span>
-                <span>{tsrUser.role}</span>
+            <div className="flex-row">
+                <DrawerMenu />
+                <span style={{ fontSize: "42px" }}>{tsrUser.username}</span>
             </div>
             {children}
         </nav>

@@ -4,6 +4,7 @@
     min-width: 300px;
     max-width: 47.5%;
     width: 47.5%;
+    text-align: center;
 }
 
 .EventsSection-SingleEvent {

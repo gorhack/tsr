@@ -1,0 +1,30 @@
+.MenuButton {
+     background: transparent;
+     box-shadow: none;
+     color: white;
+     min-height: 0;
+     min-width: 0;
+     padding: 5px;
+     text-transform: capitalize;
+     margin: 5px;
+}
+
+.MenuButton svg {
+     fill: var(--action-color);
+}
+
+.MenuButton:hover {
+     color: var(--action-hover-color);
+     background: transparent;
+     box-shadow: none;
+}
+.MenuButton:hover svg {
+     fill: var(--action-hover-color);
+}
+
+.MenuButton:disabled {
+     color: var(--non-essential-hover-color);
+}
+.MenuButton:disabled svg {
+     fill: var(--non-essential-hover-color)
+}

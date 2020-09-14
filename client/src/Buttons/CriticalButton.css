@@ -1,0 +1,13 @@
+.CriticalButton {
+    background: var(--critical-color);
+    color: var(--background-color);
+}
+
+.CriticalButton:hover {
+    background: var(--critical-hover-color);
+}
+
+.CriticalButton:disabled {
+    background: var(--level-two-color);
+    color: var(--non-essential-hover-color);
+}

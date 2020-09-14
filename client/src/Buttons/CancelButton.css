@@ -1,0 +1,7 @@
+.CancelButton {
+    color: var(--background-color);
+    background-color: var(--non-essential-color);
+}
+.CancelButton:hover {
+    background-color: var(--non-essential-hover-color);
+}

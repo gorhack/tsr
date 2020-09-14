@@ -1,3 +1,7 @@
+.CreateEvent-Header {
+    text-align: center;
+}
+
 .CreateEvent-Content {
     margin-left: 25%;
     max-width: 50%;
@@ -11,4 +15,9 @@
 
 .React-Select-Error {
     text-align: left;
+}
+
+.CreateEvent-Submit {
+    display: flex;
+    justify-content: space-around;
 }

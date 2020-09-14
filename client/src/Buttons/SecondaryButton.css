@@ -1,0 +1,15 @@
+.SecondaryButton {
+    background: transparent;
+    border: 2px solid var(--action-color);
+    color: var(--action-color);
+}
+
+.SecondaryButton:hover {
+    background: var(--action-hover-secondary-color);
+}
+
+.SecondaryButton:disabled {
+    border-color: var(--level-two-color);
+    background-color: transparent;
+    color: var(--non-essential-hover-color);
+}

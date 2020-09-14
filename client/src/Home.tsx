@@ -5,6 +5,8 @@ import { useStompSocketContext } from "./StompSocketContext";
 import { SocketStatus } from "./SocketService";
 import { IMessage } from "@stomp/stompjs";
 import { SocketSubscriptionTopics, TsrEvent } from "./Event/EventApi";
+import { PrimaryButton } from "./Buttons/Buttons";
+import "./Home.css";
 
 export const Home: React.FC = () => {
     const { socketService } = useStompSocketContext();
@@ -28,9 +30,16 @@ export const Home: React.FC = () => {
 
     return (
         <>
-            <button className={"basic-button"} onClick={() => history.push("/createEvent")}>
-                Create an Event
-            </button>
+            <div className="Home-Header">
+                <h1>events</h1>
+                <PrimaryButton
+                    className={"CreateEvent-Button"}
+                    onClick={() => history.push("/createEvent")}
+                >
+                    Create an Event
+                </PrimaryButton>
+            </div>
+            <div className="space-2" />
             <EventsSection />
         </>
     );

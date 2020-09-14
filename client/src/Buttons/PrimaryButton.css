@@ -1,0 +1,16 @@
+.PrimaryButton {
+    background: var(--action-color);
+    color: var(--background-color);
+}
+
+.PrimaryButton:hover {
+    background-color: var(--action-hover-color);
+}
+
+.PrimaryButton:disabled {
+    background: var(--level-two-color);
+    color: var(--non-essential-hover-color);
+}
+.PrimaryButton:disabled svg {
+    fill: var(--non-essential-hover-color);
+}
