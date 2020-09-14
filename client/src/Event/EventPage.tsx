@@ -30,9 +30,14 @@ export const EventPage: React.FC = () => {
         })();
     }, [eventId, setTsrEvent]);
 
+
+
     if (!tsrEvent) {
         return <></>;
     }
+    const setEditEventFunc = (): void => {
+        history.push(`/editEvent/${tsrEvent.eventId}`);
+    };
     const startDate = moment.utc(tsrEvent.startDate);
     const endDate = moment.utc(tsrEvent.endDate);
 
@@ -56,7 +61,8 @@ export const EventPage: React.FC = () => {
 
     return (
         <>
-            {<LinkButton onClick={() => history.push("/")}>{"< back to events"}</LinkButton>}
+            <LinkButton onClick={() => history.push("/")}>{"< back to events"}</LinkButton>
+            <LinkButton onClick={setEditEventFunc}>{"edit event"}</LinkButton>
             <div className="space-3" />
             <h1 className="EventPage-Header">{headerEventName()}</h1>
             <h2 className="EventPage-Header">{headerDates()}</h2>

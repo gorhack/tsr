@@ -19,7 +19,9 @@ const App: React.FC = () => {
                         <PrimaryNavigation />
                         <main className="App-content">
                             <Switch>
-                                <Route path="/createEvent" component={CreateEvent} />
+                                <Route path="/createEvent">
+                                    <CreateEvent />
+                                </Route>
                                 <Route path="/event/:eventId" component={EventPage} />
                                 <Route path="/about" component={About} />
                                 <Route path="/settings" component={UserSettings} />

@@ -1,10 +1,11 @@
+import React, { ReactElement, SetStateAction, useEffect, useReducer, useState } from "react";
 import React, { ReactElement, useReducer, useState } from "react";
 import { LabeledInput } from "../Inputs/LabeledInput";
 import { useHistory } from "react-router";
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import AsyncCreatable from "react-select/async-creatable";
 import { createFilter, ValueType } from "react-select";
-import { EditableTsrEvent, saveEvent } from "./EventApi";
+import { EditableTsrEvent, saveEvent, TsrEvent } from "./EventApi";
 import { Option } from "../api";
 import { FormDatePicker } from "../Inputs/FormDatePicker";
 import "./CreateEvent.css";
@@ -53,13 +54,23 @@ export const CreateEvent: React.FC = () => {
 
     const [eventTypesCache, setEventTypesCache] = useState<EventType[]>([]);
 
-    const { handleSubmit, register, errors, control, watch, setError } = useForm<FormData>({
+    const { handleSubmit, register, errors, control, watch, setError, setValue } = useForm<
+        FormData
+    >({
         defaultValues: {
             eventTypeOption: initialEventType,
             organizationOption: initialOrgName,
         },
     });
     const dateWatch = watch(["startDate", "endDate"]);
+
+    useEffect(() => {
+        if (event) {
+            setValue("startDate", new Date(event.startDate));
+            setValue("endDate", new Date(event.endDate));
+            setValue("eventName", event.eventName);
+        }
+    }, [event, setValue]);
 
     const onCancel = (e: React.MouseEvent<HTMLButtonElement>): void => {
         e.preventDefault();
