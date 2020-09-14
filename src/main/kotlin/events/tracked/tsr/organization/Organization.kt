@@ -1,6 +1,7 @@
 package events.tracked.tsr.organization
 
 import events.tracked.tsr.jpa_ext.Auditable
+import events.tracked.tsr.user.TsrUser
 import java.time.OffsetDateTime
 import javax.persistence.*
 
@@ -12,7 +13,9 @@ data class Organization(
     var organizationId: Long = 0,
     var organizationName: String = "",
     var organizationDisplayName: String = "",
-    var sortOrder: Int = 0
+    var sortOrder: Int = 0,
+    @ManyToMany(mappedBy = "organizations")
+    private var tsrUsers: MutableList<TsrUser> = mutableListOf()
 ) : Auditable() {
     constructor(organizationId: Long, organizationName: String, organizationDisplayName: String, sortOrder: Int, lastModifiedDate: OffsetDateTime, lastModifiedBy: String, createdDate: OffsetDateTime, createdBy: String) :
         this(organizationId = organizationId, organizationName = organizationName, organizationDisplayName = organizationDisplayName, sortOrder = sortOrder) {

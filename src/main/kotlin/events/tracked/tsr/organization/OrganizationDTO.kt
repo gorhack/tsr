@@ -12,8 +12,10 @@ data class OrganizationDTO (
 
     private fun copyInto(organization: Organization): Organization {
         val organizationCopy = organization.copy (
+            organizationId = this.organizationId,
             organizationName = this.organizationName,
-            organizationDisplayName = this.organizationDisplayName
+            organizationDisplayName = this.organizationDisplayName,
+            sortOrder = this.sortOrder
         )
         organizationCopy.lastModifiedDate = organization.lastModifiedDate
         organizationCopy.lastModifiedBy = organization.lastModifiedBy

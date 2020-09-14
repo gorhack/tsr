@@ -1,12 +1,15 @@
 package events.tracked.tsr.client.user
 
 import events.tracked.tsr.makeOidcUser
+import events.tracked.tsr.organization.Organization
+import events.tracked.tsr.organization.OrganizationDTO
 import events.tracked.tsr.user.*
 import io.mockk.Called
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.security.core.authority.SimpleGrantedAuthority
@@ -194,5 +197,20 @@ class TsrUserServiceTest {
         every { mockTsrUserRepository.findByUserId(aTsrUser.userId) } returns aTsrUser
         val userResult = subject.assertUserIsAdmin(oidcUser)
         assertThat(userResult).isFalse()
+    }
+
+    @Test
+    fun `setUserOrganizations updates a users organizations`() {
+        val organization = Organization(organizationId = 1L, organizationName = "org1", organizationDisplayName = "org 1", sortOrder = 1)
+        val organizationDTO = OrganizationDTO(organizationId = 1L, organizationName = "org1", organizationDisplayName = "org 1", sortOrder = 1)
+
+        val organization2 = Organization(organizationId = 2L, organizationName = "org2", organizationDisplayName = "org 2", sortOrder = 2)
+        val organizationDTO2 = OrganizationDTO(organizationId = 2L, organizationName = "org2", organizationDisplayName = "org 2", sortOrder = 2)
+
+        val userToUpdate = TsrUser(1L, "1234", "user", UserRole.USER, organizations = mutableListOf(organization))
+        val savedTsrUser = TsrUser(1L, "1234", "user", UserRole.USER, organizations = mutableListOf(organization, organization2))
+
+        every { mockTsrUserRepository.save(savedTsrUser) } returns savedTsrUser
+        assertEquals(savedTsrUser, subject.setUserOrganizations(userToUpdate, listOf(organizationDTO, organizationDTO2)))
     }
 }
