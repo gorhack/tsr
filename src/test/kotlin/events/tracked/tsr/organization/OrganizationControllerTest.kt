@@ -59,7 +59,7 @@ internal class OrganizationControllerTest {
     }
 
     @Test
-    fun `without search terms, returns page of organizations`() {
+    fun `without search terms returns page of organizations`() {
         val expectedResponse: ResponseEntity<PageDTO<OrganizationDTO>> = ResponseEntity(
                 expectedPageDTO, HttpStatus.OK
         )

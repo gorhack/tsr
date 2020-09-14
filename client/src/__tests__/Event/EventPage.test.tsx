@@ -3,12 +3,12 @@ import { fireEvent } from "@testing-library/dom";
 import React from "react";
 import td from "testdouble";
 import * as EventApi from "../../Event/EventApi";
+import { TsrEvent } from "../../Event/EventApi";
 import * as Api from "../../api";
 import { EventPage } from "../../Event/EventPage";
 import { createMemoryHistory, MemoryHistory } from "history";
 import { Route, Router } from "react-router-dom";
 import { findByAriaLabel, makeAudit, makeEvent, makeOrganization } from "../TestHelpers";
-import { TsrEvent } from "../../Event/EventApi";
 import moment from "moment";
 
 describe("displays event details", () => {

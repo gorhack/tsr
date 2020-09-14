@@ -50,7 +50,7 @@ internal class EventTypeControllerTest {
     }
 
     @Test
-    fun `without search terms, returns page of event types`() {
+    fun `without search terms returns page of event types`() {
         val expectedResponse: ResponseEntity<PageDTO<EventTypeDTO>> = ResponseEntity(
             expectedPageDTO, HttpStatus.OK
         )

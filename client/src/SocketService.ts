@@ -57,8 +57,8 @@ export const consoleLoggingErrorHandler = {
         console.error("Error with the web socket...");
     },
     onStompErrorHandler: (frame: IFrame): void => {
-        console.log("Broker reported error: " + frame.headers.message);
-        console.log("Additional details: " + frame.body);
+        console.log(`Broker reported error: ${frame.headers.message}`);
+        console.log(`Additional details: ${frame.body}`);
     },
     debug: console.log,
 };
@@ -75,7 +75,7 @@ export class SocketService {
     private subscriptionQueue: SubscribeType[] = [];
     client?: Client;
     ready = (): boolean => this.client !== undefined && this.client.connected;
-    private errorHandlers: ErrorHandlers;
+    readonly errorHandlers: ErrorHandlers;
 
     constructor({
         status = SocketStatus.INITIALIZING,
@@ -165,12 +165,12 @@ export class SocketService {
         return this.subscriptions.find((x) => topic === x.topic);
     };
 
-    private subscribeToQueuedSubscriptions = (): void => {
+    readonly subscribeToQueuedSubscriptions = (): void => {
         this.subscriptionQueue.forEach((ps) => this.subscribe(ps));
         this.subscriptionQueue = [];
     };
 
-    private getClientConfig = (webSocketPath: string): StompConfig => {
+    readonly getClientConfig = (webSocketPath: string): StompConfig => {
         const clientConfiguration: StompConfig = {
             onConnect: (): void => {
                 this.status = SocketStatus.CONNECTED;

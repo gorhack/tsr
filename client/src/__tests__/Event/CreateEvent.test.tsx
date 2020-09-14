@@ -16,11 +16,11 @@ import td from "testdouble";
 import * as EventApi from "../../Event/EventApi";
 import { TsrEvent } from "../../Event/EventApi";
 import * as EventTypeApi from "../../Event/Type/EventTypeApi";
+import { EventType } from "../../Event/Type/EventTypeApi";
 import * as OrganizationApi from "../../Organization/OrganizationApi";
 import { Organization } from "../../Organization/OrganizationApi";
 import selectEvent from "react-select-event";
 import { PageDTO } from "../../api";
-import { EventType } from "../../Event/Type/EventTypeApi";
 
 const ORGANIZATION_PLACEHOLDER_TEXT = "Select Organizations...";
 const START_DATE_PLACEHOLDER_TEXT = "Choose the Start Date...";

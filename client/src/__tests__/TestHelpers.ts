@@ -6,8 +6,7 @@ import { PageDTO } from "../api";
 import { Organization } from "../Organization/OrganizationApi";
 import td from "testdouble";
 import { SocketService, SocketStatus } from "../SocketService";
-import { messageCallbackType } from "@stomp/stompjs";
-import { Client, StompHeaders, StompSubscription } from "@stomp/stompjs";
+import { Client, messageCallbackType, StompHeaders, StompSubscription } from "@stomp/stompjs";
 
 // Define a NockBody any to avoid linter warnings. Nock can take objects of any type.
 // eslint-disable-next-line @typescript-eslint/no-explicit-any

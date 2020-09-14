@@ -1,11 +1,11 @@
-import { act, render, RenderResult, screen, fireEvent } from "@testing-library/react";
+import { act, fireEvent, render, RenderResult, screen } from "@testing-library/react";
 import React from "react";
 import td from "testdouble";
 import { EventsSection } from "../../Event/EventsSection";
 import { createMemoryHistory, MemoryHistory } from "history";
+import * as EventApi from "../../Event/EventApi";
 import { TsrEvent } from "../../Event/EventApi";
 import { makeAudit, makeEvent } from "../TestHelpers";
-import * as EventApi from "../../Event/EventApi";
 import { Route, Router } from "react-router-dom";
 import { PageDTO } from "../../api";
 

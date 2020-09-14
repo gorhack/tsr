@@ -106,7 +106,7 @@ export const CreateEvent: React.FC = () => {
 
     const createAndMapEventType = (inputVal: string): void => {
         (async () =>
-            await createEventType({
+            createEventType({
                 eventTypeId: 0,
                 eventTypeName: inputVal,
                 displayName: inputVal,
@@ -148,7 +148,7 @@ export const CreateEvent: React.FC = () => {
 
     const createAndMapOrganization = (inputVal: string): void => {
         (async () =>
-            await createOrganization({
+            createOrganization({
                 organizationId: 0,
                 organizationName: inputVal,
                 organizationDisplayName: inputVal,

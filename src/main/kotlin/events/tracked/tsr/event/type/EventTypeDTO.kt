@@ -1,6 +1,6 @@
 package events.tracked.tsr.event.type
 
-data class EventTypeDTO (
+data class EventTypeDTO(
     var eventTypeId: Long = 0,
     var eventTypeName: String = "",
     var displayName: String = "",

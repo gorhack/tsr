@@ -64,7 +64,7 @@ describe("home page of the application", () => {
         );
     });
 
-    interface renderHomePageProps {
+    interface RenderHomePageProps {
         history?: MemoryHistory;
         fakeStompSocketService?: SocketService;
     }
@@ -72,7 +72,7 @@ describe("home page of the application", () => {
     const renderHomePage = async ({
         history = createMemoryHistory(),
         fakeStompSocketService = mockSocketService(),
-    }: renderHomePageProps): Promise<RenderResult> => {
+    }: RenderHomePageProps): Promise<RenderResult> => {
         const userPage: PageDTO<TsrEvent> = {
             items: [
                 makeEvent({

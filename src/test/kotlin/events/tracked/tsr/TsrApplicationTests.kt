@@ -11,9 +11,9 @@ import org.springframework.test.context.junit.jupiter.SpringExtension
 @SpringBootTest
 class TsrApplicationTests {
 
-	@Test
-	fun contextLoads() {
-		// intentionally blank... autowire build test
-	}
+    @Test
+    fun contextLoads() {
+        // intentionally blank... autowire build test
+    }
 
 }
