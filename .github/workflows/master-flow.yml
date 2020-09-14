@@ -9,9 +9,9 @@ jobs:
     runs-on: ubuntu-18.04
     steps:
       - name: Initialize CodeQL
-          uses: github/codeql-action/init@v1
-          with:
-            languages: javascript, java
+        uses: github/codeql-action/init@v1
+        with:
+          languages: javascript, java
 
       - uses: actions/checkout@v2
 
