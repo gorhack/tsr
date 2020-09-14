@@ -8,11 +8,6 @@ jobs:
   build:
     runs-on: ubuntu-18.04
     steps:
-      - name: Initialize CodeQL
-        uses: github/codeql-action/init@v1
-        with:
-          languages: javascript, java
-
       - uses: actions/checkout@v2
 
       - name: Set up JDK 13
@@ -28,12 +23,6 @@ jobs:
         with:
           name: tsr-jar
           path: build/libs/*.jar
-
-      - name: Autobuild
-        uses: github/codeql-action/autobuild@v1
-
-      - name: Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@v1
   test:
     name: run tests
     runs-on: ubuntu-18.04
