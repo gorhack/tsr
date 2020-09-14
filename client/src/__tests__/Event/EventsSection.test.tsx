@@ -90,7 +90,6 @@ describe("home page of the application", () => {
     it("lists events created by logged in user", async () => {
         await renderEventsSection({
             userEvents: userEventList,
-            user: { userId: "1234", username: "user", role: "USER" },
         });
 
         expect(screen.getByTestId("user-event-1")).toHaveTextContent("first event");
