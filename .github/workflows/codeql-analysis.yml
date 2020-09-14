@@ -17,7 +17,7 @@ jobs:
       matrix:
         # Override automatic language detection by changing the below list
         # Supported options are ['csharp', 'cpp', 'go', 'java', 'javascript', 'python']
-        language: ['javascript', 'java']
+        language: ['javascript'] # java currently failing... https://github.com/github/codeql-action/issues/52
         # Learn more...
         # https://docs.github.com/en/github/finding-security-vulnerabilities-and-errors-in-your-code/configuring-code-scanning#overriding-automatic-language-detection
 
@@ -58,9 +58,3 @@ jobs:
 
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v1
-      id: codeql
-  
-    - name: Upload CodeQL results
-      uses: github/codeql-action/upload-sarif@v1
-      with:
-        sarif_file: ${{ steps.codeql.outputs.sarifFile }}
