@@ -7,6 +7,7 @@ import { CreateEvent } from "./Event/CreateEvent";
 import { EventPage } from "./Event/EventPage";
 import { StompSocketProvider } from "./StompSocketContext";
 import { PrimaryNavigation } from "./Navigation/PrimaryNavigation";
+import { About } from "./About";
 
 const App: React.FC = () => {
     return (
@@ -19,6 +20,7 @@ const App: React.FC = () => {
                             <Switch>
                                 <Route path="/createEvent" component={CreateEvent} />
                                 <Route path="/event/:eventId" component={EventPage} />
+                                <Route path="/about" component={About} />
                                 <Route path="/" component={Home} />
                             </Switch>
                         </main>
