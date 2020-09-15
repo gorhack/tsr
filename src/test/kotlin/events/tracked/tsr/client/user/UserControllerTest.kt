@@ -33,7 +33,14 @@ class UserControllerTest {
     fun `test getUser`() {
         every { mockTsrUserService.assertUserExistsAndReturnUser(devUser) } returns tsrUser
         val result = subject.userInfo(devUser)
-        val expected = TsrUserDTO(userId = userId, username = "username", role = UserRole.ADMIN, organizations = mutableListOf())
+        val expected = TsrUserDTO(
+            userId = userId,
+            username = "username",
+            role = UserRole.ADMIN,
+            organizations = mutableListOf(),
+            phoneNumber = null,
+            emailAddress = null
+        )
         assertEquals(expected, result)
     }
 
@@ -79,19 +86,35 @@ class UserControllerTest {
         val organization2 = Organization(organizationId = 2L, organizationName = "org2", organizationDisplayName = "org 2", sortOrder = 2)
         val organizationDTO2 = OrganizationDTO(organizationId = 2L, organizationName = "org2", organizationDisplayName = "org 2", sortOrder = 2)
 
-        val regularUser = TsrUser(4, "1234", "regular user", UserRole.USER, mutableListOf(organization))
+        val regularUser = TsrUser(4, "1234", "regular user", UserRole.USER, mutableListOf(organization), emailAddress = "test@example.com")
         val regularOidcUser = makeOidcUser(regularUser.userId, regularUser.username)
         every { mockTsrUserService.assertUserExistsAndReturnUser(regularOidcUser) } returns regularUser
         every {
-            mockTsrUserService.setUserSettings(regularUser, UserSettingsDTO(organizations = arrayListOf(organizationDTO, organizationDTO2)))
+            mockTsrUserService.setUserSettings(regularUser, UserSettingsDTO(organizations = listOf(organizationDTO, organizationDTO2), phoneNumber = null, emailAddress = "test@example.com"))
         } returns regularUser.copy(organizations = mutableListOf(organization, organization2))
 
-        val expectedResponse = ResponseEntity(TsrUser(4, "1234", "regular user", UserRole.USER, mutableListOf(organization, organization2)), HttpStatus.OK)
+        val expectedResponse = ResponseEntity(TsrUser(4, "1234", "regular user", UserRole.USER, mutableListOf(organization, organization2), emailAddress = "test@example.com"), HttpStatus.OK)
 
-        assertEquals(expectedResponse, subject.setUserSettings(regularOidcUser, UserSettingsDTO(organizations = arrayListOf(organizationDTO, organizationDTO2))))
+        assertEquals(expectedResponse, subject.setUserSettings(regularOidcUser, UserSettingsDTO(organizations = listOf(organizationDTO, organizationDTO2), phoneNumber = null, emailAddress = "test@example.com")))
         verifySequence {
             mockTsrUserService.assertUserExistsAndReturnUser(regularOidcUser)
-            mockTsrUserService.setUserSettings(regularUser, UserSettingsDTO(organizations = arrayListOf(organizationDTO, organizationDTO2)))
+            mockTsrUserService.setUserSettings(regularUser, UserSettingsDTO(organizations = listOf(organizationDTO, organizationDTO2), phoneNumber = null, emailAddress = "test@example.com"))
+        }
+    }
+
+    @Test
+    fun `any user can update their phone number and email address`() {
+        val regularUser = TsrUser(4, "1234", "regular user", UserRole.USER, mutableListOf(), null, "test@example.com")
+        val regularOidcUser = makeOidcUser(regularUser.userId, regularUser.username)
+        every { mockTsrUserService.assertUserExistsAndReturnUser(regularOidcUser) } returns regularUser
+        every {
+            mockTsrUserService.setUserSettings(regularUser, UserSettingsDTO(organizations = listOf(), phoneNumber = "1231231234", emailAddress = "new@tracked.events"))
+        } returns regularUser.copy(organizations = mutableListOf(), phoneNumber = "1231231234", emailAddress = "new@tracked.events")
+        val expectedResponse = ResponseEntity(TsrUser(4, "1234", "regular user", UserRole.USER, mutableListOf(), "1231231234", "new@tracked.events"), HttpStatus.OK)
+        assertEquals(expectedResponse, subject.setUserSettings(regularOidcUser, UserSettingsDTO(organizations = listOf(), phoneNumber = "1231231234", emailAddress = "new@tracked.events")))
+        verifySequence {
+            mockTsrUserService.assertUserExistsAndReturnUser(regularOidcUser)
+            mockTsrUserService.setUserSettings(regularUser, UserSettingsDTO(organizations = listOf(), phoneNumber = "1231231234", emailAddress = "new@tracked.events"))
         }
     }
 }

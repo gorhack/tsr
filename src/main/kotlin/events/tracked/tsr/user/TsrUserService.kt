@@ -32,7 +32,11 @@ class TsrUserService(private val tsrUserRepository: TsrUserRepository) {
     fun isEmpty(): Boolean = tsrUserRepository.count() == 0L
 
     fun setUserSettings(tsrUser: TsrUser, userSettings: UserSettingsDTO): TsrUser {
-        val tsrUserToSave = tsrUser.copy(organizations = userSettings.organizations.map { o -> o.toOrganization() }.toMutableList())
+        val tsrUserToSave = tsrUser.copy(
+            organizations = userSettings.organizations.map { o -> o.toOrganization() }.toMutableList(),
+            emailAddress = userSettings.emailAddress,
+            phoneNumber = userSettings.phoneNumber
+        )
         return tsrUserRepository.save(tsrUserToSave)
     }
 }

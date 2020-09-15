@@ -4,7 +4,7 @@
     position: fixed;
     top: 0;
     left: 0;
-    opacity: 75%;
+    opacity: 0.75;
     z-index: 1400;
     background: var(--background-color);
 }

@@ -216,6 +216,14 @@ class TsrUserServiceTest {
         val savedTsrUser = TsrUser(1L, "1234", "user", UserRole.USER, organizations = mutableListOf(organization, organization2))
 
         every { mockTsrUserRepository.save(savedTsrUser) } returns savedTsrUser
-        assertEquals(savedTsrUser, subject.setUserSettings(userToUpdate, UserSettingsDTO(organizations = listOf(organizationDTO, organizationDTO2))))
+        assertEquals(savedTsrUser, subject.setUserSettings(userToUpdate, UserSettingsDTO(organizations = listOf(organizationDTO, organizationDTO2), phoneNumber = null, emailAddress = null)))
+    }
+
+    @Test
+    fun `setUserOrganiations updates users phone number and email`() {
+        val userToUpdate = TsrUser(1L, "1234", "user", UserRole.USER, organizations = mutableListOf(), phoneNumber = "1231231234", emailAddress = null)
+        val savedTsrUser = TsrUser(1L, "1234", "user", UserRole.USER, organizations = mutableListOf(), phoneNumber = "0980987", emailAddress = "test@example.com")
+        every { mockTsrUserRepository.save(savedTsrUser) } returns savedTsrUser
+        assertEquals(savedTsrUser, subject.setUserSettings(userToUpdate, UserSettingsDTO(organizations = listOf(), phoneNumber = "0980987", emailAddress = "test@example.com")))
     }
 }

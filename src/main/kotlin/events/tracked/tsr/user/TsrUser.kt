@@ -21,7 +21,9 @@ data class TsrUser(
         joinColumns = [JoinColumn(name = "tsr_user_id")],
         inverseJoinColumns = [JoinColumn(name = "organization_id")]
     )
-    val organizations: MutableList<Organization> = mutableListOf()
+    val organizations: MutableList<Organization> = mutableListOf(),
+    val phoneNumber: String? = null,
+    val emailAddress: String? = null
 )
 
 enum class UserRole {
@@ -37,14 +39,18 @@ data class TsrUserDTO(
     val userId: String,
     val username: String,
     val role: UserRole,
-    val organizations: MutableList<Organization>
+    val organizations: MutableList<Organization>,
+    val phoneNumber: String? = null,
+    val emailAddress: String? = null
 ) {
     constructor(tsrUser: TsrUser) : this(
         id = tsrUser.id,
         userId = tsrUser.userId,
         username = tsrUser.username,
         role = tsrUser.role,
-        organizations = tsrUser.organizations
+        organizations = tsrUser.organizations,
+        phoneNumber = tsrUser.phoneNumber,
+        emailAddress = tsrUser.emailAddress
     )
 }
 
@@ -54,8 +60,13 @@ data class UserRoleUpdateDTO(
 )
 
 data class UserSettingsDTO(
-    val organizations: List<OrganizationDTO>
+    val organizations: List<OrganizationDTO>,
+    val phoneNumber: String?,
+    val emailAddress: String?
 ) {
-    // required constructor for jackson...
-    constructor() : this(organizations = listOf())
+    constructor() : this(
+        organizations = listOf(),
+        phoneNumber = null,
+        emailAddress = null
+    )
 }
