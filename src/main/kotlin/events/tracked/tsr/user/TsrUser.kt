@@ -34,26 +34,6 @@ enum class UserRole {
 val OidcUser.userId: String get() = this.attributes["sub"].toString()
 val OidcUser.userName: String get() = this.attributes["user_name"].toString()
 
-data class TsrUserDTO(
-    val id: Long = 0,
-    val userId: String,
-    val username: String,
-    val role: UserRole,
-    val organizations: MutableList<Organization>,
-    val phoneNumber: String? = null,
-    val emailAddress: String? = null
-) {
-    constructor(tsrUser: TsrUser) : this(
-        id = tsrUser.id,
-        userId = tsrUser.userId,
-        username = tsrUser.username,
-        role = tsrUser.role,
-        organizations = tsrUser.organizations,
-        phoneNumber = tsrUser.phoneNumber,
-        emailAddress = tsrUser.emailAddress
-    )
-}
-
 data class UserRoleUpdateDTO(
     val role: UserRole,
     val userId: String
@@ -64,9 +44,29 @@ data class UserSettingsDTO(
     val phoneNumber: String?,
     val emailAddress: String?
 ) {
+    // required for jackson
     constructor() : this(
         organizations = listOf(),
         phoneNumber = null,
         emailAddress = null
+    )
+}
+
+data class TsrUserDTO(
+    val id: Long = 0,
+    val userId: String,
+    val username: String,
+    val role: UserRole,
+    val settings: UserSettingsDTO
+) {
+    constructor(tsrUser: TsrUser) : this(
+        id = tsrUser.id,
+        userId = tsrUser.userId,
+        username = tsrUser.username,
+        role = tsrUser.role,
+        settings = UserSettingsDTO(
+            organizations = tsrUser.organizations.map { org -> org.toOrganizationDTO() },
+            phoneNumber = tsrUser.phoneNumber,
+            emailAddress = tsrUser.emailAddress)
     )
 }

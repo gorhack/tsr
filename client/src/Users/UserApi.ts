@@ -27,6 +27,8 @@ export const setUserSettings = async (userSettings: TsrUserSettings): Promise<Ts
 
 export interface TsrUserSettings {
     organizations: Organization[];
+    phoneNumber?: string;
+    emailAddress?: string;
 }
 
 export type UserRole = "ADMIN" | "USER";
@@ -35,5 +37,5 @@ export interface TsrUser {
     userId: string;
     username: string;
     role: UserRole;
-    organizations: Organization[];
+    settings: TsrUserSettings;
 }

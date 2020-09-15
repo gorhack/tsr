@@ -1,7 +1,10 @@
 import moment, { Moment } from "moment";
 import React from "react";
-import sortedUniqBy from "lodash/sortedUniqBy";
-import { getOrganizationContains, Organization } from "./Organization/OrganizationApi";
+import {
+    getOrganizationContains,
+    OrganizationActionTypes,
+    OrgCacheReducerAction,
+} from "./Organization/OrganizationApi";
 
 export enum HttpStatus {
     OK = 200,
@@ -54,16 +57,11 @@ export const currentTimeUtc = (): Moment => {
 // breaks tests when in orgApi due to td...
 export const loadOrganizationSearchTerm = async (
     searchTerm: string,
-    setCache: React.Dispatch<React.SetStateAction<Organization[]>>,
+    dispatchToOrgCache: React.Dispatch<OrgCacheReducerAction>,
 ): Promise<Option[]> => {
     return getOrganizationContains(searchTerm)
         .then((result) => {
-            setCache((oldCache) => {
-                return sortedUniqBy<Organization>(
-                    [...oldCache, ...result.items],
-                    (e) => e.sortOrder,
-                );
-            });
+            dispatchToOrgCache({ type: OrganizationActionTypes.LOAD, organizations: result.items });
             return Promise.resolve(
                 result.items.map((organization) => {
                     return {

@@ -1,49 +1,75 @@
-import React, { ReactElement, useEffect, useState } from "react";
+import React, { ReactElement, useCallback, useEffect, useReducer, useState } from "react";
 import { getUserInfo, setUserSettings, TsrUser, TsrUserSettings } from "./UserApi";
 import { Option } from "../api";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { Organization } from "../Organization/OrganizationApi";
+import {
+    Organization,
+    OrganizationActionTypes,
+    OrgCacheReducerAction,
+} from "../Organization/OrganizationApi";
 import { OrgSelect } from "../Organization/OrgSelect";
 import { PrimaryButton, SecondaryButton } from "../Buttons/Buttons";
 import "../Form.css";
+import { LabeledInput } from "../Inputs/LabeledInput";
+import sortedUniqBy from "lodash/sortedUniqBy";
 
 type FormData = {
-    // TODO email: string;
-    // TODO phone: string;
+    email: string;
+    phone: string;
     organizationOption: Option[];
 };
 
 export const UserSettings: React.FC = (): ReactElement => {
-    const [organizationsCache, setOrganizationsCache] = useState<Organization[]>([]);
+    const orgCacheReducer = (state: Organization[] = [], action: OrgCacheReducerAction) => {
+        switch (action.type) {
+            case OrganizationActionTypes.LOAD: {
+                return sortedUniqBy<Organization>(
+                    [...state, ...action.organizations],
+                    (e) => e.sortOrder,
+                );
+            }
+        }
+    };
+    const [organizationsCache, organizationCacheDispatch] = useReducer(orgCacheReducer, []);
+
     const [user, setUser] = useState<TsrUser>({
         userId: "",
         username: "",
         role: "USER",
-        organizations: [],
+        settings: { organizations: [] },
     });
     const [orgValues, setOrgValues] = useState<Option[]>([]);
-    const { control, handleSubmit } = useForm<FormData>({
+    const { control, handleSubmit, setValue, register } = useForm<FormData>({
         defaultValues: {
             organizationOption: orgValues,
         },
     });
 
-    const mapOrgsToOptions = (organizations: Organization[]): void => {
-        const orgsAsOptions: Option[] = organizations.map((org) => {
-            return {
-                value: org.organizationDisplayName,
-                label: org.organizationDisplayName,
-            };
-        });
-        setOrgValues(orgsAsOptions);
-    };
+    const setFormValues = useCallback(
+        (settings: TsrUserSettings): void => {
+            const orgsAsOptions: Option[] = settings.organizations.map((org) => {
+                return {
+                    value: org.organizationDisplayName,
+                    label: org.organizationDisplayName,
+                };
+            });
+            setOrgValues(orgsAsOptions);
+            setValue("email", settings.emailAddress);
+            setValue("phone", settings.phoneNumber);
+        },
+        [setOrgValues, setValue],
+    );
 
     useEffect((): void => {
         (async () => {
             await getUserInfo()
                 .then((result) => {
                     setUser(result);
-                    mapOrgsToOptions(result.organizations);
+                    organizationCacheDispatch({
+                        type: OrganizationActionTypes.LOAD,
+                        organizations: result.settings.organizations,
+                    });
+                    setFormValues(result.settings);
                 })
                 .catch((error) => {
                     console.error(`unable to get current user ${error.message}`);
@@ -52,18 +78,24 @@ export const UserSettings: React.FC = (): ReactElement => {
     }, [setUser]);
 
     const onSubmit: SubmitHandler<FormData> = async (data): Promise<void> => {
-        const { organizationOption } = data;
+        const { phone, email } = data;
         let foundOrgs: Organization[] = [];
-        organizationOption.forEach((orgOption): void => {
-            organizationsCache.find((org) => {
+        orgValues.forEach((orgOption): void => {
+            const foundOrg = organizationsCache.find((org) => {
                 if (org.organizationDisplayName === orgOption.label) {
-                    foundOrgs = [...foundOrgs, org];
+                    return org;
                 }
-                return undefined;
             });
+            if (foundOrg) {
+                foundOrgs = [...foundOrgs, foundOrg];
+            }
         });
+        const phoneNumber: string | undefined = phone.trim().length > 0 ? phone.trim() : undefined;
+        const emailAddress: string | undefined = email.trim().length > 0 ? email.trim() : undefined;
         const settingsToSave: TsrUserSettings = {
             organizations: foundOrgs,
+            phoneNumber: phoneNumber,
+            emailAddress: emailAddress,
         };
         try {
             const updatedUser = await setUserSettings(settingsToSave);
@@ -74,7 +106,7 @@ export const UserSettings: React.FC = (): ReactElement => {
     };
     const onCancel = (e: React.MouseEvent<HTMLButtonElement>): void => {
         e.preventDefault();
-        mapOrgsToOptions(user.organizations);
+        setFormValues(user.settings);
     };
 
     return (
@@ -86,9 +118,31 @@ export const UserSettings: React.FC = (): ReactElement => {
                     title="userSettingsForm"
                     onSubmit={handleSubmit(onSubmit)}
                 >
+                    <LabeledInput
+                        label={"phone number"}
+                        inputProps={{
+                            placeholder: "Enter Your Phone Number...",
+                            name: "phone",
+                            ref: register({
+                                maxLength: 32,
+                            }),
+                        }}
+                    />
+                    <span className={"space-2"} />
+                    <LabeledInput
+                        label={"email address"}
+                        inputProps={{
+                            placeholder: "Enter Your Email Address...",
+                            name: "email",
+                            ref: register({
+                                maxLength: 254,
+                            }),
+                        }}
+                    />
+                    <span className={"space-2"} />
                     <OrgSelect
                         control={control}
-                        setCache={setOrganizationsCache}
+                        dispatchToOrgCache={organizationCacheDispatch}
                         selectedOrgs={orgValues}
                         setSelectedOrgs={setOrgValues}
                     />

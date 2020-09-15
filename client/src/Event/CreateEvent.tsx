@@ -1,4 +1,4 @@
-import React, { ReactElement, useState } from "react";
+import React, { ReactElement, useReducer, useState } from "react";
 import { LabeledInput } from "../Inputs/LabeledInput";
 import { useHistory } from "react-router";
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
@@ -11,7 +11,11 @@ import "./CreateEvent.css";
 import "../Form.css";
 import { selectStyles } from "../Styles";
 import { createEventType, EventType, getEventTypeContains } from "./Type/EventTypeApi";
-import { Organization } from "../Organization/OrganizationApi";
+import {
+    Organization,
+    OrganizationActionTypes,
+    OrgCacheReducerAction,
+} from "../Organization/OrganizationApi";
 import sortedUniqBy from "lodash/sortedUniqBy";
 import { LinkButton, PrimaryButton, SecondaryButton } from "../Buttons/Buttons";
 import { OrgSelect } from "../Organization/OrgSelect";
@@ -32,7 +36,17 @@ export const CreateEvent: React.FC = () => {
     const initialEventType = { value: "", label: "" };
     const initialOrgName = { value: "", label: "" };
 
-    const [organizationsCache, setOrganizationsCache] = useState<Organization[]>([]);
+    const orgCacheReducer = (state: Organization[] = [], action: OrgCacheReducerAction) => {
+        switch (action.type) {
+            case OrganizationActionTypes.LOAD: {
+                return sortedUniqBy<Organization>(
+                    [...state, ...action.organizations],
+                    (e) => e.sortOrder,
+                );
+            }
+        }
+    };
+    const [organizationsCache, organizationCacheDispatch] = useReducer(orgCacheReducer, []);
     const [orgValues, setOrgValues] = useState<Option[]>([]);
 
     const [eventTypesCache, setEventTypesCache] = useState<EventType[]>([]);
@@ -148,7 +162,7 @@ export const CreateEvent: React.FC = () => {
                     <span className={"space-2"} />
                     <OrgSelect
                         control={control}
-                        setCache={setOrganizationsCache}
+                        dispatchToOrgCache={organizationCacheDispatch}
                         selectedOrgs={orgValues}
                         setSelectedOrgs={setOrgValues}
                     />

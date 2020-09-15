@@ -18,9 +18,11 @@ export const LabeledInput = (props: LabeledInputProps): ReactElement => {
     const inputClassName = inputProps && inputProps.className;
     const finalClass = clsx(inputClassName, { error: error });
     return (
-        <label className="Labeled-Input">
-            <span className={"space-1"}>{label}</span>
+        <label className="Labeled-Input" htmlFor={label}>
+            <div className={"space-1"} />
+            {label}
             <input
+                name={label}
                 className={finalClass}
                 aria-label={label}
                 onChange={onChange}

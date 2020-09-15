@@ -14,7 +14,7 @@ export const PrimaryNavigation: React.FC<PrimaryNavigationProps> = ({
         userId: "",
         username: "",
         role: "USER",
-        organizations: [],
+        settings: { organizations: [] },
     });
 
     useEffect(() => {

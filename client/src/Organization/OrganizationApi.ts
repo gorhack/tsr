@@ -46,3 +46,12 @@ export interface Organization {
     organizationDisplayName: string;
     sortOrder: number;
 }
+
+export enum OrganizationActionTypes {
+    LOAD,
+}
+
+export type OrgCacheReducerAction = {
+    type: OrganizationActionTypes.LOAD;
+    organizations: Organization[];
+};

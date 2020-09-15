@@ -12,6 +12,10 @@ import { Client, messageCallbackType, StompHeaders, StompSubscription } from "@s
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type NockBody = any;
 
+export const getInputValue = (element: HTMLElement): string => {
+    return (element as HTMLInputElement).value;
+};
+
 export const findByAriaLabel = (container: HTMLElement, ariaLabel: string): Element => {
     const element = container.querySelector(`[aria-label="${ariaLabel}"]`);
     if (element === null) {

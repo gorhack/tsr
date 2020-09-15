@@ -45,7 +45,7 @@ describe("user info", () => {
         } as TsrUser);
     });
 
-    it("sets user organizations", async () => {
+    it("sets user settings", async () => {
         const organizations: Organization[] = [
             {
                 organizationId: 1,
@@ -62,21 +62,36 @@ describe("user info", () => {
         ];
 
         nock("http://example.com")
-            .put("/api/v1/user/settings", JSON.stringify({ organizations: organizations }))
+            .put(
+                "/api/v1/user/settings",
+                JSON.stringify({
+                    organizations: organizations,
+                    phoneNumber: "1234",
+                    emailAddress: "test@example.com",
+                }),
+            )
             .reply(HttpStatus.OK, {
                 userId: 1,
                 username: "user",
                 role: "USER",
                 organizations: organizations,
+                phoneNumber: "1234",
+                emailAddress: "test@example.com",
             });
 
-        const response = await setUserSettings({ organizations });
+        const response = await setUserSettings({
+            organizations,
+            phoneNumber: "1234",
+            emailAddress: "test@example.com",
+        });
 
         expect(response).toEqual({
             userId: 1,
             username: "user",
             role: "USER",
             organizations: organizations,
+            phoneNumber: "1234",
+            emailAddress: "test@example.com",
         });
     });
 });

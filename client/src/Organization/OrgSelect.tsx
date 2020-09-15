@@ -4,23 +4,27 @@ import { selectStyles } from "../Styles";
 import { createFilter, ValueType } from "react-select";
 import { loadOrganizationSearchTerm, Option } from "../api";
 import { Control, Controller } from "react-hook-form";
-import { createOrganization, Organization } from "./OrganizationApi";
+import {
+    createOrganization,
+    OrganizationActionTypes,
+    OrgCacheReducerAction,
+} from "./OrganizationApi";
 
 interface OrgSelectProps {
     control: Control;
-    setCache: React.Dispatch<React.SetStateAction<Organization[]>>;
+    dispatchToOrgCache: React.Dispatch<OrgCacheReducerAction>;
     selectedOrgs: Option[];
     setSelectedOrgs: React.Dispatch<React.SetStateAction<Option[]>>;
 }
 
 export const OrgSelect = ({
     control,
-    setCache,
+    dispatchToOrgCache,
     selectedOrgs,
     setSelectedOrgs,
 }: OrgSelectProps): ReactElement => {
     const loadOrganizations = (searchTerm: string): Promise<Option[]> => {
-        return loadOrganizationSearchTerm(searchTerm, setCache);
+        return loadOrganizationSearchTerm(searchTerm, dispatchToOrgCache);
     };
 
     const createAndMapOrganization = (inputVal: string): void => {
@@ -32,7 +36,10 @@ export const OrgSelect = ({
                 sortOrder: 0,
             })
                 .then((result) => {
-                    setCache((oldCache) => [...oldCache, result]);
+                    dispatchToOrgCache({
+                        type: OrganizationActionTypes.LOAD,
+                        organizations: [result],
+                    });
                 })
                 .catch((error) => {
                     console.error(`unable to create organization ${inputVal}: ${error.message}`);
