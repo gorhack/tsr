@@ -5,7 +5,7 @@ import { SubmitHandler, useForm } from "react-hook-form";
 import { Organization } from "../Organization/OrganizationApi";
 import { OrgSelect } from "../Organization/OrgSelect";
 import { PrimaryButton, SecondaryButton } from "../Buttons/Buttons";
-import "../Event/CreateEvent.css";
+import "../Form.css";
 
 type FormData = {
     // TODO email: string;
@@ -24,22 +24,26 @@ export const UserSettings: React.FC = (): ReactElement => {
     const [orgValues, setOrgValues] = useState<Option[]>([]);
     const { control, handleSubmit } = useForm<FormData>({
         defaultValues: {
-            organizationOption: [],
+            organizationOption: orgValues,
         },
     });
 
-    useEffect(() => {
+    const mapOrgsToOptions = (organizations: Organization[]): void => {
+        const orgsAsOptions: Option[] = organizations.map((org) => {
+            return {
+                value: org.organizationDisplayName,
+                label: org.organizationDisplayName,
+            };
+        });
+        setOrgValues(orgsAsOptions);
+    };
+
+    useEffect((): void => {
         (async () => {
             await getUserInfo()
                 .then((result) => {
                     setUser(result);
-                    const orgsAsOptions: Option[] = result.organizations.map((org) => {
-                        return {
-                            value: org.organizationDisplayName,
-                            label: org.organizationDisplayName,
-                        };
-                    });
-                    setOrgValues(orgsAsOptions);
+                    mapOrgsToOptions(result.organizations);
                 })
                 .catch((error) => {
                     console.error(`unable to get current user ${error.message}`);
@@ -47,14 +51,15 @@ export const UserSettings: React.FC = (): ReactElement => {
         })();
     }, [setUser]);
 
-    const onSubmit: SubmitHandler<FormData> = async (data) => {
+    const onSubmit: SubmitHandler<FormData> = async (data): Promise<void> => {
         const { organizationOption } = data;
         let foundOrgs: Organization[] = [];
-        organizationOption.forEach((orgOption) => {
+        organizationOption.forEach((orgOption): void => {
             organizationsCache.find((org) => {
                 if (org.organizationDisplayName === orgOption.label) {
                     foundOrgs = [...foundOrgs, org];
                 }
+                return undefined;
             });
         });
         const settingsToSave: TsrUserSettings = {
@@ -69,7 +74,7 @@ export const UserSettings: React.FC = (): ReactElement => {
     };
     const onCancel = (e: React.MouseEvent<HTMLButtonElement>): void => {
         e.preventDefault();
-        // TODO reset values
+        mapOrgsToOptions(user.organizations);
     };
 
     return (
@@ -77,7 +82,7 @@ export const UserSettings: React.FC = (): ReactElement => {
             <h1 className="UserSettings-Header">{`${user.username} settings`}</h1>
             <div className="UserSettings-Content">
                 <form
-                    className="UserSettings-Form"
+                    className="Form-Content"
                     title="userSettingsForm"
                     onSubmit={handleSubmit(onSubmit)}
                 >
@@ -87,6 +92,7 @@ export const UserSettings: React.FC = (): ReactElement => {
                         selectedOrgs={orgValues}
                         setSelectedOrgs={setOrgValues}
                     />
+                    <div className="space-2" />
                     <div className="Form-Submit">
                         <PrimaryButton>save</PrimaryButton>
                         <SecondaryButton onClick={onCancel}>cancel</SecondaryButton>

@@ -17,6 +17,7 @@ describe("User settings", () => {
     let mockGetOrganizationContains: typeof OrganizationApi.getOrganizationContains;
     let mockSetUserSettings: typeof UserApi.setUserSettings;
     let userWithoutOrgs: TsrUser;
+    let userWithOrgs: TsrUser;
 
     beforeEach(() => {
         mockGetUserInfo = td.replace(UserApi, "getUserInfo");
@@ -29,21 +30,7 @@ describe("User settings", () => {
             role: "USER",
             organizations: [],
         };
-        td.when(mockGetUserInfo()).thenResolve(userWithoutOrgs);
-    });
-
-    afterEach(td.reset);
-
-    it("shows user name", async () => {
-        await act(async () => {
-            render(<UserSettings />);
-        });
-        const header = screen.getByText(`${userWithoutOrgs.username} settings`);
-        expect(header.tagName).toEqual("H1");
-    });
-
-    it("shows current user organizations", async () => {
-        const user: TsrUser = {
+        userWithOrgs = {
             userId: "1234",
             username: "user",
             role: "USER",
@@ -60,7 +47,21 @@ describe("User settings", () => {
                 }),
             ],
         };
-        td.when(mockGetUserInfo()).thenResolve(user);
+        td.when(mockGetUserInfo()).thenResolve(userWithoutOrgs);
+    });
+
+    afterEach(td.reset);
+
+    it("shows user name", async () => {
+        await act(async () => {
+            render(<UserSettings />);
+        });
+        const header = screen.getByText(`${userWithoutOrgs.username} settings`);
+        expect(header.tagName).toEqual("H1");
+    });
+
+    it("shows current user organizations", async () => {
+        td.when(mockGetUserInfo()).thenResolve(userWithOrgs);
         const result = await renderUserSettings({});
         expect(result.container).toHaveTextContent(/.*org 2.*org 1.*/);
     });
@@ -130,6 +131,15 @@ describe("User settings", () => {
         expect(screen.getByText("updatedUser settings")).toBeInTheDocument();
     });
 
+    it("canceling resets orgs to user values", async () => {
+        td.when(mockGetUserInfo()).thenResolve(userWithOrgs);
+        const result = await renderUserSettings({});
+        expect(result.container).toHaveTextContent(/.*org 2.*org 1.*/);
+        await selectEvent.clearAll(screen.getByLabelText("organizations"));
+        expect(result.container).not.toHaveTextContent(/.*org 2.*org 1.*/);
+        fireEvent.click(screen.getByRole("button", { name: "cancel" }));
+        expect(result.container).toHaveTextContent(/.*org 2.*org 1.*/);
+    });
     interface RenderUserSettingsProps {
         organizationPromise?: Promise<PageDTO<Organization>>;
     }

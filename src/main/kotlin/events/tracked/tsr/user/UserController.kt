@@ -1,7 +1,5 @@
 package events.tracked.tsr.user
 
-import com.sun.mail.iap.Response
-import events.tracked.tsr.organization.OrganizationDTO
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -21,20 +19,20 @@ class UserController(private val tsrUserService: TsrUserService) {
     @PutMapping("/role")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     fun saveUserRole(
-            @AuthenticationPrincipal user: OidcUser,
-            @RequestBody userRoleUpdate: UserRoleUpdateDTO
+        @AuthenticationPrincipal user: OidcUser,
+        @RequestBody userRoleUpdate: UserRoleUpdateDTO
     ) {
         if (tsrUserService.assertUserIsAdmin(user)) {
             tsrUserService.updateUserRole(userRoleUpdate)
         }
     }
 
-    @PutMapping("/organizations")
-    fun setUserOrganizations(
+    @PutMapping("/settings")
+    fun setUserSettings(
         @AuthenticationPrincipal user: OidcUser,
-        @RequestBody organizations: List<OrganizationDTO>
+        @RequestBody userSettings: UserSettingsDTO
     ): ResponseEntity<TsrUser> {
         val tsrUser = tsrUserService.assertUserExistsAndReturnUser(user)
-        return ResponseEntity<TsrUser>(tsrUserService.setUserOrganizations(tsrUser, organizations), HttpHeaders(), HttpStatus.OK)
+        return ResponseEntity<TsrUser>(tsrUserService.setUserSettings(tsrUser, userSettings), HttpHeaders(), HttpStatus.OK)
     }
 }

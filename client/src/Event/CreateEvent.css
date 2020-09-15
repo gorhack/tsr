@@ -8,17 +8,6 @@
     padding: 2rem;
 }
 
-.CreateEvent-Form {
-    display: flex;
-    flex-direction: column;
-}
-
 .React-Select-Error {
     text-align: left;
-}
-
-.Form-Submit {
-    display: flex;
-    justify-content: space-around;
-    flex-wrap: wrap;
 }

@@ -1,6 +1,5 @@
 package events.tracked.tsr.user
 
-import events.tracked.tsr.organization.OrganizationDTO
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.oauth2.core.oidc.user.OidcUser
 import org.springframework.stereotype.Service
@@ -32,8 +31,8 @@ class TsrUserService(private val tsrUserRepository: TsrUserRepository) {
 
     fun isEmpty(): Boolean = tsrUserRepository.count() == 0L
 
-    fun setUserOrganizations(tsrUser: TsrUser, organizations: List<OrganizationDTO>): TsrUser {
-        val tsrUserToSave = tsrUser.copy(organizations = organizations.map { o -> o.toOrganization() }.toMutableList() )
+    fun setUserSettings(tsrUser: TsrUser, userSettings: UserSettingsDTO): TsrUser {
+        val tsrUserToSave = tsrUser.copy(organizations = userSettings.organizations.map { o -> o.toOrganization() }.toMutableList())
         return tsrUserRepository.save(tsrUserToSave)
     }
 }

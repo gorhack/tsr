@@ -1,13 +1,16 @@
 package events.tracked.tsr.client.user
 
-import io.mockk.*
 import events.tracked.tsr.makeOidcUser
 import events.tracked.tsr.organization.Organization
 import events.tracked.tsr.organization.OrganizationDTO
 import events.tracked.tsr.user.*
+import io.mockk.every
+import io.mockk.mockk
+import io.mockk.verify
+import io.mockk.verifySequence
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.Assertions.assertEquals
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 
@@ -30,7 +33,7 @@ class UserControllerTest {
     fun `test getUser`() {
         every { mockTsrUserService.assertUserExistsAndReturnUser(devUser) } returns tsrUser
         val result = subject.userInfo(devUser)
-        val expected = TsrUserDTO(userId = userId, username = "username", role = UserRole.ADMIN, organization = mutableListOf())
+        val expected = TsrUserDTO(userId = userId, username = "username", role = UserRole.ADMIN, organizations = mutableListOf())
         assertEquals(expected, result)
     }
 
@@ -44,7 +47,7 @@ class UserControllerTest {
 
     @Test
     fun `admin user can update user roles`() {
-        val adminUser = TsrUser( 1, "123", "admin", UserRole.ADMIN)
+        val adminUser = TsrUser(1, "123", "admin", UserRole.ADMIN)
         val adminOidcUser = makeOidcUser(adminUser.userId, adminUser.username)
 
         every { mockTsrUserService.assertUserIsAdmin(adminOidcUser) } returns true
@@ -80,15 +83,15 @@ class UserControllerTest {
         val regularOidcUser = makeOidcUser(regularUser.userId, regularUser.username)
         every { mockTsrUserService.assertUserExistsAndReturnUser(regularOidcUser) } returns regularUser
         every {
-            mockTsrUserService.setUserOrganizations(regularUser, listOf(organizationDTO, organizationDTO2))
+            mockTsrUserService.setUserSettings(regularUser, UserSettingsDTO(organizations = arrayListOf(organizationDTO, organizationDTO2)))
         } returns regularUser.copy(organizations = mutableListOf(organization, organization2))
 
         val expectedResponse = ResponseEntity(TsrUser(4, "1234", "regular user", UserRole.USER, mutableListOf(organization, organization2)), HttpStatus.OK)
 
-        assertEquals(expectedResponse, subject.setUserOrganizations(regularOidcUser, listOf(organizationDTO, organizationDTO2)))
+        assertEquals(expectedResponse, subject.setUserSettings(regularOidcUser, UserSettingsDTO(organizations = arrayListOf(organizationDTO, organizationDTO2))))
         verifySequence {
             mockTsrUserService.assertUserExistsAndReturnUser(regularOidcUser)
-            mockTsrUserService.setUserOrganizations(regularUser, listOf(organizationDTO, organizationDTO2))
+            mockTsrUserService.setUserSettings(regularUser, UserSettingsDTO(organizations = arrayListOf(organizationDTO, organizationDTO2)))
         }
     }
 }

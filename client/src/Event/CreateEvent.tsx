@@ -8,6 +8,7 @@ import { EditableTsrEvent, saveEvent } from "./EventApi";
 import { Option } from "../api";
 import { FormDatePicker } from "../Inputs/FormDatePicker";
 import "./CreateEvent.css";
+import "../Form.css";
 import { selectStyles } from "../Styles";
 import { createEventType, EventType, getEventTypeContains } from "./Type/EventTypeApi";
 import { Organization } from "../Organization/OrganizationApi";
@@ -49,7 +50,7 @@ export const CreateEvent: React.FC = () => {
         history.push("/");
     };
 
-    const onSubmit: SubmitHandler<FormData> = async (data) => {
+    const onSubmit: SubmitHandler<FormData> = async (data): Promise<void> => {
         const { eventName, startDate, endDate, eventTypeOption } = data;
         // TODO allow multiple orgs
         const foundOrg = organizationsCache.find(
@@ -129,7 +130,7 @@ export const CreateEvent: React.FC = () => {
             <h1 className="CreateEvent-Header">create an event</h1>
             <div className={"CreateEvent-Content"}>
                 <form
-                    className={"CreateEvent-Form"}
+                    className={"Form-Content"}
                     title="createEventForm"
                     onSubmit={handleSubmit(onSubmit)}
                 >
@@ -234,7 +235,6 @@ export const CreateEvent: React.FC = () => {
                         })}
                     />
                     <span className={"space-2"} />
-
                     <div className="Form-Submit">
                         <PrimaryButton>submit</PrimaryButton>
                         <SecondaryButton onClick={onCancel}>cancel</SecondaryButton>

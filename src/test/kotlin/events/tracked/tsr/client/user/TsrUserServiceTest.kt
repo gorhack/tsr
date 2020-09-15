@@ -13,7 +13,6 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.security.core.authority.SimpleGrantedAuthority
-import java.lang.IllegalArgumentException
 
 class TsrUserServiceTest {
     private lateinit var subject: TsrUserService
@@ -111,11 +110,13 @@ class TsrUserServiceTest {
 
         verify { mockTsrUserRepository.findByUserId(userId) }
 
-        verify(exactly = 1) { mockTsrUserRepository.save(
+        verify(exactly = 1) {
+            mockTsrUserRepository.save(
                 withArg<TsrUser> {
                     assertThat(it.role).isEqualTo(UserRole.ADMIN)
                 }
-        )}
+            )
+        }
     }
 
     @Test
@@ -131,11 +132,13 @@ class TsrUserServiceTest {
 
         verify { mockTsrUserRepository.findByUserId(userId) }
 
-        verify(exactly = 1) { mockTsrUserRepository.save(
+        verify(exactly = 1) {
+            mockTsrUserRepository.save(
                 withArg<TsrUser> {
                     assertThat(it.role).isEqualTo(UserRole.USER)
                 }
-        )}
+            )
+        }
     }
 
     @Test
@@ -151,11 +154,13 @@ class TsrUserServiceTest {
 
         verify { mockTsrUserRepository.findByUserId(userId) }
 
-        verify(exactly = 1) { mockTsrUserRepository.save(
+        verify(exactly = 1) {
+            mockTsrUserRepository.save(
                 withArg<TsrUser> {
                     assertThat(it.role).isEqualTo(UserRole.ADMIN)
                 }
-        )}
+            )
+        }
     }
 
     @Test
@@ -211,6 +216,6 @@ class TsrUserServiceTest {
         val savedTsrUser = TsrUser(1L, "1234", "user", UserRole.USER, organizations = mutableListOf(organization, organization2))
 
         every { mockTsrUserRepository.save(savedTsrUser) } returns savedTsrUser
-        assertEquals(savedTsrUser, subject.setUserOrganizations(userToUpdate, listOf(organizationDTO, organizationDTO2)))
+        assertEquals(savedTsrUser, subject.setUserSettings(userToUpdate, UserSettingsDTO(organizations = listOf(organizationDTO, organizationDTO2))))
     }
 }
