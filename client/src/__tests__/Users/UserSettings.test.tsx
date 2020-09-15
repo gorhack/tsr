@@ -222,6 +222,30 @@ describe("User settings", () => {
         expect(getInputValue(screen.getByLabelText("phone number"))).toEqual("1231231234");
         expect(getInputValue(screen.getByLabelText("email address"))).toEqual("test@example.com");
     });
+
+    describe("form validation", () => {
+        it("phone number max length 32 characters", async () => {
+            const userPromise = Promise.resolve(userWithoutSettings);
+            const result = await renderUserSettings({ userPromise });
+            fillInInputValueInForm(result, "123456789012345678901234567890123", "phone number");
+            await submitSettingsForm();
+            expect(
+                screen.getByText("phone number can be a maximum of 32 characters"),
+            ).toBeInTheDocument();
+        });
+        it("email can have max length 254 characters", async () => {
+            const userPromise = Promise.resolve(userWithoutSettings);
+            const result = await renderUserSettings({ userPromise });
+            const longEmail = "a".repeat(255);
+            expect(longEmail.length).toEqual(255);
+            fillInInputValueInForm(result, longEmail, "email address");
+            await submitSettingsForm();
+            expect(
+                screen.getByText("email address can be a maximum of 254 characters"),
+            ).toBeInTheDocument();
+        });
+    });
+
     interface RenderUserSettingsProps {
         userPromise: Promise<TsrUser>;
         organizationPromise?: Promise<PageDTO<Organization>>;

@@ -39,7 +39,7 @@ export const UserSettings: React.FC = (): ReactElement => {
         settings: { organizations: [] },
     });
     const [orgValues, setOrgValues] = useState<Option[]>([]);
-    const { control, handleSubmit, setValue, register } = useForm<FormData>({
+    const { control, handleSubmit, setValue, register, errors } = useForm<FormData>({
         defaultValues: {
             organizationOption: orgValues,
         },
@@ -75,7 +75,7 @@ export const UserSettings: React.FC = (): ReactElement => {
                     console.error(`unable to get current user ${error.message}`);
                 });
         })();
-    }, [setUser]);
+    }, [setUser, setFormValues]);
 
     const onSubmit: SubmitHandler<FormData> = async (data): Promise<void> => {
         const { phone, email } = data;
@@ -85,6 +85,7 @@ export const UserSettings: React.FC = (): ReactElement => {
                 if (org.organizationDisplayName === orgOption.label) {
                     return org;
                 }
+                return undefined;
             });
             if (foundOrg) {
                 foundOrgs = [...foundOrgs, foundOrg];
@@ -127,6 +128,7 @@ export const UserSettings: React.FC = (): ReactElement => {
                                 maxLength: 32,
                             }),
                         }}
+                        error={errors.phone && "phone number can be a maximum of 32 characters"}
                     />
                     <span className={"space-2"} />
                     <LabeledInput
@@ -138,6 +140,7 @@ export const UserSettings: React.FC = (): ReactElement => {
                                 maxLength: 254,
                             }),
                         }}
+                        error={errors.email && "email address can be a maximum of 254 characters"}
                     />
                     <span className={"space-2"} />
                     <OrgSelect
