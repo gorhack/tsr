@@ -55,7 +55,7 @@ describe("create an event", () => {
 
         expect(screen.getByText("create an event")).toBeInTheDocument();
         expect(screen.getByLabelText("event name")).toBeInTheDocument();
-        expect(screen.getByLabelText("organization")).toBeInTheDocument();
+        expect(screen.getByLabelText("organizations")).toBeInTheDocument();
         expect(screen.getByLabelText("start date")).toBeInTheDocument();
         expect(screen.getByLabelText("end date")).toBeInTheDocument();
         expect(screen.getByText("event type")).toBeInTheDocument();
@@ -103,7 +103,7 @@ describe("create an event", () => {
         });
         const result = await renderCreateEvent({ history, orgNamesPromise });
         fillInInputValueInForm(result, "name", "event name");
-        await selectEvent.select(screen.getByText(ORGANIZATION_PLACEHOLDER_TEXT), "second");
+        await selectEvent.select(screen.getByLabelText("organizations"), "second");
         fillInInputValueInForm(result, dateToInput, undefined, START_DATE_PLACEHOLDER_TEXT, false);
         fillInInputValueInForm(result, dateToInput, undefined, END_DATE_PLACEHOLDER_TEXT, false);
 
@@ -226,7 +226,7 @@ describe("create an event", () => {
                 sortOrder: 4,
             });
             await act(async () => {
-                await selectEvent.create(screen.getByLabelText("organization"), "fourth", {
+                await selectEvent.create(screen.getByLabelText("organizations"), "fourth", {
                     waitForElement: false,
                 });
             });
@@ -249,17 +249,17 @@ describe("create an event", () => {
                 }) as PageDTO<Organization>,
             );
             await act(async () => {
-                fireEvent.change(screen.getByLabelText("organization"), {
+                fireEvent.change(screen.getByLabelText("organizations"), {
                     target: { value: "fou" },
                 });
             });
-            await selectEvent.select(screen.getByLabelText("organization"), "fourth");
+            await selectEvent.select(screen.getByLabelText("organizations"), "fourth");
             expect(screen.getByText("fourth")).toBeInTheDocument();
         });
 
         it("can clear the org name", async () => {
             await setupOrgSelectPromise();
-            await selectEvent.select(screen.getByLabelText("organization"), "second");
+            await selectEvent.select(screen.getByLabelText("organizations"), "second");
             expect(screen.getByText("second")).toBeInTheDocument();
             await selectEvent.clearAll(screen.getByText("second"));
             expect(screen.queryByAltText("second")).toBeNull();
@@ -309,7 +309,7 @@ describe("create an event", () => {
             expect(screen.getByText(errorMsg)).toBeInTheDocument();
 
             await act(async () => {
-                await selectEvent.select(screen.getByText(ORGANIZATION_PLACEHOLDER_TEXT), "2/75");
+                await selectEvent.select(screen.getByLabelText("organizations"), "2/75");
             });
             expect(screen.queryByText(errorMsg)).toBeNull();
         });
@@ -383,8 +383,8 @@ describe("create an event", () => {
 
     const renderCreateEvent = async ({
         history = createMemoryHistory(),
-        eventTypesPromise = Promise.resolve(makePage({})),
-        orgNamesPromise = Promise.resolve(makePage({})),
+        eventTypesPromise = Promise.resolve(makePage()),
+        orgNamesPromise = Promise.resolve(makePage()),
     }: RenderCreateEventProps): Promise<RenderResult> => {
         history.push("/createEvent");
 

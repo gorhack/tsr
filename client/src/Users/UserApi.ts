@@ -20,10 +20,14 @@ export const saveUserRole = async (role: UserRole, userId: string): Promise<TsrU
     return result.data;
 };
 
-export const setUserOrganizations = async (organizations: Organization[]): Promise<TsrUser> => {
-    const uri = `${baseUri}/organizations`;
-    return (await axios.put(uri, organizations)).data;
+export const setUserSettings = async (userSettings: TsrUserSettings): Promise<TsrUser> => {
+    const uri = `${baseUri}/settings`;
+    return (await axios.put(uri, userSettings)).data;
 };
+
+export interface TsrUserSettings {
+    organizations: Organization[];
+}
 
 export type UserRole = "ADMIN" | "USER";
 

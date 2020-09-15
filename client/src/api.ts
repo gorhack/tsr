@@ -1,4 +1,7 @@
 import moment, { Moment } from "moment";
+import React from "react";
+import sortedUniqBy from "lodash/sortedUniqBy";
+import { getOrganizationContains, Organization } from "./Organization/OrganizationApi";
 
 export enum HttpStatus {
     OK = 200,
@@ -34,12 +37,7 @@ export type PageParams = {
     sortBy?: string;
 };
 
-export interface SelectOption {
-    id: number;
-    label: string;
-}
-
-export interface SelectOptionOG {
+export interface Option {
     value: string;
     label: string;
 }
@@ -53,6 +51,32 @@ export const currentTimeUtc = (): Moment => {
     return moment.utc();
 };
 
-export const currentTimeLocal = (): string => {
-    return moment(new Date()).format("YYYY-MM-DDTHH:mm:ssZ");
+// breaks tests when in orgApi due to td...
+export const loadOrganizationSearchTerm = async (
+    searchTerm: string,
+    setCache: React.Dispatch<React.SetStateAction<Organization[]>>,
+): Promise<Option[]> => {
+    return getOrganizationContains(searchTerm)
+        .then((result) => {
+            setCache((oldCache) => {
+                return sortedUniqBy<Organization>(
+                    [...oldCache, ...result.items],
+                    (e) => e.sortOrder,
+                );
+            });
+            return Promise.resolve(
+                result.items.map((organization) => {
+                    return {
+                        value: organization.organizationDisplayName,
+                        label: organization.organizationDisplayName,
+                    };
+                }),
+            );
+        })
+        .catch((error) => {
+            console.error(
+                `error loading organizations with search term ${searchTerm} ${error.message}`,
+            );
+            return Promise.resolve([]);
+        });
 };

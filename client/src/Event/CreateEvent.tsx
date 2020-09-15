@@ -5,25 +5,22 @@ import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import AsyncCreatable from "react-select/async-creatable";
 import { createFilter, ValueType } from "react-select";
 import { EditableTsrEvent, saveEvent } from "./EventApi";
-import { SelectOption, SelectOptionOG } from "../api";
+import { Option } from "../api";
 import { FormDatePicker } from "../Inputs/FormDatePicker";
 import "./CreateEvent.css";
 import { selectStyles } from "../Styles";
 import { createEventType, EventType, getEventTypeContains } from "./Type/EventTypeApi";
-import {
-    getOrganizationContains,
-    Organization,
-    createOrganization,
-} from "../Organization/OrganizationApi";
+import { Organization } from "../Organization/OrganizationApi";
 import sortedUniqBy from "lodash/sortedUniqBy";
 import { LinkButton, PrimaryButton, SecondaryButton } from "../Buttons/Buttons";
+import { OrgSelect } from "../Organization/OrgSelect";
 
 type FormData = {
     eventName: string;
-    orgNameOption: SelectOption;
+    organizationOption: Option;
     startDate: Date;
     endDate: Date;
-    eventTypeOption?: SelectOption;
+    eventTypeOption?: Option;
 };
 
 const TODAYS_DATE = new Date();
@@ -31,16 +28,18 @@ const DATE_IN_10_YEARS = new Date(new Date().setFullYear(new Date().getFullYear(
 
 export const CreateEvent: React.FC = () => {
     const history = useHistory();
-    const initialEventType = { id: 0, label: "" };
-    const initialOrgName = { id: 0, label: "" };
+    const initialEventType = { value: "", label: "" };
+    const initialOrgName = { value: "", label: "" };
 
     const [organizationsCache, setOrganizationsCache] = useState<Organization[]>([]);
+    const [orgValues, setOrgValues] = useState<Option[]>([]);
+
     const [eventTypesCache, setEventTypesCache] = useState<EventType[]>([]);
 
     const { handleSubmit, register, errors, control, watch, setError } = useForm<FormData>({
         defaultValues: {
             eventTypeOption: initialEventType,
-            orgNameOption: initialOrgName,
+            organizationOption: initialOrgName,
         },
     });
     const dateWatch = watch(["startDate", "endDate"]);
@@ -51,12 +50,16 @@ export const CreateEvent: React.FC = () => {
     };
 
     const onSubmit: SubmitHandler<FormData> = async (data) => {
-        const { eventName, orgNameOption, startDate, endDate, eventTypeOption } = data;
+        const { eventName, startDate, endDate, eventTypeOption } = data;
+        // TODO allow multiple orgs
         const foundOrg = organizationsCache.find(
-            (orgName) => orgName.organizationDisplayName === orgNameOption.label,
+            (orgName) => orgName.organizationDisplayName === orgValues[0]?.label,
         );
         if (!foundOrg) {
-            setError("orgNameOption", { message: "must select an organization", type: "required" });
+            setError("organizationOption", {
+                message: "must select an organization",
+                type: "required",
+            });
             return;
         }
 
@@ -66,7 +69,7 @@ export const CreateEvent: React.FC = () => {
             startDate: startDate.toJSON(),
             endDate: endDate.toJSON(),
             eventType: eventTypesCache.find(
-                (eventType) => eventType.eventTypeId === eventTypeOption?.id,
+                (eventType) => eventType.displayName === eventTypeOption?.label,
             ),
         };
         await saveEvent(tsrEvent)
@@ -78,7 +81,7 @@ export const CreateEvent: React.FC = () => {
             });
     };
 
-    const loadEventTypeSearchTerm = async (searchTerm: string): Promise<SelectOption[]> => {
+    const loadEventTypeSearchTerm = async (searchTerm: string): Promise<Option[]> => {
         return getEventTypeContains(searchTerm)
             .then((result) => {
                 setEventTypesCache((oldCache) => {
@@ -90,7 +93,7 @@ export const CreateEvent: React.FC = () => {
                 return Promise.resolve(
                     result.items.map((eventType) => {
                         return {
-                            id: eventType.eventTypeId,
+                            value: eventType.displayName,
                             label: eventType.displayName,
                         };
                     }),
@@ -120,48 +123,6 @@ export const CreateEvent: React.FC = () => {
                 }))();
     };
 
-    const loadOrganizationSearchTerm = async (searchTerm: string): Promise<SelectOption[]> => {
-        return getOrganizationContains(searchTerm)
-            .then((result) => {
-                setOrganizationsCache((oldCache) => {
-                    return sortedUniqBy<Organization>(
-                        [...oldCache, ...result.items],
-                        (e) => e.sortOrder,
-                    );
-                });
-                return Promise.resolve(
-                    result.items.map((organization) => {
-                        return {
-                            id: organization.organizationId,
-                            label: organization.organizationDisplayName,
-                        };
-                    }),
-                );
-            })
-            .catch((error) => {
-                console.error(
-                    `error loading organizations with search term ${searchTerm} ${error.message}`,
-                );
-                return Promise.resolve([]);
-            });
-    };
-
-    const createAndMapOrganization = (inputVal: string): void => {
-        (async () =>
-            createOrganization({
-                organizationId: 0,
-                organizationName: inputVal,
-                organizationDisplayName: inputVal,
-                sortOrder: 0,
-            })
-                .then((result) => {
-                    setOrganizationsCache((oldCache) => [...oldCache, result]);
-                })
-                .catch((error) => {
-                    console.error(`unable to create organization ${inputVal}: ${error.message}`);
-                }))();
-    };
-
     return (
         <>
             <LinkButton onClick={() => history.push("/")}>{"< back to events"}</LinkButton>
@@ -184,56 +145,19 @@ export const CreateEvent: React.FC = () => {
                         }}
                     />
                     <span className={"space-2"} />
-
-                    <Controller
-                        name="orgNameOption"
+                    <OrgSelect
                         control={control}
-                        defaultValue={initialOrgName}
-                        rules={{ required: true }}
-                        render={(props): ReactElement => (
-                            <>
-                                <label
-                                    data-testid="organization-select"
-                                    htmlFor="organization"
-                                    style={{ textAlign: "initial" }}
-                                >
-                                    organization
-                                </label>
-                                <AsyncCreatable
-                                    styles={selectStyles}
-                                    loadOptions={loadOrganizationSearchTerm}
-                                    defaultOptions
-                                    isClearable
-                                    placeholder="Select Organizations..."
-                                    name={"organization"}
-                                    inputId="organization"
-                                    getOptionValue={(option) => option.label}
-                                    onChange={(
-                                        selection: ValueType<SelectOptionOG>,
-                                        actionType,
-                                    ): void => {
-                                        if (selection && actionType.action === "create-option") {
-                                            if ("label" in selection) {
-                                                createAndMapOrganization(selection.label);
-                                            }
-                                        }
-                                        props.onChange(selection);
-                                    }}
-                                />
-                                {errors.orgNameOption ? (
-                                    <div className={"error-message React-Select-Error"}>
-                                        {"Must select an organization."}
-                                    </div>
-                                ) : (
-                                    <></>
-                                )}
-                            </>
-                        )}
-                        filterOption={createFilter({
-                            ignoreCase: true,
-                            matchFrom: "any",
-                        })}
+                        setCache={setOrganizationsCache}
+                        selectedOrgs={orgValues}
+                        setSelectedOrgs={setOrgValues}
                     />
+                    {errors.organizationOption ? (
+                        <div className={"error-message React-Select-Error"}>
+                            {"Must select an organization."}
+                        </div>
+                    ) : (
+                        <></>
+                    )}
                     <span className={"space-2"} />
 
                     <FormDatePicker
@@ -293,10 +217,7 @@ export const CreateEvent: React.FC = () => {
                                     placeholder="Select an Event Type..."
                                     name="eventType"
                                     inputId="eventType"
-                                    onChange={(
-                                        selection: ValueType<SelectOptionOG>,
-                                        actionType,
-                                    ): void => {
+                                    onChange={(selection: ValueType<Option>, actionType): void => {
                                         if (selection && actionType.action === "create-option") {
                                             if ("label" in selection) {
                                                 createAndMapEventType(selection.label);

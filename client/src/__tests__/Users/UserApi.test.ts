@@ -3,7 +3,7 @@ import nock from "nock";
 import {
     getUserInfo,
     saveUserRole,
-    setUserOrganizations,
+    setUserSettings,
     TsrUser,
     UserRoleUpdate,
 } from "../../Users/UserApi";
@@ -62,7 +62,7 @@ describe("user info", () => {
         ];
 
         nock("http://example.com")
-            .put("/api/v1/user/organizations", JSON.stringify(organizations))
+            .put("/api/v1/user/settings", JSON.stringify({ organizations: organizations }))
             .reply(HttpStatus.OK, {
                 userId: 1,
                 username: "user",
@@ -70,7 +70,7 @@ describe("user info", () => {
                 organizations: organizations,
             });
 
-        const response = await setUserOrganizations(organizations);
+        const response = await setUserSettings({ organizations });
 
         expect(response).toEqual({
             userId: 1,
