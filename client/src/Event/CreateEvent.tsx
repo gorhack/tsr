@@ -235,7 +235,7 @@ export const CreateEvent: React.FC = () => {
                     />
                     <span className={"space-2"} />
 
-                    <div className="CreateEvent-Submit">
+                    <div className="Form-Submit">
                         <PrimaryButton>submit</PrimaryButton>
                         <SecondaryButton onClick={onCancel}>cancel</SecondaryButton>
                     </div>

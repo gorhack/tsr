@@ -17,7 +17,7 @@
     text-align: left;
 }
 
-.CreateEvent-Submit {
+.Form-Submit {
     display: flex;
     justify-content: space-around;
     flex-wrap: wrap;

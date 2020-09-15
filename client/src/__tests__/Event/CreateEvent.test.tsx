@@ -22,7 +22,6 @@ import { Organization } from "../../Organization/OrganizationApi";
 import selectEvent from "react-select-event";
 import { PageDTO } from "../../api";
 
-const ORGANIZATION_PLACEHOLDER_TEXT = "Select Organizations...";
 const START_DATE_PLACEHOLDER_TEXT = "Choose the Start Date...";
 const END_DATE_PLACEHOLDER_TEXT = "Choose the End Date...";
 

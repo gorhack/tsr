@@ -1,9 +1,11 @@
 import React, { ReactElement, useEffect, useState } from "react";
-import { getUserInfo, TsrUser } from "./UserApi";
+import { getUserInfo, setUserSettings, TsrUser, TsrUserSettings } from "./UserApi";
 import { Option } from "../api";
-import { useForm } from "react-hook-form";
+import { SubmitHandler, useForm } from "react-hook-form";
 import { Organization } from "../Organization/OrganizationApi";
 import { OrgSelect } from "../Organization/OrgSelect";
+import { PrimaryButton, SecondaryButton } from "../Buttons/Buttons";
+import "../Event/CreateEvent.css";
 
 type FormData = {
     // TODO email: string;
@@ -20,7 +22,7 @@ export const UserSettings: React.FC = (): ReactElement => {
         organizations: [],
     });
     const [orgValues, setOrgValues] = useState<Option[]>([]);
-    const { control } = useForm<FormData>({
+    const { control, handleSubmit } = useForm<FormData>({
         defaultValues: {
             organizationOption: [],
         },
@@ -45,6 +47,31 @@ export const UserSettings: React.FC = (): ReactElement => {
         })();
     }, [setUser]);
 
+    const onSubmit: SubmitHandler<FormData> = async (data) => {
+        const { organizationOption } = data;
+        let foundOrgs: Organization[] = [];
+        organizationOption.forEach((orgOption) => {
+            organizationsCache.find((org) => {
+                if (org.organizationDisplayName === orgOption.label) {
+                    foundOrgs = [...foundOrgs, org];
+                }
+            });
+        });
+        const settingsToSave: TsrUserSettings = {
+            organizations: foundOrgs,
+        };
+        try {
+            const updatedUser = await setUserSettings(settingsToSave);
+            setUser(updatedUser);
+        } catch (error) {
+            console.error(`error saving your settings, ${error.message}`);
+        }
+    };
+    const onCancel = (e: React.MouseEvent<HTMLButtonElement>): void => {
+        e.preventDefault();
+        // TODO reset values
+    };
+
     return (
         <>
             <h1 className="UserSettings-Header">{`${user.username} settings`}</h1>
@@ -52,9 +79,7 @@ export const UserSettings: React.FC = (): ReactElement => {
                 <form
                     className="UserSettings-Form"
                     title="userSettingsForm"
-                    onSubmit={() => {
-                        // do nothing
-                    }}
+                    onSubmit={handleSubmit(onSubmit)}
                 >
                     <OrgSelect
                         control={control}
@@ -62,6 +87,10 @@ export const UserSettings: React.FC = (): ReactElement => {
                         selectedOrgs={orgValues}
                         setSelectedOrgs={setOrgValues}
                     />
+                    <div className="Form-Submit">
+                        <PrimaryButton>save</PrimaryButton>
+                        <SecondaryButton onClick={onCancel}>cancel</SecondaryButton>
+                    </div>
                 </form>
             </div>
         </>
