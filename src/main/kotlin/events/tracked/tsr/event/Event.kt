@@ -11,11 +11,11 @@ import javax.persistence.*
 data class Event(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    var eventId: Long = 0,
+    val eventId: Long = 0,
     var eventName: String = "",
-    @Column(columnDefinition= "TIMESTAMP WITH TIME ZONE")
+    @Column(columnDefinition = "TIMESTAMP WITH TIME ZONE")
     var startDate: OffsetDateTime = OffsetDateTime.parse("1970-01-01T00:00:01-00:00"),
-    @Column(columnDefinition= "TIMESTAMP WITH TIME ZONE")
+    @Column(columnDefinition = "TIMESTAMP WITH TIME ZONE")
     var endDate: OffsetDateTime = OffsetDateTime.parse("1970-01-01T00:00:01-00:00"),
 
     @ManyToOne(fetch = FetchType.LAZY, optional = true)
