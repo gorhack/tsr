@@ -53,7 +53,25 @@ class EventService(
         }
     }
 
-    // TODO getActiveEventsByOrganizations
+    fun getActiveEventsByOrganizationIds(
+        organizationIds: List<Int>,
+        page: Int,
+        size: Int,
+        sortBy: Sort
+    ): PageDTO<EventDTO> {
+        val paging: Pageable = PageRequest.of(page, size, sortBy)
+        val dateUtc = OffsetDateTime.now()
+        val pagedEvents = eventRepository.findByOrganizationInAndEndDateGreaterThanEqual(
+            organizationIds,
+            dateUtc,
+            paging
+        )
+        return if (pagedEvents.hasContent()) {
+            PageDTO(pagedEvents.map { e -> e.toEventDTO() })
+        } else {
+            PageDTO()
+        }
+    }
 
     fun getEventById(eventId: Int): EventDTO {
         val event: Event = eventRepository.findByIdOrNull(eventId.toLong())

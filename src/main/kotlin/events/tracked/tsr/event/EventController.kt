@@ -47,7 +47,33 @@ class EventController(
 
         return when (sortBy) {
             "startDate" -> ResponseEntity<PageDTO<EventDTO>>(
-                eventService.getActiveEventsByUserId(user.userId, page, size, Sort.by(sortBy).and(Sort.by("endDate"))),
+                eventService.getActiveEventsByUserId(
+                    user.userId,
+                    page, size,
+                    Sort.by(sortBy).and(Sort.by("endDate"))
+                ),
+                HttpHeaders(),
+                HttpStatus.OK
+            )
+            else -> ResponseEntity(PageDTO(), HttpHeaders(), HttpStatus.BAD_REQUEST)
+        }
+    }
+
+    @GetMapping(value = ["/active/organizations"])
+    fun getActiveEventsByOrganizationIds(
+        @RequestParam("organizationIds") organizationIds: List<Int>,
+        @RequestParam("page", defaultValue = "0") page: Int,
+        @RequestParam("size", defaultValue = "10") size: Int,
+        @RequestParam("sortBy", defaultValue = "startDate") sortBy: String
+    ): ResponseEntity<PageDTO<EventDTO>> {
+        return when (sortBy) {
+            "startDate" -> ResponseEntity<PageDTO<EventDTO>>(
+                eventService.getActiveEventsByOrganizationIds(
+                    organizationIds,
+                    page,
+                    size,
+                    Sort.by(sortBy).and(Sort.by("endDate"))
+                ),
                 HttpHeaders(),
                 HttpStatus.OK
             )

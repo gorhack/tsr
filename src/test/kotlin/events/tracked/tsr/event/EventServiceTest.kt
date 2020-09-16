@@ -86,7 +86,9 @@ class EventServiceTest {
     @Test
     fun `getActiveEvents returns PageDTO of EventDTOs list of all events that end after today`() {
         val paging: Pageable = PageRequest.of(0, 10, Sort.by("startDate"))
-        every { mockEventRepository.findByEndDateGreaterThanEqual(any(), paging) } returns PageImpl(listOf(eventWithId, eventWithId2), paging, 2)
+        every {
+            mockEventRepository.findByEndDateGreaterThanEqual(any(), paging)
+        } returns PageImpl(listOf(eventWithId, eventWithId2), paging, 2)
         assertEquals(expectedPageDTO, subject.getActiveEvents(0, 10, Sort.by("startDate")))
         verifySequence {
             mockEventRepository.findByEndDateGreaterThanEqual(any(), paging)
@@ -96,8 +98,12 @@ class EventServiceTest {
     @Test
     fun `getEventById returns an event with display names`() {
         every { mockEventRepository.findByIdOrNull(1L) } returns eventWithId
-        every { mockTsrUserRepository.findByUserId("1234") } returns TsrUser(1L, "1234", "user", UserRole.USER)
-        every { mockTsrUserRepository.findByUserId("6789") } returns TsrUser(2L, "6789", "user_2", UserRole.USER)
+        every {
+            mockTsrUserRepository.findByUserId("1234")
+        } returns TsrUser(1L, "1234", "user", UserRole.USER)
+        every {
+            mockTsrUserRepository.findByUserId("6789")
+        } returns TsrUser(2L, "6789", "user_2", UserRole.USER)
         assertEquals(eventDTOWithIdAndDisplayNames, subject.getEventById(1))
         verifySequence {
             mockEventRepository.findByIdOrNull(1L)
@@ -109,7 +115,24 @@ class EventServiceTest {
     @Test
     fun `getActiveEventsByUserId returns page of events created by a user`() {
         val paging: Pageable = PageRequest.of(0, 10, Sort.by("startDate"))
-        every { mockEventRepository.findByCreatedByAndEndDateGreaterThanEqual("1234", any(), paging) } returns PageImpl(listOf(eventWithId, eventWithId2), paging, 2)
-        assertEquals(expectedPageDTO, subject.getActiveEventsByUserId("1234", 0, 10, Sort.by("startDate")))
+        every {
+            mockEventRepository.findByCreatedByAndEndDateGreaterThanEqual("1234", any(), paging)
+        } returns PageImpl(listOf(eventWithId, eventWithId2), paging, 2)
+        assertEquals(
+            expectedPageDTO,
+            subject.getActiveEventsByUserId("1234", 0, 10, Sort.by("startDate"))
+        )
+    }
+
+    @Test
+    fun `getActiveEventsByOrganizations returns page of events that belong to that organization`() {
+        val paging: Pageable = PageRequest.of(0, 10, Sort.by("startDate"))
+        every {
+            mockEventRepository.findByOrganizationInAndEndDateGreaterThanEqual(listOf(1, 2), any(), paging)
+        } returns PageImpl(listOf(eventWithId, eventWithId2), paging, 2)
+        assertEquals(
+            expectedPageDTO,
+            subject.getActiveEventsByOrganizationIds(listOf(1, 2), 0, 10, Sort.by("startDate"))
+        )
     }
 }

@@ -108,4 +108,23 @@ internal class EventControllerTest {
             mockEventService.getEventById(1)
         }
     }
+
+    @Test
+    fun `getActiveEventsByOrganizationIds returns list of events in those orgs`() {
+        val expectedResponse: ResponseEntity<PageDTO<EventDTO>> = ResponseEntity(
+            expectedPageDTO, HttpStatus.OK
+        )
+
+        every {
+            mockEventService.getActiveEventsByOrganizationIds(listOf(1, 2), 0, 10, defaultSortBy)
+        } returns expectedPageDTO
+
+        assertEquals(
+            expectedResponse,
+            subject.getActiveEventsByOrganizationIds(listOf(1, 2), 0, 10, "startDate")
+        )
+        verifySequence {
+            mockEventService.getActiveEventsByOrganizationIds(listOf(1, 2), 0, 10, defaultSortBy)
+        }
+    }
 }
