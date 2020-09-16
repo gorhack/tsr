@@ -13,7 +13,7 @@ data class EventTypeDTO(
     private fun copyInto(eventType: EventType): EventType {
         val eventTypeCopy = eventType.copy(
             eventTypeName = this.eventTypeName,
-            displayName = this.displayName,
+            displayName = this.displayName
         )
         eventTypeCopy.lastModifiedDate = eventType.lastModifiedDate
         eventTypeCopy.lastModifiedBy = eventType.lastModifiedBy

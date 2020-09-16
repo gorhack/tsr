@@ -17,12 +17,15 @@ import { StompSocketProvider } from "../StompSocketContext";
 import { SocketService } from "../SocketService";
 
 describe("home page of the application", () => {
-    let mockGetCurrentAndFutureEvents: typeof EventApi.getActiveEvents;
-    let mockGetCurrentAndFutureEventsByUserId: typeof EventApi.getActiveEventsByUserId;
+    let mockGetActiveEventsByUserId: typeof EventApi.getActiveEventsByUserId;
+    let mockGetActiveEventsByOrganizationIds: typeof EventApi.getActiveEventsByOrganizationIds;
 
     beforeEach(() => {
-        mockGetCurrentAndFutureEvents = td.replace(EventApi, "getActiveEvents");
-        mockGetCurrentAndFutureEventsByUserId = td.replace(EventApi, "getActiveEventsByUserId");
+        mockGetActiveEventsByUserId = td.replace(EventApi, "getActiveEventsByUserId");
+        mockGetActiveEventsByOrganizationIds = td.replace(
+            EventApi,
+            "getActiveEventsByOrganizationIds",
+        );
     });
 
     afterEach(td.reset);
@@ -93,10 +96,10 @@ describe("home page of the application", () => {
             ...userPage,
             items: [makeEvent({ eventId: 2, eventName: "another org event" })],
         });
-        td.when(mockGetCurrentAndFutureEvents()).thenDo(() => Promise.resolve(orgEventsPromise));
-        td.when(mockGetCurrentAndFutureEventsByUserId()).thenDo(() =>
-            Promise.resolve(userEventsPromise),
+        td.when(mockGetActiveEventsByOrganizationIds()).thenDo(() =>
+            Promise.resolve(orgEventsPromise),
         );
+        td.when(mockGetActiveEventsByUserId()).thenDo(() => Promise.resolve(userEventsPromise));
 
         history.push("/");
         const socketProps = {

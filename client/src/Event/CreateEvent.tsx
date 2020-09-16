@@ -44,6 +44,8 @@ export const CreateEvent: React.FC = () => {
                     (e) => e.sortOrder,
                 );
             }
+            default:
+                return state;
         }
     };
     const [organizationsCache, organizationCacheDispatch] = useReducer(orgCacheReducer, []);

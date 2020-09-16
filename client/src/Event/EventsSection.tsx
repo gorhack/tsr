@@ -62,7 +62,7 @@ export const EventsSection = (): ReactElement => {
                     );
                 })
                 .catch((error) => {
-                    console.error(error);
+                    console.error(error.message);
                 });
         })();
     };
@@ -77,7 +77,7 @@ export const EventsSection = (): ReactElement => {
                     );
                 })
                 .catch((error) => {
-                    console.error(error);
+                    console.error(error.message);
                 });
         })();
     };

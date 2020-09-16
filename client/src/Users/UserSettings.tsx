@@ -28,6 +28,8 @@ export const UserSettings: React.FC = (): ReactElement => {
                     (e) => e.sortOrder,
                 );
             }
+            default:
+                return state;
         }
     };
     const [organizationsCache, organizationCacheDispatch] = useReducer(orgCacheReducer, []);

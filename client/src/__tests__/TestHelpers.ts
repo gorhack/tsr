@@ -139,7 +139,7 @@ export const mockSocketService = (): SocketService => {
         ): StompSubscription => {
             const subscriptionId = headers
                 ? headers.id
-                : "generated-subscription-id-" + Math.random() * 100;
+                : `generated-subscription-id-${Math.random() * 100}`;
             return {
                 id: subscriptionId,
                 unsubscribe: (): void => {
