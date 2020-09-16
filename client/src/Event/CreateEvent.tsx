@@ -167,10 +167,16 @@ export const CreateEvent: React.FC = () => {
                 }))();
     };
 
+    const createEventHeader = eventId ? (
+        <h1 className="CreateEvent-Header">edit event</h1>
+    ) : (
+        <h1 className="CreateEvent-Header">create an event</h1>
+    );
+
     return (
         <>
             <LinkButton onClick={() => history.push("/")}>{"< back to events"}</LinkButton>
-            <h1 className="CreateEvent-Header">create an event</h1>
+            {createEventHeader}
             <div className={"CreateEvent-Content"}>
                 <form
                     className={"Form-Content"}

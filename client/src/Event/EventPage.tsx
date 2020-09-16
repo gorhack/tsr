@@ -3,7 +3,7 @@ import { useHistory, useParams } from "react-router-dom";
 import { getEventById, TsrEvent } from "./EventApi";
 import moment from "moment";
 import { EventDetails } from "./EventDetails";
-import { LinkButton } from "../Buttons/Buttons";
+import { LinkButton, PrimaryButton } from "../Buttons/Buttons";
 import "./EventPage.css";
 import { EventTaskSection } from "./Task/EventTaskSection";
 
@@ -62,6 +62,14 @@ export const EventPage: React.FC = () => {
             <LinkButton onClick={() => history.push("/")}>{"< back to events"}</LinkButton>
             <LinkButton onClick={setEditEventFunc}>{"edit event"}</LinkButton>
             <div className="space-3" />
+            <div className={"EventPage-Header flex-row"}>
+                <div>
+                    <h1>{headerEventName()}</h1>
+                    <h2>{headerDates()}</h2>
+                </div>
+                <PrimaryButton onClick={setEditEventFunc}>{"edit event"}</PrimaryButton>
+            </div>
+            <EventDetails tsrEvent={tsrEvent} />
             <h1 className="EventPage-Header">{headerEventName()}</h1>
             <h2 className="EventPage-Header">{headerDates()}</h2>
             <div className="Event-Details-Container">

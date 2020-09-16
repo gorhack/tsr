@@ -145,12 +145,15 @@ describe("create an event", () => {
         it("when passed an eventId create event pulls all event info and fills in default values", async () => {
             await setupGetEventByIdPromise();
             expect(getInputValue(screen.getByLabelText("event name"))).toEqual("name");
+            expect(getInputValue(screen.getByLabelText("start date"))).toContain(dateToInput);
+            expect(getInputValue(screen.getByLabelText("end date"))).toContain(dateToInput);
         });
 
-        it("cancel button when editing goes back to event details page", async () => {
+        it("cancel button when editing goes back to event details page and correct header", async () => {
             const history = createMemoryHistory();
             await setupGetEventByIdPromise(history);
             expect(history.location.pathname).toEqual(`/editEvent/1`);
+            expect(screen.getByText("edit event")).toBeInTheDocument();
             screen.getByText("cancel").click();
             expect(history.location.pathname).toEqual(`/event/1`);
         });
