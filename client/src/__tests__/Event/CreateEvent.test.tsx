@@ -7,7 +7,7 @@ import { Route, Router } from "react-router-dom";
 import { createMemoryHistory, MemoryHistory } from "history";
 import {
     fillInInputValueInForm,
-    makeAudit,
+    getInputValue,
     makeEvent,
     makeEventType,
     makeOrganization,
@@ -120,8 +120,9 @@ describe("create an event", () => {
     });
 
     describe("edit event", () => {
-        const setupGetEventByIdPromise = async (): Promise<RenderResult> => {
-            const historyLocation = "/editEvent/1";
+        const setupGetEventByIdPromise = async (
+            history: MemoryHistory = createMemoryHistory(),
+        ): Promise<RenderResult> => {
             const tsrEvent = makeEvent({
                 eventId: 1,
                 eventName: "name",
@@ -138,21 +139,20 @@ describe("create an event", () => {
                     sortOrder: 1,
                 }),
             });
-            return renderCreateEvent({ historyLocation, event: tsrEvent });
+            return renderCreateEvent({ history, event: tsrEvent });
         };
 
         it("when passed an eventId create event pulls all event info and fills in default values", async () => {
             await setupGetEventByIdPromise();
-            expect(screen.getByText("name")).toBeInTheDocument();
+            expect(getInputValue(screen.getByLabelText("event name"))).toEqual("name");
         });
 
         it("cancel button when editing goes back to event details page", async () => {
-            const historyLocation = "/editEvent/:eventId";
             const history = createMemoryHistory();
-            await renderCreateEvent({ history, historyLocation });
-            expect(history.location.pathname).toEqual(`/editEvent/:eventId`);
+            await setupGetEventByIdPromise(history);
+            expect(history.location.pathname).toEqual(`/editEvent/1`);
             screen.getByText("cancel").click();
-            expect(history.location.pathname).toEqual(`/event/:eventId`);
+            expect(history.location.pathname).toEqual(`/event/1`);
         });
     });
 
@@ -419,7 +419,6 @@ describe("create an event", () => {
         history?: MemoryHistory;
         eventTypesPromise?: Promise<PageDTO<unknown>>;
         orgNamesPromise?: Promise<PageDTO<unknown>>;
-        historyLocation?: string;
         event?: TsrEvent;
     }
 
@@ -427,19 +426,20 @@ describe("create an event", () => {
         history = createMemoryHistory(),
         eventTypesPromise = Promise.resolve(makePage()),
         orgNamesPromise = Promise.resolve(makePage()),
-        event = makeEvent({ eventId: 1 }),
-        historyLocation = "/createEvent",
+        event,
     }: RenderCreateEventProps): Promise<RenderResult> => {
-        history.push(historyLocation);
-        const getEventByIdPromise = Promise.resolve(event);
+        history.push(event ? `/editEvent/${event.eventId}` : "/createEvent");
 
-        td.when(mockGetEventById(event.eventId)).thenDo(() => Promise.resolve(getEventByIdPromise));
+        if (event) {
+            td.when(mockGetEventById(td.matchers.anything())).thenResolve(event);
+        }
         td.when(mockGetEventTypeContains("")).thenDo(() => Promise.resolve(eventTypesPromise));
         td.when(mockGetOrganizationContains("")).thenDo(() => Promise.resolve(orgNamesPromise));
 
+        const path = event ? "/editEvent/:eventId" : "/createEvent";
         const result = render(
             <Router history={history}>
-                <Route path={historyLocation}>
+                <Route path={path}>
                     <CreateEvent />
                 </Route>
             </Router>,
@@ -447,7 +447,6 @@ describe("create an event", () => {
 
         await act(async () => {
             await orgNamesPromise;
-            await getEventByIdPromise;
             await eventTypesPromise;
         });
 

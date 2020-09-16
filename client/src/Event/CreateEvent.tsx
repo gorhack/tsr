@@ -4,7 +4,7 @@ import { useHistory } from "react-router";
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import AsyncCreatable from "react-select/async-creatable";
 import { createFilter, ValueType } from "react-select";
-import { EditableTsrEvent, getEventById, saveEvent, TsrEvent } from "./EventApi";
+import { EditableTsrEvent, getEventById, saveEvent } from "./EventApi";
 import { Option } from "../api";
 import { FormDatePicker } from "../Inputs/FormDatePicker";
 import "./CreateEvent.css";
@@ -56,8 +56,6 @@ export const CreateEvent: React.FC = () => {
 
     const [eventTypesCache, setEventTypesCache] = useState<EventType[]>([]);
 
-    const [eventToEdit, setEventToEdit] = useState<TsrEvent>();
-
     const { handleSubmit, register, errors, control, watch, setError, setValue } = useForm<
         FormData
     >({
@@ -73,7 +71,9 @@ export const CreateEvent: React.FC = () => {
             (async () => {
                 await getEventById(parseInt(eventId))
                     .then((event) => {
-                        setEventToEdit(event);
+                        setValue("startDate", new Date(event.startDate));
+                        setValue("endDate", new Date(event.endDate));
+                        setValue("eventName", event.eventName);
                     })
                     .catch((error) => {
                         console.error(
@@ -81,11 +81,6 @@ export const CreateEvent: React.FC = () => {
                         );
                     });
             })();
-            if (eventToEdit) {
-                setValue("startDate", new Date(eventToEdit.startDate));
-                setValue("endDate", new Date(eventToEdit.endDate));
-                setValue("eventName", eventToEdit.eventName);
-            }
         }
     }, [eventId, setValue]);
 
