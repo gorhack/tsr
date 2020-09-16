@@ -1,5 +1,5 @@
 import React, { ReactElement, useCallback, useEffect, useReducer, useState } from "react";
-import { getUserInfo, setUserSettings, TsrUser, TsrUserSettings } from "./UserApi";
+import { emptyTsrUser, getUserInfo, setUserSettings, TsrUser, TsrUserSettings } from "./UserApi";
 import { Option } from "../api";
 import { SubmitHandler, useForm } from "react-hook-form";
 import {
@@ -34,12 +34,7 @@ export const UserSettings: React.FC = (): ReactElement => {
     };
     const [organizationsCache, organizationCacheDispatch] = useReducer(orgCacheReducer, []);
 
-    const [user, setUser] = useState<TsrUser>({
-        userId: "",
-        username: "",
-        role: "USER",
-        settings: { organizations: [] },
-    });
+    const [user, setUser] = useState<TsrUser>(emptyTsrUser);
     const [orgValues, setOrgValues] = useState<Option[]>([]);
     const { control, handleSubmit, setValue, register, errors } = useForm<FormData>({
         defaultValues: {

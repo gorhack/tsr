@@ -39,3 +39,12 @@ export interface TsrUser {
     role: UserRole;
     settings: TsrUserSettings;
 }
+
+export const emptyTsrUser: TsrUser = {
+    userId: "",
+    username: "",
+    role: "USER",
+    settings: {
+        organizations: [],
+    },
+};

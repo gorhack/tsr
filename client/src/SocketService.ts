@@ -156,7 +156,7 @@ export class SocketService {
     findSubscription = (topic: string): ServiceSubscription => {
         const serviceSubscription = this.subscriptions.find((x) => topic === x.topic);
         if (!serviceSubscription) {
-            throw new Error("Could not find subscription");
+            throw new Error(`Could not find subscription for topic: ${topic}`);
         }
         return serviceSubscription;
     };

@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 import { EventsSection } from "./Event/EventsSection";
 import { useStompSocketContext } from "./StompSocketContext";
@@ -7,26 +7,43 @@ import { IMessage } from "@stomp/stompjs";
 import { SocketSubscriptionTopics, TsrEvent } from "./Event/EventApi";
 import { PrimaryButton } from "./Buttons/Buttons";
 import "./Home.css";
+import { emptyTsrUser, getUserInfo, TsrUser } from "./Users/UserApi";
 
 export const Home: React.FC = () => {
     const { socketService } = useStompSocketContext();
+    const [tsrUser, setTsrUser] = useState<TsrUser>(emptyTsrUser);
     const history = useHistory();
 
     useEffect(() => {
-        if (socketService.status !== SocketStatus.CONNECTED) {
+        (async () => {
+            await getUserInfo()
+                .then((result) => {
+                    setTsrUser(result);
+                })
+                .catch((error) => {
+                    console.error(`unable to get current user ${error.message}`);
+                });
+        })();
+    }, [setTsrUser]);
+
+    useEffect(() => {
+        if (socketService.status !== SocketStatus.CONNECTED || tsrUser.userId.length === 0) {
             return;
         }
-        // TODO set as the user's org(s)
-        socketService.subscribe({
-            topic: `${SocketSubscriptionTopics.EVENT_CREATED}-1`,
-            handler: (msg: IMessage): void => {
-                const message: TsrEvent = JSON.parse(msg.body);
-                window.alert(
-                    `new event has been created in your organization\n${message.eventName}\nrefresh the page`,
-                );
-            },
+        tsrUser.settings.organizations.forEach((org) => {
+            socketService.subscribe({
+                topic: `${SocketSubscriptionTopics.EVENT_CREATED}${org.organizationId}`,
+                handler: (msg: IMessage): void => {
+                    const message: TsrEvent = JSON.parse(msg.body);
+                    if (message.audit.createdBy !== tsrUser.userId) {
+                        window.alert(
+                            `new event has been created in your organization\n${message.eventName}\nrefresh the page`,
+                        );
+                    }
+                },
+            });
         });
-    }, [socketService]);
+    }, [socketService, tsrUser]);
 
     return (
         <>

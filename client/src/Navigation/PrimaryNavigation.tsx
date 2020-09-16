@@ -1,5 +1,5 @@
 import React, { ReactElement, ReactFragment, useEffect, useState } from "react";
-import { getUserInfo, TsrUser } from "../Users/UserApi";
+import { emptyTsrUser, getUserInfo, TsrUser } from "../Users/UserApi";
 import "./PrimaryNavigation.css";
 import { DrawerMenu } from "./DrawerMenu";
 
@@ -10,12 +10,7 @@ interface PrimaryNavigationProps {
 export const PrimaryNavigation: React.FC<PrimaryNavigationProps> = ({
     children,
 }: PrimaryNavigationProps): ReactElement => {
-    const [tsrUser, setTsrUser] = useState<TsrUser>({
-        userId: "",
-        username: "",
-        role: "USER",
-        settings: { organizations: [] },
-    });
+    const [tsrUser, setTsrUser] = useState<TsrUser>(emptyTsrUser);
 
     useEffect(() => {
         (async () => {
