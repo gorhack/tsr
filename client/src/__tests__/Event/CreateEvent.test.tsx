@@ -7,6 +7,8 @@ import { Route, Router } from "react-router-dom";
 import { createMemoryHistory, MemoryHistory } from "history";
 import {
     fillInInputValueInForm,
+    makeAudit,
+    makeEvent,
     makeEventType,
     makeOrganization,
     makePage,
@@ -32,12 +34,14 @@ describe("create an event", () => {
     let mockGetEventTypeContains: typeof EventTypeApi.getEventTypeContains;
     let mockCreateOrganization: typeof OrganizationApi.createOrganization;
     let mockGetOrganizationContains: typeof OrganizationApi.getOrganizationContains;
+    let mockGetEventById: typeof EventApi.getEventById;
     beforeEach(() => {
         mockSaveEvent = td.replace(EventApi, "saveEvent");
         mockCreateEventType = td.replace(EventTypeApi, "createEventType");
         mockGetEventTypeContains = td.replace(EventTypeApi, "getEventTypeContains");
         mockGetOrganizationContains = td.replace(OrganizationApi, "getOrganizationContains");
         mockCreateOrganization = td.replace(OrganizationApi, "createOrganization");
+        mockGetEventById = td.replace(EventApi, "getEventById");
     });
 
     afterEach(td.reset);
@@ -113,6 +117,43 @@ describe("create an event", () => {
             await saveEventPromise;
         });
         expect(history.location.pathname).toEqual("/event/1");
+    });
+
+    describe("edit event", () => {
+        const setupGetEventByIdPromise = async (): Promise<RenderResult> => {
+            const historyLocation = "/editEvent/1";
+            const tsrEvent = makeEvent({
+                eventId: 1,
+                eventName: "name",
+                organization: makeOrganization({
+                    organizationId: 2,
+                    organizationDisplayName: "second",
+                    sortOrder: 2,
+                }),
+                startDate: new Date(dateToInput).toJSON(),
+                endDate: new Date(dateToInput).toJSON(),
+                eventType: makeEventType({
+                    eventTypeId: 1,
+                    displayName: "test type",
+                    sortOrder: 1,
+                }),
+            });
+            return renderCreateEvent({ historyLocation, event: tsrEvent });
+        };
+
+        it("when passed an eventId create event pulls all event info and fills in default values", async () => {
+            await setupGetEventByIdPromise();
+            expect(screen.getByText("name")).toBeInTheDocument();
+        });
+
+        it("cancel button when editing goes back to event details page", async () => {
+            const historyLocation = "/editEvent/:eventId";
+            const history = createMemoryHistory();
+            await renderCreateEvent({ history, historyLocation });
+            expect(history.location.pathname).toEqual(`/editEvent/:eventId`);
+            screen.getByText("cancel").click();
+            expect(history.location.pathname).toEqual(`/event/:eventId`);
+        });
     });
 
     describe("event type select", () => {
@@ -378,27 +419,35 @@ describe("create an event", () => {
         history?: MemoryHistory;
         eventTypesPromise?: Promise<PageDTO<unknown>>;
         orgNamesPromise?: Promise<PageDTO<unknown>>;
+        historyLocation?: string;
+        event?: TsrEvent;
     }
 
     const renderCreateEvent = async ({
         history = createMemoryHistory(),
         eventTypesPromise = Promise.resolve(makePage()),
         orgNamesPromise = Promise.resolve(makePage()),
+        event = makeEvent({ eventId: 1 }),
+        historyLocation = "/createEvent",
     }: RenderCreateEventProps): Promise<RenderResult> => {
-        history.push("/createEvent");
+        history.push(historyLocation);
+        const getEventByIdPromise = Promise.resolve(event);
 
+        td.when(mockGetEventById(event.eventId)).thenDo(() => Promise.resolve(getEventByIdPromise));
         td.when(mockGetEventTypeContains("")).thenDo(() => Promise.resolve(eventTypesPromise));
         td.when(mockGetOrganizationContains("")).thenDo(() => Promise.resolve(orgNamesPromise));
 
         const result = render(
             <Router history={history}>
-                <Route path="/createEvent">
+                <Route path={historyLocation}>
                     <CreateEvent />
                 </Route>
             </Router>,
         );
 
         await act(async () => {
+            await orgNamesPromise;
+            await getEventByIdPromise;
             await eventTypesPromise;
         });
 

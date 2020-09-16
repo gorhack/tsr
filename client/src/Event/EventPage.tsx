@@ -7,7 +7,7 @@ import { LinkButton } from "../Buttons/Buttons";
 import "./EventPage.css";
 import { EventTaskSection } from "./Task/EventTaskSection";
 
-interface RouteParams {
+export interface RouteParams {
     eventId: string;
 }
 
@@ -29,8 +29,6 @@ export const EventPage: React.FC = () => {
                 });
         })();
     }, [eventId, setTsrEvent]);
-
-
 
     if (!tsrEvent) {
         return <></>;

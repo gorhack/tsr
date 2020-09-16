@@ -51,6 +51,14 @@ describe("displays event details", () => {
         expect(history.location.pathname).toEqual("/");
     });
 
+    it("edit event button is present pushes you to /editEvent", async () => {
+        const history = createMemoryHistory();
+        await renderEventDetails({ history });
+        expect(screen.getByRole("button", { name: "edit event" })).toBeInTheDocument();
+        fireEvent.click(screen.getByRole("button", { name: "edit event" }));
+        expect(history.location.pathname).toEqual("/editEvent/1");
+    });
+
     describe("headers", () => {
         it("displays event details", async () => {
             const event: TsrEvent = {

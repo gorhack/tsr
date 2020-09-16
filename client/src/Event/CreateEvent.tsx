@@ -1,11 +1,10 @@
-import React, { ReactElement, SetStateAction, useEffect, useReducer, useState } from "react";
-import React, { ReactElement, useReducer, useState } from "react";
+import React, { ReactElement, useEffect, useReducer, useState } from "react";
 import { LabeledInput } from "../Inputs/LabeledInput";
 import { useHistory } from "react-router";
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import AsyncCreatable from "react-select/async-creatable";
 import { createFilter, ValueType } from "react-select";
-import { EditableTsrEvent, saveEvent, TsrEvent } from "./EventApi";
+import { EditableTsrEvent, getEventById, saveEvent, TsrEvent } from "./EventApi";
 import { Option } from "../api";
 import { FormDatePicker } from "../Inputs/FormDatePicker";
 import "./CreateEvent.css";
@@ -20,6 +19,8 @@ import {
 import sortedUniqBy from "lodash/sortedUniqBy";
 import { LinkButton, PrimaryButton, SecondaryButton } from "../Buttons/Buttons";
 import { OrgSelect } from "../Organization/OrgSelect";
+import { useParams } from "react-router-dom";
+import { RouteParams } from "./EventPage";
 
 type FormData = {
     eventName: string;
@@ -34,6 +35,7 @@ const DATE_IN_10_YEARS = new Date(new Date().setFullYear(new Date().getFullYear(
 
 export const CreateEvent: React.FC = () => {
     const history = useHistory();
+    const { eventId } = useParams<RouteParams>();
     const initialEventType = { value: "", label: "" };
     const initialOrgName = { value: "", label: "" };
 
@@ -54,6 +56,8 @@ export const CreateEvent: React.FC = () => {
 
     const [eventTypesCache, setEventTypesCache] = useState<EventType[]>([]);
 
+    const [eventToEdit, setEventToEdit] = useState<TsrEvent>();
+
     const { handleSubmit, register, errors, control, watch, setError, setValue } = useForm<
         FormData
     >({
@@ -65,16 +69,33 @@ export const CreateEvent: React.FC = () => {
     const dateWatch = watch(["startDate", "endDate"]);
 
     useEffect(() => {
-        if (event) {
-            setValue("startDate", new Date(event.startDate));
-            setValue("endDate", new Date(event.endDate));
-            setValue("eventName", event.eventName);
+        if (eventId) {
+            (async () => {
+                await getEventById(parseInt(eventId))
+                    .then((event) => {
+                        setEventToEdit(event);
+                    })
+                    .catch((error) => {
+                        console.error(
+                            `error getting event by id ${eventId}, ${error.message.value}`,
+                        );
+                    });
+            })();
+            if (eventToEdit) {
+                setValue("startDate", new Date(eventToEdit.startDate));
+                setValue("endDate", new Date(eventToEdit.endDate));
+                setValue("eventName", eventToEdit.eventName);
+            }
         }
-    }, [event, setValue]);
+    }, [eventId, setValue]);
 
     const onCancel = (e: React.MouseEvent<HTMLButtonElement>): void => {
         e.preventDefault();
-        history.push("/");
+        if (history.location.pathname.startsWith(`/editEvent/${eventId}`)) {
+            history.push(`/event/${eventId}`);
+        } else {
+            history.push("/");
+        }
     };
 
     const onSubmit: SubmitHandler<FormData> = async (data): Promise<void> => {
