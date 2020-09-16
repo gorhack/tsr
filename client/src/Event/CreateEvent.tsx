@@ -4,7 +4,7 @@ import { useHistory } from "react-router";
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import AsyncCreatable from "react-select/async-creatable";
 import { createFilter, ValueType } from "react-select";
-import { EditableTsrEvent, getEventById, saveEvent } from "./EventApi";
+import { CreatableTsrEvent, getEventById, saveEvent, TsrEvent, updateEvent } from "./EventApi";
 import { Option } from "../api";
 import { FormDatePicker } from "../Inputs/FormDatePicker";
 import "./CreateEvent.css";
@@ -55,6 +55,8 @@ export const CreateEvent: React.FC = () => {
     const [orgValues, setOrgValues] = useState<Option[]>([]);
 
     const [eventTypesCache, setEventTypesCache] = useState<EventType[]>([]);
+    // TODO fill in empty tsr event
+    const [tsrEvent, setTsrEvent] = useState<TsrEvent>();
 
     const { handleSubmit, register, errors, control, watch, setError, setValue } = useForm<
         FormData
@@ -71,6 +73,7 @@ export const CreateEvent: React.FC = () => {
             (async () => {
                 await getEventById(parseInt(eventId))
                     .then((event) => {
+                        setTsrEvent(event);
                         setValue("startDate", new Date(event.startDate));
                         setValue("endDate", new Date(event.endDate));
                         setValue("eventName", event.eventName);
@@ -82,7 +85,7 @@ export const CreateEvent: React.FC = () => {
                     });
             })();
         }
-    }, [eventId, setValue]);
+    }, [eventId, setValue, setTsrEvent]);
 
     const onCancel = (e: React.MouseEvent<HTMLButtonElement>): void => {
         e.preventDefault();
@@ -107,22 +110,43 @@ export const CreateEvent: React.FC = () => {
             return;
         }
 
-        const tsrEvent: EditableTsrEvent = {
-            eventName,
-            organization: foundOrg,
-            startDate: startDate.toJSON(),
-            endDate: endDate.toJSON(),
-            eventType: eventTypesCache.find(
-                (eventType) => eventType.displayName === eventTypeOption?.label,
-            ),
-        };
-        await saveEvent(tsrEvent)
-            .then((result) => {
-                history.push(`/event/${result.eventId}`);
-            })
-            .catch((error) => {
-                console.error("error saving the event", error.message);
-            });
+        if (eventId) {
+            const tsrEventToUpdate: TsrEvent = {
+                ...tsrEvent,
+                eventName,
+                organization: foundOrg,
+                startDate: startDate.toJSON(),
+                endDate: endDate.toJSON(),
+                eventType: eventTypesCache.find(
+                    (eventType) => eventType.displayName === eventTypeOption?.label,
+                ),
+            };
+            await updateEvent(tsrEventToUpdate)
+                .then((result) => {
+                    history.push(`/event/${result.eventId}`);
+                })
+                .catch((error) => {
+                    console.error("error saving the event", error.message);
+                });
+        } else {
+            const tsrEventToSave: CreatableTsrEvent = {
+                eventId: parseInt(eventId),
+                eventName,
+                organization: foundOrg,
+                startDate: startDate.toJSON(),
+                endDate: endDate.toJSON(),
+                eventType: eventTypesCache.find(
+                    (eventType) => eventType.displayName === eventTypeOption?.label,
+                ),
+            };
+            await saveEvent(tsrEventToSave)
+                .then((result) => {
+                    history.push(`/event/${result.eventId}`);
+                })
+                .catch((error) => {
+                    console.error("error saving the event", error.message);
+                });
+        }
     };
 
     const loadEventTypeSearchTerm = async (searchTerm: string): Promise<Option[]> => {

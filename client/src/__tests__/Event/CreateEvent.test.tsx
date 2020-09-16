@@ -30,6 +30,7 @@ const END_DATE_PLACEHOLDER_TEXT = "Choose the End Date...";
 describe("create an event", () => {
     const dateToInput = new Date().toLocaleDateString();
     let mockSaveEvent: typeof EventApi.saveEvent;
+    let mockUpdateEvent: typeof EventApi.updateEvent;
     let mockCreateEventType: typeof EventTypeApi.createEventType;
     let mockGetEventTypeContains: typeof EventTypeApi.getEventTypeContains;
     let mockCreateOrganization: typeof OrganizationApi.createOrganization;
@@ -37,6 +38,7 @@ describe("create an event", () => {
     let mockGetEventById: typeof EventApi.getEventById;
     beforeEach(() => {
         mockSaveEvent = td.replace(EventApi, "saveEvent");
+        mockUpdateEvent = td.replace(EventApi, "updateEvent");
         mockCreateEventType = td.replace(EventTypeApi, "createEventType");
         mockGetEventTypeContains = td.replace(EventTypeApi, "getEventTypeContains");
         mockGetOrganizationContains = td.replace(OrganizationApi, "getOrganizationContains");
@@ -156,6 +158,37 @@ describe("create an event", () => {
             expect(screen.getByText("edit event")).toBeInTheDocument();
             screen.getByText("cancel").click();
             expect(history.location.pathname).toEqual(`/event/1`);
+        });
+
+        it("uses updateEvent function when submitting and leads back to /event/eventId", async () => {
+            const history = createMemoryHistory();
+            const tsrEvent = makeEvent({
+                eventId: 1,
+                eventName: "eman",
+                organization: makeOrganization({
+                    organizationId: 2,
+                    organizationDisplayName: "second",
+                    sortOrder: 2,
+                }),
+                startDate: new Date(dateToInput).toJSON(),
+                endDate: new Date(dateToInput).toJSON(),
+                eventType: makeEventType({
+                    eventTypeId: 1,
+                    displayName: "test type",
+                    sortOrder: 1,
+                }),
+            });
+            const updateEventPromise: Promise<TsrEvent> = Promise.resolve(tsrEvent);
+            const result = await setupGetEventByIdPromise(history);
+            fillInInputValueInForm(result, "eman", "event name");
+
+            td.when(mockUpdateEvent(tsrEvent)).thenDo(() => updateEventPromise);
+
+            await submitEventForm();
+            await act(async () => {
+                await updateEventPromise;
+            });
+            expect(history.location.pathname).toEqual("/event/1");
         });
     });
 

@@ -37,7 +37,17 @@ data class EventDTO(
         return eventCopy
     }
 
+    private fun copyIntoWithId(event: Event): Event {
+        return copyInto(event).copy(
+            eventId = eventId!!
+        )
+    }
+
     fun toEvent(): Event {
-        return copyInto(Event())
+        return if (this.eventId == null) {
+            copyInto(Event())
+        } else {
+            copyIntoWithId(Event())
+        }
     }
 }

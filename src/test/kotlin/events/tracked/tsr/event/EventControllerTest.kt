@@ -15,6 +15,7 @@ import org.springframework.data.domain.Sort
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.oauth2.core.oidc.user.OidcUser
+import java.time.OffsetDateTime
 
 internal class EventControllerTest {
     private lateinit var subject: EventController
@@ -141,5 +142,20 @@ internal class EventControllerTest {
             mockTsrUserService.assertUserExistsAndReturnUser(oidcUser)
             mockEventService.getActiveEventsByOrganizationIds(organizations, 0, 10, defaultSortBy)
         }
+    }
+
+    @Test
+    fun `edits already created event`() {
+        val updatedEvent = eventDTOWithId.copy(
+            audit = AuditDTO(
+                lastModifiedBy = "9876",
+                lastModifiedDate = OffsetDateTime.parse("1970-01-02T00:00:01-09:00"),
+                createdBy = "1234",
+                createdDate = OffsetDateTime.parse("1970-01-02T00:00:01-08:00")
+            )
+        )
+        every { mockEventService.updateEvent(eventDTOWithId) } returns updatedEvent
+        assertEquals(updatedEvent, subject.updateEvent(eventDTOWithId))
+        verifySequence { mockEventService.updateEvent(eventDTOWithId) }
     }
 }

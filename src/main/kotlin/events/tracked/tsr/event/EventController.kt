@@ -23,6 +23,12 @@ class EventController(
         return eventService.saveEvent(eventDTO)
     }
 
+    @PutMapping(value = [""])
+    fun updateEvent(@RequestBody eventDTO: EventDTO): EventDTO {
+        println(eventDTO)
+        return eventService.updateEvent(eventDTO)
+    }
+
     @GetMapping(value = ["/active"])
     fun getActiveEvents(@RequestParam("page", defaultValue = "0") page: Int,
                         @RequestParam("size", defaultValue = "10") size: Int,

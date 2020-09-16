@@ -1,12 +1,13 @@
 import axios from "axios";
 import nock from "nock";
 import {
-    EditableTsrEvent,
+    CreatableTsrEvent,
     getActiveEvents,
     getActiveEventsByOrganizationIds,
     getActiveEventsByUserId,
     saveEvent,
     TsrEvent,
+    updateEvent,
 } from "../../Event/EventApi";
 import { makePage, NockBody } from "../TestHelpers";
 import { HttpStatus, PageDTO } from "../../api";
@@ -71,7 +72,7 @@ describe("event data", () => {
     axios.defaults.baseURL = "http://example.com";
 
     it("saves an event", async () => {
-        const event: EditableTsrEvent = {
+        const event: CreatableTsrEvent = {
             eventName: "first",
             organization,
             eventType: {
@@ -90,6 +91,29 @@ describe("event data", () => {
         const response = await saveEvent(event);
 
         expect(response).toEqual({ eventId: 1, ...event });
+    });
+
+    it("updates an event", async () => {
+        const event: CreatableTsrEvent = {
+            eventId: 1,
+            eventName: "first",
+            organization,
+            eventType: {
+                eventTypeId: 1,
+                displayName: "run",
+                eventTypeName: "and hide",
+                sortOrder: 1,
+            },
+            startDate: "2020-08-18T14:15:59",
+            endDate: "2020-08-20T01:00:01",
+        };
+        nock("http://example.com")
+            .put("/api/v1/event", event as NockBody)
+            .reply(HttpStatus.CREATED, { ...event });
+
+        const response = await updateEvent(event);
+
+        expect(response).toEqual(event);
     });
 
     describe("get active events", () => {

@@ -1,6 +1,7 @@
 package events.tracked.tsr.event
 
 import events.tracked.tsr.*
+import events.tracked.tsr.event.type.EventType
 import events.tracked.tsr.organization.Organization
 import events.tracked.tsr.user.TsrUser
 import events.tracked.tsr.user.TsrUserRepository
@@ -15,6 +16,7 @@ import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
 import org.springframework.data.repository.findByIdOrNull
+import java.time.OffsetDateTime
 
 class EventServiceTest {
     private lateinit var subject: EventService
@@ -23,6 +25,7 @@ class EventServiceTest {
     private lateinit var mockApplicationEventPublisher: ApplicationEventPublisher
 
     private var capturedTsrEventSaveEvent = slot<NewTsrEventSaveEvent>()
+    private var capturedTsrEventUpdateEvent = slot<UpdateTsrEventSaveEvent>()
 
     // test data
     private lateinit var eventWithoutId: Event
@@ -44,6 +47,10 @@ class EventServiceTest {
 
         every {
             mockApplicationEventPublisher.publishEvent(capture(capturedTsrEventSaveEvent))
+        } just Runs
+
+        every {
+            mockApplicationEventPublisher.publishEvent(capture(capturedTsrEventUpdateEvent))
         } just Runs
 
         eventWithoutId = makeEventWithoutId()
@@ -137,5 +144,33 @@ class EventServiceTest {
             expectedPageDTO,
             subject.getActiveEventsByOrganizationIds(organizations, 0, 10, Sort.by("startDate"))
         )
+    }
+
+    @Test
+    fun `editEvent returns eventDTO with updated event details`() {
+        val updatedEventDTO = eventDTOWithId.copy(
+            audit = AuditDTO(
+                lastModifiedBy = "9876",
+                lastModifiedDate = OffsetDateTime.parse("1970-01-02T00:00:01-09:00"),
+                createdBy = "1234",
+                createdDate = OffsetDateTime.parse("1970-01-02T00:00:01-08:00")
+            )
+        )
+        val updatedEvent = Event(
+            eventId = 1L,
+            eventName = "blue",
+            organization = makeOrganization1(),
+            startDate = OffsetDateTime.parse("1970-01-01T00:00:01-08:00"),
+            endDate = OffsetDateTime.parse("1970-01-02T00:00:01-08:00"),
+            eventType = EventType(1, "rock", "rocks are fun", 1),
+            lastModifiedBy = "9876",
+            lastModifiedDate = OffsetDateTime.parse("1970-01-02T00:00:01-09:00"),
+            createdBy = "1234",
+            createdDate = OffsetDateTime.parse("1970-01-02T00:00:01-08:00")
+        )
+        every { mockEventRepository.saveAndFlush(eventWithId) } returns updatedEvent
+        assertEquals(updatedEventDTO, subject.updateEvent(eventDTOWithId))
+        verifySequence { mockEventRepository.saveAndFlush(eventWithId) }
+        assertEquals(updatedEvent, capturedTsrEventUpdateEvent.captured.event)
     }
 }

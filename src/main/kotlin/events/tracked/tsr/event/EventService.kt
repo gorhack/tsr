@@ -2,6 +2,7 @@ package events.tracked.tsr.event
 
 import events.tracked.tsr.NewTsrEventSaveEvent
 import events.tracked.tsr.PageDTO
+import events.tracked.tsr.UpdateTsrEventSaveEvent
 import events.tracked.tsr.organization.Organization
 import events.tracked.tsr.user.TsrUserRepository
 import org.springframework.context.ApplicationEventPublisher
@@ -89,5 +90,12 @@ class EventService(
                 ?: "[deleted]"
         }
         return event.toEventDTO(createdByDisplayName = createdByUser, lastModifiedByDisplayName = lastModifiedByUser)
+    }
+
+    @Transactional
+    fun updateEvent(eventDTO: EventDTO): EventDTO {
+        val updatedEvent = eventRepository.saveAndFlush(eventDTO.toEvent())
+        applicationEventPublisher.publishEvent(UpdateTsrEventSaveEvent(this, updatedEvent))
+        return updatedEvent.toEventDTO()
     }
 }

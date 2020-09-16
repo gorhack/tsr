@@ -5,9 +5,17 @@ import { EventType } from "./Type/EventTypeApi";
 
 const baseUri = "/api/v1/event";
 
-export const saveEvent = async (event: EditableTsrEvent): Promise<TsrEvent> => {
+export const saveEvent = async (event: CreatableTsrEvent): Promise<TsrEvent> => {
     try {
         return (await axios.post(baseUri, event)).data;
+    } catch (error) {
+        throw new Error(error.message);
+    }
+};
+
+export const updateEvent = async (event: TsrEvent): Promise<TsrEvent> => {
+    try {
+        return (await axios.put(baseUri, event)).data;
     } catch (error) {
         throw new Error(error.message);
     }
@@ -62,7 +70,7 @@ export const getActiveEventsByOrganizationIds = async (
         });
 };
 
-export interface EditableTsrEvent {
+export interface CreatableTsrEvent {
     eventId?: number;
     eventName: string;
     organization: Organization;
