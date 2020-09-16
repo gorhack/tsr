@@ -3,6 +3,7 @@ import nock from "nock";
 import {
     EditableTsrEvent,
     getActiveEvents,
+    getActiveEventsByOrganizationIds,
     getActiveEventsByUserId,
     saveEvent,
     TsrEvent,
@@ -127,6 +128,27 @@ describe("event data", () => {
 
             nock("http://example.com").get("/api/v1/event/active/user?page=1").reply(200, events);
             const response = await getActiveEventsByUserId({ page: 1 });
+            expect(response).toEqual(events);
+        });
+
+        it("gets page of events by organization ids", async () => {
+            nock("http://example.com")
+                .get("/api/v1/event/active/organizations")
+                .reply(200, eventsPage);
+            const response = await getActiveEventsByOrganizationIds();
+            expect(response).toEqual(eventsPage);
+        });
+
+        it("gets page of events by organizations with page number as parameter", async () => {
+            const events = {
+                ...eventsPage,
+                pageNumber: 1,
+            };
+
+            nock("http://example.com")
+                .get("/api/v1/event/active/organizations?page=1")
+                .reply(200, events);
+            const response = await getActiveEventsByOrganizationIds({ page: 1 });
             expect(response).toEqual(events);
         });
     });

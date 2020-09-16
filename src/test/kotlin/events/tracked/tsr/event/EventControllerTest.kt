@@ -1,6 +1,7 @@
 package events.tracked.tsr.event
 
 import events.tracked.tsr.*
+import events.tracked.tsr.organization.Organization
 import events.tracked.tsr.user.TsrUser
 import events.tracked.tsr.user.TsrUserService
 import events.tracked.tsr.user.UserRole
@@ -21,6 +22,7 @@ internal class EventControllerTest {
     private lateinit var mockTsrUserService: TsrUserService
     private lateinit var oidcUser: OidcUser
     private lateinit var tsrUser: TsrUser
+    private lateinit var organizations: MutableList<Organization>
     private lateinit var eventDTOWithoutId: EventDTO
     private lateinit var eventDTOWithId: EventDTO
     private lateinit var eventDTOWithId2: EventDTO
@@ -35,7 +37,17 @@ internal class EventControllerTest {
         subject = EventController(mockEventService, mockTsrUserService)
 
         oidcUser = makeOidcUser(userId = "1234", userName = "user")
-        tsrUser = TsrUser(id = 1L, userId = "1234", username = "user", role = UserRole.USER)
+        organizations = mutableListOf(
+            makeOrganization1(),
+            makeOrganization2()
+        )
+        tsrUser = TsrUser(
+            id = 1L,
+            userId = "1234",
+            username = "user",
+            role = UserRole.USER,
+            organizations = organizations
+        )
         eventDTOWithoutId = makeEventDTOWithoutId()
         eventDTOWithId = makeEventDTOWithId()
         eventDTOWithId2 = makeEventDTOWithId2()
@@ -114,17 +126,20 @@ internal class EventControllerTest {
         val expectedResponse: ResponseEntity<PageDTO<EventDTO>> = ResponseEntity(
             expectedPageDTO, HttpStatus.OK
         )
-
         every {
-            mockEventService.getActiveEventsByOrganizationIds(listOf(1, 2), 0, 10, defaultSortBy)
+            mockTsrUserService.assertUserExistsAndReturnUser(oidcUser)
+        } returns tsrUser
+        every {
+            mockEventService.getActiveEventsByOrganizationIds(organizations, 0, 10, defaultSortBy)
         } returns expectedPageDTO
 
         assertEquals(
             expectedResponse,
-            subject.getActiveEventsByOrganizationIds(listOf(1, 2), 0, 10, "startDate")
+            subject.getActiveEventsByOrganizationIds(oidcUser, 0, 10, "startDate")
         )
         verifySequence {
-            mockEventService.getActiveEventsByOrganizationIds(listOf(1, 2), 0, 10, defaultSortBy)
+            mockTsrUserService.assertUserExistsAndReturnUser(oidcUser)
+            mockEventService.getActiveEventsByOrganizationIds(organizations, 0, 10, defaultSortBy)
         }
     }
 }

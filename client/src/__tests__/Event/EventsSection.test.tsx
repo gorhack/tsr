@@ -5,21 +5,32 @@ import { EventsSection } from "../../Event/EventsSection";
 import { createMemoryHistory, MemoryHistory } from "history";
 import * as EventApi from "../../Event/EventApi";
 import { TsrEvent } from "../../Event/EventApi";
-import { makeAudit, makeEvent } from "../TestHelpers";
+import { makeAudit, makeEvent, makeOrganization } from "../TestHelpers";
 import { Route, Router } from "react-router-dom";
 import { PageDTO } from "../../api";
+import { Organization } from "../../Organization/OrganizationApi";
 
 describe("home page of the application", () => {
-    let mockGetCurrentAndFutureEvents: typeof EventApi.getActiveEvents;
-    let mockGetCurrentAndFutureEventsByUserId: typeof EventApi.getActiveEventsByUserId;
+    let mockGetActiveEventsByOrganizationIds: typeof EventApi.getActiveEventsByOrganizationIds;
+    let mockGetActiveEventsByUserId: typeof EventApi.getActiveEventsByUserId;
     let userEventList: TsrEvent[];
+    let orgEventList: TsrEvent[];
+    let organization: Organization;
     let userPage1: PageDTO<TsrEvent>;
     let userPage2: PageDTO<TsrEvent>;
     let orgPage1: PageDTO<TsrEvent>;
     let orgPage2: PageDTO<TsrEvent>;
     beforeEach(() => {
-        mockGetCurrentAndFutureEvents = td.replace(EventApi, "getActiveEvents");
-        mockGetCurrentAndFutureEventsByUserId = td.replace(EventApi, "getActiveEventsByUserId");
+        mockGetActiveEventsByOrganizationIds = td.replace(
+            EventApi,
+            "getActiveEventsByOrganizationIds",
+        );
+        mockGetActiveEventsByUserId = td.replace(EventApi, "getActiveEventsByUserId");
+        organization = makeOrganization({
+            organizationId: 1,
+            organizationDisplayName: "org 1",
+            sortOrder: 1,
+        });
         userEventList = [
             makeEvent({
                 eventId: 1,
@@ -29,7 +40,17 @@ describe("home page of the application", () => {
             makeEvent({
                 eventId: 2,
                 eventName: "second event",
+                organization,
                 audit: makeAudit({ createdBy: "1234" }),
+            }),
+        ];
+        orgEventList = [
+            userEventList[1],
+            makeEvent({
+                eventId: 3,
+                eventName: "third event",
+                organization,
+                audit: makeAudit({ createdBy: "0987" }),
             }),
         ];
         userPage1 = {
@@ -50,31 +71,31 @@ describe("home page of the application", () => {
             first: false,
             last: true,
         };
-        orgPage1 = { ...userPage1, items: [userEventList[0]] };
-        orgPage2 = { ...userPage2, items: [userEventList[1]] };
+        orgPage1 = { ...userPage1, items: [orgEventList[0]] };
+        orgPage2 = { ...userPage2, items: [orgEventList[1]] };
     });
 
     afterEach(td.reset);
 
-    it("lists all non-user org events", async () => {
-        await renderEventsSection({ orgEvents: userEventList });
+    it("lists all users org events", async () => {
+        await renderEventsSection({ orgEvents: orgEventList });
 
-        expect(screen.getByTestId("org-event-1")).toHaveTextContent("first event");
         expect(screen.getByTestId("org-event-2")).toHaveTextContent("second event");
+        expect(screen.getByTestId("org-event-3")).toHaveTextContent("third event");
     });
 
     it("shows load more if more org event pages", async () => {
         await renderEventsSection({
-            orgEvents: userEventList,
+            orgEvents: orgEventList,
             orgPage: orgPage1,
         });
         const loadMoreButton = screen.getByTestId("org-event-more");
-        expect(screen.getByText("first event")).toBeInTheDocument();
-        expect(screen.queryByText("second event")).toBeNull();
+        expect(screen.getByText("second event")).toBeInTheDocument();
+        expect(screen.queryByText("third event")).toBeNull();
 
         expect(loadMoreButton).toHaveTextContent("load more");
         const moreEventsPromise: Promise<PageDTO<TsrEvent>> = Promise.resolve(orgPage2);
-        td.when(mockGetCurrentAndFutureEvents({ page: 1 })).thenDo(() =>
+        td.when(mockGetActiveEventsByOrganizationIds({ page: 1 })).thenDo(() =>
             Promise.resolve(moreEventsPromise),
         );
         fireEvent.click(loadMoreButton);
@@ -82,8 +103,8 @@ describe("home page of the application", () => {
             await moreEventsPromise;
         });
 
-        expect(screen.getByText("first event")).toBeInTheDocument();
         expect(screen.getByText("second event")).toBeInTheDocument();
+        expect(screen.getByText("third event")).toBeInTheDocument();
         expect(screen.queryByTestId("org-event-more")).toBeNull();
     });
 
@@ -107,7 +128,7 @@ describe("home page of the application", () => {
 
         expect(nextButton).toHaveTextContent("load more");
         const moreEventsPromise: Promise<PageDTO<TsrEvent>> = Promise.resolve(userPage2);
-        td.when(mockGetCurrentAndFutureEventsByUserId({ page: 1 })).thenDo(() =>
+        td.when(mockGetActiveEventsByUserId({ page: 1 })).thenDo(() =>
             Promise.resolve(moreEventsPromise),
         );
         fireEvent.click(nextButton);
@@ -159,10 +180,10 @@ describe("home page of the application", () => {
     }: RenderEventsSectionProps): Promise<RenderResult> => {
         const userEventsPromise = Promise.resolve(userPage);
         const orgEventsPromise = Promise.resolve(orgPage);
-        td.when(mockGetCurrentAndFutureEvents()).thenDo(() => Promise.resolve(orgEventsPromise));
-        td.when(mockGetCurrentAndFutureEventsByUserId()).thenDo(() =>
-            Promise.resolve(userEventsPromise),
+        td.when(mockGetActiveEventsByOrganizationIds()).thenDo(() =>
+            Promise.resolve(orgEventsPromise),
         );
+        td.when(mockGetActiveEventsByUserId()).thenDo(() => Promise.resolve(userEventsPromise));
 
         history.push("/");
         const result = render(

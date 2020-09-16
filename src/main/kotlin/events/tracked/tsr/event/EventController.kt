@@ -61,15 +61,16 @@ class EventController(
 
     @GetMapping(value = ["/active/organizations"])
     fun getActiveEventsByOrganizationIds(
-        @RequestParam("organizationIds") organizationIds: List<Int>,
+        @AuthenticationPrincipal user: OidcUser,
         @RequestParam("page", defaultValue = "0") page: Int,
         @RequestParam("size", defaultValue = "10") size: Int,
         @RequestParam("sortBy", defaultValue = "startDate") sortBy: String
     ): ResponseEntity<PageDTO<EventDTO>> {
+        val tsrUser = tsrUserService.assertUserExistsAndReturnUser(user);
         return when (sortBy) {
             "startDate" -> ResponseEntity<PageDTO<EventDTO>>(
                 eventService.getActiveEventsByOrganizationIds(
-                    organizationIds,
+                    tsrUser.organizations,
                     page,
                     size,
                     Sort.by(sortBy).and(Sort.by("endDate"))

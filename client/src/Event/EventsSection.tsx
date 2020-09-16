@@ -1,5 +1,5 @@
 import React, { ReactElement, useEffect, useState } from "react";
-import { getActiveEvents, getActiveEventsByUserId, TsrEvent } from "./EventApi";
+import { getActiveEventsByOrganizationIds, getActiveEventsByUserId, TsrEvent } from "./EventApi";
 import "./EventsSection.css";
 import { useHistory } from "react-router-dom";
 import { emptyPage, PageDTO } from "../api";
@@ -21,9 +21,9 @@ export const EventsSection = (): ReactElement => {
                 .catch((e) => {
                     console.error(`Error getting user events: ${e.message}`);
                 });
-            await getActiveEvents()
+            await getActiveEventsByOrganizationIds()
                 .then((result) => {
-                    setOrgEventPage(result); // TODO separate call for org events
+                    setOrgEventPage(result);
                     setOrgEvents(result.items);
                 })
                 .catch((e) => {
@@ -42,7 +42,6 @@ export const EventsSection = (): ReactElement => {
         );
     };
 
-    // TODO add filter by user org on backend
     const showOrgEvents = (): ReactElement => {
         return (
             <>
@@ -55,7 +54,7 @@ export const EventsSection = (): ReactElement => {
 
     const loadOrgEvents = (page: number) => {
         (async () => {
-            await getActiveEvents({ page })
+            await getActiveEventsByOrganizationIds({ page })
                 .then((results) => {
                     setOrgEventPage(results);
                     setOrgEvents(

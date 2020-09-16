@@ -1,7 +1,8 @@
 package events.tracked.tsr.event
 
-import events.tracked.tsr.PageDTO
 import events.tracked.tsr.NewTsrEventSaveEvent
+import events.tracked.tsr.PageDTO
+import events.tracked.tsr.organization.Organization
 import events.tracked.tsr.user.TsrUserRepository
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.dao.EmptyResultDataAccessException
@@ -54,7 +55,7 @@ class EventService(
     }
 
     fun getActiveEventsByOrganizationIds(
-        organizationIds: List<Int>,
+        organizations: MutableList<Organization>,
         page: Int,
         size: Int,
         sortBy: Sort
@@ -62,7 +63,7 @@ class EventService(
         val paging: Pageable = PageRequest.of(page, size, sortBy)
         val dateUtc = OffsetDateTime.now()
         val pagedEvents = eventRepository.findByOrganizationInAndEndDateGreaterThanEqual(
-            organizationIds,
+            organizations,
             dateUtc,
             paging
         )

@@ -1,6 +1,7 @@
 package events.tracked.tsr.event
 
 import events.tracked.tsr.*
+import events.tracked.tsr.organization.Organization
 import events.tracked.tsr.user.TsrUser
 import events.tracked.tsr.user.TsrUserRepository
 import events.tracked.tsr.user.UserRole
@@ -31,6 +32,7 @@ class EventServiceTest {
     private lateinit var eventDTOWithId: EventDTO
     private lateinit var eventDTOWithId2: EventDTO
     private lateinit var eventDTOWithIdAndDisplayNames: EventDTO
+    private lateinit var organizations: MutableList<Organization>
     private lateinit var expectedPageDTO: PageDTO<EventDTO>
 
     @BeforeEach
@@ -67,6 +69,7 @@ class EventServiceTest {
             isLast = true,
             pageSize = 10
         )
+        organizations = mutableListOf(makeOrganization1(), makeOrganization2())
     }
 
     @Test
@@ -128,11 +131,11 @@ class EventServiceTest {
     fun `getActiveEventsByOrganizations returns page of events that belong to that organization`() {
         val paging: Pageable = PageRequest.of(0, 10, Sort.by("startDate"))
         every {
-            mockEventRepository.findByOrganizationInAndEndDateGreaterThanEqual(listOf(1, 2), any(), paging)
+            mockEventRepository.findByOrganizationInAndEndDateGreaterThanEqual(organizations, any(), paging)
         } returns PageImpl(listOf(eventWithId, eventWithId2), paging, 2)
         assertEquals(
             expectedPageDTO,
-            subject.getActiveEventsByOrganizationIds(listOf(1, 2), 0, 10, Sort.by("startDate"))
+            subject.getActiveEventsByOrganizationIds(organizations, 0, 10, Sort.by("startDate"))
         )
     }
 }

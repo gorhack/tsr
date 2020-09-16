@@ -48,6 +48,20 @@ export const getActiveEventsByUserId = async (
         });
 };
 
+export const getActiveEventsByOrganizationIds = async (
+    pageParams: PageParams = {},
+): Promise<PageDTO<TsrEvent>> => {
+    const uri = `${baseUri}/active/organizations`;
+    return axios
+        .get(uri, { params: pageParams })
+        .then((response: AxiosResponse<PageDTO<TsrEvent>>) => {
+            return response.data;
+        })
+        .catch((error) => {
+            throw new Error(error.message);
+        });
+};
+
 export interface EditableTsrEvent {
     eventId?: number;
     eventName: string;
