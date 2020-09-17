@@ -23,31 +23,16 @@ data class EventDTO(
     val audit: AuditDTO? = null
 ) {
     private fun copyInto(event: Event): Event {
-        val eventCopy = event.copy(
-            eventName = this.eventName,
-            organization = this.organization,
-            startDate = this.startDate,
-            endDate = this.endDate,
-            eventType = this.eventType
-        )
-        eventCopy.lastModifiedDate = event.lastModifiedDate
-        eventCopy.lastModifiedBy = event.lastModifiedBy
-        eventCopy.createdDate = event.createdDate
-        eventCopy.createdBy = event.createdBy
-        return eventCopy
-    }
-
-    private fun copyIntoWithId(event: Event): Event {
-        return copyInto(event).copy(
-            eventId = eventId!!
+        return event.copy(
+            eventName = eventName,
+            organization = organization,
+            startDate = startDate,
+            endDate = endDate,
+            eventType = eventType
         )
     }
 
     fun toEvent(): Event {
-        return if (this.eventId == null) {
-            copyInto(Event())
-        } else {
-            copyIntoWithId(Event())
-        }
+        return copyInto(Event())
     }
 }

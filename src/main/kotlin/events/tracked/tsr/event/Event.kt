@@ -18,11 +18,11 @@ data class Event(
     @Column(columnDefinition = "TIMESTAMP WITH TIME ZONE")
     var endDate: OffsetDateTime = OffsetDateTime.parse("1970-01-01T00:00:01-00:00"),
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = true)
+    @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = [CascadeType.PERSIST, CascadeType.MERGE])
     @JoinColumn(name = "event_type_id", nullable = true)
     var eventType: EventType? = null,
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false, cascade = [CascadeType.PERSIST, CascadeType.MERGE])
     @JoinColumn(name = "organization", nullable = false)
     var organization: Organization = Organization(organizationId = 0L, organizationName = "", organizationDisplayName = "", sortOrder = 0)
 ) : Auditable() {
@@ -37,7 +37,7 @@ data class Event(
         this.createdBy = createdBy
     }
 
-    fun toEventDTO(): EventDTO {
+    fun toEventDTOWithDisplayNames(): EventDTO {
         return EventDTO(
             eventId = eventId,
             eventName = eventName,
@@ -54,8 +54,8 @@ data class Event(
         )
     }
 
-    fun toEventDTO(createdByDisplayName: String, lastModifiedByDisplayName: String): EventDTO {
-        return this.toEventDTO().copy(
+    fun toEventDTOWithDisplayNames(createdByDisplayName: String, lastModifiedByDisplayName: String): EventDTO {
+        return this.toEventDTOWithDisplayNames().copy(
             audit = AuditDTO(
                 createdDate = createdDate!!,
                 createdBy = createdBy,

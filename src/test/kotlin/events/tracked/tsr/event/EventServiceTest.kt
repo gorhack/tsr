@@ -168,9 +168,13 @@ class EventServiceTest {
             createdBy = "1234",
             createdDate = OffsetDateTime.parse("1970-01-02T00:00:01-08:00")
         )
-        every { mockEventRepository.saveAndFlush(eventWithId) } returns updatedEvent
+        every { mockEventRepository.findByIdOrNull(1) } returns eventWithId
+        every { mockEventRepository.saveAndFlush(updatedEvent) } returns updatedEvent
         assertEquals(updatedEventDTO, subject.updateEvent(eventDTOWithId))
-        verifySequence { mockEventRepository.saveAndFlush(eventWithId) }
+        verifySequence {
+            mockEventRepository.findByIdOrNull(1)
+            mockEventRepository.saveAndFlush(eventWithId)
+        }
         assertEquals(updatedEvent, capturedTsrEventUpdateEvent.captured.event)
     }
 }

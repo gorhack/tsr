@@ -26,7 +26,7 @@ class EventService(
     fun saveEvent(eventDTO: EventDTO): EventDTO {
         val savedEvent = eventRepository.saveAndFlush(eventDTO.toEvent())
         applicationEventPublisher.publishEvent(NewTsrEventSaveEvent(this, savedEvent))
-        return savedEvent.toEventDTO()
+        return savedEvent.toEventDTOWithDisplayNames()
     }
 
     fun getActiveEvents(page: Int, size: Int, sortBy: Sort): PageDTO<EventDTO> {
@@ -38,7 +38,7 @@ class EventService(
         )
 
         return if (pagedEventResults.hasContent()) {
-            PageDTO(pagedEventResults.map { e -> e.toEventDTO() })
+            PageDTO(pagedEventResults.map { e -> e.toEventDTOWithDisplayNames() })
         } else {
             PageDTO()
         }
@@ -49,7 +49,7 @@ class EventService(
         val dateUtc = OffsetDateTime.now()
         val pagedEvents = eventRepository.findByCreatedByAndEndDateGreaterThanEqual(userId, dateUtc, paging)
         return if (pagedEvents.hasContent()) {
-            PageDTO(pagedEvents.map { e -> e.toEventDTO() })
+            PageDTO(pagedEvents.map { e -> e.toEventDTOWithDisplayNames() })
         } else {
             PageDTO()
         }
@@ -69,7 +69,7 @@ class EventService(
             paging
         )
         return if (pagedEvents.hasContent()) {
-            PageDTO(pagedEvents.map { e -> e.toEventDTO() })
+            PageDTO(pagedEvents.map { e -> e.toEventDTOWithDisplayNames() })
         } else {
             PageDTO()
         }
@@ -89,13 +89,24 @@ class EventService(
             lastModifiedByUser = userRepository.findByUserId(event.lastModifiedBy)?.username
                 ?: "[deleted]"
         }
-        return event.toEventDTO(createdByDisplayName = createdByUser, lastModifiedByDisplayName = lastModifiedByUser)
+        return event.toEventDTOWithDisplayNames(createdByDisplayName = createdByUser, lastModifiedByDisplayName = lastModifiedByUser)
     }
 
     @Transactional
     fun updateEvent(eventDTO: EventDTO): EventDTO {
-        val updatedEvent = eventRepository.saveAndFlush(eventDTO.toEvent())
+        val eventToUpdate = eventRepository.findByIdOrNull(eventDTO.eventId) ?: throw EmptyResultDataAccessException(1)
+        eventToUpdate.eventName = eventDTO.eventName
+        eventToUpdate.startDate = eventDTO.startDate
+        eventToUpdate.endDate = eventDTO.endDate
+        eventToUpdate.eventType = eventDTO.eventType
+        eventToUpdate.organization = eventDTO.organization
+        eventToUpdate.createdBy = eventDTO.audit?.createdBy ?: "[deleted]"
+        eventToUpdate.createdDate = eventDTO.audit?.createdDate ?: OffsetDateTime.parse("1970-01-01T00:00:01-00:00")
+        eventToUpdate.lastModifiedBy = eventDTO.audit?.lastModifiedBy ?: "[deleted]"
+        eventToUpdate.lastModifiedDate = eventDTO.audit?.lastModifiedDate ?: OffsetDateTime.parse("1970-01-01T00:00:01-00:00")
+
+        val updatedEvent = eventRepository.saveAndFlush(eventToUpdate)
         applicationEventPublisher.publishEvent(UpdateTsrEventSaveEvent(this, updatedEvent))
-        return updatedEvent.toEventDTO()
+        return updatedEvent.toEventDTOWithDisplayNames()
     }
 }

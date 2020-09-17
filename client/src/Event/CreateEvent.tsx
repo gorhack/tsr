@@ -24,7 +24,7 @@ import { RouteParams } from "./EventPage";
 
 type FormData = {
     eventName: string;
-    organizationOption: Option;
+    organizationOption: Option[];
     startDate: Date;
     endDate: Date;
     eventTypeOption?: Option;
@@ -63,7 +63,7 @@ export const CreateEvent: React.FC = () => {
     >({
         defaultValues: {
             eventTypeOption: initialEventType,
-            organizationOption: initialOrgName,
+            organizationOption: orgValues,
         },
     });
     const dateWatch = watch(["startDate", "endDate"]);
@@ -74,6 +74,16 @@ export const CreateEvent: React.FC = () => {
                 await getEventById(parseInt(eventId))
                     .then((event) => {
                         setTsrEvent(event);
+                        organizationCacheDispatch({
+                            type: OrganizationActionTypes.LOAD,
+                            organizations: [event.organization],
+                        });
+                        setOrgValues([
+                            {
+                                value: event.organization.organizationDisplayName,
+                                label: event.organization.organizationDisplayName,
+                            },
+                        ]);
                         setValue("startDate", new Date(event.startDate));
                         setValue("endDate", new Date(event.endDate));
                         setValue("eventName", event.eventName);
@@ -110,7 +120,7 @@ export const CreateEvent: React.FC = () => {
             return;
         }
 
-        if (eventId) {
+        if (tsrEvent) {
             const tsrEventToUpdate: TsrEvent = {
                 ...tsrEvent,
                 eventName,
