@@ -1,4 +1,4 @@
-import { act, render, RenderResult, screen } from "@testing-library/react";
+import { render, RenderResult, screen } from "@testing-library/react";
 import { fireEvent } from "@testing-library/dom";
 import React from "react";
 import td from "testdouble";
@@ -8,8 +8,19 @@ import * as Api from "../../api";
 import { EventPage } from "../../Event/EventPage";
 import { createMemoryHistory, MemoryHistory } from "history";
 import { Route, Router } from "react-router-dom";
-import { findByAriaLabel, makeAudit, makeEvent, makeOrganization, reRender } from "../TestHelpers";
+import {
+    findByAriaLabel,
+    makeAudit,
+    makeEvent,
+    makeOrganization,
+    makePage,
+    reRender,
+} from "../TestHelpers";
+import * as EventTaskApi from "../../Event/Task/EventTaskApi";
 import moment from "moment";
+import { EventTaskCategory } from "../../Event/Task/EventTaskApi";
+import { PageDTO } from "../../api";
+import selectEvent from "react-select-event";
 
 describe("displays event details", () => {
     let mockGetEventById: typeof EventApi.getEventById;
@@ -19,13 +30,13 @@ describe("displays event details", () => {
      */
     let mockUserTimeZone: typeof Api.userTimeZone;
     let mockCurrentTime: typeof Api.currentTimeUtc;
-    // let mockGetEventTaskCategories: typeof EventTaskApi.getEventTaskCategories
+    let mockGetEventTaskCategories: typeof EventTaskApi.getEventTaskCategoriesContains;
 
     beforeEach(() => {
         mockGetEventById = td.replace(EventApi, "getEventById");
         mockUserTimeZone = td.replace(Api, "userTimeZone");
         mockCurrentTime = td.replace(Api, "currentTimeUtc");
-        // mockGetEventTaskCategories = td.replace(EventTaskApi, "getEventTaskCategories");
+        mockGetEventTaskCategories = td.replace(EventTaskApi, "getEventTaskCategoriesContains");
     });
     afterEach(td.reset);
 
@@ -159,10 +170,11 @@ describe("displays event details", () => {
         });
     });
 
-    describe.skip("event tasks", () => {
+    describe("event tasks", () => {
         it("shows a react select that gets list of tasks", async () => {
             const result = await renderEventDetails({});
             expect(screen.getByRole("button", { name: "add task" })).toBeInTheDocument();
+            selectEvent.openMenu(screen.getByLabelText("add requirement"));
             expect(result.container).toHaveTextContent(/.*task 1.*task 2.*/);
         });
     });
@@ -182,7 +194,22 @@ describe("displays event details", () => {
         td.when(mockGetEventById(event.eventId)).thenResolve(event);
         td.when(mockUserTimeZone()).thenReturn("TIMEZONE/timezone");
         td.when(mockCurrentTime()).thenReturn(moment(currentTime));
-        // td.when(mockGetEventTaskCategories()).thenResolve( ... )
+        td.when(mockGetEventTaskCategories(td.matchers.anything())).thenResolve(
+            makePage({
+                items: [
+                    {
+                        eventTaskId: 1,
+                        eventTaskName: "task 1",
+                        eventTaskDisplayName: "task 1",
+                    },
+                    {
+                        eventTaskId: 2,
+                        eventTaskName: "task 2",
+                        eventTaskDisplayName: "task 2",
+                    },
+                ],
+            }) as PageDTO<EventTaskCategory>,
+        );
 
         const result = render(
             <Router history={history}>
