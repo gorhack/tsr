@@ -36,8 +36,8 @@ internal class EventTaskCategoryServiceTest {
             pageSize = 10
         )
         every {
-            mockEventTaskCategoryRepository.findAll(paging)
+            mockEventTaskCategoryRepository.findByEventTaskDisplayNameContainsIgnoreCase("", paging)
         } returns PageImpl(listOf(firstEventTask, secondEventTask), paging, 2)
-        assertEquals(expectedPageDTO, subject.getEventTaskCategories(0, 10, Sort.by("eventTaskId")))
+        assertEquals(expectedPageDTO, subject.getEventTaskCategories("", 0, 10, Sort.by("eventTaskId")))
     }
 }

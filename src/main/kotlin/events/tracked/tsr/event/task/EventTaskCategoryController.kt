@@ -17,13 +17,14 @@ class EventTaskCategoryController(
 ) {
     @GetMapping(value = [""])
     fun getEventTaskCategories(
+        @RequestParam("searchTerm", defaultValue = "") searchTerm: String,
         @RequestParam("page", defaultValue = "0") page: Int,
         @RequestParam("size", defaultValue = "10") size: Int,
         @RequestParam("sortBy", defaultValue = "eventTaskId") sortBy: String
     ): ResponseEntity<PageDTO<EventTaskCategory>> {
         return when (sortBy) {
             "eventTaskId" -> ResponseEntity<PageDTO<EventTaskCategory>>(
-                eventTaskCategoryService.getEventTaskCategories(page, size, Sort.by(sortBy)),
+                eventTaskCategoryService.getEventTaskCategories(searchTerm, page, size, Sort.by(sortBy)),
                 HttpHeaders(),
                 HttpStatus.OK
             )

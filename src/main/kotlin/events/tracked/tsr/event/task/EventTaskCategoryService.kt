@@ -11,9 +11,10 @@ import org.springframework.stereotype.Service
 class EventTaskCategoryService (
     val eventTaskCategoryRepository: EventTaskCategoryRepository
 ) {
-    fun getEventTaskCategories(page: Int, size: Int, sortBy: Sort): PageDTO<EventTaskCategory> {
+    fun getEventTaskCategories(searchTerm: String, page: Int, size: Int, sortBy: Sort): PageDTO<EventTaskCategory> {
         val paging: Pageable = PageRequest.of(page, size, sortBy)
-        val pagedEventResults: Page<EventTaskCategory> = eventTaskCategoryRepository.findAll(paging)
+        val pagedEventResults: Page<EventTaskCategory> =
+            eventTaskCategoryRepository.findByEventTaskDisplayNameContainsIgnoreCase(searchTerm, paging)
         return if (pagedEventResults.hasContent()) {
             PageDTO(pagedEventResults)
         } else {
