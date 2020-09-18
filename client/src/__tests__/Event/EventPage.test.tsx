@@ -174,7 +174,7 @@ describe("displays event details", () => {
         it("shows a react select that gets list of tasks", async () => {
             const result = await renderEventDetails({});
             expect(screen.getByRole("button", { name: "add task" })).toBeInTheDocument();
-            selectEvent.openMenu(screen.getByLabelText("add requirement"));
+            selectEvent.openMenu(screen.getByLabelText("add a task"));
             expect(result.container).toHaveTextContent(/.*task 1.*task 2.*/);
         });
     });

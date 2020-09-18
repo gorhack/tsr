@@ -25,5 +25,5 @@
 }
 
 .Event-Detail-Add-Task {
-    align-items: end;
+    align-items: flex-end;
 }
