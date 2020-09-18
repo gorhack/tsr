@@ -60,6 +60,7 @@ class EventServiceTest {
                 lastModifiedByDisplayName = "user_2"
             )
         )
+        organizations = mutableListOf(makeOrganization1(), makeOrganization2())
         expectedPageDTO = PageDTO(
             items = listOf(eventDTOWithId, eventDTOWithId2),
             totalPages = 1,
@@ -69,7 +70,6 @@ class EventServiceTest {
             isLast = true,
             pageSize = 10
         )
-        organizations = mutableListOf(makeOrganization1(), makeOrganization2())
     }
 
     @Test
