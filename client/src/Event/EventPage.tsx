@@ -5,6 +5,7 @@ import moment from "moment";
 import { EventDetails } from "./EventDetails";
 import { LinkButton } from "../Buttons/Buttons";
 import "./EventPage.css";
+import { EventTaskSection } from "./Task/EventTaskSection";
 
 interface RouteParams {
     eventId: string;
@@ -60,6 +61,8 @@ export const EventPage: React.FC = () => {
             <h1 className="EventPage-Header">{headerEventName()}</h1>
             <h2 className="EventPage-Header">{headerDates()}</h2>
             <EventDetails tsrEvent={tsrEvent} />
+            <div className="space-3" />
+            <EventTaskSection />
         </>
     );
 };
