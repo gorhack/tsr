@@ -60,9 +60,11 @@ export const EventPage: React.FC = () => {
             <div className="space-3" />
             <h1 className="EventPage-Header">{headerEventName()}</h1>
             <h2 className="EventPage-Header">{headerDates()}</h2>
-            <EventDetails tsrEvent={tsrEvent} />
-            <div className="space-3" />
-            <EventTaskSection />
+            <div className="Event-Details-Container">
+                <EventDetails tsrEvent={tsrEvent} />
+                <div className="space-3" />
+                <EventTaskSection />
+            </div>
         </>
     );
 };

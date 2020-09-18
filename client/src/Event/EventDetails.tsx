@@ -2,7 +2,7 @@ import React, { ReactElement } from "react";
 import moment, { Moment } from "moment";
 import { TsrEvent } from "./EventApi";
 import { currentTimeUtc, userTimeZone } from "../api";
-import "./EventDetails.css";
+import "./EventPage.css";
 
 const SHORT_DATE_FORMAT = "M/D/YY";
 const LONG_DATE_TIME_FORMAT = "dddd, MMMM Do YYYY, HHmm";
@@ -54,7 +54,7 @@ export const EventDetails = React.memo(
         };
 
         return (
-            <div className="Event-Details-Container">
+            <>
                 <DetailRow
                     label="Event Type"
                     description={
@@ -79,7 +79,7 @@ export const EventDetails = React.memo(
                         tsrEvent.audit.lastModifiedByDisplayName
                     }, ${dateLastModifiedFormat(moment(tsrEvent.audit.lastModifiedDate))}`}
                 />
-            </div>
+            </>
         );
     },
 );

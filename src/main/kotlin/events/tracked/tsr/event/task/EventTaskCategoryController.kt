@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController
 class EventTaskCategoryController(
     val eventTaskCategoryService: EventTaskCategoryService
 ) {
-    @GetMapping(value = [""])
+    @GetMapping(value = ["/search"])
     fun getEventTaskCategories(
         @RequestParam("searchTerm", defaultValue = "") searchTerm: String,
         @RequestParam("page", defaultValue = "0") page: Int,
