@@ -55,11 +55,11 @@ internal class EventTaskServiceTest {
         )
         val tsrUser = TsrUser(1L, "1234", "user", UserRole.USER, mutableListOf())
 
-        val eventTaskCategory = EventTaskCategory(eventTaskId = 1L, "CLASS", "class")
+        val eventTaskCategory = EventTaskCategory(eventTaskCategoryId = 1L, "CLASS", "class")
         val eventTaskStatus = EventTaskStatus(statusId = 1L, "CREATED", "created", 'R')
         val createTask = CreateEventTaskDTO(
             eventTaskCategory = eventTaskCategory,
-            eventId = 1L
+            eventId = 1
         )
         val eventTaskToSave = EventTask(
             eventTaskCategoryId = eventTaskCategory,
@@ -71,6 +71,7 @@ internal class EventTaskServiceTest {
         )
 
         val savedEventTask = EventTask(
+            eventTaskId = 1L,
             eventTaskCategoryId = eventTaskCategory,
             eventId = event,
             suspenseDate = suspenseDate,

@@ -17,7 +17,7 @@ class EventTaskService(
     private val applicationEventPublisher: ApplicationEventPublisher
 ){
     fun createEventTask(tsrUser: TsrUser, taskToCreate: CreateEventTaskDTO): ResponseEntity<EventTaskDTO> {
-        val event = eventRepository.findByIdOrNull(taskToCreate.eventId) ?: throw EntityNotFoundException("event not found")
+        val event = eventRepository.findByIdOrNull(taskToCreate.eventId.toLong()) ?: throw EntityNotFoundException("event not found")
         val eventTaskToSave = EventTask(
             eventTaskCategoryId = taskToCreate.eventTaskCategory,
             eventId = event,

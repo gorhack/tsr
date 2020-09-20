@@ -37,12 +37,12 @@ internal class EventTaskCategoryControllerTest {
         val expectedResponse: ResponseEntity<PageDTO<EventTaskCategory>> = ResponseEntity(expectedPageDTO, HttpStatus.OK)
 
         every {
-            mockEventTaskCategoryService.getEventTaskCategories("", 0, 10, Sort.by("eventTaskId"))
+            mockEventTaskCategoryService.getEventTaskCategories("", 0, 10, Sort.by("eventTaskCategoryId"))
         } returns expectedPageDTO
 
-        assertEquals(expectedResponse, subject.getEventTaskCategories("", 0, 10, "eventTaskId"))
+        assertEquals(expectedResponse, subject.getEventTaskCategories("", 0, 10, "eventTaskCategoryId"))
         verifySequence {
-            mockEventTaskCategoryService.getEventTaskCategories("", 0, 10, Sort.by("eventTaskId"))
+            mockEventTaskCategoryService.getEventTaskCategories("", 0, 10, Sort.by("eventTaskCategoryId"))
         }
     }
 }

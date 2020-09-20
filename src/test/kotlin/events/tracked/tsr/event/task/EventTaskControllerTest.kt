@@ -30,12 +30,12 @@ internal class EventTaskControllerTest {
         val tsrUser = TsrUser(1L, "1234", "user", UserRole.USER, mutableListOf())
 
         val taskToCreate = CreateEventTaskDTO(
-            eventId = 1L,
-            eventTaskCategory = EventTaskCategory(eventTaskId = 10L, eventTaskName = "CLASS_ONE", eventTaskDisplayName = "Class I"),
+            eventId = 1,
+            eventTaskCategory = EventTaskCategory(eventTaskCategoryId = 10L, eventTaskName = "CLASS_ONE", eventTaskDisplayName = "Class I"),
         )
         val createdTaskDTO = EventTaskDTO(
             eventId = 1L,
-            eventTaskCategory = EventTaskCategory(eventTaskId = 10L, eventTaskName = "CLASS_ONE", eventTaskDisplayName = "Class I"),
+            eventTaskCategory = EventTaskCategory(eventTaskCategoryId = 10L, eventTaskName = "CLASS_ONE", eventTaskDisplayName = "Class I"),
             suspenseDate = OffsetDateTime.parse("1970-01-01T00:00:01-08:00"),
             resourcer = TsrUserDTO(1L, "1234", "user", UserRole.USER, UserSettingsDTO()),
             approver = TsrUserDTO(1L, "1234", "user", UserRole.USER, UserSettingsDTO()),

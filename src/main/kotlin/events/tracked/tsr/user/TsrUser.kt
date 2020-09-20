@@ -15,7 +15,7 @@ data class TsrUser(
     val username: String,
     @Enumerated(EnumType.STRING)
     val role: UserRole = UserRole.ADMIN,
-    @ManyToMany(cascade = [CascadeType.PERSIST, CascadeType.MERGE])
+    @ManyToMany(cascade = [CascadeType.MERGE])
     @JoinTable(
         name = "tsr_user_organization",
         joinColumns = [JoinColumn(name = "tsr_user_id")],

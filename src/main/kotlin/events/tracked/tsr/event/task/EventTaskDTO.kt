@@ -13,6 +13,6 @@ data class EventTaskDTO(
 )
 
 data class CreateEventTaskDTO(
-    val eventTaskCategory: EventTaskCategory = EventTaskCategory(),
-    val eventId: Long = 0L
+    val eventTaskCategory: EventTaskCategory,
+    val eventId: Int
 )

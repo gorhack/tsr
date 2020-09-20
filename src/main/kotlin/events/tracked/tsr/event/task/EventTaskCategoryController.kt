@@ -20,10 +20,10 @@ class EventTaskCategoryController(
         @RequestParam("searchTerm", defaultValue = "") searchTerm: String,
         @RequestParam("page", defaultValue = "0") page: Int,
         @RequestParam("size", defaultValue = "10") size: Int,
-        @RequestParam("sortBy", defaultValue = "eventTaskId") sortBy: String
+        @RequestParam("sortBy", defaultValue = "eventTaskCategoryId") sortBy: String
     ): ResponseEntity<PageDTO<EventTaskCategory>> {
         return when (sortBy) {
-            "eventTaskId" -> ResponseEntity<PageDTO<EventTaskCategory>>(
+            "eventTaskCategoryId" -> ResponseEntity<PageDTO<EventTaskCategory>>(
                 eventTaskCategoryService.getEventTaskCategories(searchTerm, page, size, Sort.by(sortBy)),
                 HttpHeaders(),
                 HttpStatus.OK

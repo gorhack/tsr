@@ -63,7 +63,7 @@ export const EventPage: React.FC = () => {
             <div className="Event-Details-Container">
                 <EventDetails tsrEvent={tsrEvent} />
                 <div className="space-3" />
-                <EventTaskSection />
+                <EventTaskSection tsrEvent={tsrEvent} />
             </div>
         </>
     );
