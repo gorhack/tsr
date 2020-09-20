@@ -19,6 +19,7 @@ class EventController(
 ) {
     @PostMapping(value = [""])
     fun saveEvent(@RequestBody eventDTO: EventDTO): EventDTO {
+        // TODO return ResponseEntity
         return eventService.saveEvent(eventDTO)
     }
 

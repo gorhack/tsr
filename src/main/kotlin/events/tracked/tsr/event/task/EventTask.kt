@@ -3,6 +3,7 @@ package events.tracked.tsr.event.task
 import events.tracked.tsr.event.Event
 import events.tracked.tsr.jpa_ext.Auditable
 import events.tracked.tsr.user.TsrUser
+import events.tracked.tsr.user.TsrUserDTO
 import java.io.Serializable
 import java.time.OffsetDateTime
 import javax.persistence.*
@@ -18,7 +19,7 @@ data class EventTaskCategory(
 )
 
 class EventTaskKey : Serializable {
-    val eventTaskId: EventTaskCategory = EventTaskCategory()
+    val eventTaskCategoryId: EventTaskCategory = EventTaskCategory()
     val eventId: Event = Event()
 }
 
@@ -29,7 +30,7 @@ data class EventTask(
     @Id
     @ManyToOne(fetch = FetchType.LAZY, cascade = [CascadeType.ALL])
     @JoinColumn(name = "event_task_id")
-    val eventTaskId: EventTaskCategory = EventTaskCategory(),
+    val eventTaskCategoryId: EventTaskCategory = EventTaskCategory(),
     @Id
     @ManyToOne(fetch = FetchType.LAZY, cascade = [CascadeType.ALL])
     @JoinColumn(name = "event_id")
@@ -44,13 +45,25 @@ data class EventTask(
     var resourcer: TsrUser,
     @ManyToOne(fetch = FetchType.LAZY, cascade = [CascadeType.PERSIST, CascadeType.MERGE])
     @JoinColumn(name = "status_id")
-    var status: EventTaskStatus
+    var status: EventTaskStatus = EventTaskStatus(statusId = 1L, "CREATED", "created", 'R')
 ) : Auditable() {
-    constructor(eventTaskId: EventTaskCategory, eventId: Event, suspenseDate: OffsetDateTime, approver: TsrUser, resourcer: TsrUser, status: EventTaskStatus, lastModifiedDate: OffsetDateTime, lastModifiedBy: String, createdDate: OffsetDateTime, createdBy: String) :
-        this(eventTaskId = eventTaskId, eventId = eventId, suspenseDate = suspenseDate, approver = approver, resourcer = resourcer, status = status) {
+    constructor(eventTaskCategoryId: EventTaskCategory, eventId: Event, suspenseDate: OffsetDateTime, approver: TsrUser, resourcer: TsrUser, status: EventTaskStatus, lastModifiedDate: OffsetDateTime, lastModifiedBy: String, createdDate: OffsetDateTime, createdBy: String) :
+        this(eventTaskCategoryId = eventTaskCategoryId, eventId = eventId, suspenseDate = suspenseDate, approver = approver, resourcer = resourcer, status = status) {
         this.lastModifiedDate = lastModifiedDate
         this.lastModifiedBy = lastModifiedBy
         this.createdDate = createdDate
         this.createdBy = createdBy
+    }
+
+
+    fun toEventTaskDTO(): EventTaskDTO {
+        return EventTaskDTO(
+            eventTaskCategory = this.eventTaskCategoryId,
+            eventId = this.eventId.eventId,
+            suspenseDate = this.suspenseDate,
+            approver = TsrUserDTO(this.approver),
+            resourcer = TsrUserDTO(this.resourcer),
+            status = this.status
+        )
     }
 }

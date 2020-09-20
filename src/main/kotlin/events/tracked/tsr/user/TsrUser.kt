@@ -54,10 +54,10 @@ data class UserSettingsDTO(
 
 data class TsrUserDTO(
     val id: Long = 0,
-    val userId: String,
-    val username: String,
-    val role: UserRole,
-    val settings: UserSettingsDTO
+    val userId: String = "",
+    val username: String = "",
+    val role: UserRole = UserRole.USER,
+    val settings: UserSettingsDTO = UserSettingsDTO()
 ) {
     constructor(tsrUser: TsrUser) : this(
         id = tsrUser.id,
