@@ -4,7 +4,7 @@ import td from "testdouble";
 import { act, fireEvent, render, RenderResult, screen } from "@testing-library/react";
 import { EventTaskSection } from "../../../Event/Task/EventTaskSection";
 import * as EventTaskApi from "../../../Event/Task/EventTaskApi";
-import { CreateEventTask, EventTaskCategory, StatusCode } from "../../../Event/Task/EventTaskApi";
+import { EventTaskCategory, StatusCode } from "../../../Event/Task/EventTaskApi";
 import selectEvent from "react-select-event";
 import { TsrEvent } from "../../../Event/EventApi";
 import { makeEvent, makePage, reRender } from "../../TestHelpers";
@@ -40,11 +40,7 @@ describe("event tasks", () => {
                 organizations: [],
             },
         };
-        const creatableEventTask: CreateEventTask = {
-            eventId: tsrEvent.eventId,
-            eventTaskCategory: firstEventTaskCategory,
-        };
-        td.when(mockCreateEventTask(creatableEventTask)).thenResolve({
+        td.when(mockCreateEventTask(tsrEvent.eventId, firstEventTaskCategory)).thenResolve({
             eventTaskCategory: firstEventTaskCategory,
             eventId: tsrEvent.eventId,
             suspenseDate: "2020-08-18T14:15:59",

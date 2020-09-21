@@ -47,10 +47,7 @@ export const EventTaskSection = ({ tsrEvent }: EventTaskSectionProps): ReactElem
             console.error("must select a task to add");
             return Promise.resolve();
         }
-        await createEventTask({
-            eventId: tsrEvent.eventId,
-            eventTaskCategory: foundEventTask,
-        })
+        await createEventTask(tsrEvent.eventId, foundEventTask)
             .then((result) => {
                 setEventTasks((oldTasks) => [...oldTasks, result]);
             })

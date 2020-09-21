@@ -114,10 +114,10 @@ internal class EventControllerTest {
 
     @Test
     fun `getEventById returns a page of current and future events by user id`() {
-        every { mockEventService.getEventById(1) } returns eventDTOWithId
+        every { mockEventService.getEventDTOById(1) } returns eventDTOWithId
         assertEquals(subject.getEventById(1), eventDTOWithId)
         verifySequence {
-            mockEventService.getEventById(1)
+            mockEventService.getEventDTOById(1)
         }
     }
 

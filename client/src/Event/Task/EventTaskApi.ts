@@ -2,11 +2,15 @@ import axios, { AxiosResponse } from "axios";
 import { PageDTO } from "../../api";
 import { TsrUser } from "../../Users/UserApi";
 
-const baseUri = "/api/v1/event/task";
+const baseUri = "/api/v1/event";
 
-export const createEventTask = async (creatableEvent: CreateEventTask): Promise<EventTask> => {
+export const createEventTask = async (
+    eventId: number,
+    creatableEvent: EventTaskCategory,
+): Promise<EventTask> => {
+    const uri = `${baseUri}/${eventId}/task`;
     return axios
-        .post(baseUri, creatableEvent)
+        .post(uri, creatableEvent)
         .then((response: AxiosResponse<EventTask>) => {
             return response.data;
         })
@@ -18,7 +22,7 @@ export const createEventTask = async (creatableEvent: CreateEventTask): Promise<
 export const getEventTaskCategoriesContains = async (
     searchTerm: string,
 ): Promise<PageDTO<EventTaskCategory>> => {
-    const uri = `${baseUri}/category/search`;
+    const uri = `${baseUri}/task/category/search`;
     return axios
         .get(uri, { params: { searchTerm } })
         .then((response: AxiosResponse<PageDTO<EventTaskCategory>>) => {
@@ -46,11 +50,6 @@ export interface EventTaskStatus {
     statusName: string;
     statusDisplayName: string;
     statusShortName: StatusCode;
-}
-
-export interface CreateEventTask {
-    eventTaskCategory: EventTaskCategory;
-    eventId: number;
 }
 
 export interface EventTask {

@@ -11,8 +11,3 @@ data class EventTaskDTO(
     val resourcer: TsrUserDTO = TsrUserDTO(),
     val status: EventTaskStatus = EventTaskStatus()
 )
-
-data class CreateEventTaskDTO(
-    val eventTaskCategory: EventTaskCategory,
-    val eventId: Int
-)

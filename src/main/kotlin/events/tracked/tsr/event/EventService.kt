@@ -74,10 +74,13 @@ class EventService(
         }
     }
 
-    fun getEventById(eventId: Int): EventDTO {
-        val event: Event = eventRepository.findByIdOrNull(eventId.toLong())
+    fun getEventById(eventId: Int): Event {
+        return eventRepository.findByIdOrNull(eventId.toLong())
             ?: throw EmptyResultDataAccessException(1)
+    }
 
+    fun getEventDTOById(eventId: Int): EventDTO {
+        val event = getEventById(eventId)
         val createdByUser: String = userRepository.findByUserId(event.createdBy)?.username
             ?: "[deleted]"
         var lastModifiedByUser: String = createdByUser

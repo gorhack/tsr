@@ -2,7 +2,6 @@ import nock from "nock";
 import axios from "axios";
 import {
     createEventTask,
-    CreateEventTask,
     EventTask,
     EventTaskCategory,
     getEventTaskCategoriesContains,
@@ -50,10 +49,6 @@ describe("event task", () => {
                 organizations: [],
             },
         };
-        const createableEvent: CreateEventTask = {
-            eventTaskCategory: eventTaskCategory,
-            eventId: 1,
-        };
         const eventTask: EventTask = {
             eventTaskCategory: eventTaskCategory,
             eventId: 1,
@@ -68,9 +63,9 @@ describe("event task", () => {
             },
         };
         nock("http://example.com")
-            .post("/api/v1/event/task", createableEvent as NockBody)
+            .post("/api/v1/event/1/task", eventTaskCategory as NockBody)
             .reply(HttpStatus.CREATED, eventTask);
-        const response = await createEventTask(createableEvent);
+        const response = await createEventTask(1, eventTaskCategory);
         expect(eventTask).toEqual(response);
     });
 });

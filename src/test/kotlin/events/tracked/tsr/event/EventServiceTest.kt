@@ -99,7 +99,7 @@ class EventServiceTest {
     }
 
     @Test
-    fun `getEventById returns an event with display names`() {
+    fun `getEventDTOById returns an event with display names`() {
         every { mockEventRepository.findByIdOrNull(1L) } returns eventWithId
         every {
             mockTsrUserRepository.findByUserId("1234")
@@ -107,7 +107,7 @@ class EventServiceTest {
         every {
             mockTsrUserRepository.findByUserId("6789")
         } returns TsrUser(2L, "6789", "user_2", UserRole.USER)
-        assertEquals(eventDTOWithIdAndDisplayNames, subject.getEventById(1))
+        assertEquals(eventDTOWithIdAndDisplayNames, subject.getEventDTOById(1))
         verifySequence {
             mockEventRepository.findByIdOrNull(1L)
             mockTsrUserRepository.findByUserId("1234")

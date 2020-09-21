@@ -85,6 +85,6 @@ class EventController(
 
     @GetMapping(value = ["/{eventId}"])
     fun getEventById(@PathVariable eventId: Int): EventDTO {
-        return eventService.getEventById(eventId)
+        return eventService.getEventDTOById(eventId)
     }
 }
