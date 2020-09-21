@@ -35,6 +35,8 @@ describe("home page of the application", () => {
             makeEvent({
                 eventId: 1,
                 eventName: "first event",
+                startDate: "2020-08-18T14:15:59Z",
+                endDate: "2020-08-20T01:00:01Z",
                 audit: makeAudit({ createdBy: "1234" }),
             }),
             makeEvent({
@@ -50,6 +52,8 @@ describe("home page of the application", () => {
                 eventId: 3,
                 eventName: "third event",
                 organization,
+                startDate: "2020-08-18T14:15:59Z",
+                endDate: "2020-08-20T01:00:01Z",
                 audit: makeAudit({ createdBy: "0987" }),
             }),
         ];
@@ -77,9 +81,12 @@ describe("home page of the application", () => {
 
     afterEach(td.reset);
 
-    it("lists all users org events", async () => {
+    it("lists all users org events with dates/status", async () => {
         await renderEventsSection({ orgEvents: orgEventList });
 
+        expect(screen.getAllByText("Status:")).toHaveLength(2);
+        expect(screen.getByText("Start Date:8/18/20")).toBeInTheDocument();
+        expect(screen.getByText("End Date:8/19/20")).toBeInTheDocument();
         expect(screen.getByTestId("org-event-2")).toHaveTextContent("second event");
         expect(screen.getByTestId("org-event-3")).toHaveTextContent("third event");
     });
@@ -108,13 +115,22 @@ describe("home page of the application", () => {
         expect(screen.queryByTestId("org-event-more")).toBeNull();
     });
 
-    it("lists events created by logged in user", async () => {
+    it("lists events created by logged in user with dates/status", async () => {
         await renderEventsSection({
             userEvents: userEventList,
         });
 
+        expect(screen.getAllByText("Status:")).toHaveLength(2);
+        expect(screen.getByText("Start Date:8/18/20")).toBeInTheDocument();
+        expect(screen.getByText("End Date:8/19/20")).toBeInTheDocument();
         expect(screen.getByTestId("user-event-1")).toHaveTextContent("first event");
         expect(screen.getByTestId("user-event-2")).toHaveTextContent("second event");
+    });
+
+    it("shows no active events box if theres no org events", async () => {
+        await renderEventsSection({});
+
+        expect(screen.getAllByText("No Active Events")).toHaveLength(2);
     });
 
     it("shows next if more user event pages", async () => {
@@ -141,13 +157,14 @@ describe("home page of the application", () => {
         expect(screen.queryByTestId("user-event-more")).toBeNull();
     });
 
-    it("clicking on an event goes to event details", async () => {
+    it("clicking on view button takes to event details", async () => {
         const history = createMemoryHistory();
         await renderEventsSection({
             userEvents: [makeEvent({ eventId: 1, eventName: "this event" })],
             history,
         });
-        fireEvent.click(screen.getByText("this event"));
+        expect(screen.getByText("View Event")).toBeInTheDocument();
+        fireEvent.click(screen.getByText("View Event"));
         expect(history.location.pathname).toEqual("/event/1");
     });
 

@@ -4,7 +4,8 @@ import "./EventsSection.css";
 import { useHistory } from "react-router-dom";
 import { emptyPage, PageDTO } from "../api";
 import uniqBy from "lodash/uniqBy";
-import { PrimaryButton, SecondaryButton } from "../Buttons/Buttons";
+import { MenuButton, PrimaryButton } from "../Buttons/Buttons";
+import moment, { Moment } from "moment";
 
 export const EventsSection = (): ReactElement => {
     const [userEventPage, setUserEventPage] = useState<PageDTO<TsrEvent>>(emptyPage);
@@ -97,12 +98,12 @@ export const EventsSection = (): ReactElement => {
                 {userEventPage.last || userEventPage.totalResults === 0 ? (
                     <></>
                 ) : (
-                    <PrimaryButton
+                    <MenuButton
                         data-testid={"user-event-more"}
                         onClick={() => loadUserEvents(userEventPage.pageNumber + 1)}
                     >
                         load more
-                    </PrimaryButton>
+                    </MenuButton>
                 )}
             </div>
             <div className={"EventsSection-Events"}>
@@ -133,13 +134,27 @@ interface SingleEventProps {
 
 const SingleEvent = ({ event, className = "", dataTestId }: SingleEventProps): ReactElement => {
     const history = useHistory();
+    const SHORT_DATE_FORMAT = "M/D/YY";
+
+    const shortDateFormat = (date: Moment): string => `${date.local().format(SHORT_DATE_FORMAT)}`;
+
     return (
         <div
             className={`EventsSection-SingleEvent ${className}`}
             data-testid={`${dataTestId}-${event.eventId}`}
-            onClick={() => history.push(`/event/${event.eventId}`)}
         >
             {event.eventName}
+            <MenuButton
+                onClick={() => history.push(`/event/${event.eventId}`)}
+                className={"EventsSection-View-Button"}
+            >
+                View Event
+            </MenuButton>
+            <div className={"EventsSection-SingleEvent-Container"}>
+                <span>Status:</span>
+                <span>Start Date:{shortDateFormat(moment(event.startDate))}</span>
+                <span>End Date:{shortDateFormat(moment(event.endDate))}</span>
+            </div>
         </div>
     );
 };
