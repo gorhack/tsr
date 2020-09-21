@@ -18,11 +18,11 @@ data class Event(
     @Column(columnDefinition = "TIMESTAMP WITH TIME ZONE")
     var endDate: OffsetDateTime = OffsetDateTime.parse("1970-01-01T00:00:01-00:00"),
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = [CascadeType.PERSIST, CascadeType.MERGE])
+    @ManyToOne(fetch = FetchType.LAZY, optional = true)
     @JoinColumn(name = "event_type_id", nullable = true)
     var eventType: EventType? = null,
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false, cascade = [CascadeType.PERSIST, CascadeType.MERGE])
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "organization", nullable = false)
     var organization: Organization = Organization(organizationId = 0L, organizationName = "", organizationDisplayName = "", sortOrder = 0)
 ) : Auditable() {

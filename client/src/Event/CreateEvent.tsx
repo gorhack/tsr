@@ -27,7 +27,7 @@ type FormData = {
     organizationOption: Option[];
     startDate: Date;
     endDate: Date;
-    eventTypeOption?: Option;
+    eventTypeOption?: Option[];
 };
 
 const TODAYS_DATE = new Date();
@@ -36,8 +36,6 @@ const DATE_IN_10_YEARS = new Date(new Date().setFullYear(new Date().getFullYear(
 export const CreateEvent: React.FC = () => {
     const history = useHistory();
     const { eventId } = useParams<RouteParams>();
-    const initialEventType = { value: "", label: "" };
-    const initialOrgName = { value: "", label: "" };
 
     const orgCacheReducer = (state: Organization[] = [], action: OrgCacheReducerAction) => {
         switch (action.type) {
@@ -53,6 +51,7 @@ export const CreateEvent: React.FC = () => {
     };
     const [organizationsCache, organizationCacheDispatch] = useReducer(orgCacheReducer, []);
     const [orgValues, setOrgValues] = useState<Option[]>([]);
+    const [eventTypeValue, setEventTypeValue] = useState<Option[]>([]);
 
     const [eventTypesCache, setEventTypesCache] = useState<EventType[]>([]);
     // TODO fill in empty tsr event
@@ -62,7 +61,7 @@ export const CreateEvent: React.FC = () => {
         FormData
     >({
         defaultValues: {
-            eventTypeOption: initialEventType,
+            eventTypeOption: eventTypeValue,
             organizationOption: orgValues,
         },
     });
@@ -84,6 +83,14 @@ export const CreateEvent: React.FC = () => {
                                 label: event.organization.organizationDisplayName,
                             },
                         ]);
+                        if (event.eventType?.displayName) {
+                            setEventTypeValue([
+                                {
+                                    value: event.eventType?.displayName,
+                                    label: event.eventType?.displayName,
+                                },
+                            ]);
+                        }
                         setValue("startDate", new Date(event.startDate));
                         setValue("endDate", new Date(event.endDate));
                         setValue("eventName", event.eventName);
@@ -107,11 +114,15 @@ export const CreateEvent: React.FC = () => {
     };
 
     const onSubmit: SubmitHandler<FormData> = async (data): Promise<void> => {
-        const { eventName, startDate, endDate, eventTypeOption } = data;
+        const { eventName, startDate, endDate } = data;
         // TODO allow multiple orgs
         const foundOrg = organizationsCache.find(
             (orgName) => orgName.organizationDisplayName === orgValues[0]?.label,
         );
+        const foundEventType = eventTypesCache.find(
+            (eventType) => eventType.displayName === eventTypeValue[0]?.label,
+        );
+
         if (!foundOrg) {
             setError("organizationOption", {
                 message: "must select an organization",
@@ -127,9 +138,7 @@ export const CreateEvent: React.FC = () => {
                 organization: foundOrg,
                 startDate: startDate.toJSON(),
                 endDate: endDate.toJSON(),
-                eventType: eventTypesCache.find(
-                    (eventType) => eventType.displayName === eventTypeOption?.label,
-                ),
+                eventType: foundEventType,
             };
             await updateEvent(tsrEventToUpdate)
                 .then((result) => {
@@ -140,14 +149,11 @@ export const CreateEvent: React.FC = () => {
                 });
         } else {
             const tsrEventToSave: CreatableTsrEvent = {
-                eventId: parseInt(eventId),
                 eventName,
                 organization: foundOrg,
                 startDate: startDate.toJSON(),
                 endDate: endDate.toJSON(),
-                eventType: eventTypesCache.find(
-                    (eventType) => eventType.displayName === eventTypeOption?.label,
-                ),
+                eventType: foundEventType,
             };
             await saveEvent(tsrEventToSave)
                 .then((result) => {
@@ -195,6 +201,7 @@ export const CreateEvent: React.FC = () => {
             })
                 .then((result) => {
                     setEventTypesCache((oldCache) => [...oldCache, result]);
+                    setEventTypeValue([{ value: result.displayName, label: result.displayName }]);
                 })
                 .catch((error) => {
                     console.error(`unable to create event type ${inputVal}: ${error.message}`);
@@ -213,6 +220,7 @@ export const CreateEvent: React.FC = () => {
             {createEventHeader}
             <div className={"CreateEvent-Content"}>
                 <form
+                    data-testid={"create-event-form"}
                     className={"Form-Content"}
                     title="createEventForm"
                     onSubmit={handleSubmit(onSubmit)}
@@ -281,7 +289,7 @@ export const CreateEvent: React.FC = () => {
                     <Controller
                         name="eventTypeOption"
                         control={control}
-                        defaultValue={initialEventType}
+                        defaultValue={eventTypeValue}
                         render={(props): ReactElement => (
                             <>
                                 <label
@@ -300,6 +308,7 @@ export const CreateEvent: React.FC = () => {
                                     getOptionValue={(option) => option.label}
                                     placeholder="Select an Event Type..."
                                     name="eventType"
+                                    value={eventTypeValue}
                                     inputId="eventType"
                                     onChange={(selection: ValueType<Option>, actionType): void => {
                                         if (selection && actionType.action === "create-option") {
@@ -307,6 +316,8 @@ export const CreateEvent: React.FC = () => {
                                                 createAndMapEventType(selection.label);
                                             }
                                         }
+                                        const newValuesOrEmpty = ([selection] || []) as Option[];
+                                        setEventTypeValue(newValuesOrEmpty);
                                         props.onChange(selection);
                                     }}
                                 />

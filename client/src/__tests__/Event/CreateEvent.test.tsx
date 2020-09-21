@@ -1,6 +1,6 @@
 import "mutationobserver-shim";
 import { act, render, RenderResult, screen } from "@testing-library/react";
-import { fireEvent } from "@testing-library/dom";
+import { fireEvent, getByTestId } from "@testing-library/dom";
 import { CreateEvent } from "../../Event/CreateEvent";
 import React from "react";
 import { Route, Router } from "react-router-dom";
@@ -16,13 +16,14 @@ import {
 } from "../TestHelpers";
 import td from "testdouble";
 import * as EventApi from "../../Event/EventApi";
-import { TsrEvent } from "../../Event/EventApi";
+import { CreatableTsrEvent, TsrEvent } from "../../Event/EventApi";
 import * as EventTypeApi from "../../Event/Type/EventTypeApi";
 import { EventType } from "../../Event/Type/EventTypeApi";
 import * as OrganizationApi from "../../Organization/OrganizationApi";
 import { Organization } from "../../Organization/OrganizationApi";
 import selectEvent from "react-select-event";
 import { PageDTO } from "../../api";
+import Creatable from "react-select/creatable";
 
 const START_DATE_PLACEHOLDER_TEXT = "Choose the Start Date...";
 const END_DATE_PLACEHOLDER_TEXT = "Choose the End Date...";
@@ -125,6 +126,11 @@ describe("create an event", () => {
         const setupGetEventByIdPromise = async (
             history: MemoryHistory = createMemoryHistory(),
         ): Promise<RenderResult> => {
+            const eventType1 = makeEventType({
+                eventTypeId: 1,
+                displayName: "test type",
+                sortOrder: 1,
+            });
             const tsrEvent = makeEvent({
                 eventId: 1,
                 eventName: "name",
@@ -135,20 +141,18 @@ describe("create an event", () => {
                 }),
                 startDate: new Date(dateToInput).toJSON(),
                 endDate: new Date(dateToInput).toJSON(),
-                eventType: makeEventType({
-                    eventTypeId: 1,
-                    displayName: "test type",
-                    sortOrder: 1,
-                }),
+                eventType: eventType1,
             });
-            return renderCreateEvent({ history, event: tsrEvent });
+            const eventTypesPromise = Promise.resolve(makePage({ items: [eventType1] }));
+            return renderCreateEvent({ history, event: tsrEvent, eventTypesPromise });
         };
 
         it("when passed an eventId create event pulls all event info and fills in default values", async () => {
-            await setupGetEventByIdPromise();
+            const result = await setupGetEventByIdPromise();
             expect(getInputValue(screen.getByLabelText("event name"))).toEqual("name");
             expect(getInputValue(screen.getByLabelText("start date"))).toContain(dateToInput);
             expect(getInputValue(screen.getByLabelText("end date"))).toContain(dateToInput);
+            expect(result.container).toHaveTextContent(/.*second.*test type.*/);
         });
 
         it("cancel button when editing goes back to event details page and correct header", async () => {
