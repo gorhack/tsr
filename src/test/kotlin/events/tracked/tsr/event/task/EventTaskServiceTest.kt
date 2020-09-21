@@ -1,13 +1,9 @@
 package events.tracked.tsr.event.task
 
-import events.tracked.tsr.NewTsrEventTaskSaveEvent
+import events.tracked.tsr.*
 import events.tracked.tsr.event.Event
 import events.tracked.tsr.event.EventService
-import events.tracked.tsr.makeEventWithId
-import events.tracked.tsr.makeOidcUser
-import events.tracked.tsr.organization.Organization
 import events.tracked.tsr.user.TsrUser
-import events.tracked.tsr.user.TsrUserDTO
 import events.tracked.tsr.user.TsrUserService
 import events.tracked.tsr.user.UserRole
 import io.mockk.*
@@ -15,8 +11,6 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.springframework.context.ApplicationEventPublisher
-import org.springframework.http.HttpStatus
-import org.springframework.http.ResponseEntity
 import java.time.OffsetDateTime
 
 internal class EventTaskServiceTest {
@@ -29,6 +23,8 @@ internal class EventTaskServiceTest {
     private var capturedTsrEventTaskSaveEvent = slot<NewTsrEventTaskSaveEvent>()
 
     private lateinit var eventWithId: Event
+    private lateinit var eventTask: EventTask
+    private lateinit var eventTask2: EventTask
 
     @Before
     fun setup() {
@@ -43,6 +39,8 @@ internal class EventTaskServiceTest {
         } just Runs
 
         eventWithId = makeEventWithId()
+        eventTask = makeEventTask()
+        eventTask2 = makeEventTask2()
     }
 
     @Test
@@ -52,17 +50,8 @@ internal class EventTaskServiceTest {
         val oidcUser = makeOidcUser("1234", "user")
         val tsrUser = TsrUser(1L, "1234", "user", UserRole.USER, mutableListOf())
 
-        val eventTaskCategory = EventTaskCategory(eventTaskCategoryId = 1L, "CLASS", "class")
+        val eventTaskCategory = EventTaskCategory(eventTaskCategoryId = 10L, eventTaskName = "CLASS_ONE", eventTaskDisplayName = "Class I")
         val eventTaskStatus = EventTaskStatus(statusId = 1L, "CREATED", "created", 'R')
-
-        val eventTaskToSave = EventTask(
-            eventTaskCategoryId = eventTaskCategory,
-            eventId = eventWithId,
-            suspenseDate = suspenseDate,
-            approver = tsrUser,
-            resourcer = tsrUser,
-            status = eventTaskStatus
-        )
 
         val savedEventTask = EventTask(
             eventTaskId = 1L,
@@ -85,15 +74,31 @@ internal class EventTaskServiceTest {
             mockEventService.getEventById(1)
         } returns eventWithId
         every {
-            mockEventTaskRepository.saveAndFlush(eventTaskToSave)
+            mockEventTaskRepository.saveAndFlush(eventTask)
         } returns savedEventTask
 
         assertEquals(savedEventTask, subject.createEventTask(oidcUser, 1, eventTaskCategory))
         verifySequence {
             mockTsrUserService.assertUserExistsAndReturnUser(oidcUser)
             mockEventService.getEventById(1)
-            mockEventTaskRepository.saveAndFlush(eventTaskToSave)
+            mockEventTaskRepository.saveAndFlush(eventTask)
         }
         assertEquals(savedEventTask, capturedTsrEventTaskSaveEvent.captured.eventTask)
+    }
+
+    @Test
+    fun `getEventTasks gets a list of event tasks`() {
+        val eventTasks = listOf(eventTask, eventTask2)
+        every {
+            mockEventService.getEventById(1)
+        } returns eventWithId
+        every {
+            mockEventTaskRepository.findAllByEventId(eventWithId)
+        } returns eventTasks
+        assertEquals(eventTasks, subject.getEventTasks(1))
+        verifySequence {
+            mockEventService.getEventById(1)
+            mockEventTaskRepository.findAllByEventId(eventWithId)
+        }
     }
 }

@@ -1,8 +1,16 @@
 package events.tracked.tsr
 
 import events.tracked.tsr.event.*
+import events.tracked.tsr.event.task.EventTask
+import events.tracked.tsr.event.task.EventTaskCategory
+import events.tracked.tsr.event.task.EventTaskDTO
+import events.tracked.tsr.event.task.EventTaskStatus
 import events.tracked.tsr.event.type.EventType
 import events.tracked.tsr.organization.Organization
+import events.tracked.tsr.user.TsrUser
+import events.tracked.tsr.user.TsrUserDTO
+import events.tracked.tsr.user.UserRole
+import events.tracked.tsr.user.UserSettingsDTO
 import io.mockk.every
 import io.mockk.mockk
 import org.springframework.security.oauth2.core.oidc.IdTokenClaimNames
@@ -127,5 +135,38 @@ fun makeEventDTOWithId2(): EventDTO {
             createdBy = "1234",
             createdDate = OffsetDateTime.parse("1970-01-02T00:00:01-08:00")
         )
+    )
+}
+
+fun makeEventTask(): EventTask {
+    return EventTask(
+        eventId = makeEventWithId(),
+        eventTaskCategoryId = EventTaskCategory(eventTaskCategoryId = 10L, eventTaskName = "CLASS_ONE", eventTaskDisplayName = "Class I"),
+        suspenseDate = OffsetDateTime.parse("1970-01-01T00:00:01-08:00"),
+        resourcer = TsrUser(1L, "1234", "user", UserRole.USER),
+        approver = TsrUser(1L, "1234", "user", UserRole.USER),
+        status = EventTaskStatus(1L, "CREATED", "created", 'R')
+    )
+}
+
+fun makeEventTask2(): EventTask {
+    return EventTask(
+        eventId = makeEventWithId(),
+        eventTaskCategoryId = EventTaskCategory(eventTaskCategoryId = 4L, eventTaskName = "CLASS_FOUR", eventTaskDisplayName = "Class IV"),
+        suspenseDate = OffsetDateTime.parse("1970-01-01T00:00:01-08:00"),
+        resourcer = TsrUser(1L, "1234", "user", UserRole.USER),
+        approver = TsrUser(1L, "1234", "user", UserRole.USER),
+        status = EventTaskStatus(1L, "CREATED", "created", 'R')
+    )
+}
+
+fun makeEventTaskDTO(): EventTaskDTO {
+    return EventTaskDTO(
+        eventId = 1L,
+        eventTaskCategory = EventTaskCategory(eventTaskCategoryId = 10L, eventTaskName = "CLASS_ONE", eventTaskDisplayName = "Class I"),
+        suspenseDate = OffsetDateTime.parse("1970-01-01T00:00:01-08:00"),
+        resourcer = TsrUserDTO(1L, "1234", "user", UserRole.USER, UserSettingsDTO()),
+        approver = TsrUserDTO(1L, "1234", "user", UserRole.USER, UserSettingsDTO()),
+        status = EventTaskStatus(1L, "CREATED", "created", 'R')
     )
 }

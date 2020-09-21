@@ -33,4 +33,9 @@ class EventTaskService(
         return eventTask
     }
 
+    fun getEventTasks(eventId: Int): List<EventTask> {
+        val event = eventService.getEventById(eventId)
+        return eventTaskRepository.findAllByEventId(event)
+    }
+
 }

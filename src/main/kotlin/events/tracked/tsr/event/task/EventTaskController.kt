@@ -21,4 +21,10 @@ class EventTaskController(
         return ResponseEntity(eventTask.toEventTaskDTO(), HttpStatus.CREATED)
     }
 
+    @GetMapping(value = [""])
+    fun getEventTasks(@PathVariable eventId: Int): ResponseEntity<List<EventTaskDTO>> {
+        val eventTasks = eventTaskService.getEventTasks(eventId)
+        return ResponseEntity(eventTasks.map { eventTask -> eventTask.toEventTaskDTO() }, HttpStatus.OK)
+    }
+
 }
