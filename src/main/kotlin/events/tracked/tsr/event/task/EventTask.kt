@@ -17,6 +17,26 @@ data class EventTaskCategory(
     val eventTaskDisplayName: String = ""
 )
 
+enum class EventTaskStatusCode {
+    R,
+    Y,
+    G
+}
+
+@Entity
+@Table(name = "event_task_status")
+data class EventTaskStatus(
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    val statusId: Long = 0,
+    val statusName: String = "",
+    val statusDisplayName: String = "",
+    @Column(columnDefinition = "CHAR(1)")
+    @Enumerated(EnumType.STRING)
+    val statusShortName: EventTaskStatusCode = EventTaskStatusCode.R,
+    val sortOrder: Int = 0
+)
+
 @Entity
 @Table(name = "event_task")
 data class EventTask(
@@ -39,7 +59,7 @@ data class EventTask(
     var resourcer: TsrUser,
     @ManyToOne(fetch = FetchType.LAZY, cascade = [CascadeType.MERGE])
     @JoinColumn(name = "status_id")
-    var status: EventTaskStatus = EventTaskStatus(statusId = 1L, "CREATED", "created", 'R')
+    var status: EventTaskStatus = EventTaskStatus(statusId = 1L, "CREATED", "created", EventTaskStatusCode.R, 2)
 ) : Auditable() {
     constructor(eventTaskId: Long, eventTaskCategoryId: EventTaskCategory, eventId: Event, suspenseDate: OffsetDateTime, approver: TsrUser, resourcer: TsrUser, status: EventTaskStatus, lastModifiedDate: OffsetDateTime, lastModifiedBy: String, createdDate: OffsetDateTime, createdBy: String) :
         this(eventTaskId = eventTaskId, eventTaskCategoryId = eventTaskCategoryId, eventId = eventId, suspenseDate = suspenseDate, approver = approver, resourcer = resourcer, status = status) {

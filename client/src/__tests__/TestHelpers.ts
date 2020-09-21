@@ -7,6 +7,13 @@ import { Organization } from "../Organization/OrganizationApi";
 import td from "testdouble";
 import { SocketService, SocketStatus } from "../SocketService";
 import { Client, messageCallbackType, StompHeaders, StompSubscription } from "@stomp/stompjs";
+import {
+    EventTask,
+    EventTaskCategory,
+    EventTaskStatus,
+    StatusCode,
+} from "../Event/Task/EventTaskApi";
+import { TsrUser } from "../Users/UserApi";
 
 // Define a NockBody any to avoid linter warnings. Nock can take objects of any type.
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -108,6 +115,55 @@ export const makeEvent = (partial: Partial<TsrEvent>): TsrEvent => {
         organization: makeOrganization({ organizationId: 1, sortOrder: 1 }),
         eventType: partial.eventType || undefined,
         audit: partial.audit || makeAudit({}),
+    };
+};
+
+export const makeEventTaskStatus = (partial: Partial<EventTaskStatus>): EventTaskStatus => {
+    return {
+        statusId: partial.statusId || 0,
+        statusName: partial.statusName || "",
+        statusDisplayName: partial.statusDisplayName || "",
+        statusShortName: partial.statusShortName || StatusCode.R,
+        sortOrder: partial.sortOrder || 0,
+    };
+};
+
+export const makeTsrUser = (partial: Partial<TsrUser>): TsrUser => {
+    return {
+        userId: partial.userId || "",
+        username: partial.username || "",
+        role: partial.role || "USER",
+        settings: partial.settings || {
+            organizations: [],
+        },
+    };
+};
+
+export const makeEventTaskCategory = (partial: Partial<EventTaskCategory>): EventTaskCategory => {
+    if (!partial.eventTaskId) {
+        throw Error("event task category must have event task id");
+    }
+    return {
+        eventTaskId: partial.eventTaskId,
+        eventTaskDisplayName: partial.eventTaskDisplayName || "",
+        eventTaskName: partial.eventTaskName || "",
+    };
+};
+
+export const makeEventTask = (partial: Partial<EventTask>): EventTask => {
+    if (!partial.eventId) {
+        throw Error("event task must have an event id");
+    }
+    if (!partial.eventTaskCategory) {
+        throw Error("event task must have event task category");
+    }
+    return {
+        eventId: partial.eventId,
+        eventTaskCategory: partial.eventTaskCategory,
+        suspenseDate: partial.suspenseDate || "",
+        status: partial.status || makeEventTaskStatus({}),
+        approver: partial.approver || makeTsrUser({}),
+        resourcer: partial.resourcer || makeTsrUser({}),
     };
 };
 

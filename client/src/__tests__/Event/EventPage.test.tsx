@@ -31,12 +31,15 @@ describe("displays event details", () => {
     let mockUserTimeZone: typeof Api.userTimeZone;
     let mockCurrentTime: typeof Api.currentTimeUtc;
     let mockGetEventTaskCategories: typeof EventTaskApi.getEventTaskCategoriesContains;
+    let mockGetEventTasks: typeof EventTaskApi.getEventTasks;
 
     beforeEach(() => {
         mockGetEventById = td.replace(EventApi, "getEventById");
         mockUserTimeZone = td.replace(Api, "userTimeZone");
         mockCurrentTime = td.replace(Api, "currentTimeUtc");
         mockGetEventTaskCategories = td.replace(EventTaskApi, "getEventTaskCategoriesContains");
+        mockGetEventTasks = td.replace(EventTaskApi, "getEventTasks");
+        td.when(mockGetEventTasks(td.matchers.anything())).thenResolve([]);
     });
     afterEach(td.reset);
 

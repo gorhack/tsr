@@ -51,7 +51,7 @@ internal class EventTaskServiceTest {
         val tsrUser = TsrUser(1L, "1234", "user", UserRole.USER, mutableListOf())
 
         val eventTaskCategory = EventTaskCategory(eventTaskCategoryId = 10L, eventTaskName = "CLASS_ONE", eventTaskDisplayName = "Class I")
-        val eventTaskStatus = EventTaskStatus(statusId = 1L, "CREATED", "created", 'R')
+        val eventTaskStatus = EventTaskStatus(statusId = 1L, "CREATED", "created", EventTaskStatusCode.R, 2)
 
         val savedEventTask = EventTask(
             eventTaskId = 1L,
@@ -76,7 +76,6 @@ internal class EventTaskServiceTest {
         every {
             mockEventTaskRepository.saveAndFlush(eventTask)
         } returns savedEventTask
-
         assertEquals(savedEventTask, subject.createEventTask(oidcUser, 1, eventTaskCategory))
         verifySequence {
             mockTsrUserService.assertUserExistsAndReturnUser(oidcUser)

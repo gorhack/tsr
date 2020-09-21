@@ -19,6 +19,18 @@ export const createEventTask = async (
         });
 };
 
+export const getEventTasks = async (eventId: number): Promise<EventTask[]> => {
+    const uri = `${baseUri}/${eventId}/task`;
+    return axios
+        .get(uri)
+        .then((response: AxiosResponse<EventTask[]>) => {
+            return response.data;
+        })
+        .catch((error) => {
+            throw new Error(error.message);
+        });
+};
+
 export const getEventTaskCategoriesContains = async (
     searchTerm: string,
 ): Promise<PageDTO<EventTaskCategory>> => {
@@ -50,6 +62,7 @@ export interface EventTaskStatus {
     statusName: string;
     statusDisplayName: string;
     statusShortName: StatusCode;
+    sortOrder: number;
 }
 
 export interface EventTask {

@@ -1,4 +1,4 @@
-import React, { FormEvent, ReactElement, useState } from "react";
+import React, { FormEvent, ReactElement, useEffect, useState } from "react";
 import AsyncCreatable from "react-select/async-creatable";
 import { PrimaryButton } from "../../Buttons/Buttons";
 import { selectStyles } from "../../Styles";
@@ -8,10 +8,12 @@ import {
     EventTask,
     EventTaskCategory,
     getEventTaskCategoriesContains,
+    getEventTasks,
 } from "./EventTaskApi";
 import "../EventPage.css";
 import { TsrEvent } from "../EventApi";
 import { ValueType } from "react-select";
+import sortBy from "lodash/sortBy";
 
 interface EventTaskSectionProps {
     tsrEvent: TsrEvent;
@@ -21,6 +23,23 @@ export const EventTaskSection = ({ tsrEvent }: EventTaskSectionProps): ReactElem
     const [selectedTaskOption, setSelectedTaskOption] = useState<Option | undefined>(undefined);
     const [eventTaskCache, setEventTaskCache] = useState<EventTaskCategory[]>([]);
     const [eventTasks, setEventTasks] = useState<EventTask[]>([]);
+
+    useEffect(() => {
+        (async () => {
+            await getEventTasks(tsrEvent.eventId)
+                .then((response) => {
+                    const orderEventTasks = sortBy(
+                        response,
+                        (eventTask) => eventTask.status.sortOrder,
+                    );
+                    setEventTasks(orderEventTasks);
+                })
+                .catch((error) => {
+                    console.error(`could not get event tasks ${error.message}`);
+                });
+        })();
+    }, [tsrEvent.eventId, setEventTasks]);
+
     const loadEventCategories = async (searchTerm: string): Promise<Option[]> => {
         return getEventTaskCategoriesContains(searchTerm).then((result) => {
             setEventTaskCache((previousCache) => [...previousCache, ...result.items]);

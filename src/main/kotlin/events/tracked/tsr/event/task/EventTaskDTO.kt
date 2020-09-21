@@ -9,5 +9,5 @@ data class EventTaskDTO(
     val suspenseDate: OffsetDateTime = OffsetDateTime.parse("1970-01-01T00:00:01-08:00"),
     val approver: TsrUserDTO = TsrUserDTO(),
     val resourcer: TsrUserDTO = TsrUserDTO(),
-    val status: EventTaskStatus = EventTaskStatus()
+    val status: EventTaskStatus = EventTaskStatus(statusId = 1L, "CREATED", "created", EventTaskStatusCode.R, 2)
 )

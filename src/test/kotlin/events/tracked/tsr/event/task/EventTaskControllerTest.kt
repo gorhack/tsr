@@ -65,7 +65,7 @@ internal class EventTaskControllerTest {
                 suspenseDate = OffsetDateTime.parse("1970-01-01T00:00:01-08:00"),
                 resourcer = TsrUserDTO(1L, "1234", "user", UserRole.USER, UserSettingsDTO()),
                 approver = TsrUserDTO(1L, "1234", "user", UserRole.USER, UserSettingsDTO()),
-                status = EventTaskStatus(1L, "CREATED", "created", 'R'),
+                status = EventTaskStatus(1L, "CREATED", "created", EventTaskStatusCode.R, 2),
             )
         )
         every {

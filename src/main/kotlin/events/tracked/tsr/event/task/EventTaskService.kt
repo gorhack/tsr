@@ -1,13 +1,9 @@
 package events.tracked.tsr.event.task
 
 import events.tracked.tsr.NewTsrEventTaskSaveEvent
-import events.tracked.tsr.event.Event
 import events.tracked.tsr.event.EventService
-import events.tracked.tsr.user.TsrUser
 import events.tracked.tsr.user.TsrUserService
 import org.springframework.context.ApplicationEventPublisher
-import org.springframework.http.HttpStatus
-import org.springframework.http.ResponseEntity
 import org.springframework.security.oauth2.core.oidc.user.OidcUser
 import org.springframework.stereotype.Service
 
