@@ -1,6 +1,6 @@
 import "mutationobserver-shim";
 import { act, render, RenderResult, screen } from "@testing-library/react";
-import { fireEvent, getByTestId } from "@testing-library/dom";
+import { fireEvent } from "@testing-library/dom";
 import { CreateEvent } from "../../Event/CreateEvent";
 import React from "react";
 import { Route, Router } from "react-router-dom";
@@ -16,14 +16,13 @@ import {
 } from "../TestHelpers";
 import td from "testdouble";
 import * as EventApi from "../../Event/EventApi";
-import { CreatableTsrEvent, TsrEvent } from "../../Event/EventApi";
+import { TsrEvent } from "../../Event/EventApi";
 import * as EventTypeApi from "../../Event/Type/EventTypeApi";
 import { EventType } from "../../Event/Type/EventTypeApi";
 import * as OrganizationApi from "../../Organization/OrganizationApi";
 import { Organization } from "../../Organization/OrganizationApi";
 import selectEvent from "react-select-event";
 import { PageDTO } from "../../api";
-import Creatable from "react-select/creatable";
 
 const START_DATE_PLACEHOLDER_TEXT = "Choose the Start Date...";
 const END_DATE_PLACEHOLDER_TEXT = "Choose the End Date...";

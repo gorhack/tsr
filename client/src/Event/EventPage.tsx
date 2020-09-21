@@ -60,7 +60,6 @@ export const EventPage: React.FC = () => {
     return (
         <>
             <LinkButton onClick={() => history.push("/")}>{"< back to events"}</LinkButton>
-            <LinkButton onClick={setEditEventFunc}>{"edit event"}</LinkButton>
             <div className="space-3" />
             <div className={"EventPage-Header flex-row"}>
                 <div>
@@ -69,9 +68,6 @@ export const EventPage: React.FC = () => {
                 </div>
                 <PrimaryButton onClick={setEditEventFunc}>{"edit event"}</PrimaryButton>
             </div>
-            <EventDetails tsrEvent={tsrEvent} />
-            <h1 className="EventPage-Header">{headerEventName()}</h1>
-            <h2 className="EventPage-Header">{headerDates()}</h2>
             <div className="Event-Details-Container">
                 <EventDetails tsrEvent={tsrEvent} />
                 <div className="space-3" />

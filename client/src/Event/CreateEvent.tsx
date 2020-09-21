@@ -27,7 +27,7 @@ type FormData = {
     organizationOption: Option[];
     startDate: Date;
     endDate: Date;
-    eventTypeOption?: Option[];
+    eventTypeOption?: Option;
 };
 
 const TODAYS_DATE = new Date();
@@ -51,7 +51,7 @@ export const CreateEvent: React.FC = () => {
     };
     const [organizationsCache, organizationCacheDispatch] = useReducer(orgCacheReducer, []);
     const [orgValues, setOrgValues] = useState<Option[]>([]);
-    const [eventTypeValue, setEventTypeValue] = useState<Option[]>([]);
+    const [eventTypeValue, setEventTypeValue] = useState<Option | undefined>(undefined);
 
     const [eventTypesCache, setEventTypesCache] = useState<EventType[]>([]);
     // TODO fill in empty tsr event
@@ -61,7 +61,7 @@ export const CreateEvent: React.FC = () => {
         FormData
     >({
         defaultValues: {
-            eventTypeOption: eventTypeValue,
+            eventTypeOption: { value: "", label: "" },
             organizationOption: orgValues,
         },
     });
@@ -84,12 +84,10 @@ export const CreateEvent: React.FC = () => {
                             },
                         ]);
                         if (event.eventType?.displayName) {
-                            setEventTypeValue([
-                                {
-                                    value: event.eventType?.displayName,
-                                    label: event.eventType?.displayName,
-                                },
-                            ]);
+                            setEventTypeValue({
+                                value: event.eventType?.displayName,
+                                label: event.eventType?.displayName,
+                            });
                         }
                         setValue("startDate", new Date(event.startDate));
                         setValue("endDate", new Date(event.endDate));
@@ -120,7 +118,7 @@ export const CreateEvent: React.FC = () => {
             (orgName) => orgName.organizationDisplayName === orgValues[0]?.label,
         );
         const foundEventType = eventTypesCache.find(
-            (eventType) => eventType.displayName === eventTypeValue[0]?.label,
+            (eventType) => eventType.displayName === eventTypeValue?.label,
         );
 
         if (!foundOrg) {
@@ -201,7 +199,7 @@ export const CreateEvent: React.FC = () => {
             })
                 .then((result) => {
                     setEventTypesCache((oldCache) => [...oldCache, result]);
-                    setEventTypeValue([{ value: result.displayName, label: result.displayName }]);
+                    setEventTypeValue({ value: result.displayName, label: result.displayName });
                 })
                 .catch((error) => {
                     console.error(`unable to create event type ${inputVal}: ${error.message}`);
@@ -303,6 +301,7 @@ export const CreateEvent: React.FC = () => {
                                 <AsyncCreatable
                                     styles={selectStyles}
                                     isClearable
+                                    defaultValue={eventTypeValue}
                                     defaultOptions
                                     loadOptions={loadEventTypeSearchTerm}
                                     getOptionValue={(option) => option.label}
@@ -316,7 +315,7 @@ export const CreateEvent: React.FC = () => {
                                                 createAndMapEventType(selection.label);
                                             }
                                         }
-                                        const newValuesOrEmpty = ([selection] || []) as Option[];
+                                        const newValuesOrEmpty = (selection || undefined) as Option;
                                         setEventTypeValue(newValuesOrEmpty);
                                         props.onChange(selection);
                                     }}
