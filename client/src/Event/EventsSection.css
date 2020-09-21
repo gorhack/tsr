@@ -1,5 +1,4 @@
 .EventsSection-Events {
-    border: 2px solid var(--action-color);
     border-radius: .5rem;
     min-width: 300px;
     max-width: 47.5%;
@@ -19,4 +18,15 @@
     display: flex;
     justify-content: space-around;
     flex-wrap: wrap;
+}
+
+.EventsSection-No-Events {
+    height: 100px;
+    padding-top: 45px;
+    opacity: 40%;
+    border-radius: .5rem;
+    background-color: var(--action-color);
+    text-align: center;
+    color: black;
+    font-size: 145%;
 }

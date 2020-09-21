@@ -10,6 +10,7 @@ import {
 import { OrgSelect } from "../Organization/OrgSelect";
 import { PrimaryButton, SecondaryButton } from "../Buttons/Buttons";
 import "../Form.css";
+import "./UserSettings.css";
 import { LabeledInput } from "../Inputs/LabeledInput";
 import sortedUniqBy from "lodash/sortedUniqBy";
 

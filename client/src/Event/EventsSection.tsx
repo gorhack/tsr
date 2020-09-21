@@ -4,6 +4,7 @@ import "./EventsSection.css";
 import { useHistory } from "react-router-dom";
 import { emptyPage, PageDTO } from "../api";
 import uniqBy from "lodash/uniqBy";
+import { PrimaryButton, SecondaryButton } from "../Buttons/Buttons";
 
 export const EventsSection = (): ReactElement => {
     const [userEventPage, setUserEventPage] = useState<PageDTO<TsrEvent>>(emptyPage);
@@ -82,36 +83,42 @@ export const EventsSection = (): ReactElement => {
         })();
     };
 
+    const noEvents = () => {
+        return <div className={"EventsSection-No-Events"}>No Active Events</div>;
+    };
+
     return (
         <div className={"EventsSection-Content"}>
             <div className={"EventsSection-Events"}>
                 <h2>My Active Events</h2>
                 <div className="space-2" />
                 {showMyEvents()}
-                {userEventPage.last ? (
+                {userEventPage.totalResults === 0 ? noEvents() : <></>}
+                {userEventPage.last || userEventPage.totalResults === 0 ? (
                     <></>
                 ) : (
-                    <button
+                    <PrimaryButton
                         data-testid={"user-event-more"}
                         onClick={() => loadUserEvents(userEventPage.pageNumber + 1)}
                     >
                         load more
-                    </button>
+                    </PrimaryButton>
                 )}
             </div>
             <div className={"EventsSection-Events"}>
                 <h2>{"My Organization's Active Events"}</h2>
                 <div className="space-2" />
                 {showOrgEvents()}
-                {orgEventPage.last ? (
+                {orgEventPage.totalResults === 0 ? noEvents() : <></>}
+                {orgEventPage.last || orgEventPage.totalResults === 0 ? (
                     <></>
                 ) : (
-                    <button
+                    <PrimaryButton
                         data-testid={"org-event-more"}
                         onClick={() => loadOrgEvents(orgEventPage.pageNumber + 1)}
                     >
                         load more
-                    </button>
+                    </PrimaryButton>
                 )}
             </div>
         </div>
