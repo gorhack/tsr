@@ -9,8 +9,12 @@ import { makeAudit, makeEvent, makeOrganization } from "../TestHelpers";
 import { Route, Router } from "react-router-dom";
 import { PageDTO } from "../../api";
 import { Organization } from "../../Organization/OrganizationApi";
+import * as Api from "../../api";
+import moment from "moment";
 
 describe("home page of the application", () => {
+    let mockUserTimeZone: typeof Api.userTimeZone;
+    let mockCurrentTime: typeof Api.currentTimeUtc;
     let mockGetActiveEventsByOrganizationIds: typeof EventApi.getActiveEventsByOrganizationIds;
     let mockGetActiveEventsByUserId: typeof EventApi.getActiveEventsByUserId;
     let userEventList: TsrEvent[];
@@ -21,6 +25,8 @@ describe("home page of the application", () => {
     let orgPage1: PageDTO<TsrEvent>;
     let orgPage2: PageDTO<TsrEvent>;
     beforeEach(() => {
+        mockUserTimeZone = td.replace(Api, "userTimeZone");
+        mockCurrentTime = td.replace(Api, "currentTimeUtc");
         mockGetActiveEventsByOrganizationIds = td.replace(
             EventApi,
             "getActiveEventsByOrganizationIds",
@@ -84,9 +90,8 @@ describe("home page of the application", () => {
     it("lists all users org events with dates/status", async () => {
         await renderEventsSection({ orgEvents: orgEventList });
 
-        expect(screen.getAllByText("Status:")).toHaveLength(2);
-        expect(screen.getByText("Start Date:8/18/20")).toBeInTheDocument();
-        expect(screen.getByText("End Date:8/19/20")).toBeInTheDocument();
+        expect(screen.getByText(/Start Date:8\/(19|18)\/20/)).toBeInTheDocument();
+        expect(screen.getByText(/End Date:8\/(19|20)\/20/)).toBeInTheDocument();
         expect(screen.getByTestId("org-event-2")).toHaveTextContent("second event");
         expect(screen.getByTestId("org-event-3")).toHaveTextContent("third event");
     });
@@ -120,9 +125,8 @@ describe("home page of the application", () => {
             userEvents: userEventList,
         });
 
-        expect(screen.getAllByText("Status:")).toHaveLength(2);
-        expect(screen.getByText("Start Date:8/18/20")).toBeInTheDocument();
-        expect(screen.getByText("End Date:8/19/20")).toBeInTheDocument();
+        expect(screen.getByText(/Start Date:8\/(19|18)\/20/)).toBeInTheDocument();
+        expect(screen.getByText(/End Date:8\/(19|20)\/20/)).toBeInTheDocument();
         expect(screen.getByTestId("user-event-1")).toHaveTextContent("first event");
         expect(screen.getByTestId("user-event-2")).toHaveTextContent("second event");
     });
@@ -174,9 +178,11 @@ describe("home page of the application", () => {
         history?: MemoryHistory;
         userPage?: PageDTO<TsrEvent>;
         orgPage?: PageDTO<TsrEvent>;
+        currentTime?: string;
     }
 
     const renderEventsSection = async ({
+        currentTime = "2020-07-20T10:00:00",
         orgEvents = [],
         userEvents = [],
         history = createMemoryHistory(),
@@ -197,6 +203,8 @@ describe("home page of the application", () => {
     }: RenderEventsSectionProps): Promise<RenderResult> => {
         const userEventsPromise = Promise.resolve(userPage);
         const orgEventsPromise = Promise.resolve(orgPage);
+        td.when(mockUserTimeZone()).thenReturn("TIMEZONE/timezone");
+        td.when(mockCurrentTime()).thenReturn(moment(currentTime));
         td.when(mockGetActiveEventsByOrganizationIds()).thenDo(() =>
             Promise.resolve(orgEventsPromise),
         );

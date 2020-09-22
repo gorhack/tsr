@@ -151,7 +151,6 @@ const SingleEvent = ({ event, className = "", dataTestId }: SingleEventProps): R
                 View Event
             </MenuButton>
             <div className={"EventsSection-SingleEvent-Container"}>
-                <span>Status:</span>
                 <span>Start Date:{shortDateFormat(moment(event.startDate))}</span>
                 <span>End Date:{shortDateFormat(moment(event.endDate))}</span>
             </div>

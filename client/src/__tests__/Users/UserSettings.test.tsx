@@ -17,6 +17,8 @@ import {
 import { PageDTO } from "../../api";
 import selectEvent from "react-select-event";
 import { fireEvent } from "@testing-library/dom";
+import { createMemoryHistory, MemoryHistory } from "history";
+import { Route, Router } from "react-router";
 
 describe("User settings", () => {
     let mockGetUserInfo: typeof UserApi.getUserInfo;
@@ -79,6 +81,7 @@ describe("User settings", () => {
 
     it("submit form with select org, find org, and save orgs", async () => {
         const userPromise = Promise.resolve(userWithoutSettings);
+        const history = createMemoryHistory();
         const originalOrganizationPromise = Promise.resolve(
             makePage({
                 items: [
@@ -98,6 +101,7 @@ describe("User settings", () => {
         const result = await renderUserSettings({
             userPromise,
             organizationPromise: originalOrganizationPromise,
+            history,
         });
         await selectEvent.select(screen.getByLabelText("organizations"), "org 2");
         td.when(mockGetOrganizationContains("fou")).thenResolve(
@@ -147,17 +151,18 @@ describe("User settings", () => {
             },
         });
         await submitSettingsForm();
-        expect(screen.getByText("updatedUser settings")).toBeInTheDocument();
+        expect(history.location.pathname).toEqual("/");
     });
 
     it("submits the form with user settings", async () => {
+        const history = createMemoryHistory();
         const userPromise = Promise.resolve(userWithoutSettings);
         const organizationPromise = Promise.resolve(
             makePage({
                 items: [org1, org2],
             }),
         ) as Promise<PageDTO<Organization>>;
-        const result = await renderUserSettings({ userPromise, organizationPromise });
+        const result = await renderUserSettings({ userPromise, organizationPromise, history });
         await selectEvent.select(screen.getByLabelText("organizations"), ["org 1", "org 2"]);
         fillInInputValueInForm(result, "1231231234", "phone number");
         fillInInputValueInForm(result, "test@example.com", "email address");
@@ -178,31 +183,31 @@ describe("User settings", () => {
             },
         });
         await submitSettingsForm();
-        expect(screen.getByText("updatedUser settings")).toBeInTheDocument();
+        expect(history.location.pathname).toEqual("/");
+    });
+
+    it("shows text to go back to events", async () => {
+        const history = createMemoryHistory();
+        const userPromise = Promise.resolve(userWithSettings);
+        await renderUserSettings({ userPromise, history });
+        expect(screen.getByRole("button", { name: "< back to events" })).toBeInTheDocument();
+        fireEvent.click(screen.getByText("< back to events"));
+        expect(history.location.pathname).toEqual("/");
     });
 
     it("keeps orgs if not changed", async () => {
+        const history = createMemoryHistory();
         const userPromise = Promise.resolve(userWithSettings);
-        const result = await renderUserSettings({ userPromise });
+        const result = await renderUserSettings({ userPromise, history });
         fillInInputValueInForm(result, "0980980987", "phone number");
-        td.when(
+        await submitSettingsForm();
+        td.verify(
             mockSetUserSettings({
                 organizations: [org2, org1],
                 phoneNumber: "0980980987",
                 emailAddress: "test@example.com",
             }),
-        ).thenResolve({
-            userId: "1234",
-            username: "updatedUser",
-            role: "USER",
-            settings: {
-                organizations: [org2, org1],
-                phoneNumber: "0980980987",
-                emailAddress: "test@example.com",
-            },
-        });
-        await submitSettingsForm();
-        expect(screen.getByText("updatedUser settings")).toBeInTheDocument();
+        );
     });
 
     it("canceling resets settings to user values", async () => {
@@ -247,17 +252,27 @@ describe("User settings", () => {
     });
 
     interface RenderUserSettingsProps {
+        history?: MemoryHistory;
         userPromise: Promise<TsrUser>;
         organizationPromise?: Promise<PageDTO<Organization>>;
     }
 
     const renderUserSettings = async ({
+        history = createMemoryHistory(),
         userPromise,
         organizationPromise = Promise.resolve(makePage() as PageDTO<Organization>),
     }: RenderUserSettingsProps): Promise<RenderResult> => {
+        history.push("/settings");
+
         td.when(mockGetUserInfo()).thenDo(() => Promise.resolve(userPromise));
         td.when(mockGetOrganizationContains("")).thenDo(() => Promise.resolve(organizationPromise));
-        const result = render(<UserSettings />);
+        const result = render(
+            <Router history={history}>
+                <Route path={"/settings"}>
+                    <UserSettings />
+                </Route>
+            </Router>,
+        );
 
         await act(async () => {
             await userPromise;

@@ -8,11 +8,12 @@ import {
     OrgCacheReducerAction,
 } from "../Organization/OrganizationApi";
 import { OrgSelect } from "../Organization/OrgSelect";
-import { PrimaryButton, SecondaryButton } from "../Buttons/Buttons";
+import { LinkButton, PrimaryButton, SecondaryButton } from "../Buttons/Buttons";
 import "../Form.css";
 import "./UserSettings.css";
 import { LabeledInput } from "../Inputs/LabeledInput";
 import sortedUniqBy from "lodash/sortedUniqBy";
+import { useHistory } from "react-router-dom";
 
 type FormData = {
     email: string;
@@ -21,6 +22,8 @@ type FormData = {
 };
 
 export const UserSettings: React.FC = (): ReactElement => {
+    const history = useHistory();
+
     const orgCacheReducer = (state: Organization[] = [], action: OrgCacheReducerAction) => {
         switch (action.type) {
             case OrganizationActionTypes.LOAD: {
@@ -97,8 +100,8 @@ export const UserSettings: React.FC = (): ReactElement => {
             emailAddress: emailAddress,
         };
         try {
-            const updatedUser = await setUserSettings(settingsToSave);
-            setUser(updatedUser);
+            await setUserSettings(settingsToSave);
+            history.push("/");
         } catch (error) {
             console.error(`error saving your settings, ${error.message}`);
         }
@@ -110,6 +113,7 @@ export const UserSettings: React.FC = (): ReactElement => {
 
     return (
         <>
+            <LinkButton onClick={() => history.push("/")}>{"< back to events"}</LinkButton>
             <h1 className="UserSettings-Header">{`${user.username} settings`}</h1>
             <div className="UserSettings-Content">
                 <form
