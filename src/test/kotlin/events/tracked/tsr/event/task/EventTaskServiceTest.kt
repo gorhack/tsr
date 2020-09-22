@@ -61,6 +61,7 @@ internal class EventTaskServiceTest {
             approver = tsrUser,
             resourcer = tsrUser,
             status = eventTaskStatus,
+            comments = mutableListOf(),
             createdBy = "1234",
             createdDate = OffsetDateTime.parse("1970-01-01T00:00:01-08:00"),
             lastModifiedBy = "1234",
