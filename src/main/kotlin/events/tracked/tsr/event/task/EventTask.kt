@@ -28,7 +28,7 @@ enum class EventTaskStatusCode {
 data class EventTaskStatus(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val statusId: Long = 0,
+    val statusId: Long = 0L,
     val statusName: String = "",
     val statusDisplayName: String = "",
     @Column(columnDefinition = "CHAR(1)")
@@ -59,10 +59,13 @@ data class EventTask(
     var resourcer: TsrUser,
     @ManyToOne(fetch = FetchType.LAZY, cascade = [CascadeType.MERGE])
     @JoinColumn(name = "status_id")
-    var status: EventTaskStatus = EventTaskStatus(statusId = 1L, "CREATED", "created", EventTaskStatusCode.R, 2)
+    var status: EventTaskStatus = EventTaskStatus(statusId = 1L, "CREATED", "created", EventTaskStatusCode.R, 2),
+    @OneToMany(mappedBy="commentId", fetch = FetchType.LAZY, cascade = [CascadeType.MERGE], orphanRemoval = true)
+    var comments: MutableList<EventTaskComment> = mutableListOf()
+
 ) : Auditable() {
-    constructor(eventTaskId: Long, eventTaskCategoryId: EventTaskCategory, eventId: Event, suspenseDate: OffsetDateTime, approver: TsrUser, resourcer: TsrUser, status: EventTaskStatus, lastModifiedDate: OffsetDateTime, lastModifiedBy: String, createdDate: OffsetDateTime, createdBy: String) :
-        this(eventTaskId = eventTaskId, eventTaskCategoryId = eventTaskCategoryId, eventId = eventId, suspenseDate = suspenseDate, approver = approver, resourcer = resourcer, status = status) {
+    constructor(eventTaskId: Long, eventTaskCategoryId: EventTaskCategory, eventId: Event, suspenseDate: OffsetDateTime, approver: TsrUser, resourcer: TsrUser, status: EventTaskStatus, comments: MutableList<EventTaskComment>, lastModifiedDate: OffsetDateTime, lastModifiedBy: String, createdDate: OffsetDateTime, createdBy: String) :
+        this(eventTaskId = eventTaskId, eventTaskCategoryId = eventTaskCategoryId, eventId = eventId, suspenseDate = suspenseDate, approver = approver, resourcer = resourcer, status = status, comments = comments) {
         this.lastModifiedDate = lastModifiedDate
         this.lastModifiedBy = lastModifiedBy
         this.createdDate = createdDate
@@ -77,7 +80,8 @@ data class EventTask(
             suspenseDate = this.suspenseDate,
             approver = TsrUserDTO(this.approver),
             resourcer = TsrUserDTO(this.resourcer),
-            status = this.status
+            status = this.status,
+            comments = this.comments
         )
     }
 }
