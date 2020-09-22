@@ -1,5 +1,6 @@
 package events.tracked.tsr.organization
 
+import events.tracked.tsr.event.Event
 import events.tracked.tsr.jpa_ext.Auditable
 import events.tracked.tsr.user.TsrUser
 import java.time.OffsetDateTime
@@ -14,6 +15,8 @@ data class Organization(
     var organizationName: String = "",
     var organizationDisplayName: String = "",
     var sortOrder: Int = 0,
+    @ManyToMany(mappedBy = "organizations", cascade = [CascadeType.MERGE])
+    private var events: MutableList<Event> = mutableListOf(),
     @ManyToMany(mappedBy = "organizations", cascade = [CascadeType.MERGE])
     private var tsrUsers: MutableList<TsrUser> = mutableListOf()
 ) : Auditable() {

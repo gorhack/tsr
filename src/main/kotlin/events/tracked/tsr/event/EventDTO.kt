@@ -16,7 +16,7 @@ data class AuditDTO(
 data class EventDTO(
     val eventId: Long? = null,
     val eventName: String = "",
-    val organization: Organization,
+    val organizations: MutableList<Organization>,
     val startDate: OffsetDateTime,
     val endDate: OffsetDateTime,
     val eventType: EventType? = null,
@@ -25,7 +25,7 @@ data class EventDTO(
     private fun copyInto(event: Event): Event {
         return event.copy(
             eventName = eventName,
-            organization = organization,
+            organizations = organizations,
             startDate = startDate,
             endDate = endDate,
             eventType = eventType

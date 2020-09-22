@@ -138,7 +138,7 @@ class EventServiceTest {
     fun `getActiveEventsByOrganizations returns page of events that belong to that organization`() {
         val paging: Pageable = PageRequest.of(0, 10, Sort.by("startDate"))
         every {
-            mockEventRepository.findByOrganizationInAndEndDateGreaterThanEqual(organizations, any(), paging)
+            mockEventRepository.findByOrganizationsInAndEndDateGreaterThanEqual(organizations, any(), paging)
         } returns PageImpl(listOf(eventWithId, eventWithId2), paging, 2)
         assertEquals(
             expectedPageDTO,
@@ -159,7 +159,7 @@ class EventServiceTest {
         val updatedEvent = Event(
             eventId = 1L,
             eventName = "blue",
-            organization = makeOrganization1(),
+            organizations = mutableListOf(makeOrganization1()),
             startDate = OffsetDateTime.parse("1970-01-01T00:00:01-08:00"),
             endDate = OffsetDateTime.parse("1970-01-02T00:00:01-08:00"),
             eventType = EventType(1, "rock", "rocks are fun", 1),

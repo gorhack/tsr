@@ -22,15 +22,21 @@ data class Event(
     @JoinColumn(name = "event_type_id", nullable = true)
     var eventType: EventType? = null,
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "organization", nullable = false)
-    var organization: Organization = Organization(organizationId = 0L, organizationName = "", organizationDisplayName = "", sortOrder = 0)
-) : Auditable() {
-    constructor(eventId: Long, eventName: String, organization: Organization, startDate: OffsetDateTime, endDate: OffsetDateTime) :
-        this(eventId = eventId, eventName = eventName, organization = organization, startDate = startDate, endDate = endDate, eventType = null)
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+        name = "event_organization",
+        joinColumns = [JoinColumn(name = "event_id")],
+        inverseJoinColumns = [JoinColumn(name = "organization_id")]
+    )
+    var organizations: MutableList<Organization> = mutableListOf()
 
-    constructor(eventId: Long, eventName: String, organization: Organization, startDate: OffsetDateTime, endDate: OffsetDateTime, eventType: EventType?, lastModifiedDate: OffsetDateTime, lastModifiedBy: String, createdDate: OffsetDateTime, createdBy: String) :
-        this(eventId = eventId, eventName = eventName, organization = organization, startDate = startDate, endDate = endDate, eventType = eventType) {
+
+) : Auditable() {
+    constructor(eventId: Long, eventName: String, organizations: MutableList<Organization>, startDate: OffsetDateTime, endDate: OffsetDateTime) :
+        this(eventId = eventId, eventName = eventName, organizations = organizations, startDate = startDate, endDate = endDate, eventType = null)
+
+    constructor(eventId: Long, eventName: String, organizations: MutableList<Organization>, startDate: OffsetDateTime, endDate: OffsetDateTime, eventType: EventType?, lastModifiedDate: OffsetDateTime, lastModifiedBy: String, createdDate: OffsetDateTime, createdBy: String) :
+        this(eventId = eventId, eventName = eventName, organizations = organizations, startDate = startDate, endDate = endDate, eventType = eventType) {
         this.lastModifiedDate = lastModifiedDate
         this.lastModifiedBy = lastModifiedBy
         this.createdDate = createdDate
@@ -41,7 +47,7 @@ data class Event(
         return EventDTO(
             eventId = eventId,
             eventName = eventName,
-            organization = organization,
+            organizations = organizations,
             startDate = startDate,
             endDate = endDate,
             eventType = eventType,

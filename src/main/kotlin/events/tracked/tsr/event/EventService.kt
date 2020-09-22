@@ -63,7 +63,7 @@ class EventService(
     ): PageDTO<EventDTO> {
         val paging: Pageable = PageRequest.of(page, size, sortBy)
         val dateUtc = OffsetDateTime.now()
-        val pagedEvents = eventRepository.findByOrganizationInAndEndDateGreaterThanEqual(
+        val pagedEvents = eventRepository.findByOrganizationsInAndEndDateGreaterThanEqual(
             organizations,
             dateUtc,
             paging
@@ -99,7 +99,7 @@ class EventService(
         eventToUpdate.startDate = eventDTO.startDate
         eventToUpdate.endDate = eventDTO.endDate
         eventToUpdate.eventType = eventDTO.eventType
-        eventToUpdate.organization = eventDTO.organization
+        eventToUpdate.organizations = eventDTO.organizations
         eventToUpdate.createdBy = eventDTO.audit?.createdBy ?: "[deleted]"
         eventToUpdate.createdDate = eventDTO.audit?.createdDate ?: OffsetDateTime.parse("1970-01-01T00:00:01-00:00")
         eventToUpdate.lastModifiedBy = eventDTO.audit?.lastModifiedBy ?: "[deleted]"

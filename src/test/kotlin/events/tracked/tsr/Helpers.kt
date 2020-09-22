@@ -57,7 +57,7 @@ val janSecondDate = OffsetDateTime.parse("1970-01-02T00:00:01-08:00")
 fun makeEventWithoutId(): Event {
     return Event(
         eventName = "blue",
-        organization = makeOrganization1(),
+        organizations = mutableListOf(makeOrganization1()),
         eventType = EventType(1, "rock", "rocks are fun", 1),
         startDate = janFirstDate,
         endDate = janSecondDate
@@ -67,7 +67,7 @@ fun makeEventWithoutId(): Event {
 fun makeEventDTOWithoutId(): EventDTO {
     return EventDTO(
         eventName = "blue",
-        organization = makeOrganization1(),
+        organizations = mutableListOf(makeOrganization1()),
         eventType = EventType(1, "rock", "rocks are fun", 1),
         startDate = janFirstDate,
         endDate = janSecondDate
@@ -78,7 +78,7 @@ fun makeEventWithId(): Event {
     return Event(
         eventId = 1L,
         eventName = "blue",
-        organization = makeOrganization1(),
+        organizations = mutableListOf(makeOrganization1()),
         startDate = janFirstDate,
         endDate = janSecondDate,
         eventType = EventType(1, "rock", "rocks are fun", 1),
@@ -93,7 +93,7 @@ fun makeEventDTOWithId(): EventDTO {
     return EventDTO(
         eventId = 1L,
         eventName = "blue",
-        organization = makeOrganization1(),
+        organizations = mutableListOf(makeOrganization1()),
         startDate = janFirstDate,
         endDate = janSecondDate,
         eventType = EventType(1, "rock", "rocks are fun", 1),
@@ -110,7 +110,7 @@ fun makeEventWithId2(): Event {
     return Event(
         eventId = 2L,
         eventName = "second",
-        organization = makeOrganization2(),
+        organizations = mutableListOf(makeOrganization2()),
         startDate = OffsetDateTime.parse("1970-01-03T00:00:01-08:00"),
         endDate = OffsetDateTime.parse("1970-01-03T00:00:01-08:00"),
         eventType = null,
@@ -127,7 +127,7 @@ fun makeEventDTOWithId2(): EventDTO {
         eventName = "second",
         startDate = OffsetDateTime.parse("1970-01-03T00:00:01-08:00"),
         endDate = OffsetDateTime.parse("1970-01-03T00:00:01-08:00"),
-        organization = makeOrganization2(),
+        organizations = mutableListOf(makeOrganization2()),
         eventType = null,
         audit = AuditDTO(
             lastModifiedBy = "6789",
