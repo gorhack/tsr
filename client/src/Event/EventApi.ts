@@ -100,4 +100,6 @@ export interface Auditable {
 
 export enum SocketSubscriptionTopics {
     EVENT_CREATED = "/topic/newEvent/",
+    EVENT_UPDATED = "/topic/updateEvent/",
+    TASK_CREATED = "/topic/newEventTask/",
 }

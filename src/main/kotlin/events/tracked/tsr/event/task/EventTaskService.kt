@@ -6,6 +6,7 @@ import events.tracked.tsr.user.TsrUserService
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.security.oauth2.core.oidc.user.OidcUser
 import org.springframework.stereotype.Service
+import javax.transaction.Transactional
 
 @Service
 class EventTaskService(
@@ -14,6 +15,7 @@ class EventTaskService(
     private val eventService: EventService,
     private val applicationEventPublisher: ApplicationEventPublisher
 ){
+    @Transactional
     fun createEventTask(oidcUser: OidcUser, eventId: Int, taskToCreate: EventTaskCategory): EventTask {
         val tsrUser = tsrUserService.assertUserExistsAndReturnUser(oidcUser)
         val event = eventService.getEventById(eventId)

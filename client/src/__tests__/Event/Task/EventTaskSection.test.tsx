@@ -6,16 +6,20 @@ import { EventTaskSection } from "../../../Event/Task/EventTaskSection";
 import * as EventTaskApi from "../../../Event/Task/EventTaskApi";
 import { EventTask, EventTaskCategory } from "../../../Event/Task/EventTaskApi";
 import selectEvent from "react-select-event";
-import { TsrEvent } from "../../../Event/EventApi";
+import { SocketSubscriptionTopics, TsrEvent } from "../../../Event/EventApi";
 import {
+    callSocketSubscriptionHandler,
     makeEvent,
     makeEventTask,
     makeEventTaskCategory,
     makeEventTaskStatus,
     makePage,
+    mockSocketService,
     reRender,
 } from "../../TestHelpers";
 import { PageDTO } from "../../../api";
+import { SocketService } from "../../../SocketService";
+import { StompSocketProvider } from "../../../StompSocketContext";
 
 describe("event tasks", () => {
     let mockGetEventTaskCategories: typeof EventTaskApi.getEventTaskCategoriesContains;
@@ -37,7 +41,7 @@ describe("event tasks", () => {
         eventTask = makeEventTask({
             eventTaskCategory: firstEventTaskCategory,
             eventId: tsrEvent.eventId,
-            status: makeEventTaskStatus({ sortOrder: 1 }),
+            status: makeEventTaskStatus({ sortOrder: 2 }),
         });
     });
 
@@ -45,15 +49,12 @@ describe("event tasks", () => {
 
     it("create a task creates a task", async () => {
         await renderEventTasks({});
-        td.when(mockCreateEventTask(tsrEvent.eventId, firstEventTaskCategory)).thenResolve(
-            eventTask,
-        );
         await selectEvent.select(screen.getByLabelText("add a task"), "task 1");
         expect(screen.queryByTestId("task-1")).not.toBeInTheDocument();
         await act(async () => {
             await fireEvent.click(screen.getByRole("button", { name: "add task" }));
         });
-        expect(screen.getByTestId("task-1")).toBeInTheDocument();
+        td.verify(mockCreateEventTask(tsrEvent.eventId, firstEventTaskCategory), { times: 1 });
     });
 
     it("shows tasks in order of status R->Y->G", async () => {
@@ -84,12 +85,52 @@ describe("event tasks", () => {
         expect(result.container).toHaveTextContent(/.*task 1.*second task.*last task.*/);
     });
 
+    describe("websockets", () => {
+        it("adds new events tasks in order", async () => {
+            const fakeStompSocketService = mockSocketService();
+            const result = await renderEventTasks({
+                eventTasks: [eventTask],
+                fakeStompSocketService,
+            });
+            const subscriptionId = fakeStompSocketService.findSubscription(
+                `${SocketSubscriptionTopics.TASK_CREATED}${tsrEvent.eventId}`,
+            ).subscription.id;
+
+            const socketTask = makeEventTask({
+                eventId: tsrEvent.eventId,
+                eventTaskCategory: makeEventTaskCategory({
+                    eventTaskId: 55,
+                    eventTaskDisplayName: "socket task",
+                }),
+                status: makeEventTaskStatus({
+                    sortOrder: 1,
+                }),
+            });
+            expect(screen.queryByTestId("task-1")).toBeInTheDocument();
+            expect(screen.queryByTestId("task-55")).not.toBeInTheDocument();
+            act(() => {
+                callSocketSubscriptionHandler(
+                    fakeStompSocketService,
+                    `${SocketSubscriptionTopics.TASK_CREATED}${tsrEvent.eventId}`,
+                    subscriptionId,
+                    socketTask,
+                );
+            });
+            await reRender();
+            expect(screen.queryByTestId("task-1")).toBeInTheDocument();
+            expect(screen.queryByTestId("task-55")).toBeInTheDocument();
+            expect(result.container).toHaveTextContent(/.*socket task.*task 1.*/);
+        });
+    });
+
     interface RenderEventTasksProps {
         eventTasks?: EventTask[];
+        fakeStompSocketService?: SocketService;
     }
 
     const renderEventTasks = async ({
         eventTasks = [],
+        fakeStompSocketService = mockSocketService(),
     }: RenderEventTasksProps): Promise<RenderResult> => {
         td.when(mockGetEventTasks(tsrEvent.eventId)).thenResolve(eventTasks);
         td.when(mockGetEventTaskCategories(td.matchers.anything())).thenResolve(
@@ -104,7 +145,14 @@ describe("event tasks", () => {
                 ],
             }) as PageDTO<EventTaskCategory>,
         );
-        const result = render(<EventTaskSection tsrEvent={tsrEvent} />);
+        const socketProps = {
+            inputSocketService: fakeStompSocketService,
+        };
+        const result = render(
+            <StompSocketProvider {...socketProps}>
+                <EventTaskSection tsrEvent={tsrEvent} />
+            </StompSocketProvider>,
+        );
         await reRender();
         return result;
     };

@@ -1,4 +1,4 @@
-import React, { FormEvent, ReactElement, useEffect, useState } from "react";
+import React, { FormEvent, ReactElement, useEffect, useReducer, useState } from "react";
 import AsyncCreatable from "react-select/async-creatable";
 import { PrimaryButton } from "../../Buttons/Buttons";
 import { selectStyles } from "../../Styles";
@@ -6,39 +6,77 @@ import { Option } from "../../api";
 import {
     createEventTask,
     EventTask,
+    EventTaskActionTypes,
     EventTaskCategory,
+    EventTaskReducerAction,
     getEventTaskCategoriesContains,
     getEventTasks,
 } from "./EventTaskApi";
 import "../EventPage.css";
-import { TsrEvent } from "../EventApi";
+import { SocketSubscriptionTopics, TsrEvent } from "../EventApi";
 import { ValueType } from "react-select";
 import sortBy from "lodash/sortBy";
+import { useStompSocketContext } from "../../StompSocketContext";
+import { SocketStatus } from "../../SocketService";
+import { IMessage } from "@stomp/stompjs";
 
 interface EventTaskSectionProps {
     tsrEvent: TsrEvent;
 }
 
 export const EventTaskSection = ({ tsrEvent }: EventTaskSectionProps): ReactElement => {
+    const { socketService } = useStompSocketContext();
     const [selectedTaskOption, setSelectedTaskOption] = useState<Option | undefined>(undefined);
     const [eventTaskCache, setEventTaskCache] = useState<EventTaskCategory[]>([]);
-    const [eventTasks, setEventTasks] = useState<EventTask[]>([]);
+
+    const reducerInitialState: EventTask[] = [];
+    const eventTaskReducer = (state: EventTask[], action: EventTaskReducerAction): EventTask[] => {
+        switch (action.type) {
+            case EventTaskActionTypes.LOAD: {
+                return sortBy(action.eventTasks, (eventTask) => eventTask.status.sortOrder);
+            }
+            case EventTaskActionTypes.ADD: {
+                return sortBy(
+                    [...state, action.eventTask],
+                    (eventTask) => eventTask.status.sortOrder,
+                );
+            }
+            default:
+                return [...state];
+        }
+    };
+    const [eventTasks, eventTasksDispatch] = useReducer(eventTaskReducer, reducerInitialState);
+
+    useEffect(() => {
+        if (socketService.status !== SocketStatus.CONNECTED) {
+            return;
+        }
+        socketService.subscribe({
+            topic: `${SocketSubscriptionTopics.TASK_CREATED}${tsrEvent.eventId}`,
+            handler: (msg: IMessage): void => {
+                const message: EventTask = JSON.parse(msg.body);
+                eventTasksDispatch({
+                    type: EventTaskActionTypes.ADD,
+                    eventTask: message,
+                });
+            },
+        });
+    }, [socketService, tsrEvent.eventId]);
 
     useEffect(() => {
         (async () => {
             await getEventTasks(tsrEvent.eventId)
                 .then((response) => {
-                    const orderEventTasks = sortBy(
-                        response,
-                        (eventTask) => eventTask.status.sortOrder,
-                    );
-                    setEventTasks(orderEventTasks);
+                    eventTasksDispatch({
+                        type: EventTaskActionTypes.LOAD,
+                        eventTasks: response,
+                    });
                 })
                 .catch((error) => {
                     console.error(`could not get event tasks ${error.message}`);
                 });
         })();
-    }, [tsrEvent.eventId, setEventTasks]);
+    }, [tsrEvent.eventId]);
 
     const loadEventCategories = async (searchTerm: string): Promise<Option[]> => {
         return getEventTaskCategoriesContains(searchTerm).then((result) => {
@@ -66,13 +104,11 @@ export const EventTaskSection = ({ tsrEvent }: EventTaskSectionProps): ReactElem
             console.error("must select a task to add");
             return Promise.resolve();
         }
-        await createEventTask(tsrEvent.eventId, foundEventTask)
-            .then((result) => {
-                setEventTasks((oldTasks) => [...oldTasks, result]);
-            })
-            .catch((error) => {
-                console.error(`could not add event task ${error.message}`);
-            });
+        try {
+            await createEventTask(tsrEvent.eventId, foundEventTask);
+        } catch (error) {
+            console.error(`could not add event task ${error.message}`);
+        }
         setSelectedTaskOption(undefined); // TODO: clear the value in the select
     };
 

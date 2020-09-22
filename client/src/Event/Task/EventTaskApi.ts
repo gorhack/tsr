@@ -73,3 +73,12 @@ export interface EventTask {
     resourcer: TsrUser;
     status: EventTaskStatus;
 }
+
+export enum EventTaskActionTypes {
+    LOAD,
+    ADD,
+}
+
+export type EventTaskReducerAction =
+    | { type: EventTaskActionTypes.LOAD; eventTasks: EventTask[] }
+    | { type: EventTaskActionTypes.ADD; eventTask: EventTask };

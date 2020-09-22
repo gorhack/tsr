@@ -21,19 +21,19 @@ class TsrEventHandler(private val websocket: SimpMessagingTemplate) {
 
     @Async
     @TransactionalEventListener
-    fun newTsrEventTaskSaveEvent(transactionalEventTask: NewTsrEventTaskSaveEvent) {
-        val eventId = transactionalEventTask.eventTask.eventId
-        val dto = transactionalEventTask.eventTask.toEventTaskDTO()
-        websocket.convertAndSend("/topic/newEventTask/${eventId}", dto)
-    }
-
-    @Async
-    @TransactionalEventListener
     fun updateTsrEventSaveEvent(transactionEvent: UpdateTsrEventSaveEvent) {
         val orgId = transactionEvent.event.organization.organizationId
         val dto = transactionEvent.event.toEventDTOWithDisplayNames()
         // TODO map over all event organzations and convertAndSend to each org
         websocket.convertAndSend("/topic/updateEvent/${orgId}", dto)
+    }
+
+    @Async
+    @TransactionalEventListener
+    fun newTsrEventTaskSaveEvent(transactionalEventTask: NewTsrEventTaskSaveEvent) {
+        val eventId = transactionalEventTask.eventTask.eventId.eventId
+        val dto = transactionalEventTask.eventTask.toEventTaskDTO()
+        websocket.convertAndSend("/topic/newEventTask/${eventId}", dto)
     }
 }
 
