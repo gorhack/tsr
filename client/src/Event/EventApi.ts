@@ -73,7 +73,7 @@ export const getActiveEventsByOrganizationIds = async (
 export interface CreatableTsrEvent {
     eventId?: number;
     eventName: string;
-    organization: Organization;
+    organizations: Organization[];
     startDate: string;
     endDate: string;
     eventType?: EventType;
@@ -82,7 +82,7 @@ export interface CreatableTsrEvent {
 export interface TsrEvent {
     eventId: number;
     eventName: string;
-    organization: Organization;
+    organizations: Organization[];
     startDate: string;
     endDate: string;
     eventType?: EventType;

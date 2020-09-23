@@ -53,6 +53,11 @@ export const EventDetails = React.memo(
             return `${numOfTime} ${unitOfTime} ago`;
         };
 
+        const mapOrganizations = () => {
+            const orgArray = tsrEvent.organizations.map((org) => org.organizationDisplayName);
+            return orgArray.join("; ");
+        };
+
         return (
             <>
                 <DetailRow
@@ -62,10 +67,7 @@ export const EventDetails = React.memo(
                     }
                 />
                 {startEndDate(moment.utc(tsrEvent.startDate), moment.utc(tsrEvent.endDate))}
-                <DetailRow
-                    label="Organization"
-                    description={tsrEvent.organization.organizationDisplayName}
-                />
+                <DetailRow label="Organization" description={mapOrganizations()} />
                 <DetailRow
                     label="Event Created By"
                     description={`${tsrEvent.audit.createdByDisplayName}, (${moment

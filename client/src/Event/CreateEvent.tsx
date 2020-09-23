@@ -1,4 +1,4 @@
-import React, { ReactElement, useEffect, useReducer, useState } from "react";
+import React, { ReactElement, useCallback, useEffect, useReducer, useState } from "react";
 import { LabeledInput } from "../Inputs/LabeledInput";
 import { useHistory } from "react-router";
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
@@ -67,6 +67,28 @@ export const CreateEvent: React.FC = () => {
     });
     const dateWatch = watch(["startDate", "endDate"]);
 
+    const setFormValues = useCallback(
+        (event: TsrEvent): void => {
+            const orgsAsOptions: Option[] = event.organizations.map((org) => {
+                return {
+                    value: org.organizationDisplayName,
+                    label: org.organizationDisplayName,
+                };
+            });
+            if (event.eventType?.displayName) {
+                setEventTypeValue({
+                    value: event.eventType?.displayName,
+                    label: event.eventType?.displayName,
+                });
+            }
+            setOrgValues(orgsAsOptions);
+            setValue("startDate", new Date(event.startDate));
+            setValue("endDate", new Date(event.endDate));
+            setValue("eventName", event.eventName);
+        },
+        [setValue, setOrgValues],
+    );
+
     useEffect(() => {
         if (eventId) {
             (async () => {
@@ -75,23 +97,9 @@ export const CreateEvent: React.FC = () => {
                         setTsrEvent(event);
                         organizationCacheDispatch({
                             type: OrganizationActionTypes.LOAD,
-                            organizations: [event.organization],
+                            organizations: event.organizations,
                         });
-                        setOrgValues([
-                            {
-                                value: event.organization.organizationDisplayName,
-                                label: event.organization.organizationDisplayName,
-                            },
-                        ]);
-                        if (event.eventType?.displayName) {
-                            setEventTypeValue({
-                                value: event.eventType?.displayName,
-                                label: event.eventType?.displayName,
-                            });
-                        }
-                        setValue("startDate", new Date(event.startDate));
-                        setValue("endDate", new Date(event.endDate));
-                        setValue("eventName", event.eventName);
+                        setFormValues(event);
                     })
                     .catch((error) => {
                         console.error(
@@ -100,7 +108,7 @@ export const CreateEvent: React.FC = () => {
                     });
             })();
         }
-    }, [eventId, setValue, setTsrEvent]);
+    }, [eventId, setFormValues, setTsrEvent]);
 
     const onCancel = (e: React.MouseEvent<HTMLButtonElement>): void => {
         e.preventDefault();
@@ -113,15 +121,23 @@ export const CreateEvent: React.FC = () => {
 
     const onSubmit: SubmitHandler<FormData> = async (data): Promise<void> => {
         const { eventName, startDate, endDate } = data;
-        // TODO allow multiple orgs
-        const foundOrg = organizationsCache.find(
-            (orgName) => orgName.organizationDisplayName === orgValues[0]?.label,
-        );
+        let foundOrgs: Organization[] = [];
+        orgValues.forEach((orgOption): void => {
+            const foundOrg = organizationsCache.find((org) => {
+                if (org.organizationDisplayName === orgOption.label) {
+                    return org;
+                }
+                return undefined;
+            });
+            if (foundOrg) {
+                foundOrgs = [...foundOrgs, foundOrg];
+            }
+        });
         const foundEventType = eventTypesCache.find(
             (eventType) => eventType.displayName === eventTypeValue?.label,
         );
 
-        if (!foundOrg) {
+        if (foundOrgs.length === 0) {
             setError("organizationOption", {
                 message: "must select an organization",
                 type: "required",
@@ -133,7 +149,7 @@ export const CreateEvent: React.FC = () => {
             const tsrEventToUpdate: TsrEvent = {
                 ...tsrEvent,
                 eventName,
-                organization: foundOrg,
+                organizations: foundOrgs,
                 startDate: startDate.toJSON(),
                 endDate: endDate.toJSON(),
                 eventType: foundEventType,
@@ -148,7 +164,7 @@ export const CreateEvent: React.FC = () => {
         } else {
             const tsrEventToSave: CreatableTsrEvent = {
                 eventName,
-                organization: foundOrg,
+                organizations: foundOrgs,
                 startDate: startDate.toJSON(),
                 endDate: endDate.toJSON(),
                 eventType: foundEventType,

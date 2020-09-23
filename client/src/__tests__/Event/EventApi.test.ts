@@ -17,18 +17,20 @@ describe("event data", () => {
     let userEvent: TsrEvent;
     let user2Event: TsrEvent;
     let eventsPage: PageDTO<unknown>;
-    let organization: Organization;
+    let organizations: Organization[];
     beforeEach(() => {
-        organization = {
-            organizationId: 1,
-            organizationName: "organization",
-            organizationDisplayName: "org name",
-            sortOrder: 1,
-        };
+        organizations = [
+            {
+                organizationId: 1,
+                organizationName: "organization",
+                organizationDisplayName: "org name",
+                sortOrder: 1,
+            },
+        ];
         userEvent = {
             eventId: 1,
             eventName: "first",
-            organization,
+            organizations,
             eventType: {
                 eventTypeId: 1,
                 displayName: "run",
@@ -47,7 +49,7 @@ describe("event data", () => {
         user2Event = {
             eventId: 2,
             eventName: "second",
-            organization,
+            organizations,
             eventType: {
                 eventTypeId: 2,
                 displayName: "walk",
@@ -74,7 +76,7 @@ describe("event data", () => {
     it("saves an event", async () => {
         const event: CreatableTsrEvent = {
             eventName: "first",
-            organization,
+            organizations,
             eventType: {
                 eventTypeId: 1,
                 displayName: "run",
@@ -94,10 +96,10 @@ describe("event data", () => {
     });
 
     it("updates an event", async () => {
-        const event: CreatableTsrEvent = {
+        const event: TsrEvent = {
             eventId: 1,
             eventName: "first",
-            organization,
+            organizations,
             eventType: {
                 eventTypeId: 1,
                 displayName: "run",
@@ -106,6 +108,12 @@ describe("event data", () => {
             },
             startDate: "2020-08-18T14:15:59",
             endDate: "2020-08-20T01:00:01",
+            audit: {
+                createdBy: "1234",
+                createdDate: "2020-08-18T14:15:59",
+                lastModifiedBy: "6789",
+                lastModifiedDate: "2020-08-18T14:15:59",
+            },
         };
         nock("http://example.com")
             .put("/api/v1/event", event as NockBody)

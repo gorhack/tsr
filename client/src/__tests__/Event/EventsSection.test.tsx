@@ -19,7 +19,7 @@ describe("home page of the application", () => {
     let mockGetActiveEventsByUserId: typeof EventApi.getActiveEventsByUserId;
     let userEventList: TsrEvent[];
     let orgEventList: TsrEvent[];
-    let organization: Organization;
+    let organizations: Organization[];
     let userPage1: PageDTO<TsrEvent>;
     let userPage2: PageDTO<TsrEvent>;
     let orgPage1: PageDTO<TsrEvent>;
@@ -32,11 +32,13 @@ describe("home page of the application", () => {
             "getActiveEventsByOrganizationIds",
         );
         mockGetActiveEventsByUserId = td.replace(EventApi, "getActiveEventsByUserId");
-        organization = makeOrganization({
-            organizationId: 1,
-            organizationDisplayName: "org 1",
-            sortOrder: 1,
-        });
+        organizations = [
+            makeOrganization({
+                organizationId: 1,
+                organizationDisplayName: "org 1",
+                sortOrder: 1,
+            }),
+        ];
         userEventList = [
             makeEvent({
                 eventId: 1,
@@ -48,7 +50,7 @@ describe("home page of the application", () => {
             makeEvent({
                 eventId: 2,
                 eventName: "second event",
-                organization,
+                organizations,
                 audit: makeAudit({ createdBy: "1234" }),
             }),
         ];
@@ -57,7 +59,7 @@ describe("home page of the application", () => {
             makeEvent({
                 eventId: 3,
                 eventName: "third event",
-                organization,
+                organizations,
                 startDate: "2020-08-18T14:15:59Z",
                 endDate: "2020-08-20T01:00:01Z",
                 audit: makeAudit({ createdBy: "0987" }),

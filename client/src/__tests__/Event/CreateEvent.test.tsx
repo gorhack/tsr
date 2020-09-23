@@ -83,15 +83,27 @@ describe("create an event", () => {
                 sortOrder: 2,
                 organizationDisplayName: "second",
             }),
+            makeOrganization({
+                organizationId: 3,
+                organizationDisplayName: "third",
+                sortOrder: 3,
+            }),
         ];
         const orgNamesPromise = Promise.resolve(makePage({ items: orgNames }));
         const tsrEvent = {
             eventName: "name",
-            organization: makeOrganization({
-                organizationId: 2,
-                organizationDisplayName: "second",
-                sortOrder: 2,
-            }),
+            organizations: [
+                makeOrganization({
+                    organizationId: 2,
+                    organizationDisplayName: "second",
+                    sortOrder: 2,
+                }),
+                makeOrganization({
+                    organizationId: 3,
+                    organizationDisplayName: "third",
+                    sortOrder: 3,
+                }),
+            ],
             startDate: new Date(dateToInput).toJSON(),
             endDate: new Date(dateToInput).toJSON(),
             eventType: undefined,
@@ -109,6 +121,7 @@ describe("create an event", () => {
         const result = await renderCreateEvent({ history, orgNamesPromise });
         fillInInputValueInForm(result, "name", "event name");
         await selectEvent.select(screen.getByLabelText("organizations"), "second");
+        await selectEvent.select(screen.getByLabelText("organizations"), "third");
         fillInInputValueInForm(result, dateToInput, undefined, START_DATE_PLACEHOLDER_TEXT, false);
         fillInInputValueInForm(result, dateToInput, undefined, END_DATE_PLACEHOLDER_TEXT, false);
 
@@ -133,11 +146,13 @@ describe("create an event", () => {
             const tsrEvent = makeEvent({
                 eventId: 1,
                 eventName: "name",
-                organization: makeOrganization({
-                    organizationId: 2,
-                    organizationDisplayName: "second",
-                    sortOrder: 2,
-                }),
+                organizations: [
+                    makeOrganization({
+                        organizationId: 2,
+                        organizationDisplayName: "second",
+                        sortOrder: 2,
+                    }),
+                ],
                 startDate: new Date(dateToInput).toJSON(),
                 endDate: new Date(dateToInput).toJSON(),
                 eventType: eventType1,
@@ -168,11 +183,13 @@ describe("create an event", () => {
             const tsrEvent = makeEvent({
                 eventId: 1,
                 eventName: "eman",
-                organization: makeOrganization({
-                    organizationId: 2,
-                    organizationDisplayName: "second",
-                    sortOrder: 2,
-                }),
+                organizations: [
+                    makeOrganization({
+                        organizationId: 2,
+                        organizationDisplayName: "second",
+                        sortOrder: 2,
+                    }),
+                ],
                 startDate: new Date(dateToInput).toJSON(),
                 endDate: new Date(dateToInput).toJSON(),
                 eventType: makeEventType({

@@ -72,12 +72,20 @@ describe("displays event details", () => {
                 },
                 startDate: "2020-08-18T14:15:59Z",
                 endDate: "2020-08-20T01:00:01Z",
-                organization: makeOrganization({
-                    organizationId: 1,
-                    organizationName: "test_ragnar",
-                    organizationDisplayName: "ragnar",
-                    sortOrder: 1,
-                }),
+                organizations: [
+                    makeOrganization({
+                        organizationId: 1,
+                        organizationName: "test_ragnar",
+                        organizationDisplayName: "ragnar",
+                        sortOrder: 1,
+                    }),
+                    makeOrganization({
+                        organizationId: 2,
+                        organizationName: "org2",
+                        organizationDisplayName: "org2",
+                        sortOrder: 2,
+                    }),
+                ],
                 audit: {
                     createdBy: "1234",
                     createdByDisplayName: "test_user",
@@ -102,7 +110,7 @@ describe("displays event details", () => {
             expect(findByAriaLabel(result.container, "Start Date")).toHaveTextContent(
                 /^(Tuesday|Wednesday), August (18th|19th) 2020, [0-9]{4} \(TIMEZONE\/timezone\)$/,
             );
-            expect(screen.getByText("ragnar")).toBeInTheDocument();
+            expect(screen.getByText("ragnar; org2")).toBeInTheDocument();
             expect(screen.getByText(/test_user, \(7\/(17|18)\/20\)/)).toBeInTheDocument();
             expect(screen.getByText("test_user_2, 2 days ago")).toBeInTheDocument();
         });
