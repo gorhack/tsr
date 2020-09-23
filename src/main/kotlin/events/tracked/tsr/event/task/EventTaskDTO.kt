@@ -10,5 +10,5 @@ data class EventTaskDTO(
     val approver: TsrUserDTO = TsrUserDTO(),
     val resourcer: TsrUserDTO = TsrUserDTO(),
     val status: EventTaskStatus = EventTaskStatus(statusId = 1L, "CREATED", "created", EventTaskStatusCode.R, 2),
-    val comments: MutableList<EventTaskComment> = mutableListOf()
+    val comments: List<EventTaskCommentDTO> = listOf()
 )

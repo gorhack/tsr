@@ -11,8 +11,8 @@ data class TsrUser(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long = 0,
-    val userId: String,
-    val username: String,
+    val userId: String = "",
+    val username: String = "",
     @Enumerated(EnumType.STRING)
     val role: UserRole = UserRole.ADMIN,
     @ManyToMany(cascade = [CascadeType.MERGE])

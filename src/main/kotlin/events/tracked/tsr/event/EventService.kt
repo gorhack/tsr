@@ -5,6 +5,7 @@ import events.tracked.tsr.PageDTO
 import events.tracked.tsr.UpdateTsrEventSaveEvent
 import events.tracked.tsr.organization.Organization
 import events.tracked.tsr.user.TsrUserRepository
+import events.tracked.tsr.user.TsrUserService
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.dao.EmptyResultDataAccessException
 import org.springframework.data.domain.Page
@@ -19,14 +20,14 @@ import java.time.OffsetDateTime
 @Service
 class EventService(
     private val eventRepository: EventRepository,
-    private val userRepository: TsrUserRepository,
+    private val userService: TsrUserService,
     private val applicationEventPublisher: ApplicationEventPublisher
 ) {
     @Transactional
     fun saveEvent(eventDTO: EventDTO): EventDTO {
         val savedEvent = eventRepository.saveAndFlush(eventDTO.toEvent())
         applicationEventPublisher.publishEvent(NewTsrEventSaveEvent(this, savedEvent))
-        return savedEvent.toEventDTOWithDisplayNames()
+        return savedEvent.toEventDTO()
     }
 
     fun getActiveEvents(page: Int, size: Int, sortBy: Sort): PageDTO<EventDTO> {
@@ -38,7 +39,7 @@ class EventService(
         )
 
         return if (pagedEventResults.hasContent()) {
-            PageDTO(pagedEventResults.map { e -> e.toEventDTOWithDisplayNames() })
+            PageDTO(pagedEventResults.map { e -> e.toEventDTO() })
         } else {
             PageDTO()
         }
@@ -49,7 +50,7 @@ class EventService(
         val dateUtc = OffsetDateTime.now()
         val pagedEvents = eventRepository.findByCreatedByAndEndDateGreaterThanEqual(userId, dateUtc, paging)
         return if (pagedEvents.hasContent()) {
-            PageDTO(pagedEvents.map { e -> e.toEventDTOWithDisplayNames() })
+            PageDTO(pagedEvents.map { e -> e.toEventDTO() })
         } else {
             PageDTO()
         }
@@ -69,7 +70,7 @@ class EventService(
             paging
         )
         return if (pagedEvents.hasContent()) {
-            PageDTO(pagedEvents.map { e -> e.toEventDTOWithDisplayNames() })
+            PageDTO(pagedEvents.map { e -> e.toEventDTO() })
         } else {
             PageDTO()
         }
@@ -82,11 +83,11 @@ class EventService(
 
     fun getEventDTOById(eventId: Int): EventDTO {
         val event = getEventById(eventId)
-        val createdByUser: String = userRepository.findByUserId(event.createdBy)?.username
+        val createdByUser: String = userService.findByUserId(event.createdBy)?.username
             ?: "[deleted]"
         var lastModifiedByUser: String = createdByUser
         if (event.createdBy != event.lastModifiedBy) {
-            lastModifiedByUser = userRepository.findByUserId(event.lastModifiedBy)?.username
+            lastModifiedByUser = userService.findByUserId(event.lastModifiedBy)?.username
                 ?: "[deleted]"
         }
         return event.toEventDTOWithDisplayNames(createdByDisplayName = createdByUser, lastModifiedByDisplayName = lastModifiedByUser)
@@ -107,6 +108,6 @@ class EventService(
 
         val updatedEvent = eventRepository.saveAndFlush(eventToUpdate)
         applicationEventPublisher.publishEvent(UpdateTsrEventSaveEvent(this, updatedEvent))
-        return updatedEvent.toEventDTOWithDisplayNames()
+        return updatedEvent.toEventDTO()
     }
 }

@@ -1,6 +1,7 @@
 package events.tracked.tsr.event.task
 
 import events.tracked.tsr.*
+import events.tracked.tsr.event.AuditDTO
 import events.tracked.tsr.event.Event
 import events.tracked.tsr.event.EventService
 import events.tracked.tsr.user.TsrUser
@@ -16,11 +17,13 @@ import java.time.OffsetDateTime
 internal class EventTaskServiceTest {
     private lateinit var subject: EventTaskService
     private lateinit var mockEventTaskRepository: EventTaskRepository
+    private lateinit var mockEventTaskCommentRepository: EventTaskCommentRepository
     private lateinit var mockTsrUserService: TsrUserService
     private lateinit var mockEventService: EventService
     private lateinit var mockApplicationEventPublisher: ApplicationEventPublisher
 
     private var capturedTsrEventTaskSaveEvent = slot<NewTsrEventTaskSaveEvent>()
+    private var capturedNewCommentTsrEventTaskEvent = slot<NewEventTaskCommentEvent>()
 
     private lateinit var eventWithId: Event
     private lateinit var eventTask: EventTask
@@ -29,13 +32,17 @@ internal class EventTaskServiceTest {
     @Before
     fun setup() {
         mockEventTaskRepository = mockk(relaxUnitFun = true)
+        mockEventTaskCommentRepository = mockk(relaxUnitFun = true)
         mockTsrUserService = mockk(relaxUnitFun = true)
         mockEventService = mockk(relaxUnitFun = true)
         mockApplicationEventPublisher = mockk()
-        subject = EventTaskService(mockEventTaskRepository, mockTsrUserService, mockEventService, mockApplicationEventPublisher)
+        subject = EventTaskService(mockEventTaskRepository, mockEventTaskCommentRepository, mockTsrUserService, mockEventService, mockApplicationEventPublisher)
 
         every {
             mockApplicationEventPublisher.publishEvent(capture(capturedTsrEventTaskSaveEvent))
+        } just Runs
+        every {
+            mockApplicationEventPublisher.publishEvent(capture(capturedNewCommentTsrEventTaskEvent))
         } just Runs
 
         eventWithId = makeEventWithId()
@@ -61,7 +68,7 @@ internal class EventTaskServiceTest {
             approver = tsrUser,
             resourcer = tsrUser,
             status = eventTaskStatus,
-            comments = mutableListOf(),
+            comments = emptySet(),
             createdBy = "1234",
             createdDate = OffsetDateTime.parse("1970-01-01T00:00:01-08:00"),
             lastModifiedBy = "1234",
@@ -100,5 +107,48 @@ internal class EventTaskServiceTest {
             mockEventService.getEventById(1)
             mockEventTaskRepository.findAllByEventId(eventWithId)
         }
+    }
+
+    @Test
+    fun `addComment adds a comment to an event task`() {
+        val tsrUser = TsrUser(1L, "1234", "user")
+
+        val initialCommentDTO = EventTaskCommentDTO(eventTaskId = 2L, annotation = "second annotation")
+        val commentToSave = EventTaskComment(eventTask = EventTask(eventTaskId = 2L), annotation = "second annotation")
+        val savedComment = EventTaskComment(
+            commentId = 1L,
+            eventTask = EventTask(eventTaskId = 2L),
+            annotation = "first annotation",
+            createdBy = "1234",
+            createdDate = OffsetDateTime.parse("1970-01-01T00:00:01-08:00"),
+            lastModifiedBy = "1234",
+            lastModifiedDate = OffsetDateTime.parse("1970-01-01T00:00:01-08:00")
+        )
+        val savedCommentDTO = EventTaskCommentDTO(
+            eventTaskId = 2L,
+            annotation = "first annotation",
+            audit = AuditDTO(
+                createdBy = "1234",
+                createdDate = OffsetDateTime.parse("1970-01-01T00:00:01-08:00"),
+                createdByDisplayName = "user",
+                lastModifiedBy = "1234",
+                lastModifiedDate = OffsetDateTime.parse("1970-01-01T00:00:01-08:00"),
+                lastModifiedByDisplayName = "user"
+            )
+        )
+
+        every {
+            mockTsrUserService.findByUserId("1234")
+        } returns tsrUser
+        every {
+            mockEventTaskCommentRepository.saveAndFlush(commentToSave)
+        } returns savedComment
+        assertEquals(savedCommentDTO, subject.addComment(1, initialCommentDTO))
+        verifySequence {
+            mockEventTaskCommentRepository.saveAndFlush(commentToSave)
+            mockTsrUserService.findByUserId("1234")
+        }
+        assertEquals(1, capturedNewCommentTsrEventTaskEvent.captured.eventId)
+        assertEquals(savedCommentDTO, capturedNewCommentTsrEventTaskEvent.captured.comment)
     }
 }

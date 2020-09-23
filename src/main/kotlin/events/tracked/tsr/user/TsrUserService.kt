@@ -6,6 +6,10 @@ import org.springframework.stereotype.Service
 
 @Service
 class TsrUserService(private val tsrUserRepository: TsrUserRepository) {
+    fun findByUserId(userId: String): TsrUser? {
+        return tsrUserRepository.findByUserId(userId)
+    }
+
     fun assertUserExistsAndReturnUser(user: OidcUser): TsrUser {
         val maybeUser = tsrUserRepository.findByUserId(user.userId)
         if (maybeUser == null) {
