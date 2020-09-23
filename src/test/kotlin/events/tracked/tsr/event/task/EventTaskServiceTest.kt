@@ -10,6 +10,7 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.springframework.context.ApplicationEventPublisher
+import org.springframework.data.repository.findByIdOrNull
 import java.time.OffsetDateTime
 
 internal class EventTaskServiceTest {
@@ -147,11 +148,10 @@ internal class EventTaskServiceTest {
     fun `addComment adds a comment to an event task`() {
         val tsrUser = TsrUser(1L, "1234", "user")
 
-        val initialCommentDTO = EventTaskCommentDTO(eventTaskId = 2L, annotation = "second annotation")
-        val commentToSave = EventTaskComment(eventTask = EventTask(eventTaskId = 2L), annotation = "second annotation")
+        val initialCommentDTO = EventTaskCommentDTO(eventTaskId = 1L, annotation = "first annotation")
         val savedComment = EventTaskComment(
             commentId = 1L,
-            eventTask = EventTask(eventTaskId = 2L),
+            eventTask = EventTask(eventTaskId = 1L),
             annotation = "first annotation",
             createdBy = "1234",
             createdDate = OffsetDateTime.parse("1970-01-01T00:00:01-08:00"),
@@ -159,7 +159,7 @@ internal class EventTaskServiceTest {
             lastModifiedDate = OffsetDateTime.parse("1970-01-01T00:00:01-08:00")
         )
         val savedCommentDTO = EventTaskCommentDTO(
-            eventTaskId = 2L,
+            eventTaskId = 1L,
             annotation = "first annotation",
             audit = AuditDTO(
                 createdBy = "1234",
@@ -171,15 +171,19 @@ internal class EventTaskServiceTest {
             )
         )
 
+        every { mockEventTaskRepository.findByIdOrNull(1L) } returns eventTask
         every {
             mockTsrUserService.findByUserId("1234")
         } returns tsrUser
         every {
-            mockEventTaskCommentRepository.saveAndFlush(commentToSave)
-        } returns savedComment
+            mockEventTaskRepository.saveAndFlush(eventTask)
+        } returns eventTask.copy(comments = listOf(savedComment))
+
         assertEquals(savedCommentDTO, subject.addComment(1, initialCommentDTO))
+
         verifySequence {
-            mockEventTaskCommentRepository.saveAndFlush(commentToSave)
+            mockEventTaskRepository.findByIdOrNull(1L)
+            mockEventTaskRepository.saveAndFlush(eventTask)
             mockTsrUserService.findByUserId("1234")
         }
         assertEquals(1, capturedNewCommentTsrEventTaskEvent.captured.eventId)

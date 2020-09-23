@@ -5,6 +5,8 @@ import events.tracked.tsr.NewTsrEventTaskSaveEvent
 import events.tracked.tsr.event.EventService
 import events.tracked.tsr.user.TsrUserService
 import org.springframework.context.ApplicationEventPublisher
+import org.springframework.dao.EmptyResultDataAccessException
+import org.springframework.data.repository.findByIdOrNull
 import org.springframework.security.oauth2.core.oidc.user.OidcUser
 import org.springframework.stereotype.Service
 import javax.transaction.Transactional
@@ -82,15 +84,20 @@ class EventTaskService(
     }
 
     @Transactional
-    fun addComment(eventId: Int, comment: EventTaskCommentDTO): EventTaskCommentDTO {
-        val savedComment = eventTaskCommentRepository.saveAndFlush(comment.toComment())
-        val savedCommentDTO = getCommentDisplayNames(
-            eventTaskId = comment.eventTaskId,
-            comment = savedComment,
+    fun addComment(eventId: Int, commentDTO: EventTaskCommentDTO): EventTaskCommentDTO {
+        val eventTask = eventTaskRepository.findByIdOrNull(commentDTO.eventTaskId)
+            ?: throw EmptyResultDataAccessException(1)
+        val comment = commentDTO.toComment(eventTask)
+        eventTask.addComment(comment)
+        // TODO verify this saves the comment in the correct table...
+        val savedEventTask = eventTaskRepository.saveAndFlush(eventTask)
+        val commentWithDisplayNames = getCommentDisplayNames(
+            eventTaskId = eventTask.eventTaskId,
+            comment = savedEventTask.comments.last(),
             userIdToUsername = hashMapOf()
         )
-        applicationEventPublisher.publishEvent(NewEventTaskCommentEvent(this, eventId, savedCommentDTO))
-        return savedCommentDTO
+        applicationEventPublisher.publishEvent(NewEventTaskCommentEvent(this, eventId, commentWithDisplayNames))
+        return commentWithDisplayNames
     }
 
 }

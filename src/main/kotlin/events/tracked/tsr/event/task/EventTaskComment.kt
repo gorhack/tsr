@@ -11,9 +11,9 @@ data class EventTaskComment(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val commentId: Long = 0L,
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(targetEntity = EventTask::class, fetch = FetchType.LAZY)
     @JoinColumn(name = "event_task_id", nullable = false)
-    private val eventTask: EventTask,
+    private var eventTask: EventTask,
     @Column(columnDefinition = "TEXT")
     var annotation: String = ""
 ) : Auditable() {
@@ -27,6 +27,23 @@ data class EventTaskComment(
         this.createdDate = createdDate
         this.lastModifiedBy = lastModifiedBy
         this.lastModifiedDate = lastModifiedDate
+    }
+
+    fun setEventTask(eventTask: EventTask) {
+        this.eventTask = eventTask
+    }
+
+    // https://medium.com/@rajibrath20/the-best-way-to-map-a-onetomany-relationship-with-jpa-and-hibernate-dbbf6dba00d3
+    @Override
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is EventTaskComment) return false
+        return commentId == other.commentId
+    }
+
+    @Override
+    override fun hashCode(): Int {
+        return 31
     }
 }
 
@@ -48,9 +65,9 @@ data class EventTaskCommentDTO(
         )
     )
 
-    fun toComment(): EventTaskComment {
+    fun toComment(eventTask: EventTask): EventTaskComment {
         return EventTaskComment(
-            eventTask = EventTask(eventTaskId = this.eventTaskId),
+            eventTask = eventTask,
             annotation = this.annotation
         )
     }

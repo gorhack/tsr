@@ -60,7 +60,7 @@ data class EventTask(
     @ManyToOne(fetch = FetchType.LAZY, cascade = [CascadeType.MERGE])
     @JoinColumn(name = "status_id")
     var status: EventTaskStatus = EventTaskStatus(statusId = 1L, "CREATED", "created", EventTaskStatusCode.R, 2),
-    @OneToMany(mappedBy = "commentId", fetch = FetchType.LAZY, cascade = [CascadeType.ALL], orphanRemoval = true)
+    @OneToMany(targetEntity = EventTaskComment::class, mappedBy = "commentId", fetch = FetchType.LAZY, cascade = [CascadeType.ALL], orphanRemoval = true)
     var comments: List<EventTaskComment> = emptyList()
 
 ) : Auditable() {
@@ -73,6 +73,10 @@ data class EventTask(
         this.createdBy = createdBy
     }
 
+    fun addComment(comment: EventTaskComment) {
+        comments = comments.plus(comment)
+        comment.setEventTask(this)
+    }
 
     fun toEventTaskDTO(commentDTOs: List<EventTaskCommentDTO>): EventTaskDTO {
         return EventTaskDTO(
