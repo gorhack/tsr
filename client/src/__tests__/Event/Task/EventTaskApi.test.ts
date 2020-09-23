@@ -33,6 +33,7 @@ describe("event task", () => {
             },
         };
         eventTask = {
+            eventTaskId: 4,
             eventTaskCategory: eventTaskCategory,
             eventId: 1,
             suspenseDate: "2020-08-18T14:15:59",
@@ -45,6 +46,7 @@ describe("event task", () => {
                 statusShortName: StatusCode.R,
                 sortOrder: 2,
             },
+            comments: [],
         };
     });
 
@@ -77,6 +79,7 @@ describe("event task", () => {
         const expectedResponse: EventTask[] = [
             eventTask,
             {
+                eventTaskId: 2,
                 eventTaskCategory: {
                     eventTaskId: 2,
                     eventTaskDisplayName: "second",
@@ -93,6 +96,7 @@ describe("event task", () => {
                     statusShortName: StatusCode.R,
                     sortOrder: 2,
                 },
+                comments: [],
             },
         ];
         nock("http://example.com")

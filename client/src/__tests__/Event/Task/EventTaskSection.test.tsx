@@ -14,6 +14,7 @@ import {
     makeEventTaskCategory,
     makeEventTaskStatus,
     makePage,
+    makeTsrUser,
     mockSocketService,
     reRender,
 } from "../../TestHelpers";
@@ -38,11 +39,16 @@ describe("event tasks", () => {
             eventTaskId: 1,
             eventTaskDisplayName: "task 1",
         });
-        eventTask = makeEventTask({
+        eventTask = {
+            eventTaskId: 1,
             eventTaskCategory: firstEventTaskCategory,
             eventId: tsrEvent.eventId,
+            suspenseDate: "2020-08-18T14:15:59",
+            approver: makeTsrUser({ username: "approver user" }),
+            resourcer: makeTsrUser({ username: "resourcer user" }),
             status: makeEventTaskStatus({ sortOrder: 2 }),
-        });
+            comments: [],
+        };
     });
 
     afterEach(td.reset);
@@ -84,6 +90,8 @@ describe("event tasks", () => {
         const result = await renderEventTasks({ eventTasks });
         expect(result.container).toHaveTextContent(/.*task 1.*second task.*last task.*/);
     });
+
+    // it("shows details when task is clicked", async () => {});
 
     describe("websockets", () => {
         it("adds new events tasks in order", async () => {

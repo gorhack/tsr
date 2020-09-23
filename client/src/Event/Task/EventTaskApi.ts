@@ -1,6 +1,7 @@
 import axios, { AxiosResponse } from "axios";
 import { PageDTO } from "../../api";
 import { TsrUser } from "../../Users/UserApi";
+import { Auditable } from "../EventApi";
 
 const baseUri = "/api/v1/event";
 
@@ -65,13 +66,21 @@ export interface EventTaskStatus {
     sortOrder: number;
 }
 
+export interface EventTaskComment {
+    eventTaskId: number;
+    annotation: string;
+    audit: Auditable;
+}
+
 export interface EventTask {
+    eventTaskId: number;
     eventTaskCategory: EventTaskCategory;
     eventId: number;
     suspenseDate: string;
     approver: TsrUser;
     resourcer: TsrUser;
     status: EventTaskStatus;
+    comments: EventTaskComment[];
 }
 
 export enum EventTaskActionTypes {
