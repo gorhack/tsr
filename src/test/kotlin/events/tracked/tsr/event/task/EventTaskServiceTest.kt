@@ -4,9 +4,7 @@ import events.tracked.tsr.*
 import events.tracked.tsr.event.AuditDTO
 import events.tracked.tsr.event.Event
 import events.tracked.tsr.event.EventService
-import events.tracked.tsr.user.TsrUser
-import events.tracked.tsr.user.TsrUserService
-import events.tracked.tsr.user.UserRole
+import events.tracked.tsr.user.*
 import io.mockk.*
 import org.junit.Before
 import org.junit.Test
@@ -27,6 +25,7 @@ internal class EventTaskServiceTest {
 
     private lateinit var eventWithId: Event
     private lateinit var eventTask: EventTask
+    private lateinit var eventTaskDTO: EventTaskDTO
     private lateinit var eventTask2: EventTask
 
     @Before
@@ -47,6 +46,7 @@ internal class EventTaskServiceTest {
 
         eventWithId = makeEventWithId()
         eventTask = makeEventTask()
+        eventTaskDTO = makeEventTaskDTO()
         eventTask2 = makeEventTask2()
     }
 
@@ -58,21 +58,13 @@ internal class EventTaskServiceTest {
         val tsrUser = TsrUser(1L, "1234", "user", UserRole.USER, mutableListOf())
 
         val eventTaskCategory = EventTaskCategory(eventTaskCategoryId = 10L, eventTaskName = "CLASS_ONE", eventTaskDisplayName = "Class I")
-        val eventTaskStatus = EventTaskStatus(statusId = 1L, "CREATED", "created", EventTaskStatusCode.R, 2)
 
-        val savedEventTask = EventTask(
-            eventTaskId = 1L,
-            eventTaskCategoryId = eventTaskCategory,
-            eventId = eventWithId,
+        val eventTaskToSave = EventTask(
+            eventTaskCategory = eventTaskCategory,
+            event = eventWithId,
             suspenseDate = suspenseDate,
             approver = tsrUser,
-            resourcer = tsrUser,
-            status = eventTaskStatus,
-            comments = emptySet(),
-            createdBy = "1234",
-            createdDate = OffsetDateTime.parse("1970-01-01T00:00:01-08:00"),
-            lastModifiedBy = "1234",
-            lastModifiedDate = OffsetDateTime.parse("1970-01-01T00:00:01-08:00")
+            resourcer = tsrUser
         )
 
         every {
@@ -82,30 +74,72 @@ internal class EventTaskServiceTest {
             mockEventService.getEventById(1)
         } returns eventWithId
         every {
-            mockEventTaskRepository.saveAndFlush(eventTask)
-        } returns savedEventTask
-        assertEquals(savedEventTask, subject.createEventTask(oidcUser, 1, eventTaskCategory))
+            mockEventTaskRepository.saveAndFlush(eventTaskToSave)
+        } returns eventTask
+        assertEquals(eventTask, subject.createEventTask(oidcUser, 1, eventTaskCategory))
         verifySequence {
             mockTsrUserService.assertUserExistsAndReturnUser(oidcUser)
             mockEventService.getEventById(1)
-            mockEventTaskRepository.saveAndFlush(eventTask)
+            mockEventTaskRepository.saveAndFlush(eventTaskToSave)
         }
-        assertEquals(savedEventTask, capturedTsrEventTaskSaveEvent.captured.eventTask)
+        assertEquals(eventTask, capturedTsrEventTaskSaveEvent.captured.eventTask)
     }
 
     @Test
-    fun `getEventTasks gets a list of event tasks`() {
+    fun `getEventTasksDTOs gets a list of event tasks`() {
         val eventTasks = listOf(eventTask, eventTask2)
+        val eventTaskDTOs = listOf(
+            eventTaskDTO,
+            EventTaskDTO(
+                eventTaskId = 2L,
+                eventTaskCategory = EventTaskCategory(eventTaskCategoryId = 4L, eventTaskName = "CLASS_FOUR", eventTaskDisplayName = "Class IV"),
+                eventId = 1L,
+                suspenseDate = janFirstDate,
+                approver = TsrUserDTO(1L, "1234", "user", UserRole.USER, UserSettingsDTO()),
+                resourcer = TsrUserDTO(1L, "1234", "user", UserRole.USER, UserSettingsDTO()),
+                comments = listOf(
+                    EventTaskCommentDTO(
+                        eventTaskId = 2L,
+                        annotation = "first annotation",
+                        audit = AuditDTO(
+                            createdBy = "1234",
+                            createdDate = janFirstDate,
+                            createdByDisplayName = "user",
+                            lastModifiedBy = "1234",
+                            lastModifiedDate = janFirstDate,
+                            lastModifiedByDisplayName = "user"
+                        )
+                    ),
+                    EventTaskCommentDTO(
+                        eventTaskId = 2L,
+                        annotation = "second annotation",
+                        audit = AuditDTO(
+                            createdBy = "0987",
+                            createdDate = janSecondDate,
+                            createdByDisplayName = "user 2",
+                            lastModifiedBy = "1234",
+                            lastModifiedDate = janSecondDate,
+                            lastModifiedByDisplayName = "user"
+                        )
+                    )
+                )
+            )
+        )
         every {
-            mockEventService.getEventById(1)
-        } returns eventWithId
-        every {
-            mockEventTaskRepository.findAllByEventId(eventWithId)
+            mockEventTaskRepository.findAllByEventEventId(1L)
         } returns eventTasks
-        assertEquals(eventTasks, subject.getEventTasks(1))
+        every {
+            mockTsrUserService.findByUserId("1234")
+        } returns TsrUser(userId = "1234", username = "user")
+        every {
+            mockTsrUserService.findByUserId("0987")
+        } returns TsrUser(userId = "0987", username = "user 2")
+
+        assertEquals(eventTaskDTOs, subject.getEventTaskDTOs(1))
         verifySequence {
-            mockEventService.getEventById(1)
-            mockEventTaskRepository.findAllByEventId(eventWithId)
+            mockEventTaskRepository.findAllByEventEventId(1L)
+            mockTsrUserService.findByUserId("1234")
+            mockTsrUserService.findByUserId("0987")
         }
     }
 

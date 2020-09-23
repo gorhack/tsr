@@ -22,8 +22,8 @@ class EventTaskService(
         val tsrUser = tsrUserService.assertUserExistsAndReturnUser(oidcUser)
         val event = eventService.getEventById(eventId)
         val eventTaskToSave = EventTask(
-            eventTaskCategoryId = taskToCreate,
-            eventId = event,
+            eventTaskCategory = taskToCreate,
+            event = event,
             suspenseDate = event.startDate,
             approver = tsrUser,
             resourcer = tsrUser
@@ -33,13 +33,21 @@ class EventTaskService(
         return eventTask
     }
 
-    fun getCommentDisplayNames(eventTaskId: Long, comment: EventTaskComment): EventTaskCommentDTO {
-        val createdByUser: String = tsrUserService.findByUserId(comment.createdBy)?.username
-            ?: "[deleted]"
-        var lastModifiedByUser: String = createdByUser
-        if (comment.createdBy != comment.lastModifiedBy) {
-            lastModifiedByUser = tsrUserService.findByUserId(comment.lastModifiedBy)?.username
+    fun getCommentDisplayNames(eventTaskId: Long, comment: EventTaskComment, userIdToUsername: HashMap<String, String>): EventTaskCommentDTO {
+        val createdByUser = if (userIdToUsername.containsKey(comment.createdBy)) {
+            userIdToUsername[comment.createdBy]!!
+        } else {
+            tsrUserService.findByUserId(comment.createdBy)?.username
                 ?: "[deleted]"
+        }
+        var lastModifiedByUser = createdByUser
+        if (comment.createdBy != comment.lastModifiedBy) {
+            lastModifiedByUser = if (userIdToUsername.containsKey(comment.lastModifiedBy)) {
+                userIdToUsername[comment.lastModifiedBy]!!
+            } else {
+                tsrUserService.findByUserId(comment.lastModifiedBy)?.username
+                    ?: "[deleted]"
+            }
         }
         return EventTaskCommentDTO(
             eventTaskId = eventTaskId,
@@ -51,22 +59,36 @@ class EventTaskService(
 
     fun getEventTaskDTOs(eventId: Int): List<EventTaskDTO> {
         val eventTasks = getEventTasks(eventId)
+        val userIdToUsername = HashMap<String, String>()
         // TODO so expensive to make a DTO!! Find a better way...
+        // use hash map to reduce, only get comments when task is opened by user?
         return eventTasks.map { task ->
-            val comments: List<EventTaskCommentDTO> = task.comments.map { comment -> getCommentDisplayNames(task.eventTaskId, comment) }
+            val comments: List<EventTaskCommentDTO> = task.comments.map { comment ->
+                val commentDTO = getCommentDisplayNames(
+                    eventTaskId = task.eventTaskId,
+                    comment = comment,
+                    userIdToUsername = userIdToUsername
+                )
+                userIdToUsername[commentDTO.audit!!.createdBy] = commentDTO.audit!!.createdByDisplayName!!
+                userIdToUsername[commentDTO.audit!!.lastModifiedBy] = commentDTO.audit!!.lastModifiedByDisplayName!!
+                commentDTO
+            }
             task.toEventTaskDTO(comments)
         }
     }
 
     fun getEventTasks(eventId: Int): List<EventTask> {
-        val event = eventService.getEventById(eventId)
-        return eventTaskRepository.findAllByEventId(event)
+        return eventTaskRepository.findAllByEventEventId(eventId.toLong())
     }
 
     @Transactional
     fun addComment(eventId: Int, comment: EventTaskCommentDTO): EventTaskCommentDTO {
         val savedComment = eventTaskCommentRepository.saveAndFlush(comment.toComment())
-        val savedCommentDTO = getCommentDisplayNames(comment.eventTaskId, savedComment)
+        val savedCommentDTO = getCommentDisplayNames(
+            eventTaskId = comment.eventTaskId,
+            comment = savedComment,
+            userIdToUsername = hashMapOf()
+        )
         applicationEventPublisher.publishEvent(NewEventTaskCommentEvent(this, eventId, savedCommentDTO))
         return savedCommentDTO
     }

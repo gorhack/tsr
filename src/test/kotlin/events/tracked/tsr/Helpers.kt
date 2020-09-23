@@ -51,14 +51,16 @@ fun makeOrganization2(): Organization {
     )
 }
 
-val janFirstDate = OffsetDateTime.parse("1970-01-01T00:00:01-08:00")
-val janSecondDate = OffsetDateTime.parse("1970-01-02T00:00:01-08:00")
+val janFirstDate: OffsetDateTime = OffsetDateTime.parse("1970-01-01T00:00:01-08:00")
+val janSecondDate: OffsetDateTime = OffsetDateTime.parse("1970-01-02T00:00:01-08:00")
+val eventType = EventType(1, "rock", "rocks are fun", 1)
+val tsrUser = TsrUser(1L, "1234", "user", UserRole.USER)
 
 fun makeEventWithoutId(): Event {
     return Event(
         eventName = "blue",
         organization = makeOrganization1(),
-        eventType = EventType(1, "rock", "rocks are fun", 1),
+        eventType = eventType,
         startDate = janFirstDate,
         endDate = janSecondDate
     )
@@ -68,7 +70,7 @@ fun makeEventDTOWithoutId(): EventDTO {
     return EventDTO(
         eventName = "blue",
         organization = makeOrganization1(),
-        eventType = EventType(1, "rock", "rocks are fun", 1),
+        eventType = eventType,
         startDate = janFirstDate,
         endDate = janSecondDate
     )
@@ -81,7 +83,7 @@ fun makeEventWithId(): Event {
         organization = makeOrganization1(),
         startDate = janFirstDate,
         endDate = janSecondDate,
-        eventType = EventType(1, "rock", "rocks are fun", 1),
+        eventType = eventType,
         lastModifiedBy = "6789",
         lastModifiedDate = janSecondDate,
         createdBy = "1234",
@@ -96,7 +98,7 @@ fun makeEventDTOWithId(): EventDTO {
         organization = makeOrganization1(),
         startDate = janFirstDate,
         endDate = janSecondDate,
-        eventType = EventType(1, "rock", "rocks are fun", 1),
+        eventType = eventType,
         audit = AuditDTO(
             lastModifiedBy = "6789",
             lastModifiedDate = janSecondDate,
@@ -140,11 +142,17 @@ fun makeEventDTOWithId2(): EventDTO {
 
 fun makeEventTask(): EventTask {
     return EventTask(
-        eventId = makeEventWithId(),
+        eventTaskId = 1L,
         eventTaskCategoryId = EventTaskCategory(eventTaskCategoryId = 10L, eventTaskName = "CLASS_ONE", eventTaskDisplayName = "Class I"),
+        eventId = makeEventWithId(),
         suspenseDate = janFirstDate,
-        resourcer = TsrUser(1L, "1234", "user", UserRole.USER),
-        approver = TsrUser(1L, "1234", "user", UserRole.USER),
+        approver = tsrUser,
+        resourcer = tsrUser,
+        comments = emptyList(),
+        createdBy = "1234",
+        createdDate = OffsetDateTime.parse("1970-01-01T00:00:01-08:00"),
+        lastModifiedBy = "1234",
+        lastModifiedDate = OffsetDateTime.parse("1970-01-01T00:00:01-08:00")
     )
 }
 
@@ -154,14 +162,26 @@ fun makeEventTask2(): EventTask {
         eventId = makeEventWithId(),
         eventTaskCategoryId = EventTaskCategory(eventTaskCategoryId = 4L, eventTaskName = "CLASS_FOUR", eventTaskDisplayName = "Class IV"),
         suspenseDate = janFirstDate,
-        resourcer = TsrUser(1L, "1234", "user", UserRole.USER),
-        approver = TsrUser(1L, "1234", "user", UserRole.USER),
-        status = EventTaskStatus(),
-        comments = setOf(
+        resourcer = tsrUser,
+        approver = tsrUser,
+        comments = listOf(
             EventTaskComment(
                 commentId = 1L,
                 eventTask = EventTask(eventTaskId = 2L),
-                annotation = "first annotation"
+                annotation = "first annotation",
+                lastModifiedBy = "1234",
+                lastModifiedDate = janFirstDate,
+                createdBy = "1234",
+                createdDate = janFirstDate
+            ),
+            EventTaskComment(
+                commentId = 2L,
+                eventTask = EventTask(eventTaskId = 2L),
+                annotation = "second annotation",
+                lastModifiedBy = "1234",
+                lastModifiedDate = janSecondDate,
+                createdBy = "0987",
+                createdDate = janSecondDate
             )
         ),
         createdBy = "1234",
@@ -173,6 +193,7 @@ fun makeEventTask2(): EventTask {
 
 fun makeEventTaskDTO(): EventTaskDTO {
     return EventTaskDTO(
+        eventTaskId = 1L,
         eventId = 1L,
         eventTaskCategory = EventTaskCategory(eventTaskCategoryId = 10L, eventTaskName = "CLASS_ONE", eventTaskDisplayName = "Class I"),
         suspenseDate = janFirstDate,
