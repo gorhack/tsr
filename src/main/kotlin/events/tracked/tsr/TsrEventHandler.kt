@@ -32,7 +32,7 @@ class TsrEventHandler(private val websocket: SimpMessagingTemplate) {
     @Async
     @TransactionalEventListener
     fun newTsrEventTaskSaveEvent(transactionalEventTask: NewTsrEventTaskSaveEvent) {
-        val eventId = transactionalEventTask.eventTask.eventId.eventId
+        val eventId = transactionalEventTask.eventTask.event.eventId
         val dto = transactionalEventTask.eventTask.toEventTaskDTO(listOf())
         websocket.convertAndSend("/topic/newEventTask/${eventId}", dto)
     }

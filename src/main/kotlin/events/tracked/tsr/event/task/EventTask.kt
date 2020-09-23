@@ -45,10 +45,10 @@ data class EventTask(
     val eventTaskId: Long = 0L,
     @ManyToOne(fetch = FetchType.LAZY, cascade = [CascadeType.MERGE, CascadeType.REMOVE])
     @JoinColumn(name = "event_task_category_id")
-    var eventTaskCategoryId: EventTaskCategory = EventTaskCategory(),
+    var eventTaskCategory: EventTaskCategory = EventTaskCategory(),
     @ManyToOne(fetch = FetchType.LAZY, cascade = [CascadeType.MERGE, CascadeType.REMOVE])
     @JoinColumn(name = "event_id")
-    var eventId: Event = Event(),
+    var event: Event = Event(),
     @Column(columnDefinition = "TIMESTAMP WITH TIME ZONE")
     var suspenseDate: OffsetDateTime = OffsetDateTime.parse("1970-01-01T00:00:01-00:00"),
     @ManyToOne(fetch = FetchType.LAZY, cascade = [CascadeType.MERGE])
@@ -61,11 +61,12 @@ data class EventTask(
     @JoinColumn(name = "status_id")
     var status: EventTaskStatus = EventTaskStatus(statusId = 1L, "CREATED", "created", EventTaskStatusCode.R, 2),
     @OneToMany(mappedBy = "commentId", fetch = FetchType.LAZY, cascade = [CascadeType.ALL], orphanRemoval = true)
-    var comments: Set<EventTaskComment> = emptySet()
+    var comments: List<EventTaskComment> = emptyList()
 
 ) : Auditable() {
-    constructor(eventTaskId: Long, eventTaskCategoryId: EventTaskCategory, eventId: Event, suspenseDate: OffsetDateTime, approver: TsrUser, resourcer: TsrUser, status: EventTaskStatus, comments: Set<EventTaskComment>, lastModifiedDate: OffsetDateTime, lastModifiedBy: String, createdDate: OffsetDateTime, createdBy: String) :
-        this(eventTaskId = eventTaskId, eventTaskCategoryId = eventTaskCategoryId, eventId = eventId, suspenseDate = suspenseDate, approver = approver, resourcer = resourcer, status = status, comments = comments) {
+    // constructor without status
+    constructor(eventTaskId: Long, eventTaskCategoryId: EventTaskCategory, eventId: Event, suspenseDate: OffsetDateTime, approver: TsrUser, resourcer: TsrUser, comments: List<EventTaskComment>, lastModifiedDate: OffsetDateTime, lastModifiedBy: String, createdDate: OffsetDateTime, createdBy: String) :
+        this(eventTaskId = eventTaskId, eventTaskCategory = eventTaskCategoryId, event = eventId, suspenseDate = suspenseDate, approver = approver, resourcer = resourcer, comments = comments) {
         this.lastModifiedDate = lastModifiedDate
         this.lastModifiedBy = lastModifiedBy
         this.createdDate = createdDate
@@ -75,8 +76,9 @@ data class EventTask(
 
     fun toEventTaskDTO(commentDTOs: List<EventTaskCommentDTO>): EventTaskDTO {
         return EventTaskDTO(
-            eventTaskCategory = this.eventTaskCategoryId,
-            eventId = this.eventId.eventId,
+            eventId = this.event.eventId,
+            eventTaskId = this.eventTaskId,
+            eventTaskCategory = this.eventTaskCategory,
             suspenseDate = this.suspenseDate,
             approver = TsrUserDTO(this.approver),
             resourcer = TsrUserDTO(this.resourcer),
