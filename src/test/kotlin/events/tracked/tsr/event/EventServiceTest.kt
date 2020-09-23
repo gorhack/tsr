@@ -4,7 +4,7 @@ import events.tracked.tsr.*
 import events.tracked.tsr.event.type.EventType
 import events.tracked.tsr.organization.Organization
 import events.tracked.tsr.user.TsrUser
-import events.tracked.tsr.user.TsrUserRepository
+import events.tracked.tsr.user.TsrUserService
 import events.tracked.tsr.user.UserRole
 import io.mockk.*
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -21,7 +21,7 @@ import java.time.OffsetDateTime
 class EventServiceTest {
     private lateinit var subject: EventService
     private lateinit var mockEventRepository: EventRepository
-    private lateinit var mockTsrUserRepository: TsrUserRepository
+    private lateinit var mockTsrUserService: TsrUserService
     private lateinit var mockApplicationEventPublisher: ApplicationEventPublisher
 
     private var capturedTsrEventSaveEvent = slot<NewTsrEventSaveEvent>()
@@ -41,9 +41,9 @@ class EventServiceTest {
     @BeforeEach
     fun setup() {
         mockEventRepository = mockk(relaxUnitFun = true)
-        mockTsrUserRepository = mockk(relaxUnitFun = true)
+        mockTsrUserService = mockk(relaxUnitFun = true)
         mockApplicationEventPublisher = mockk()
-        subject = EventService(mockEventRepository, mockTsrUserRepository, mockApplicationEventPublisher)
+        subject = EventService(mockEventRepository, mockTsrUserService, mockApplicationEventPublisher)
 
         every {
             mockApplicationEventPublisher.publishEvent(capture(capturedTsrEventSaveEvent))
@@ -109,16 +109,16 @@ class EventServiceTest {
     fun `getEventDTOById returns an event with display names`() {
         every { mockEventRepository.findByIdOrNull(1L) } returns eventWithId
         every {
-            mockTsrUserRepository.findByUserId("1234")
+            mockTsrUserService.findByUserId("1234")
         } returns TsrUser(1L, "1234", "user", UserRole.USER)
         every {
-            mockTsrUserRepository.findByUserId("6789")
+            mockTsrUserService.findByUserId("6789")
         } returns TsrUser(2L, "6789", "user_2", UserRole.USER)
         assertEquals(eventDTOWithIdAndDisplayNames, subject.getEventDTOById(1))
         verifySequence {
             mockEventRepository.findByIdOrNull(1L)
-            mockTsrUserRepository.findByUserId("1234")
-            mockTsrUserRepository.findByUserId("6789")
+            mockTsrUserService.findByUserId("1234")
+            mockTsrUserService.findByUserId("6789")
         }
     }
 

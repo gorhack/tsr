@@ -43,7 +43,7 @@ data class Event(
         this.createdBy = createdBy
     }
 
-    fun toEventDTOWithDisplayNames(): EventDTO {
+    fun toEventDTO(): EventDTO {
         return EventDTO(
             eventId = eventId,
             eventName = eventName,
@@ -61,7 +61,7 @@ data class Event(
     }
 
     fun toEventDTOWithDisplayNames(createdByDisplayName: String, lastModifiedByDisplayName: String): EventDTO {
-        return this.toEventDTOWithDisplayNames().copy(
+        return this.toEventDTO().copy(
             audit = AuditDTO(
                 createdDate = createdDate!!,
                 createdBy = createdBy,

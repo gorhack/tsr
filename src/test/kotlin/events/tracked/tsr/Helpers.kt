@@ -150,11 +150,24 @@ fun makeEventTask(): EventTask {
 
 fun makeEventTask2(): EventTask {
     return EventTask(
+        eventTaskId = 2L,
         eventId = makeEventWithId(),
         eventTaskCategoryId = EventTaskCategory(eventTaskCategoryId = 4L, eventTaskName = "CLASS_FOUR", eventTaskDisplayName = "Class IV"),
         suspenseDate = janFirstDate,
         resourcer = TsrUser(1L, "1234", "user", UserRole.USER),
         approver = TsrUser(1L, "1234", "user", UserRole.USER),
+        status = EventTaskStatus(),
+        comments = setOf(
+            EventTaskComment(
+                commentId = 1L,
+                eventTask = EventTask(eventTaskId = 2L),
+                annotation = "first annotation"
+            )
+        ),
+        createdBy = "1234",
+        createdDate = janFirstDate,
+        lastModifiedBy = "0987",
+        lastModifiedDate = janSecondDate
     )
 }
 
