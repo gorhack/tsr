@@ -3,7 +3,7 @@ import { LabeledInput } from "../Inputs/LabeledInput";
 import { useHistory } from "react-router";
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import AsyncCreatable from "react-select/async-creatable";
-import { createFilter, ValueType } from "react-select";
+import { createFilter } from "react-select";
 import { CreatableTsrEvent, getEventById, saveEvent, TsrEvent, updateEvent } from "./EventApi";
 import { Option } from "../api";
 import { FormDatePicker } from "../Inputs/FormDatePicker";
@@ -325,12 +325,8 @@ export const CreateEvent: React.FC = () => {
                                     name="eventType"
                                     value={eventTypeValue}
                                     inputId="eventType"
-                                    onChange={(selection: ValueType<Option>, actionType): void => {
-                                        if (selection && actionType.action === "create-option") {
-                                            if ("label" in selection) {
-                                                createAndMapEventType(selection.label);
-                                            }
-                                        }
+                                    onCreateOption={createAndMapEventType}
+                                    onChange={(selection): void => {
                                         const newValuesOrEmpty = (selection || undefined) as Option;
                                         setEventTypeValue(newValuesOrEmpty);
                                         props.onChange(selection);

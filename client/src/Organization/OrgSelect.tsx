@@ -40,6 +40,13 @@ export const OrgSelect = ({
                         type: OrganizationActionTypes.LOAD,
                         organizations: [result],
                     });
+                    setSelectedOrgs([
+                        ...selectedOrgs,
+                        {
+                            value: result.organizationDisplayName,
+                            label: result.organizationDisplayName,
+                        },
+                    ]);
                 })
                 .catch((error) => {
                     console.error(`unable to create organization ${inputVal}: ${error.message}`);
@@ -72,12 +79,8 @@ export const OrgSelect = ({
                         inputId="organizations"
                         value={selectedOrgs}
                         getOptionValue={(option) => option.label}
-                        onChange={(selection: ValueType<Option>, actionType): void => {
-                            if (selection && actionType.action === "create-option") {
-                                if ("label" in selection) {
-                                    createAndMapOrganization(selection.label);
-                                }
-                            }
+                        onCreateOption={createAndMapOrganization}
+                        onChange={(selection: ValueType<Option>): void => {
                             const newValuesOrEmpty = (selection || []) as Option[];
                             setSelectedOrgs(newValuesOrEmpty);
                             props.onChange(selection);
