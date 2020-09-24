@@ -2,7 +2,7 @@ import React, { FormEvent, ReactElement, useEffect, useReducer, useState } from 
 import AsyncCreatable from "react-select/async-creatable";
 import { PrimaryButton } from "../../Buttons/Buttons";
 import { selectStyles } from "../../Styles";
-import { Option } from "../../api";
+import { LONG_DATE_FORMAT, Option } from "../../api";
 import {
     createEventTask,
     EventTask,
@@ -19,6 +19,8 @@ import sortBy from "lodash/sortBy";
 import { useStompSocketContext } from "../../StompSocketContext";
 import { SocketStatus } from "../../SocketService";
 import { IMessage } from "@stomp/stompjs";
+import { DetailRow } from "../DetailRow";
+import moment from "moment";
 
 interface EventTaskSectionProps {
     tsrEvent: TsrEvent;
@@ -28,7 +30,7 @@ export const EventTaskSection = ({ tsrEvent }: EventTaskSectionProps): ReactElem
     const { socketService } = useStompSocketContext();
     const [selectedTaskOption, setSelectedTaskOption] = useState<Option | undefined>(undefined);
     const [eventTaskCache, setEventTaskCache] = useState<EventTaskCategory[]>([]);
-
+    const [taskOpen, setTaskOpen] = useState<number | undefined>(undefined);
     const reducerInitialState: EventTask[] = [];
     const eventTaskReducer = (state: EventTask[], action: EventTaskReducerAction): EventTask[] => {
         switch (action.type) {
@@ -112,17 +114,53 @@ export const EventTaskSection = ({ tsrEvent }: EventTaskSectionProps): ReactElem
         setSelectedTaskOption(undefined); // TODO: clear the value in the select
     };
 
-    const displayEventTasks = (): ReactElement => {
+    const displayEventTasks = (): JSX.Element => {
         return (
             <>
                 {eventTasks.map((eventTask) => {
+                    const open = taskOpen === eventTask.eventTaskId;
+                    const openHandler = (): void => {
+                        setTaskOpen(eventTask.eventTaskId);
+                    };
+                    const closeHandler = (): void => {
+                        setTaskOpen(undefined);
+                    };
                     return (
-                        <span
-                            key={eventTask.eventTaskCategory.eventTaskId}
-                            data-testid={`task-${eventTask.eventTaskCategory.eventTaskId}`}
-                        >
-                            {eventTask.eventTaskCategory.eventTaskDisplayName}
-                        </span>
+                        <div key={`task-container-${eventTask.eventTaskId}`}>
+                            <button
+                                type="button"
+                                className={`Event-Task-Collapsible ${
+                                    taskOpen === eventTask.eventTaskId ? "active" : ""
+                                }`}
+                                onClick={open ? closeHandler : openHandler}
+                                key={`task-header-${eventTask.eventTaskId}`}
+                                data-testid={`task-${eventTask.eventTaskCategory.eventTaskId}`}
+                            >
+                                {eventTask.eventTaskCategory.eventTaskDisplayName}
+                            </button>
+                            {open && (
+                                <div
+                                    className="Event-Task-Details"
+                                    key={`task-body-${eventTask.eventTaskId}`}
+                                >
+                                    <DetailRow
+                                        label="suspense date"
+                                        description={moment
+                                            .utc(eventTask.suspenseDate)
+                                            .local()
+                                            .format(LONG_DATE_FORMAT)}
+                                    />
+                                    <DetailRow
+                                        label="approver"
+                                        description={eventTask.approver.username}
+                                    />
+                                    <DetailRow
+                                        label="resourcer"
+                                        description={eventTask.resourcer.username}
+                                    />
+                                </div>
+                            )}
+                        </div>
                     );
                 })}
             </>
@@ -169,6 +207,7 @@ export const EventTaskSection = ({ tsrEvent }: EventTaskSectionProps): ReactElem
                     <PrimaryButton>add task</PrimaryButton>
                 </div>
             </form>
+            <div className="space-3" />
             {displayEventTasks()}
         </>
     );

@@ -91,7 +91,20 @@ describe("event tasks", () => {
         expect(result.container).toHaveTextContent(/.*task 1.*second task.*last task.*/);
     });
 
-    // it("shows details when task is clicked", async () => {});
+    it("shows details when task is clicked", async () => {
+        await renderEventTasks({ eventTasks: [eventTask] });
+        expect(screen.queryByLabelText("suspense date")).not.toBeInTheDocument();
+        expect(screen.queryByLabelText("approver")).not.toBeInTheDocument();
+        expect(screen.queryByLabelText("resourcer")).not.toBeInTheDocument();
+        fireEvent.click(
+            screen.getByRole("button", { name: firstEventTaskCategory.eventTaskDisplayName }),
+        );
+        expect(screen.getByLabelText("suspense date")).toHaveTextContent(
+            /(Tue|Wed) Aug (18|19), 2020/,
+        );
+        expect(screen.getByLabelText("approver")).toHaveTextContent("user");
+        expect(screen.getByLabelText("resourcer")).toHaveTextContent("user");
+    });
 
     describe("websockets", () => {
         it("adds new events tasks in order", async () => {

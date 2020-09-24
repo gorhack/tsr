@@ -46,6 +46,21 @@ export const getEventTaskCategoriesContains = async (
         });
 };
 
+export const addComment = async (
+    eventId: number,
+    comment: EventTaskComment,
+): Promise<EventTaskComment> => {
+    const uri = `${baseUri}/${eventId}/task/${comment.eventTaskId}/comment`;
+    return axios
+        .post(uri, comment)
+        .then((response: AxiosResponse) => {
+            return response.data;
+        })
+        .catch((error) => {
+            throw new Error(error.message);
+        });
+};
+
 export interface EventTaskCategory {
     eventTaskId: number;
     eventTaskName: string;
@@ -69,7 +84,7 @@ export interface EventTaskStatus {
 export interface EventTaskComment {
     eventTaskId: number;
     annotation: string;
-    audit: Auditable;
+    audit?: Auditable;
 }
 
 export interface EventTask {

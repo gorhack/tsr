@@ -16,15 +16,26 @@
     padding: 2rem;
 }
 
-.Event-Detail-Row {
-    padding-bottom: 5px;
-}
-
-.Event-Detail-Row-Label {
-    font-family: var(--font-family-bold);
-    padding-right: 10px;
-}
-
 .Event-Detail-Add-Task {
     align-items: flex-end;
+}
+
+.Event-Task-Collapsible {
+    background-color: var(--level-two-color);
+    color: var(--text-color);
+    cursor: pointer;
+    padding: 18px;
+    width: 100%;
+    border: none;
+    text-align: left;
+    outline: none;
+}
+
+.active, .Event-Task-Collapsible:hover {
+    background-color: var(--level-two-accent);
+}
+
+.Event-Task-Details {
+    padding: 0 18px;
+    background-color: var(--level-one-color);
 }

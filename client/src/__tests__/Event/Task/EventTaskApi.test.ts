@@ -1,9 +1,11 @@
 import nock from "nock";
 import axios from "axios";
 import {
+    addComment,
     createEventTask,
     EventTask,
     EventTaskCategory,
+    EventTaskComment,
     getEventTaskCategoriesContains,
     getEventTasks,
     StatusCode,
@@ -103,6 +105,30 @@ describe("event task", () => {
             .get("/api/v1/event/1/task")
             .reply(HttpStatus.OK, expectedResponse);
         const response = await getEventTasks(1);
+        expect(expectedResponse).toEqual(response);
+    });
+
+    it("posts a comment", async () => {
+        const comment: EventTaskComment = {
+            eventTaskId: 10,
+            annotation: "a comment",
+        };
+        const expectedResponse: EventTaskComment = {
+            eventTaskId: 10,
+            annotation: "a comment",
+            audit: {
+                createdBy: "1234",
+                createdByDisplayName: "user",
+                createdDate: "2020-08-18T14:15:59",
+                lastModifiedBy: "1234",
+                lastModifiedByDisplayName: "user",
+                lastModifiedDate: "2020-08-18T14:15:59",
+            },
+        };
+        nock("http://example.com")
+            .post("/api/v1/event/1/task/10/comment", comment as NockBody)
+            .reply(HttpStatus.CREATED, expectedResponse);
+        const response = await addComment(1, comment);
         expect(expectedResponse).toEqual(response);
     });
 });
