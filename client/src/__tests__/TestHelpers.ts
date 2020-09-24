@@ -161,11 +161,13 @@ export const makeEventTask = (partial: Partial<EventTask>): EventTask => {
     }
     return {
         eventId: partial.eventId,
+        eventTaskId: partial.eventTaskId || partial.eventTaskCategory.eventTaskId,
         eventTaskCategory: partial.eventTaskCategory,
         suspenseDate: partial.suspenseDate || "",
         status: partial.status || makeEventTaskStatus({}),
         approver: partial.approver || makeTsrUser({}),
         resourcer: partial.resourcer || makeTsrUser({}),
+        comments: partial.comments || [],
     };
 };
 
