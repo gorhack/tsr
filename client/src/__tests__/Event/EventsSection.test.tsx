@@ -136,7 +136,12 @@ describe("home page of the application", () => {
     it("shows no active events box if theres no org events", async () => {
         await renderEventsSection({});
 
-        expect(screen.getAllByText("No Active Events")).toHaveLength(2);
+        expect(
+            screen.getAllByText(
+                "No active events. Ensure you are subscribed to the correct Organizations.",
+            ),
+        ).toHaveLength(2);
+        expect(screen.getAllByRole("button", { name: "Go To User Settings" })).toHaveLength(2);
     });
 
     it("shows next if more user event pages", async () => {

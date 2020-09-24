@@ -38,6 +38,7 @@ input[type=text],input[type=number],input[type=search] {
   border: 1px solid var(--action-color);
   color: var(--text-color);
   background-color: var(--background-color);
+  width: 100%;
 }
 
 .space-1 {

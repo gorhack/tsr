@@ -4,10 +4,11 @@ import "./EventsSection.css";
 import { useHistory } from "react-router-dom";
 import { emptyPage, PageDTO } from "../api";
 import uniqBy from "lodash/uniqBy";
-import { MenuButton, PrimaryButton } from "../Buttons/Buttons";
+import { MenuButton } from "../Buttons/Buttons";
 import moment, { Moment } from "moment";
 
 export const EventsSection = (): ReactElement => {
+    const history = useHistory();
     const [userEventPage, setUserEventPage] = useState<PageDTO<TsrEvent>>(emptyPage);
     const [userEvents, setUserEvents] = useState<TsrEvent[]>([]);
     const [orgEventPage, setOrgEventPage] = useState<PageDTO<TsrEvent>>(emptyPage);
@@ -85,7 +86,16 @@ export const EventsSection = (): ReactElement => {
     };
 
     const noEvents = () => {
-        return <div className={"EventsSection-No-Events"}>No Active Events</div>;
+        return (
+            <div>
+                <div className={"EventsSection-No-Events"}>
+                    No active events. Ensure you are subscribed to the correct Organizations.
+                </div>
+                <MenuButton onClick={() => history.push("/settings")}>
+                    Go To User Settings
+                </MenuButton>
+            </div>
+        );
     };
 
     return (
@@ -114,12 +124,12 @@ export const EventsSection = (): ReactElement => {
                 {orgEventPage.last || orgEventPage.totalResults === 0 ? (
                     <></>
                 ) : (
-                    <PrimaryButton
+                    <MenuButton
                         data-testid={"org-event-more"}
                         onClick={() => loadOrgEvents(orgEventPage.pageNumber + 1)}
                     >
                         load more
-                    </PrimaryButton>
+                    </MenuButton>
                 )}
             </div>
         </div>
