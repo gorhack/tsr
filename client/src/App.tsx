@@ -7,6 +7,7 @@ import { CreateEvent } from "./Event/CreateEvent";
 import { EventPage } from "./Event/EventPage";
 import { StompSocketProvider } from "./StompSocketContext";
 import { PrimaryNavigation } from "./Navigation/PrimaryNavigation";
+import { Footer } from "./Navigation/Footer";
 import { About } from "./About";
 import { UserSettings } from "./Users/UserSettings";
 
@@ -15,9 +16,9 @@ const App: React.FC = () => {
         <StompSocketProvider>
             <BrowserRouter>
                 <div className="App">
-                    <div className="App-header">
+                    <div className="App-Container">
                         <PrimaryNavigation />
-                        <main className="App-content">
+                        <main className="App-Content">
                             <Switch>
                                 <Route path="/createEvent" component={CreateEvent} />
                                 <Route path="/editEvent/:eventId" component={CreateEvent} />
@@ -27,6 +28,7 @@ const App: React.FC = () => {
                                 <Route path="/" component={Home} />
                             </Switch>
                         </main>
+                        <Footer />
                     </div>
                 </div>
             </BrowserRouter>

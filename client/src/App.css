@@ -1,9 +1,11 @@
-.App-header {
-  height: 70px;
+.App-Container {
+  position: relative;
+  min-height: 100vh;
 }
 
-.App-content {
+.App-Content {
   max-width: 90%;
   margin-left: 5%;
   margin-top: 5%;
+  padding-bottom: 7rem;
 }

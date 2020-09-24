@@ -1,0 +1,21 @@
+.Footer {
+    background-color: var(--level-two-color);
+    box-shadow: 0 2px 4px 0 rgba(0,0,0,0.50);
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    height: 3.5rem;
+}
+
+.Footer-Container {
+    font-size: 42px;
+    color: var(--action-color);
+    font-style: italic;
+    font-weight: bold;
+}
+
+.Footer-Content {
+    align-content: space-between;
+    margin-left: 85%;
+    padding-left: 5rem;
+}
