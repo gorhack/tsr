@@ -110,10 +110,12 @@ describe("event task", () => {
 
     it("posts a comment", async () => {
         const comment: EventTaskComment = {
+            commentId: 1,
             eventTaskId: 10,
             annotation: "a comment",
         };
         const expectedResponse: EventTaskComment = {
+            commentId: 1,
             eventTaskId: 10,
             annotation: "a comment",
             audit: {

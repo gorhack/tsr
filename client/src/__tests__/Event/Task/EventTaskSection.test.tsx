@@ -9,9 +9,11 @@ import selectEvent from "react-select-event";
 import { SocketSubscriptionTopics, TsrEvent } from "../../../Event/EventApi";
 import {
     callSocketSubscriptionHandler,
+    makeAudit,
     makeEvent,
     makeEventTask,
     makeEventTaskCategory,
+    makeEventTaskComment,
     makeEventTaskStatus,
     makePage,
     makeTsrUser,
@@ -92,7 +94,27 @@ describe("event tasks", () => {
     });
 
     it("shows details when task is clicked", async () => {
-        await renderEventTasks({ eventTasks: [eventTask] });
+        await renderEventTasks({
+            eventTasks: [
+                {
+                    ...eventTask,
+                    comments: [
+                        makeEventTaskComment({
+                            commentId: 1,
+                            eventTaskId: eventTask.eventTaskId,
+                            annotation: "this is an annotation",
+                            audit: makeAudit({ createdByDisplayName: "someone" }),
+                        }),
+                        makeEventTaskComment({
+                            commentId: 2,
+                            eventTaskId: eventTask.eventTaskId,
+                            annotation: "another annotation",
+                            audit: makeAudit({ createdByDisplayName: "someone else" }),
+                        }),
+                    ],
+                },
+            ],
+        });
         expect(screen.queryByLabelText("suspense date")).not.toBeInTheDocument();
         expect(screen.queryByLabelText("approver")).not.toBeInTheDocument();
         expect(screen.queryByLabelText("resourcer")).not.toBeInTheDocument();
@@ -104,6 +126,8 @@ describe("event tasks", () => {
         );
         expect(screen.getByLabelText("approver")).toHaveTextContent("user");
         expect(screen.getByLabelText("resourcer")).toHaveTextContent("user");
+        expect(screen.getByLabelText("someone")).toHaveTextContent("this is an annotation");
+        expect(screen.getByLabelText("someone else")).toHaveTextContent("another annotation");
     });
 
     describe("websockets", () => {

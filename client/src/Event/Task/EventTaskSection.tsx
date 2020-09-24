@@ -158,6 +158,27 @@ export const EventTaskSection = ({ tsrEvent }: EventTaskSectionProps): ReactElem
                                         label="resourcer"
                                         description={eventTask.resourcer.username}
                                     />
+                                    {eventTask.comments.map((comment) => {
+                                        return (
+                                            <div
+                                                key={`task-comment-${comment.commentId}`}
+                                                className="Event-Task-Comment"
+                                            >
+                                                <span>
+                                                    {comment.audit &&
+                                                        comment.audit.createdByDisplayName}
+                                                </span>
+                                                <span
+                                                    aria-label={
+                                                        comment.audit &&
+                                                        comment.audit.createdByDisplayName
+                                                    }
+                                                >
+                                                    {comment.annotation}
+                                                </span>
+                                            </div>
+                                        );
+                                    })}
                                 </div>
                             )}
                         </div>

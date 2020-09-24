@@ -16,7 +16,6 @@ import java.time.OffsetDateTime
 internal class EventTaskServiceTest {
     private lateinit var subject: EventTaskService
     private lateinit var mockEventTaskRepository: EventTaskRepository
-    private lateinit var mockEventTaskCommentRepository: EventTaskCommentRepository
     private lateinit var mockTsrUserService: TsrUserService
     private lateinit var mockEventService: EventService
     private lateinit var mockApplicationEventPublisher: ApplicationEventPublisher
@@ -99,6 +98,7 @@ internal class EventTaskServiceTest {
                 resourcer = TsrUserDTO(1L, "1234", "user", UserRole.USER, UserSettingsDTO()),
                 comments = listOf(
                     EventTaskCommentDTO(
+                        commentId = 1L,
                         eventTaskId = 2L,
                         annotation = "first annotation",
                         audit = AuditDTO(
@@ -111,6 +111,7 @@ internal class EventTaskServiceTest {
                         )
                     ),
                     EventTaskCommentDTO(
+                        commentId = 2L,
                         eventTaskId = 2L,
                         annotation = "second annotation",
                         audit = AuditDTO(
@@ -147,9 +148,9 @@ internal class EventTaskServiceTest {
     fun `addComment adds a comment to an event task`() {
         val tsrUser = TsrUser(1L, "1234", "user")
 
-        val initialCommentDTO = EventTaskCommentDTO(eventTaskId = 1L, annotation = "first annotation")
+        val initialCommentDTO = EventTaskCommentDTO(commentId = 40L, eventTaskId = 1L, annotation = "first annotation")
         val savedComment = EventTaskComment(
-            commentId = 1L,
+            commentId = 40L,
             eventTask = EventTask(eventTaskId = 1L),
             annotation = "first annotation",
             createdBy = "1234",
@@ -158,6 +159,7 @@ internal class EventTaskServiceTest {
             lastModifiedDate = OffsetDateTime.parse("1970-01-01T00:00:01-08:00")
         )
         val savedCommentDTO = EventTaskCommentDTO(
+            commentId = 40L,
             eventTaskId = 1L,
             annotation = "first annotation",
             audit = AuditDTO(

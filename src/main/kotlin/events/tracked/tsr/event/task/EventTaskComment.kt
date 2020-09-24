@@ -49,11 +49,13 @@ data class EventTaskComment(
 }
 
 data class EventTaskCommentDTO(
+    val commentId: Long,
     var eventTaskId: Long = 0L,
     var annotation: String = "",
     var audit: AuditDTO? = null
 ) {
     constructor(eventTaskId: Long, comment: EventTaskComment, createdByDisplayName: String, lastModifiedByDisplayName: String) : this(
+        commentId = comment.commentId,
         eventTaskId = eventTaskId,
         annotation = comment.annotation,
         audit = AuditDTO(
@@ -68,6 +70,7 @@ data class EventTaskCommentDTO(
 
     fun toComment(eventTask: EventTask): EventTaskComment {
         return EventTaskComment(
+            commentId = this.commentId,
             eventTask = eventTask,
             annotation = this.annotation
         )

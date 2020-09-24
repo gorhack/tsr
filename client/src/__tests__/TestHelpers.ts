@@ -10,6 +10,7 @@ import { Client, messageCallbackType, StompHeaders, StompSubscription } from "@s
 import {
     EventTask,
     EventTaskCategory,
+    EventTaskComment,
     EventTaskStatus,
     StatusCode,
 } from "../Event/Task/EventTaskApi";
@@ -149,6 +150,21 @@ export const makeEventTaskCategory = (partial: Partial<EventTaskCategory>): Even
         eventTaskId: partial.eventTaskId,
         eventTaskDisplayName: partial.eventTaskDisplayName || "",
         eventTaskName: partial.eventTaskName || "",
+    };
+};
+
+export const makeEventTaskComment = (partial: Partial<EventTaskComment>): EventTaskComment => {
+    if (!partial.commentId) {
+        throw Error("event task comment must have an id");
+    }
+    if (!partial.eventTaskId) {
+        throw Error("event task comment must have an event task id");
+    }
+    return {
+        commentId: partial.commentId,
+        eventTaskId: partial.eventTaskId,
+        annotation: partial.annotation || "",
+        audit: partial.audit || makeAudit({}),
     };
 };
 

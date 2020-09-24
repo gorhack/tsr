@@ -76,10 +76,12 @@ internal class EventTaskControllerTest {
     @Test
     fun `addComment adds a comment to the task`() {
         val comment = EventTaskCommentDTO(
+            commentId = 14L,
             eventTaskId = 10L,
             annotation = "a really long comment"
         )
         val savedComment = EventTaskCommentDTO(
+            commentId = 14L,
             eventTaskId = 10L,
             annotation = "a really long comment",
             audit = AuditDTO(
