@@ -90,9 +90,9 @@ internal class EventTaskControllerTest {
             )
         )
         every {
-            mockEventTaskService.addComment(1, comment)
+            mockEventTaskService.addComment(1, 10, comment)
         } returns savedComment
         val expectedResponse = ResponseEntity(savedComment, HttpStatus.CREATED)
-        assertEquals(expectedResponse, subject.addComment(1, comment))
+        assertEquals(expectedResponse, subject.addComment(1, 10, comment))
     }
 }

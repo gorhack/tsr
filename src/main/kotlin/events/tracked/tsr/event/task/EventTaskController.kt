@@ -26,12 +26,13 @@ class EventTaskController(
         return ResponseEntity(eventTaskService.getEventTaskDTOs(eventId), HttpStatus.OK)
     }
 
-    @PostMapping(value = ["/comment"])
+    @PostMapping(value = ["/{eventTaskId}/comment"])
     fun addComment(
         @PathVariable eventId: Int,
+        @PathVariable eventTaskId: Int,
         @RequestBody comment: EventTaskCommentDTO
     ): ResponseEntity<EventTaskCommentDTO> {
-        val eventTaskWithComment = eventTaskService.addComment(eventId, comment)
+        val eventTaskWithComment = eventTaskService.addComment(eventId, eventTaskId, comment)
         return ResponseEntity(eventTaskWithComment, HttpStatus.CREATED)
     }
 }

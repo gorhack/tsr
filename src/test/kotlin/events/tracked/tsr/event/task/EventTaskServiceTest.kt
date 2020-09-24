@@ -32,11 +32,10 @@ internal class EventTaskServiceTest {
     @Before
     fun setup() {
         mockEventTaskRepository = mockk(relaxUnitFun = true)
-        mockEventTaskCommentRepository = mockk(relaxUnitFun = true)
         mockTsrUserService = mockk(relaxUnitFun = true)
         mockEventService = mockk(relaxUnitFun = true)
         mockApplicationEventPublisher = mockk()
-        subject = EventTaskService(mockEventTaskRepository, mockEventTaskCommentRepository, mockTsrUserService, mockEventService, mockApplicationEventPublisher)
+        subject = EventTaskService(mockEventTaskRepository, mockTsrUserService, mockEventService, mockApplicationEventPublisher)
 
         every {
             mockApplicationEventPublisher.publishEvent(capture(capturedTsrEventTaskSaveEvent))
@@ -179,7 +178,7 @@ internal class EventTaskServiceTest {
             mockEventTaskRepository.saveAndFlush(eventTask)
         } returns eventTask.copy(comments = hashSetOf(savedComment))
 
-        assertEquals(savedCommentDTO, subject.addComment(1, initialCommentDTO))
+        assertEquals(savedCommentDTO, subject.addComment(1, 1, initialCommentDTO))
 
         verifySequence {
             mockEventTaskRepository.findByIdOrNull(1L)

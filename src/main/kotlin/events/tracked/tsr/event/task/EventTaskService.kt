@@ -14,7 +14,6 @@ import javax.transaction.Transactional
 @Service
 class EventTaskService(
     private val eventTaskRepository: EventTaskRepository,
-    private val eventTaskCommentRepository: EventTaskCommentRepository,
     private val tsrUserService: TsrUserService,
     private val eventService: EventService,
     private val applicationEventPublisher: ApplicationEventPublisher
@@ -84,8 +83,8 @@ class EventTaskService(
     }
 
     @Transactional
-    fun addComment(eventId: Int, commentDTO: EventTaskCommentDTO): EventTaskCommentDTO {
-        val eventTask = eventTaskRepository.findByIdOrNull(commentDTO.eventTaskId)
+    fun addComment(eventId: Int, eventTaskId: Int, commentDTO: EventTaskCommentDTO): EventTaskCommentDTO {
+        val eventTask = eventTaskRepository.findByIdOrNull(eventTaskId.toLong())
             ?: throw EmptyResultDataAccessException(1)
         val comment = commentDTO.toComment(eventTask)
         eventTask.addComment(comment)
