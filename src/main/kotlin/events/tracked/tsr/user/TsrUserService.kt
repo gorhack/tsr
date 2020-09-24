@@ -30,17 +30,17 @@ class TsrUserService(private val tsrUserRepository: TsrUserRepository) {
 
     fun updateUserRole(userRoleUpdate: UserRoleUpdateDTO) {
         val tsrUser = tsrUserRepository.findByUserId(userRoleUpdate.userId) ?: throw IllegalArgumentException()
-        tsrUserRepository.save(tsrUser.copy(role = userRoleUpdate.role))
+        tsrUser.role = userRoleUpdate.role
+        tsrUserRepository.save(tsrUser)
     }
 
     fun isEmpty(): Boolean = tsrUserRepository.count() == 0L
 
-    fun setUserSettings(tsrUser: TsrUser, userSettings: UserSettingsDTO): TsrUser {
-        val tsrUserToSave = tsrUser.copy(
-            organizations = userSettings.organizations.map { o -> o.toOrganization() }.toMutableList(),
-            emailAddress = userSettings.emailAddress,
-            phoneNumber = userSettings.phoneNumber
-        )
-        return tsrUserRepository.save(tsrUserToSave)
+    fun setUserSettings(oidcUser: OidcUser, userSettings: UserSettingsDTO): TsrUser {
+        val userToUpdate = assertUserExistsAndReturnUser(oidcUser)
+        userToUpdate.updateOrganizations(userSettings.organizations.map { o -> o.toOrganization() }.toHashSet())
+        userToUpdate.emailAddress = userSettings.emailAddress
+        userToUpdate.phoneNumber = userSettings.phoneNumber
+        return tsrUserRepository.save(userToUpdate)
     }
 }

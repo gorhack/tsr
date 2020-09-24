@@ -61,11 +61,11 @@ data class EventTask(
     @JoinColumn(name = "status_id")
     var status: EventTaskStatus = EventTaskStatus(statusId = 1L, "CREATED", "created", EventTaskStatusCode.R, 2),
     @OneToMany(targetEntity = EventTaskComment::class, mappedBy = "commentId", fetch = FetchType.LAZY, cascade = [CascadeType.ALL], orphanRemoval = true)
-    var comments: List<EventTaskComment> = emptyList()
+    var comments: Set<EventTaskComment> = hashSetOf()
 
 ) : Auditable() {
     // constructor without status
-    constructor(eventTaskId: Long, eventTaskCategoryId: EventTaskCategory, eventId: Event, suspenseDate: OffsetDateTime, approver: TsrUser, resourcer: TsrUser, comments: List<EventTaskComment>, lastModifiedDate: OffsetDateTime, lastModifiedBy: String, createdDate: OffsetDateTime, createdBy: String) :
+    constructor(eventTaskId: Long, eventTaskCategoryId: EventTaskCategory, eventId: Event, suspenseDate: OffsetDateTime, approver: TsrUser, resourcer: TsrUser, comments: Set<EventTaskComment>, lastModifiedDate: OffsetDateTime, lastModifiedBy: String, createdDate: OffsetDateTime, createdBy: String) :
         this(eventTaskId = eventTaskId, eventTaskCategory = eventTaskCategoryId, event = eventId, suspenseDate = suspenseDate, approver = approver, resourcer = resourcer, comments = comments) {
         this.lastModifiedDate = lastModifiedDate
         this.lastModifiedBy = lastModifiedBy
@@ -75,7 +75,7 @@ data class EventTask(
 
     fun addComment(comment: EventTaskComment) {
         comments = comments.plus(comment)
-        comment.setEventTask(this)
+        comment.updateEventTask(this)
     }
 
     fun toEventTaskDTO(commentDTOs: List<EventTaskCommentDTO>): EventTaskDTO {

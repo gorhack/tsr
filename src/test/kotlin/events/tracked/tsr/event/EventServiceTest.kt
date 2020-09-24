@@ -35,7 +35,7 @@ class EventServiceTest {
     private lateinit var eventDTOWithId: EventDTO
     private lateinit var eventDTOWithId2: EventDTO
     private lateinit var eventDTOWithIdAndDisplayNames: EventDTO
-    private lateinit var organizations: MutableList<Organization>
+    private lateinit var organizations: Set<Organization>
     private lateinit var expectedPageDTO: PageDTO<EventDTO>
 
     @BeforeEach
@@ -67,7 +67,7 @@ class EventServiceTest {
                 lastModifiedByDisplayName = "user_2"
             )
         )
-        organizations = mutableListOf(makeOrganization1(), makeOrganization2())
+        organizations = hashSetOf(makeOrganization1(), makeOrganization2())
         expectedPageDTO = PageDTO(
             items = listOf(eventDTOWithId, eventDTOWithId2),
             totalPages = 1,
@@ -147,30 +147,38 @@ class EventServiceTest {
     }
 
     @Test
-    fun `editEvent returns eventDTO with updated event details`() {
-        val updatedEventDTO = eventDTOWithId.copy(
-            audit = AuditDTO(
-                lastModifiedBy = "9876",
-                lastModifiedDate = OffsetDateTime.parse("1970-01-02T00:00:01-09:00"),
-                createdBy = "1234",
-                createdDate = OffsetDateTime.parse("1970-01-02T00:00:01-08:00")
-            )
+    fun `updateEvent returns eventDTO with updated event details`() {
+        val eventDTOToUpdate = EventDTO(
+            eventId = 1L,
+            eventName = "updated name",
+            organizations = hashSetOf(makeOrganizationDTO2()),
+            startDate = OffsetDateTime.parse("2020-01-02T00:00:01-09:00"),
+            endDate = OffsetDateTime.parse("2020-01-03T00:00:01-09:00"),
+            eventType = EventType(11L, "some other thing", "some other thing", 50)
+        )
+        val eventToUpdate = Event(
+            eventId = 1L,
+            eventName = "updated name",
+            organizations = hashSetOf(makeOrganization2()),
+            startDate = OffsetDateTime.parse("2020-01-02T00:00:01-09:00"),
+            endDate = OffsetDateTime.parse("2020-01-03T00:00:01-09:00"),
+            eventType = EventType(11L, "some other thing", "some other thing", 50)
         )
         val updatedEvent = Event(
             eventId = 1L,
-            eventName = "blue",
-            organizations = mutableListOf(makeOrganization1()),
-            startDate = OffsetDateTime.parse("1970-01-01T00:00:01-08:00"),
-            endDate = OffsetDateTime.parse("1970-01-02T00:00:01-08:00"),
-            eventType = EventType(1, "rock", "rocks are fun", 1),
+            eventName = "updated name",
+            organizations = hashSetOf(makeOrganization2()),
+            startDate = OffsetDateTime.parse("2020-01-02T00:00:01-09:00"),
+            endDate = OffsetDateTime.parse("2020-01-03T00:00:01-09:00"),
+            eventType = EventType(11L, "some other thing", "some other thing", 50),
             lastModifiedBy = "9876",
             lastModifiedDate = OffsetDateTime.parse("1970-01-02T00:00:01-09:00"),
             createdBy = "1234",
             createdDate = OffsetDateTime.parse("1970-01-02T00:00:01-08:00")
         )
         every { mockEventRepository.findByIdOrNull(1) } returns eventWithId
-        every { mockEventRepository.saveAndFlush(updatedEvent) } returns updatedEvent
-        assertEquals(updatedEventDTO, subject.updateEvent(eventDTOWithId))
+        every { mockEventRepository.saveAndFlush(eventToUpdate) } returns updatedEvent
+        assertEquals(updatedEvent, subject.updateEvent(eventDTOToUpdate))
         verifySequence {
             mockEventRepository.findByIdOrNull(1)
             mockEventRepository.saveAndFlush(eventWithId)

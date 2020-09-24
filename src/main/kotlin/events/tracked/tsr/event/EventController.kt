@@ -25,8 +25,7 @@ class EventController(
 
     @PutMapping(value = [""])
     fun updateEvent(@RequestBody eventDTO: EventDTO): EventDTO {
-        println(eventDTO)
-        return eventService.updateEvent(eventDTO)
+        return eventService.updateEvent(eventDTO).toEventDTO()
     }
 
     @GetMapping(value = ["/active"])
@@ -73,7 +72,7 @@ class EventController(
         @RequestParam("size", defaultValue = "10") size: Int,
         @RequestParam("sortBy", defaultValue = "startDate") sortBy: String
     ): ResponseEntity<PageDTO<EventDTO>> {
-        val tsrUser = tsrUserService.assertUserExistsAndReturnUser(user);
+        val tsrUser = tsrUserService.assertUserExistsAndReturnUser(user)
         return when (sortBy) {
             "startDate" -> ResponseEntity<PageDTO<EventDTO>>(
                 eventService.getActiveEventsByOrganizationIds(

@@ -4,6 +4,7 @@ import events.tracked.tsr.event.type.EventType
 import events.tracked.tsr.jpa_ext.Auditable
 import events.tracked.tsr.organization.Organization
 import java.time.OffsetDateTime
+import java.util.*
 import javax.persistence.*
 
 @Entity
@@ -28,14 +29,14 @@ data class Event(
         joinColumns = [JoinColumn(name = "event_id")],
         inverseJoinColumns = [JoinColumn(name = "organization_id")]
     )
-    var organizations: MutableList<Organization> = mutableListOf()
+    var organizations: Set<Organization> = hashSetOf()
 
 
 ) : Auditable() {
-    constructor(eventId: Long, eventName: String, organizations: MutableList<Organization>, startDate: OffsetDateTime, endDate: OffsetDateTime) :
+    constructor(eventId: Long, eventName: String, organizations: Set<Organization>, startDate: OffsetDateTime, endDate: OffsetDateTime) :
         this(eventId = eventId, eventName = eventName, organizations = organizations, startDate = startDate, endDate = endDate, eventType = null)
 
-    constructor(eventId: Long, eventName: String, organizations: MutableList<Organization>, startDate: OffsetDateTime, endDate: OffsetDateTime, eventType: EventType?, lastModifiedDate: OffsetDateTime, lastModifiedBy: String, createdDate: OffsetDateTime, createdBy: String) :
+    constructor(eventId: Long, eventName: String, organizations: Set<Organization>, startDate: OffsetDateTime, endDate: OffsetDateTime, eventType: EventType?, lastModifiedDate: OffsetDateTime, lastModifiedBy: String, createdDate: OffsetDateTime, createdBy: String) :
         this(eventId = eventId, eventName = eventName, organizations = organizations, startDate = startDate, endDate = endDate, eventType = eventType) {
         this.lastModifiedDate = lastModifiedDate
         this.lastModifiedBy = lastModifiedBy
@@ -43,11 +44,41 @@ data class Event(
         this.createdBy = createdBy
     }
 
+    // https://vladmihalcea.com/the-best-way-to-use-the-manytomany-annotation-with-jpa-and-hibernate/
+    fun addOrganization(organization: Organization) {
+        organizations = organizations.plus(organization)
+        organization.events = organization.events.plus(this)
+    }
+
+    fun removeOrganization(organization: Organization) {
+        organizations = organizations.minus(organization)
+        organization.events = organization.events.minus(this)
+    }
+
+    fun updateOrganizations(newOrganizations: Set<Organization>) {
+        val added = newOrganizations.subtract(organizations)
+        val removed = organizations.subtract(newOrganizations)
+        added.map { organization -> this.addOrganization(organization) }
+        removed.map { organization -> this.removeOrganization(organization) }
+    }
+
+    @Override
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is Event) return false
+        return eventId == other.eventId
+    }
+
+    @Override
+    override fun hashCode(): Int {
+        return Objects.hash(this.eventId)
+    }
+
     fun toEventDTO(): EventDTO {
         return EventDTO(
             eventId = eventId,
             eventName = eventName,
-            organizations = organizations,
+            organizations = organizations.map { org -> org.toOrganizationDTO() }.toHashSet(),
             startDate = startDate,
             endDate = endDate,
             eventType = eventType,

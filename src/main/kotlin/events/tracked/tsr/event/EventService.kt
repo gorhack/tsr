@@ -4,7 +4,6 @@ import events.tracked.tsr.NewTsrEventSaveEvent
 import events.tracked.tsr.PageDTO
 import events.tracked.tsr.UpdateTsrEventSaveEvent
 import events.tracked.tsr.organization.Organization
-import events.tracked.tsr.user.TsrUserRepository
 import events.tracked.tsr.user.TsrUserService
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.dao.EmptyResultDataAccessException
@@ -57,7 +56,7 @@ class EventService(
     }
 
     fun getActiveEventsByOrganizationIds(
-        organizations: MutableList<Organization>,
+        organizations: Set<Organization>,
         page: Int,
         size: Int,
         sortBy: Sort
@@ -94,20 +93,16 @@ class EventService(
     }
 
     @Transactional
-    fun updateEvent(eventDTO: EventDTO): EventDTO {
+    fun updateEvent(eventDTO: EventDTO): Event {
         val eventToUpdate = eventRepository.findByIdOrNull(eventDTO.eventId) ?: throw EmptyResultDataAccessException(1)
         eventToUpdate.eventName = eventDTO.eventName
         eventToUpdate.startDate = eventDTO.startDate
         eventToUpdate.endDate = eventDTO.endDate
         eventToUpdate.eventType = eventDTO.eventType
-        eventToUpdate.organizations = eventDTO.organizations
-        eventToUpdate.createdBy = eventDTO.audit?.createdBy ?: "[deleted]"
-        eventToUpdate.createdDate = eventDTO.audit?.createdDate ?: OffsetDateTime.parse("1970-01-01T00:00:01-00:00")
-        eventToUpdate.lastModifiedBy = eventDTO.audit?.lastModifiedBy ?: "[deleted]"
-        eventToUpdate.lastModifiedDate = eventDTO.audit?.lastModifiedDate ?: OffsetDateTime.parse("1970-01-01T00:00:01-00:00")
+        eventToUpdate.updateOrganizations(eventDTO.organizations.map { org -> org.toOrganization() }.toHashSet())
 
         val updatedEvent = eventRepository.saveAndFlush(eventToUpdate)
         applicationEventPublisher.publishEvent(UpdateTsrEventSaveEvent(this, updatedEvent))
-        return updatedEvent.toEventDTO()
+        return updatedEvent
     }
 }

@@ -3,6 +3,7 @@ package events.tracked.tsr.event.task
 import events.tracked.tsr.event.AuditDTO
 import events.tracked.tsr.jpa_ext.Auditable
 import java.time.OffsetDateTime
+import java.util.*
 import javax.persistence.*
 
 @Entity
@@ -29,7 +30,7 @@ data class EventTaskComment(
         this.lastModifiedDate = lastModifiedDate
     }
 
-    fun setEventTask(eventTask: EventTask) {
+    fun updateEventTask(eventTask: EventTask) {
         this.eventTask = eventTask
     }
 
@@ -43,7 +44,7 @@ data class EventTaskComment(
 
     @Override
     override fun hashCode(): Int {
-        return 31
+        return Objects.hash(this.commentId)
     }
 }
 

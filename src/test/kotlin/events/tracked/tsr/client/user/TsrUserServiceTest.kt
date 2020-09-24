@@ -212,18 +212,26 @@ class TsrUserServiceTest {
         val organization2 = Organization(organizationId = 2L, organizationName = "org2", organizationDisplayName = "org 2", sortOrder = 2)
         val organizationDTO2 = OrganizationDTO(organizationId = 2L, organizationName = "org2", organizationDisplayName = "org 2", sortOrder = 2)
 
-        val userToUpdate = TsrUser(1L, "1234", "user", UserRole.USER, organizations = mutableListOf(organization))
-        val savedTsrUser = TsrUser(1L, "1234", "user", UserRole.USER, organizations = mutableListOf(organization, organization2))
+        val oidcUser = makeOidcUser("1234", "user")
+        val userToUpdate = TsrUser(1L, "1234", "user", UserRole.USER, organizations = hashSetOf(organization))
+        val savedTsrUser = TsrUser(1L, "1234", "user", UserRole.USER, organizations = hashSetOf(organization, organization2))
 
+        every {
+            mockTsrUserRepository.findByUserId("1234")
+        } returns userToUpdate
         every { mockTsrUserRepository.save(savedTsrUser) } returns savedTsrUser
-        assertEquals(savedTsrUser, subject.setUserSettings(userToUpdate, UserSettingsDTO(organizations = listOf(organizationDTO, organizationDTO2), phoneNumber = null, emailAddress = null)))
+        assertEquals(savedTsrUser, subject.setUserSettings(oidcUser, UserSettingsDTO(organizations = hashSetOf(organizationDTO, organizationDTO2), phoneNumber = null, emailAddress = null)))
     }
 
     @Test
     fun `setUserOrganiations updates users phone number and email`() {
-        val userToUpdate = TsrUser(1L, "1234", "user", UserRole.USER, organizations = mutableListOf(), phoneNumber = "1231231234", emailAddress = null)
-        val savedTsrUser = TsrUser(1L, "1234", "user", UserRole.USER, organizations = mutableListOf(), phoneNumber = "0980987", emailAddress = "test@example.com")
+        val oidcUser = makeOidcUser("1234", "user")
+        val userToUpdate = TsrUser(1L, "1234", "user", UserRole.USER, organizations = hashSetOf(), phoneNumber = "1231231234", emailAddress = null)
+        val savedTsrUser = TsrUser(1L, "1234", "user", UserRole.USER, organizations = hashSetOf(), phoneNumber = "0980987", emailAddress = "test@example.com")
+        every {
+            mockTsrUserRepository.findByUserId("1234")
+        } returns userToUpdate
         every { mockTsrUserRepository.save(savedTsrUser) } returns savedTsrUser
-        assertEquals(savedTsrUser, subject.setUserSettings(userToUpdate, UserSettingsDTO(organizations = listOf(), phoneNumber = "0980987", emailAddress = "test@example.com")))
+        assertEquals(savedTsrUser, subject.setUserSettings(oidcUser, UserSettingsDTO(organizations = hashSetOf(), phoneNumber = "0980987", emailAddress = "test@example.com")))
     }
 }

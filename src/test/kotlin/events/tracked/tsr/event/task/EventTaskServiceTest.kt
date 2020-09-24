@@ -56,7 +56,7 @@ internal class EventTaskServiceTest {
         val suspenseDate = OffsetDateTime.parse("1970-01-01T00:00:01-08:00")
 
         val oidcUser = makeOidcUser("1234", "user")
-        val tsrUser = TsrUser(1L, "1234", "user", UserRole.USER, mutableListOf())
+        val tsrUser = TsrUser(1L, "1234", "user", UserRole.USER, hashSetOf())
 
         val eventTaskCategory = EventTaskCategory(eventTaskCategoryId = 10L, eventTaskName = "CLASS_ONE", eventTaskDisplayName = "Class I")
 
@@ -177,7 +177,7 @@ internal class EventTaskServiceTest {
         } returns tsrUser
         every {
             mockEventTaskRepository.saveAndFlush(eventTask)
-        } returns eventTask.copy(comments = listOf(savedComment))
+        } returns eventTask.copy(comments = hashSetOf(savedComment))
 
         assertEquals(savedCommentDTO, subject.addComment(1, initialCommentDTO))
 
