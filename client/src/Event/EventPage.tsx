@@ -6,12 +6,11 @@ import { EventDetails } from "./EventDetails";
 import { LinkButton, PrimaryButton } from "../Buttons/Buttons";
 import "./EventPage.css";
 import { EventTaskSection } from "./Task/EventTaskSection";
+import { LONG_DATE_FORMAT } from "../api";
 
 export interface RouteParams {
     eventId: string;
 }
-
-const LONG_DATE_FORMAT = "ddd MMM D, YYYY";
 
 export const EventPage: React.FC = () => {
     const history = useHistory();

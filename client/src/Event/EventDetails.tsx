@@ -3,6 +3,7 @@ import moment, { Moment } from "moment";
 import { TsrEvent } from "./EventApi";
 import { currentTimeUtc, userTimeZone } from "../api";
 import "./EventPage.css";
+import { DetailRow } from "./DetailRow";
 
 const SHORT_DATE_FORMAT = "M/D/YY";
 const LONG_DATE_TIME_FORMAT = "dddd, MMMM Do YYYY, HHmm";
@@ -85,20 +86,5 @@ export const EventDetails = React.memo(
         );
     },
 );
-
-interface DetailRowProps {
-    label: string;
-    description: string;
-    className?: string;
-}
-
-const DetailRow = ({ label, description, className = "" }: DetailRowProps): ReactElement => {
-    return (
-        <div className={`Event-Detail-Row ${className}`}>
-            <span className={"Event-Detail-Row-Label"}>{label}</span>
-            <span aria-label={label}>{description}</span>
-        </div>
-    );
-};
 
 EventDetails.displayName = "EventDetails";

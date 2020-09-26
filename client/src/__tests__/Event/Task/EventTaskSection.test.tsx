@@ -9,11 +9,14 @@ import selectEvent from "react-select-event";
 import { SocketSubscriptionTopics, TsrEvent } from "../../../Event/EventApi";
 import {
     callSocketSubscriptionHandler,
+    makeAudit,
     makeEvent,
     makeEventTask,
     makeEventTaskCategory,
+    makeEventTaskComment,
     makeEventTaskStatus,
     makePage,
+    makeTsrUser,
     mockSocketService,
     reRender,
 } from "../../TestHelpers";
@@ -25,6 +28,7 @@ describe("event tasks", () => {
     let mockGetEventTaskCategories: typeof EventTaskApi.getEventTaskCategoriesContains;
     let mockCreateEventTask: typeof EventTaskApi.createEventTask;
     let mockGetEventTasks: typeof EventTaskApi.getEventTasks;
+    let mockAddComment: typeof EventTaskApi.addComment;
     let tsrEvent: TsrEvent;
     let firstEventTaskCategory: EventTaskCategory;
     let eventTask: EventTask;
@@ -33,16 +37,22 @@ describe("event tasks", () => {
         mockGetEventTaskCategories = td.replace(EventTaskApi, "getEventTaskCategoriesContains");
         mockCreateEventTask = td.replace(EventTaskApi, "createEventTask");
         mockGetEventTasks = td.replace(EventTaskApi, "getEventTasks");
+        mockAddComment = td.replace(EventTaskApi, "addComment");
         tsrEvent = makeEvent({ eventId: 1 });
         firstEventTaskCategory = makeEventTaskCategory({
             eventTaskId: 1,
             eventTaskDisplayName: "task 1",
         });
-        eventTask = makeEventTask({
+        eventTask = {
+            eventTaskId: 1,
             eventTaskCategory: firstEventTaskCategory,
             eventId: tsrEvent.eventId,
+            suspenseDate: "2020-08-18T14:15:59",
+            approver: makeTsrUser({ username: "approver user" }),
+            resourcer: makeTsrUser({ username: "resourcer user" }),
             status: makeEventTaskStatus({ sortOrder: 2 }),
-        });
+            comments: [],
+        };
     });
 
     afterEach(td.reset);
@@ -85,6 +95,73 @@ describe("event tasks", () => {
         expect(result.container).toHaveTextContent(/.*task 1.*second task.*last task.*/);
     });
 
+    it("shows details when task is clicked and hides when clicked again", async () => {
+        await renderEventTasks({
+            eventTasks: [
+                {
+                    ...eventTask,
+                    comments: [
+                        makeEventTaskComment({
+                            commentId: 1,
+                            eventTaskId: eventTask.eventTaskId,
+                            annotation: "this is an annotation",
+                            audit: makeAudit({ createdByDisplayName: "someone" }),
+                        }),
+                        makeEventTaskComment({
+                            commentId: 2,
+                            eventTaskId: eventTask.eventTaskId,
+                            annotation: "another annotation",
+                            audit: makeAudit({ createdByDisplayName: "someone else" }),
+                        }),
+                    ],
+                },
+            ],
+        });
+
+        fireEvent.click(
+            screen.getByRole("button", { name: firstEventTaskCategory.eventTaskDisplayName }),
+        );
+        expect(screen.getByLabelText("suspense date")).toHaveTextContent(
+            /(Tue|Wed) Aug (18|19), 2020/,
+        );
+
+        expect(screen.getByLabelText("approver")).toHaveTextContent("user");
+        expect(screen.getByLabelText("resourcer")).toHaveTextContent("user");
+        expect(screen.getByLabelText("someone")).toHaveTextContent("this is an annotation");
+        expect(screen.getByLabelText("someone else")).toHaveTextContent("another annotation");
+
+        fireEvent.click(
+            screen.getByRole("button", { name: firstEventTaskCategory.eventTaskDisplayName }),
+        );
+
+        expect(screen.queryByLabelText("suspense date")).not.toBeInTheDocument();
+        expect(screen.queryByLabelText("approver")).not.toBeInTheDocument();
+        expect(screen.queryByLabelText("resourcer")).not.toBeInTheDocument();
+        expect(screen.queryByLabelText("someone")).not.toBeInTheDocument();
+        expect(screen.queryByLabelText("someone else")).not.toBeInTheDocument();
+    });
+
+    it("submits comment", async () => {
+        await renderEventTasks({ eventTasks: [eventTask] });
+        fireEvent.click(
+            screen.getByRole("button", { name: firstEventTaskCategory.eventTaskDisplayName }),
+        );
+        const inputBox = screen.getByPlaceholderText("add a comment...");
+        const commentAnnotation = "this is my very first comment";
+        fireEvent.change(inputBox, {
+            target: { value: commentAnnotation },
+        });
+        expect((inputBox as HTMLFormElement).value).toEqual(commentAnnotation.toString());
+        fireEvent.submit(screen.getByTitle("commentForm"));
+        td.verify(
+            mockAddComment(eventTask.eventTaskId, {
+                eventTaskId: eventTask.eventTaskId,
+                annotation: commentAnnotation,
+            }),
+            { times: 1 },
+        );
+    });
+
     describe("websockets", () => {
         it("adds new events tasks in order", async () => {
             const fakeStompSocketService = mockSocketService();
@@ -120,6 +197,34 @@ describe("event tasks", () => {
             expect(screen.queryByTestId("task-1")).toBeInTheDocument();
             expect(screen.queryByTestId("task-55")).toBeInTheDocument();
             expect(result.container).toHaveTextContent(/.*socket task.*task 1.*/);
+        });
+
+        it("adds comments to event task", async () => {
+            const fakeStompSocketService = mockSocketService();
+            await renderEventTasks({ fakeStompSocketService, eventTasks: [eventTask] });
+            const socketComment = makeEventTaskComment({
+                commentId: 1,
+                eventTaskId: eventTask.eventTaskId,
+                annotation: "my very first comment",
+            });
+            expect(screen.queryByText("my very first comment")).not.toBeInTheDocument();
+            const subscriptionId = fakeStompSocketService.findSubscription(
+                `${SocketSubscriptionTopics.TASK_COMMENT_CREATED}${tsrEvent.eventId}`,
+            ).subscription.id;
+            act(() => {
+                callSocketSubscriptionHandler(
+                    fakeStompSocketService,
+                    `${SocketSubscriptionTopics.TASK_COMMENT_CREATED}${tsrEvent.eventId}`,
+                    subscriptionId,
+                    socketComment,
+                );
+            });
+            await reRender();
+            expect(screen.queryByText("my very first comment")).not.toBeInTheDocument();
+            fireEvent.click(
+                screen.getByRole("button", { name: firstEventTaskCategory.eventTaskDisplayName }),
+            );
+            expect(screen.queryByText("my very first comment")).toBeInTheDocument();
         });
     });
 

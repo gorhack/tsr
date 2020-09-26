@@ -1,13 +1,22 @@
-import React, { FormEvent, ReactElement, useEffect, useReducer, useState } from "react";
+import React, {
+    ChangeEvent,
+    FormEvent,
+    ReactElement,
+    useEffect,
+    useReducer,
+    useState,
+} from "react";
 import AsyncCreatable from "react-select/async-creatable";
 import { PrimaryButton } from "../../Buttons/Buttons";
 import { selectStyles } from "../../Styles";
-import { Option } from "../../api";
+import { LONG_DATE_FORMAT, Option } from "../../api";
 import {
+    addComment,
     createEventTask,
     EventTask,
     EventTaskActionTypes,
     EventTaskCategory,
+    EventTaskComment,
     EventTaskReducerAction,
     getEventTaskCategoriesContains,
     getEventTasks,
@@ -19,32 +28,39 @@ import sortBy from "lodash/sortBy";
 import { useStompSocketContext } from "../../StompSocketContext";
 import { SocketStatus } from "../../SocketService";
 import { IMessage } from "@stomp/stompjs";
+import { DetailRow } from "../DetailRow";
+import moment from "moment";
 
 interface EventTaskSectionProps {
     tsrEvent: TsrEvent;
 }
 
+const eventTaskReducer = (state: EventTask[], action: EventTaskReducerAction): EventTask[] => {
+    switch (action.type) {
+        case EventTaskActionTypes.LOAD: {
+            return sortBy(action.eventTasks, (eventTask) => eventTask.status.sortOrder);
+        }
+        case EventTaskActionTypes.ADD: {
+            return sortBy([...state, action.eventTask], (eventTask) => eventTask.status.sortOrder);
+        }
+        case EventTaskActionTypes.ADD_COMMENT: {
+            return state.map((eventTask) =>
+                eventTask.eventTaskId === action.comment.eventTaskId
+                    ? { ...eventTask, comments: [...eventTask.comments, action.comment] }
+                    : eventTask,
+            );
+        }
+        default:
+            return state;
+    }
+};
+
 export const EventTaskSection = ({ tsrEvent }: EventTaskSectionProps): ReactElement => {
     const { socketService } = useStompSocketContext();
     const [selectedTaskOption, setSelectedTaskOption] = useState<Option | undefined>(undefined);
     const [eventTaskCache, setEventTaskCache] = useState<EventTaskCategory[]>([]);
-
+    const [taskOpen, setTaskOpen] = useState<number | undefined>(undefined);
     const reducerInitialState: EventTask[] = [];
-    const eventTaskReducer = (state: EventTask[], action: EventTaskReducerAction): EventTask[] => {
-        switch (action.type) {
-            case EventTaskActionTypes.LOAD: {
-                return sortBy(action.eventTasks, (eventTask) => eventTask.status.sortOrder);
-            }
-            case EventTaskActionTypes.ADD: {
-                return sortBy(
-                    [...state, action.eventTask],
-                    (eventTask) => eventTask.status.sortOrder,
-                );
-            }
-            default:
-                return [...state];
-        }
-    };
     const [eventTasks, eventTasksDispatch] = useReducer(eventTaskReducer, reducerInitialState);
 
     useEffect(() => {
@@ -61,6 +77,26 @@ export const EventTaskSection = ({ tsrEvent }: EventTaskSectionProps): ReactElem
                 });
             },
         });
+        socketService.subscribe({
+            topic: `${SocketSubscriptionTopics.TASK_COMMENT_CREATED}${tsrEvent.eventId}`,
+            handler: (msg: IMessage): void => {
+                const message: EventTaskComment = JSON.parse(msg.body);
+                eventTasksDispatch({
+                    type: EventTaskActionTypes.ADD_COMMENT,
+                    comment: message,
+                });
+            },
+        });
+        return () => {
+            const newTaskSubId = socketService.findSubscriptionWithoutError(
+                `${SocketSubscriptionTopics.TASK_CREATED}${tsrEvent.eventId}`,
+            )?.subscription.id;
+            if (newTaskSubId) socketService.unsubscribe(newTaskSubId);
+            const newCommentSubId = socketService.findSubscriptionWithoutError(
+                `${SocketSubscriptionTopics.TASK_CREATED}${tsrEvent.eventId}`,
+            )?.subscription.id;
+            if (newCommentSubId) socketService.unsubscribe(newCommentSubId);
+        };
     }, [socketService, tsrEvent.eventId]);
 
     useEffect(() => {
@@ -112,17 +148,102 @@ export const EventTaskSection = ({ tsrEvent }: EventTaskSectionProps): ReactElem
         setSelectedTaskOption(undefined); // TODO: clear the value in the select
     };
 
+    const displayComments = (comments: EventTaskComment[]): ReactElement[] => {
+        return comments.map((comment) => {
+            return (
+                <div key={`task-comment-${comment.commentId}`} className="Event-Task-Comment">
+                    <span>{comment.audit && comment.audit.createdByDisplayName}</span>
+                    <span aria-label={comment.audit && comment.audit.createdByDisplayName}>
+                        {comment.annotation}
+                    </span>
+                </div>
+            );
+        });
+    };
+
+    const [commentAnnotation, setCommentAnnotation] = useState<string>("");
+
+    const submitComment = (e: FormEvent<HTMLFormElement>, eventTask: EventTask): void => {
+        e.preventDefault();
+        (async () => {
+            try {
+                await addComment(eventTask.eventId, {
+                    eventTaskId: eventTask.eventTaskId,
+                    annotation: commentAnnotation,
+                });
+            } catch (error) {
+                console.error(`unable to add your comment, ${error.message}`);
+            }
+        })();
+        setCommentAnnotation("");
+    };
+
+    const handleCommentChange = (e: ChangeEvent<HTMLTextAreaElement>): void => {
+        setCommentAnnotation(e.target.value);
+    };
+
+    const displayCommentForm = (eventTask: EventTask): ReactElement => {
+        return (
+            <form title="commentForm" onSubmit={(e) => submitComment(e, eventTask)}>
+                <textarea
+                    placeholder="add a comment..."
+                    onChange={handleCommentChange}
+                    value={commentAnnotation}
+                />
+                <PrimaryButton>post comment</PrimaryButton>
+            </form>
+        );
+    };
+
     const displayEventTasks = (): ReactElement => {
         return (
             <>
                 {eventTasks.map((eventTask) => {
+                    const open = taskOpen === eventTask.eventTaskId;
+                    const openHandler = (): void => {
+                        setTaskOpen(eventTask.eventTaskId);
+                    };
+                    const closeHandler = (): void => {
+                        setTaskOpen(undefined);
+                    };
                     return (
-                        <span
-                            key={eventTask.eventTaskCategory.eventTaskId}
-                            data-testid={`task-${eventTask.eventTaskCategory.eventTaskId}`}
-                        >
-                            {eventTask.eventTaskCategory.eventTaskDisplayName}
-                        </span>
+                        <div key={`task-container-${eventTask.eventTaskId}`}>
+                            <button
+                                type="button"
+                                className={`Event-Task-Collapsible ${
+                                    taskOpen === eventTask.eventTaskId ? "active" : ""
+                                }`}
+                                onClick={open ? closeHandler : openHandler}
+                                key={`task-header-${eventTask.eventTaskId}`}
+                                data-testid={`task-${eventTask.eventTaskCategory.eventTaskId}`}
+                            >
+                                {eventTask.eventTaskCategory.eventTaskDisplayName}
+                            </button>
+                            {open && (
+                                <div
+                                    className="Event-Task-Details"
+                                    key={`task-body-${eventTask.eventTaskId}`}
+                                >
+                                    <DetailRow
+                                        label="suspense date"
+                                        description={moment
+                                            .utc(eventTask.suspenseDate)
+                                            .local()
+                                            .format(LONG_DATE_FORMAT)}
+                                    />
+                                    <DetailRow
+                                        label="approver"
+                                        description={eventTask.approver.username}
+                                    />
+                                    <DetailRow
+                                        label="resourcer"
+                                        description={eventTask.resourcer.username}
+                                    />
+                                    {displayComments(eventTask.comments)}
+                                    {displayCommentForm(eventTask)}
+                                </div>
+                            )}
+                        </div>
                     );
                 })}
             </>
@@ -154,9 +275,6 @@ export const EventTaskSection = ({ tsrEvent }: EventTaskSectionProps): ReactElem
                                             setSelectedTaskOption(selection);
                                             break;
                                         }
-                                        case "create-option":
-                                            // TODO create the thing
-                                            break;
                                         default: {
                                             setSelectedTaskOption(undefined);
                                             break;
@@ -169,6 +287,7 @@ export const EventTaskSection = ({ tsrEvent }: EventTaskSectionProps): ReactElem
                     <PrimaryButton>add task</PrimaryButton>
                 </div>
             </form>
+            <div className="space-3" />
             {displayEventTasks()}
         </>
     );

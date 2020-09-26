@@ -1,0 +1,8 @@
+.Detail-Row {
+    padding-bottom: 5px;
+}
+
+.Detail-Row-Label {
+    font-family: var(--font-family-bold);
+    padding-right: 10px;
+}

@@ -1,9 +1,11 @@
 import nock from "nock";
 import axios from "axios";
 import {
+    addComment,
     createEventTask,
     EventTask,
     EventTaskCategory,
+    EventTaskComment,
     getEventTaskCategoriesContains,
     getEventTasks,
     StatusCode,
@@ -33,6 +35,7 @@ describe("event task", () => {
             },
         };
         eventTask = {
+            eventTaskId: 4,
             eventTaskCategory: eventTaskCategory,
             eventId: 1,
             suspenseDate: "2020-08-18T14:15:59",
@@ -45,6 +48,7 @@ describe("event task", () => {
                 statusShortName: StatusCode.R,
                 sortOrder: 2,
             },
+            comments: [],
         };
     });
 
@@ -77,6 +81,7 @@ describe("event task", () => {
         const expectedResponse: EventTask[] = [
             eventTask,
             {
+                eventTaskId: 2,
                 eventTaskCategory: {
                     eventTaskId: 2,
                     eventTaskDisplayName: "second",
@@ -93,12 +98,39 @@ describe("event task", () => {
                     statusShortName: StatusCode.R,
                     sortOrder: 2,
                 },
+                comments: [],
             },
         ];
         nock("http://example.com")
             .get("/api/v1/event/1/task")
             .reply(HttpStatus.OK, expectedResponse);
         const response = await getEventTasks(1);
+        expect(expectedResponse).toEqual(response);
+    });
+
+    it("posts a comment", async () => {
+        const comment: EventTaskComment = {
+            commentId: 1,
+            eventTaskId: 10,
+            annotation: "a comment",
+        };
+        const expectedResponse: EventTaskComment = {
+            commentId: 1,
+            eventTaskId: 10,
+            annotation: "a comment",
+            audit: {
+                createdBy: "1234",
+                createdByDisplayName: "user",
+                createdDate: "2020-08-18T14:15:59",
+                lastModifiedBy: "1234",
+                lastModifiedByDisplayName: "user",
+                lastModifiedDate: "2020-08-18T14:15:59",
+            },
+        };
+        nock("http://example.com")
+            .post("/api/v1/event/1/task/10/comment", comment as NockBody)
+            .reply(HttpStatus.CREATED, expectedResponse);
+        const response = await addComment(1, comment);
         expect(expectedResponse).toEqual(response);
     });
 });

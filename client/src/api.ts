@@ -45,6 +45,8 @@ export interface Option {
     label: string;
 }
 
+export const LONG_DATE_FORMAT = "ddd MMM D, YYYY";
+
 // TODO user pref, then use user-set timezone with moment-timezome
 export const userTimeZone = (): string => {
     return Intl.DateTimeFormat().resolvedOptions().timeZone;

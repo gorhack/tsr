@@ -4,6 +4,7 @@ import events.tracked.tsr.event.*
 import events.tracked.tsr.event.task.*
 import events.tracked.tsr.event.type.EventType
 import events.tracked.tsr.organization.Organization
+import events.tracked.tsr.organization.OrganizationDTO
 import events.tracked.tsr.user.TsrUser
 import events.tracked.tsr.user.TsrUserDTO
 import events.tracked.tsr.user.UserRole
@@ -42,6 +43,15 @@ fun makeOrganization1(): Organization {
     )
 }
 
+fun makeOrganizationDTO1(): OrganizationDTO {
+    return OrganizationDTO(
+        organizationId = 1L,
+        organizationName = "org1",
+        organizationDisplayName = "org 1",
+        sortOrder = 1
+    )
+}
+
 fun makeOrganization2(): Organization {
     return Organization(
         organizationId = 2L,
@@ -51,14 +61,25 @@ fun makeOrganization2(): Organization {
     )
 }
 
-val janFirstDate = OffsetDateTime.parse("1970-01-01T00:00:01-08:00")
-val janSecondDate = OffsetDateTime.parse("1970-01-02T00:00:01-08:00")
+fun makeOrganizationDTO2(): OrganizationDTO {
+    return OrganizationDTO(
+        organizationId = 2L,
+        organizationName = "org2",
+        organizationDisplayName = "org 2",
+        sortOrder = 2
+    )
+}
+
+val janFirstDate: OffsetDateTime = OffsetDateTime.parse("1970-01-01T00:00:01-08:00")
+val janSecondDate: OffsetDateTime = OffsetDateTime.parse("1970-01-02T00:00:01-08:00")
+val eventType = EventType(1, "rock", "rocks are fun", 1)
+val tsrUser = TsrUser(1L, "1234", "user", UserRole.USER)
 
 fun makeEventWithoutId(): Event {
     return Event(
         eventName = "blue",
-        organizations = mutableListOf(makeOrganization1()),
-        eventType = EventType(1, "rock", "rocks are fun", 1),
+        organizations = hashSetOf(makeOrganization1()),
+        eventType = eventType,
         startDate = janFirstDate,
         endDate = janSecondDate
     )
@@ -67,8 +88,8 @@ fun makeEventWithoutId(): Event {
 fun makeEventDTOWithoutId(): EventDTO {
     return EventDTO(
         eventName = "blue",
-        organizations = mutableListOf(makeOrganization1()),
-        eventType = EventType(1, "rock", "rocks are fun", 1),
+        organizations = hashSetOf(makeOrganizationDTO1()),
+        eventType = eventType,
         startDate = janFirstDate,
         endDate = janSecondDate
     )
@@ -78,10 +99,10 @@ fun makeEventWithId(): Event {
     return Event(
         eventId = 1L,
         eventName = "blue",
-        organizations = mutableListOf(makeOrganization1()),
+        organizations = hashSetOf(makeOrganization1()),
         startDate = janFirstDate,
         endDate = janSecondDate,
-        eventType = EventType(1, "rock", "rocks are fun", 1),
+        eventType = eventType,
         lastModifiedBy = "6789",
         lastModifiedDate = janSecondDate,
         createdBy = "1234",
@@ -93,10 +114,10 @@ fun makeEventDTOWithId(): EventDTO {
     return EventDTO(
         eventId = 1L,
         eventName = "blue",
-        organizations = mutableListOf(makeOrganization1()),
+        organizations = hashSetOf(makeOrganizationDTO1()),
         startDate = janFirstDate,
         endDate = janSecondDate,
-        eventType = EventType(1, "rock", "rocks are fun", 1),
+        eventType = eventType,
         audit = AuditDTO(
             lastModifiedBy = "6789",
             lastModifiedDate = janSecondDate,
@@ -110,7 +131,7 @@ fun makeEventWithId2(): Event {
     return Event(
         eventId = 2L,
         eventName = "second",
-        organizations = mutableListOf(makeOrganization2()),
+        organizations = hashSetOf(makeOrganization2()),
         startDate = OffsetDateTime.parse("1970-01-03T00:00:01-08:00"),
         endDate = OffsetDateTime.parse("1970-01-03T00:00:01-08:00"),
         eventType = null,
@@ -127,7 +148,7 @@ fun makeEventDTOWithId2(): EventDTO {
         eventName = "second",
         startDate = OffsetDateTime.parse("1970-01-03T00:00:01-08:00"),
         endDate = OffsetDateTime.parse("1970-01-03T00:00:01-08:00"),
-        organizations = mutableListOf(makeOrganization2()),
+        organizations = hashSetOf(makeOrganizationDTO2()),
         eventType = null,
         audit = AuditDTO(
             lastModifiedBy = "6789",
@@ -140,26 +161,58 @@ fun makeEventDTOWithId2(): EventDTO {
 
 fun makeEventTask(): EventTask {
     return EventTask(
-        eventId = makeEventWithId(),
+        eventTaskId = 1L,
         eventTaskCategoryId = EventTaskCategory(eventTaskCategoryId = 10L, eventTaskName = "CLASS_ONE", eventTaskDisplayName = "Class I"),
+        eventId = makeEventWithId(),
         suspenseDate = janFirstDate,
-        resourcer = TsrUser(1L, "1234", "user", UserRole.USER),
-        approver = TsrUser(1L, "1234", "user", UserRole.USER),
+        approver = tsrUser,
+        resourcer = tsrUser,
+        comments = hashSetOf(),
+        createdBy = "1234",
+        createdDate = OffsetDateTime.parse("1970-01-01T00:00:01-08:00"),
+        lastModifiedBy = "1234",
+        lastModifiedDate = OffsetDateTime.parse("1970-01-01T00:00:01-08:00")
     )
 }
 
 fun makeEventTask2(): EventTask {
     return EventTask(
+        eventTaskId = 2L,
         eventId = makeEventWithId(),
         eventTaskCategoryId = EventTaskCategory(eventTaskCategoryId = 4L, eventTaskName = "CLASS_FOUR", eventTaskDisplayName = "Class IV"),
         suspenseDate = janFirstDate,
-        resourcer = TsrUser(1L, "1234", "user", UserRole.USER),
-        approver = TsrUser(1L, "1234", "user", UserRole.USER),
+        resourcer = tsrUser,
+        approver = tsrUser,
+        comments = hashSetOf(
+            EventTaskComment(
+                commentId = 1L,
+                eventTask = EventTask(eventTaskId = 2L),
+                annotation = "first annotation",
+                lastModifiedBy = "1234",
+                lastModifiedDate = janFirstDate,
+                createdBy = "1234",
+                createdDate = janFirstDate
+            ),
+            EventTaskComment(
+                commentId = 2L,
+                eventTask = EventTask(eventTaskId = 2L),
+                annotation = "second annotation",
+                lastModifiedBy = "1234",
+                lastModifiedDate = janSecondDate,
+                createdBy = "0987",
+                createdDate = janSecondDate
+            )
+        ),
+        createdBy = "1234",
+        createdDate = janFirstDate,
+        lastModifiedBy = "0987",
+        lastModifiedDate = janSecondDate
     )
 }
 
 fun makeEventTaskDTO(): EventTaskDTO {
     return EventTaskDTO(
+        eventTaskId = 1L,
         eventId = 1L,
         eventTaskCategory = EventTaskCategory(eventTaskCategoryId = 10L, eventTaskName = "CLASS_ONE", eventTaskDisplayName = "Class I"),
         suspenseDate = janFirstDate,

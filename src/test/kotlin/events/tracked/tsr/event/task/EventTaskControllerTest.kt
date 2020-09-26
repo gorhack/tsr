@@ -1,6 +1,7 @@
 package events.tracked.tsr.event.task
 
 import events.tracked.tsr.*
+import events.tracked.tsr.event.AuditDTO
 import events.tracked.tsr.event.Event
 import events.tracked.tsr.user.TsrUserDTO
 import events.tracked.tsr.user.UserRole
@@ -20,7 +21,6 @@ internal class EventTaskControllerTest {
     private lateinit var mockEventTaskService: EventTaskService
     private lateinit var eventWithId: Event
     private lateinit var eventTask: EventTask
-    private lateinit var eventTask2: EventTask
     private lateinit var eventTaskDTO: EventTaskDTO
 
     @Before
@@ -29,7 +29,6 @@ internal class EventTaskControllerTest {
         subject = EventTaskController(mockEventTaskService)
         eventWithId = makeEventWithId()
         eventTask = makeEventTask()
-        eventTask2 = makeEventTask2()
         eventTaskDTO = makeEventTaskDTO()
     }
 
@@ -53,10 +52,6 @@ internal class EventTaskControllerTest {
 
     @Test
     fun `getEventTasks returns list of event tasks`() {
-        val eventTasks = listOf(
-            eventTask,
-            eventTask2
-        )
         val eventTasksDTOs = listOf(
             eventTaskDTO,
             EventTaskDTO(
@@ -69,12 +64,37 @@ internal class EventTaskControllerTest {
             )
         )
         every {
-            mockEventTaskService.getEventTasks(1)
-        } returns eventTasks
+            mockEventTaskService.getEventTaskDTOs(1)
+        } returns eventTasksDTOs
         val expectedResponse = ResponseEntity(eventTasksDTOs, HttpStatus.OK)
         assertEquals(expectedResponse, subject.getEventTasks(1))
         verifySequence {
-            mockEventTaskService.getEventTasks(1)
+            mockEventTaskService.getEventTaskDTOs(1)
         }
+    }
+
+    @Test
+    fun `addComment adds a comment to the task`() {
+        val comment = EventTaskCommentDTO(
+            commentId = 14L,
+            eventTaskId = 10L,
+            annotation = "a really long comment"
+        )
+        val savedComment = EventTaskCommentDTO(
+            commentId = 14L,
+            eventTaskId = 10L,
+            annotation = "a really long comment",
+            audit = AuditDTO(
+                createdBy = "1234",
+                createdByDisplayName = "user",
+                lastModifiedBy = "1234",
+                lastModifiedByDisplayName = "user"
+            )
+        )
+        every {
+            mockEventTaskService.addComment(1, 10, comment)
+        } returns savedComment
+        val expectedResponse = ResponseEntity(savedComment, HttpStatus.CREATED)
+        assertEquals(expectedResponse, subject.addComment(1, 10, comment))
     }
 }

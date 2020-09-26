@@ -1,6 +1,7 @@
 package events.tracked.tsr.event
 
 import events.tracked.tsr.*
+import events.tracked.tsr.event.type.EventType
 import events.tracked.tsr.organization.Organization
 import events.tracked.tsr.user.TsrUser
 import events.tracked.tsr.user.TsrUserService
@@ -23,7 +24,7 @@ internal class EventControllerTest {
     private lateinit var mockTsrUserService: TsrUserService
     private lateinit var oidcUser: OidcUser
     private lateinit var tsrUser: TsrUser
-    private lateinit var organizations: MutableList<Organization>
+    private lateinit var organizations: Set<Organization>
     private lateinit var eventDTOWithoutId: EventDTO
     private lateinit var eventDTOWithId: EventDTO
     private lateinit var eventDTOWithId2: EventDTO
@@ -38,7 +39,7 @@ internal class EventControllerTest {
         subject = EventController(mockEventService, mockTsrUserService)
 
         oidcUser = makeOidcUser(userId = "1234", userName = "user")
-        organizations = mutableListOf(
+        organizations = hashSetOf(
             makeOrganization1(),
             makeOrganization2()
         )
@@ -146,7 +147,21 @@ internal class EventControllerTest {
 
     @Test
     fun `edits already created event`() {
-        val updatedEvent = eventDTOWithId.copy(
+        val eventDTOToUpdate = EventDTO(
+            eventId = 1L,
+            eventName = "updated name",
+            organizations = hashSetOf(makeOrganizationDTO2()),
+            startDate = OffsetDateTime.parse("2020-01-02T00:00:01-09:00"),
+            endDate = OffsetDateTime.parse("2020-01-03T00:00:01-09:00"),
+            eventType = EventType(11L, "some other thing", "some other thing", 50)
+        )
+        val updatedEventDTO = EventDTO(
+            eventId = 1L,
+            eventName = "updated name",
+            organizations = hashSetOf(makeOrganizationDTO2()),
+            startDate = OffsetDateTime.parse("2020-01-02T00:00:01-09:00"),
+            endDate = OffsetDateTime.parse("2020-01-03T00:00:01-09:00"),
+            eventType = EventType(11L, "some other thing", "some other thing", 50),
             audit = AuditDTO(
                 lastModifiedBy = "9876",
                 lastModifiedDate = OffsetDateTime.parse("1970-01-02T00:00:01-09:00"),
@@ -154,8 +169,20 @@ internal class EventControllerTest {
                 createdDate = OffsetDateTime.parse("1970-01-02T00:00:01-08:00")
             )
         )
-        every { mockEventService.updateEvent(eventDTOWithId) } returns updatedEvent
-        assertEquals(updatedEvent, subject.updateEvent(eventDTOWithId))
-        verifySequence { mockEventService.updateEvent(eventDTOWithId) }
+        val updatedEvent = Event(
+            eventId = 1L,
+            eventName = "updated name",
+            organizations = hashSetOf(makeOrganization2()),
+            startDate = OffsetDateTime.parse("2020-01-02T00:00:01-09:00"),
+            endDate = OffsetDateTime.parse("2020-01-03T00:00:01-09:00"),
+            eventType = EventType(11L, "some other thing", "some other thing", 50),
+            lastModifiedBy = "9876",
+            lastModifiedDate = OffsetDateTime.parse("1970-01-02T00:00:01-09:00"),
+            createdBy = "1234",
+            createdDate = OffsetDateTime.parse("1970-01-02T00:00:01-08:00")
+        )
+        every { mockEventService.updateEvent(eventDTOToUpdate) } returns updatedEvent
+        assertEquals(updatedEventDTO, subject.updateEvent(eventDTOToUpdate))
+        verifySequence { mockEventService.updateEvent(eventDTOToUpdate) }
     }
 }

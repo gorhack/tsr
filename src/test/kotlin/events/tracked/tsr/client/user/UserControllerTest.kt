@@ -38,7 +38,7 @@ class UserControllerTest {
             username = "username",
             role = UserRole.ADMIN,
             settings = UserSettingsDTO(
-                organizations = mutableListOf(),
+                organizations = hashSetOf(),
                 phoneNumber = null,
                 emailAddress = null
             )
@@ -113,20 +113,19 @@ class UserControllerTest {
             userId= "1234",
             username = "regular user",
             role = UserRole.USER,
-            organizations = mutableListOf(organization),
+            organizations = hashSetOf(organization),
             emailAddress = "test@example.com")
         val regularOidcUser = makeOidcUser(regularUser.userId, regularUser.username)
-        every { mockTsrUserService.assertUserExistsAndReturnUser(regularOidcUser) } returns regularUser
         every {
             mockTsrUserService.setUserSettings(
-                regularUser,
+                regularOidcUser,
                 UserSettingsDTO(
-                    organizations = listOf(organizationDTO, organizationDTO2),
+                    organizations = hashSetOf(organizationDTO, organizationDTO2),
                     phoneNumber = null,
                     emailAddress = "test@example.com"
                 )
             )
-        } returns regularUser.copy(organizations = mutableListOf(organization, organization2))
+        } returns regularUser.copy(organizations = hashSetOf(organization, organization2))
 
         val expectedResponse: ResponseEntity<TsrUserDTO> = ResponseEntity(TsrUserDTO(
             id = 4,
@@ -134,7 +133,7 @@ class UserControllerTest {
             username = "regular user",
             role = UserRole.USER,
             settings = UserSettingsDTO(
-                organizations = mutableListOf(organizationDTO, organizationDTO2),
+                organizations = hashSetOf(organizationDTO, organizationDTO2),
                 emailAddress = "test@example.com",
                 phoneNumber = null)),
             HttpStatus.OK
@@ -145,18 +144,17 @@ class UserControllerTest {
             subject.setUserSettings(
                 regularOidcUser,
                 UserSettingsDTO(
-                    organizations = listOf(organizationDTO, organizationDTO2),
+                    organizations = hashSetOf(organizationDTO, organizationDTO2),
                     phoneNumber = null,
                     emailAddress = "test@example.com"
                 )
             )
         )
         verifySequence {
-            mockTsrUserService.assertUserExistsAndReturnUser(regularOidcUser)
             mockTsrUserService.setUserSettings(
-                regularUser,
+                regularOidcUser,
                 UserSettingsDTO(
-                    organizations = listOf(organizationDTO, organizationDTO2),
+                    organizations = hashSetOf(organizationDTO, organizationDTO2),
                     phoneNumber = null,
                     emailAddress = "test@example.com"
                 )
@@ -171,23 +169,22 @@ class UserControllerTest {
             userId = "1234",
             username = "regular user",
             role = UserRole.USER,
-            organizations = mutableListOf(),
+            organizations = hashSetOf(),
             phoneNumber = null,
             emailAddress = "test@example.com"
         )
         val regularOidcUser = makeOidcUser(regularUser.userId, regularUser.username)
-        every { mockTsrUserService.assertUserExistsAndReturnUser(regularOidcUser) } returns regularUser
         every {
             mockTsrUserService.setUserSettings(
-                regularUser,
+                regularOidcUser,
                 UserSettingsDTO(
-                    organizations = listOf(),
+                    organizations = hashSetOf(),
                     phoneNumber = "1231231234",
                     emailAddress = "new@tracked.events"
                 )
             )
         } returns regularUser.copy(
-            organizations = mutableListOf(),
+            organizations = hashSetOf(),
             phoneNumber = "1231231234",
             emailAddress = "new@tracked.events"
         )
@@ -198,7 +195,7 @@ class UserControllerTest {
                 username = "regular user",
                 role = UserRole.USER,
                 settings = UserSettingsDTO(
-                    organizations = mutableListOf(),
+                    organizations = hashSetOf(),
                     phoneNumber = "1231231234",
                     emailAddress = "new@tracked.events"
                 )
@@ -209,18 +206,17 @@ class UserControllerTest {
             subject.setUserSettings(
                 regularOidcUser,
                 UserSettingsDTO(
-                    organizations = listOf(),
+                    organizations = hashSetOf(),
                     phoneNumber = "1231231234",
                     emailAddress = "new@tracked.events"
                 )
             )
         )
         verifySequence {
-            mockTsrUserService.assertUserExistsAndReturnUser(regularOidcUser)
             mockTsrUserService.setUserSettings(
-                regularUser,
+                regularOidcUser,
                 UserSettingsDTO(
-                    organizations = listOf(),
+                    organizations = hashSetOf(),
                     phoneNumber = "1231231234",
                     emailAddress = "new@tracked.events"
                 )

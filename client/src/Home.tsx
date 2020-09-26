@@ -43,6 +43,18 @@ export const Home: React.FC = () => {
                 },
             });
         });
+        return () => {
+            tsrUser.settings.organizations
+                .map(
+                    (org) =>
+                        socketService.findSubscriptionWithoutError(
+                            `${SocketSubscriptionTopics.EVENT_CREATED}${org.organizationId}`,
+                        )?.subscription.id,
+                )
+                .forEach((sub) => {
+                    if (sub) socketService.unsubscribe(sub);
+                });
+        };
     }, [socketService, tsrUser]);
 
     return (

@@ -1,6 +1,7 @@
 import axios, { AxiosResponse } from "axios";
 import { PageDTO } from "../../api";
 import { TsrUser } from "../../Users/UserApi";
+import { Auditable } from "../EventApi";
 
 const baseUri = "/api/v1/event";
 
@@ -45,6 +46,21 @@ export const getEventTaskCategoriesContains = async (
         });
 };
 
+export const addComment = async (
+    eventId: number,
+    comment: EventTaskComment,
+): Promise<EventTaskComment> => {
+    const uri = `${baseUri}/${eventId}/task/${comment.eventTaskId}/comment`;
+    return axios
+        .post(uri, comment)
+        .then((response: AxiosResponse) => {
+            return response.data;
+        })
+        .catch((error) => {
+            throw new Error(error.message);
+        });
+};
+
 export interface EventTaskCategory {
     eventTaskId: number;
     eventTaskName: string;
@@ -65,20 +81,31 @@ export interface EventTaskStatus {
     sortOrder: number;
 }
 
+export interface EventTaskComment {
+    commentId?: number;
+    eventTaskId: number;
+    annotation: string;
+    audit?: Auditable;
+}
+
 export interface EventTask {
+    eventTaskId: number;
     eventTaskCategory: EventTaskCategory;
     eventId: number;
     suspenseDate: string;
     approver: TsrUser;
     resourcer: TsrUser;
     status: EventTaskStatus;
+    comments: EventTaskComment[];
 }
 
 export enum EventTaskActionTypes {
     LOAD,
     ADD,
+    ADD_COMMENT,
 }
 
 export type EventTaskReducerAction =
     | { type: EventTaskActionTypes.LOAD; eventTasks: EventTask[] }
-    | { type: EventTaskActionTypes.ADD; eventTask: EventTask };
+    | { type: EventTaskActionTypes.ADD; eventTask: EventTask }
+    | { type: EventTaskActionTypes.ADD_COMMENT; comment: EventTaskComment };

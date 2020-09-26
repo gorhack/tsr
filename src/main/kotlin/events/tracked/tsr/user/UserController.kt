@@ -32,8 +32,7 @@ class UserController(private val tsrUserService: TsrUserService) {
         @AuthenticationPrincipal user: OidcUser,
         @RequestBody userSettings: UserSettingsDTO
     ): ResponseEntity<TsrUserDTO> {
-        val tsrUser = tsrUserService.assertUserExistsAndReturnUser(user)
-        val updatedTsrUser = tsrUserService.setUserSettings(tsrUser, userSettings)
+        val updatedTsrUser = tsrUserService.setUserSettings(user, userSettings)
         return ResponseEntity<TsrUserDTO>(TsrUserDTO(updatedTsrUser), HttpHeaders(), HttpStatus.OK)
     }
 }

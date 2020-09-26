@@ -4,7 +4,7 @@ import events.tracked.tsr.*
 import events.tracked.tsr.event.type.EventType
 import events.tracked.tsr.organization.Organization
 import events.tracked.tsr.user.TsrUser
-import events.tracked.tsr.user.TsrUserRepository
+import events.tracked.tsr.user.TsrUserService
 import events.tracked.tsr.user.UserRole
 import io.mockk.*
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -21,7 +21,7 @@ import java.time.OffsetDateTime
 class EventServiceTest {
     private lateinit var subject: EventService
     private lateinit var mockEventRepository: EventRepository
-    private lateinit var mockTsrUserRepository: TsrUserRepository
+    private lateinit var mockTsrUserService: TsrUserService
     private lateinit var mockApplicationEventPublisher: ApplicationEventPublisher
 
     private var capturedTsrEventSaveEvent = slot<NewTsrEventSaveEvent>()
@@ -35,15 +35,15 @@ class EventServiceTest {
     private lateinit var eventDTOWithId: EventDTO
     private lateinit var eventDTOWithId2: EventDTO
     private lateinit var eventDTOWithIdAndDisplayNames: EventDTO
-    private lateinit var organizations: MutableList<Organization>
+    private lateinit var organizations: Set<Organization>
     private lateinit var expectedPageDTO: PageDTO<EventDTO>
 
     @BeforeEach
     fun setup() {
         mockEventRepository = mockk(relaxUnitFun = true)
-        mockTsrUserRepository = mockk(relaxUnitFun = true)
+        mockTsrUserService = mockk(relaxUnitFun = true)
         mockApplicationEventPublisher = mockk()
-        subject = EventService(mockEventRepository, mockTsrUserRepository, mockApplicationEventPublisher)
+        subject = EventService(mockEventRepository, mockTsrUserService, mockApplicationEventPublisher)
 
         every {
             mockApplicationEventPublisher.publishEvent(capture(capturedTsrEventSaveEvent))
@@ -67,7 +67,7 @@ class EventServiceTest {
                 lastModifiedByDisplayName = "user_2"
             )
         )
-        organizations = mutableListOf(makeOrganization1(), makeOrganization2())
+        organizations = hashSetOf(makeOrganization1(), makeOrganization2())
         expectedPageDTO = PageDTO(
             items = listOf(eventDTOWithId, eventDTOWithId2),
             totalPages = 1,
@@ -109,16 +109,16 @@ class EventServiceTest {
     fun `getEventDTOById returns an event with display names`() {
         every { mockEventRepository.findByIdOrNull(1L) } returns eventWithId
         every {
-            mockTsrUserRepository.findByUserId("1234")
+            mockTsrUserService.findByUserId("1234")
         } returns TsrUser(1L, "1234", "user", UserRole.USER)
         every {
-            mockTsrUserRepository.findByUserId("6789")
+            mockTsrUserService.findByUserId("6789")
         } returns TsrUser(2L, "6789", "user_2", UserRole.USER)
         assertEquals(eventDTOWithIdAndDisplayNames, subject.getEventDTOById(1))
         verifySequence {
             mockEventRepository.findByIdOrNull(1L)
-            mockTsrUserRepository.findByUserId("1234")
-            mockTsrUserRepository.findByUserId("6789")
+            mockTsrUserService.findByUserId("1234")
+            mockTsrUserService.findByUserId("6789")
         }
     }
 
@@ -147,30 +147,38 @@ class EventServiceTest {
     }
 
     @Test
-    fun `editEvent returns eventDTO with updated event details`() {
-        val updatedEventDTO = eventDTOWithId.copy(
-            audit = AuditDTO(
-                lastModifiedBy = "9876",
-                lastModifiedDate = OffsetDateTime.parse("1970-01-02T00:00:01-09:00"),
-                createdBy = "1234",
-                createdDate = OffsetDateTime.parse("1970-01-02T00:00:01-08:00")
-            )
+    fun `updateEvent returns eventDTO with updated event details`() {
+        val eventDTOToUpdate = EventDTO(
+            eventId = 1L,
+            eventName = "updated name",
+            organizations = hashSetOf(makeOrganizationDTO2()),
+            startDate = OffsetDateTime.parse("2020-01-02T00:00:01-09:00"),
+            endDate = OffsetDateTime.parse("2020-01-03T00:00:01-09:00"),
+            eventType = EventType(11L, "some other thing", "some other thing", 50)
+        )
+        val eventToUpdate = Event(
+            eventId = 1L,
+            eventName = "updated name",
+            organizations = hashSetOf(makeOrganization2()),
+            startDate = OffsetDateTime.parse("2020-01-02T00:00:01-09:00"),
+            endDate = OffsetDateTime.parse("2020-01-03T00:00:01-09:00"),
+            eventType = EventType(11L, "some other thing", "some other thing", 50)
         )
         val updatedEvent = Event(
             eventId = 1L,
-            eventName = "blue",
-            organizations = mutableListOf(makeOrganization1()),
-            startDate = OffsetDateTime.parse("1970-01-01T00:00:01-08:00"),
-            endDate = OffsetDateTime.parse("1970-01-02T00:00:01-08:00"),
-            eventType = EventType(1, "rock", "rocks are fun", 1),
+            eventName = "updated name",
+            organizations = hashSetOf(makeOrganization2()),
+            startDate = OffsetDateTime.parse("2020-01-02T00:00:01-09:00"),
+            endDate = OffsetDateTime.parse("2020-01-03T00:00:01-09:00"),
+            eventType = EventType(11L, "some other thing", "some other thing", 50),
             lastModifiedBy = "9876",
             lastModifiedDate = OffsetDateTime.parse("1970-01-02T00:00:01-09:00"),
             createdBy = "1234",
             createdDate = OffsetDateTime.parse("1970-01-02T00:00:01-08:00")
         )
         every { mockEventRepository.findByIdOrNull(1) } returns eventWithId
-        every { mockEventRepository.saveAndFlush(updatedEvent) } returns updatedEvent
-        assertEquals(updatedEventDTO, subject.updateEvent(eventDTOWithId))
+        every { mockEventRepository.saveAndFlush(eventToUpdate) } returns updatedEvent
+        assertEquals(updatedEvent, subject.updateEvent(eventDTOToUpdate))
         verifySequence {
             mockEventRepository.findByIdOrNull(1)
             mockEventRepository.saveAndFlush(eventWithId)

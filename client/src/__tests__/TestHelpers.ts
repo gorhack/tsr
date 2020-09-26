@@ -10,6 +10,7 @@ import { Client, messageCallbackType, StompHeaders, StompSubscription } from "@s
 import {
     EventTask,
     EventTaskCategory,
+    EventTaskComment,
     EventTaskStatus,
     StatusCode,
 } from "../Event/Task/EventTaskApi";
@@ -152,6 +153,21 @@ export const makeEventTaskCategory = (partial: Partial<EventTaskCategory>): Even
     };
 };
 
+export const makeEventTaskComment = (partial: Partial<EventTaskComment>): EventTaskComment => {
+    if (!partial.commentId) {
+        throw Error("event task comment must have an id");
+    }
+    if (!partial.eventTaskId) {
+        throw Error("event task comment must have an event task id");
+    }
+    return {
+        commentId: partial.commentId,
+        eventTaskId: partial.eventTaskId,
+        annotation: partial.annotation || "",
+        audit: partial.audit || makeAudit({}),
+    };
+};
+
 export const makeEventTask = (partial: Partial<EventTask>): EventTask => {
     if (!partial.eventId) {
         throw Error("event task must have an event id");
@@ -161,11 +177,13 @@ export const makeEventTask = (partial: Partial<EventTask>): EventTask => {
     }
     return {
         eventId: partial.eventId,
+        eventTaskId: partial.eventTaskId || partial.eventTaskCategory.eventTaskId,
         eventTaskCategory: partial.eventTaskCategory,
         suspenseDate: partial.suspenseDate || "",
         status: partial.status || makeEventTaskStatus({}),
         approver: partial.approver || makeTsrUser({}),
         resourcer: partial.resourcer || makeTsrUser({}),
+        comments: partial.comments || [],
     };
 };
 
