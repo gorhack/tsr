@@ -198,6 +198,34 @@ describe("event tasks", () => {
             expect(screen.queryByTestId("task-55")).toBeInTheDocument();
             expect(result.container).toHaveTextContent(/.*socket task.*task 1.*/);
         });
+
+        it("adds comments to event task", async () => {
+            const fakeStompSocketService = mockSocketService();
+            await renderEventTasks({ fakeStompSocketService, eventTasks: [eventTask] });
+            const socketComment = makeEventTaskComment({
+                commentId: 1,
+                eventTaskId: eventTask.eventTaskId,
+                annotation: "my very first comment",
+            });
+            expect(screen.queryByText("my very first comment")).not.toBeInTheDocument();
+            const subscriptionId = fakeStompSocketService.findSubscription(
+                `${SocketSubscriptionTopics.TASK_COMMENT_CREATED}${tsrEvent.eventId}`,
+            ).subscription.id;
+            act(() => {
+                callSocketSubscriptionHandler(
+                    fakeStompSocketService,
+                    `${SocketSubscriptionTopics.TASK_COMMENT_CREATED}${tsrEvent.eventId}`,
+                    subscriptionId,
+                    socketComment,
+                );
+            });
+            await reRender();
+            expect(screen.queryByText("my very first comment")).not.toBeInTheDocument();
+            fireEvent.click(
+                screen.getByRole("button", { name: firstEventTaskCategory.eventTaskDisplayName }),
+            );
+            expect(screen.queryByText("my very first comment")).toBeInTheDocument();
+        });
     });
 
     interface RenderEventTasksProps {

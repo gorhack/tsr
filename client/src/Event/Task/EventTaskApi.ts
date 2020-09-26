@@ -102,8 +102,10 @@ export interface EventTask {
 export enum EventTaskActionTypes {
     LOAD,
     ADD,
+    ADD_COMMENT,
 }
 
 export type EventTaskReducerAction =
     | { type: EventTaskActionTypes.LOAD; eventTasks: EventTask[] }
-    | { type: EventTaskActionTypes.ADD; eventTask: EventTask };
+    | { type: EventTaskActionTypes.ADD; eventTask: EventTask }
+    | { type: EventTaskActionTypes.ADD_COMMENT; comment: EventTaskComment };

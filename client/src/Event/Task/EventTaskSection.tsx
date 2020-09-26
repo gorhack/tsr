@@ -35,27 +35,32 @@ interface EventTaskSectionProps {
     tsrEvent: TsrEvent;
 }
 
+const eventTaskReducer = (state: EventTask[], action: EventTaskReducerAction): EventTask[] => {
+    switch (action.type) {
+        case EventTaskActionTypes.LOAD: {
+            return sortBy(action.eventTasks, (eventTask) => eventTask.status.sortOrder);
+        }
+        case EventTaskActionTypes.ADD: {
+            return sortBy([...state, action.eventTask], (eventTask) => eventTask.status.sortOrder);
+        }
+        case EventTaskActionTypes.ADD_COMMENT: {
+            return state.map((eventTask) =>
+                eventTask.eventTaskId === action.comment.eventTaskId
+                    ? { ...eventTask, comments: [...eventTask.comments, action.comment] }
+                    : eventTask,
+            );
+        }
+        default:
+            return state;
+    }
+};
+
 export const EventTaskSection = ({ tsrEvent }: EventTaskSectionProps): ReactElement => {
     const { socketService } = useStompSocketContext();
     const [selectedTaskOption, setSelectedTaskOption] = useState<Option | undefined>(undefined);
     const [eventTaskCache, setEventTaskCache] = useState<EventTaskCategory[]>([]);
     const [taskOpen, setTaskOpen] = useState<number | undefined>(undefined);
     const reducerInitialState: EventTask[] = [];
-    const eventTaskReducer = (state: EventTask[], action: EventTaskReducerAction): EventTask[] => {
-        switch (action.type) {
-            case EventTaskActionTypes.LOAD: {
-                return sortBy(action.eventTasks, (eventTask) => eventTask.status.sortOrder);
-            }
-            case EventTaskActionTypes.ADD: {
-                return sortBy(
-                    [...state, action.eventTask],
-                    (eventTask) => eventTask.status.sortOrder,
-                );
-            }
-            default:
-                return [...state];
-        }
-    };
     const [eventTasks, eventTasksDispatch] = useReducer(eventTaskReducer, reducerInitialState);
 
     useEffect(() => {
@@ -72,6 +77,26 @@ export const EventTaskSection = ({ tsrEvent }: EventTaskSectionProps): ReactElem
                 });
             },
         });
+        socketService.subscribe({
+            topic: `${SocketSubscriptionTopics.TASK_COMMENT_CREATED}${tsrEvent.eventId}`,
+            handler: (msg: IMessage): void => {
+                const message: EventTaskComment = JSON.parse(msg.body);
+                eventTasksDispatch({
+                    type: EventTaskActionTypes.ADD_COMMENT,
+                    comment: message,
+                });
+            },
+        });
+        return () => {
+            const newTaskSubId = socketService.findSubscriptionWithoutError(
+                `${SocketSubscriptionTopics.TASK_CREATED}${tsrEvent.eventId}`,
+            )?.subscription.id;
+            if (newTaskSubId) socketService.unsubscribe(newTaskSubId);
+            const newCommentSubId = socketService.findSubscriptionWithoutError(
+                `${SocketSubscriptionTopics.TASK_CREATED}${tsrEvent.eventId}`,
+            )?.subscription.id;
+            if (newCommentSubId) socketService.unsubscribe(newCommentSubId);
+        };
     }, [socketService, tsrEvent.eventId]);
 
     useEffect(() => {
@@ -138,12 +163,12 @@ export const EventTaskSection = ({ tsrEvent }: EventTaskSectionProps): ReactElem
 
     const [commentAnnotation, setCommentAnnotation] = useState<string>("");
 
-    const submitComment = (e: FormEvent<HTMLFormElement>, eventTaskId: number): void => {
+    const submitComment = (e: FormEvent<HTMLFormElement>, eventTask: EventTask): void => {
         e.preventDefault();
         (async () => {
             try {
-                await addComment(eventTaskId, {
-                    eventTaskId,
+                await addComment(eventTask.eventId, {
+                    eventTaskId: eventTask.eventTaskId,
                     annotation: commentAnnotation,
                 });
             } catch (error) {
@@ -157,9 +182,9 @@ export const EventTaskSection = ({ tsrEvent }: EventTaskSectionProps): ReactElem
         setCommentAnnotation(e.target.value);
     };
 
-    const displayCommentForm = (eventTaskId: number): ReactElement => {
+    const displayCommentForm = (eventTask: EventTask): ReactElement => {
         return (
-            <form title="commentForm" onSubmit={(e) => submitComment(e, eventTaskId)}>
+            <form title="commentForm" onSubmit={(e) => submitComment(e, eventTask)}>
                 <textarea
                     placeholder="add a comment..."
                     onChange={handleCommentChange}
@@ -215,7 +240,7 @@ export const EventTaskSection = ({ tsrEvent }: EventTaskSectionProps): ReactElem
                                         description={eventTask.resourcer.username}
                                     />
                                     {displayComments(eventTask.comments)}
-                                    {displayCommentForm(eventTask.eventTaskId)}
+                                    {displayCommentForm(eventTask)}
                                 </div>
                             )}
                         </div>
