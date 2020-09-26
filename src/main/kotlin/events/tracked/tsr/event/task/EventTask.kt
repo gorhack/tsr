@@ -31,7 +31,7 @@ data class EventTaskStatus(
     val statusId: Long = 0L,
     val statusName: String = "",
     val statusDisplayName: String = "",
-    @Column(columnDefinition = "CHAR(1)")
+    @Column(columnDefinition = "BPCHAR(1)")
     @Enumerated(EnumType.STRING)
     val statusShortName: EventTaskStatusCode = EventTaskStatusCode.R,
     val sortOrder: Int = 0
@@ -60,12 +60,12 @@ data class EventTask(
     @ManyToOne(fetch = FetchType.LAZY, cascade = [CascadeType.MERGE])
     @JoinColumn(name = "status_id")
     var status: EventTaskStatus = EventTaskStatus(statusId = 1L, "CREATED", "created", EventTaskStatusCode.R, 2),
-    @OneToMany(targetEntity = EventTaskComment::class, mappedBy = "commentId", fetch = FetchType.LAZY, cascade = [CascadeType.ALL], orphanRemoval = true)
-    var comments: Set<EventTaskComment> = hashSetOf()
+    @OneToMany(targetEntity = EventTaskComment::class, mappedBy = "eventTask", fetch = FetchType.LAZY, cascade = [CascadeType.ALL], orphanRemoval = true)
+    var comments: MutableSet<EventTaskComment> = hashSetOf()
 
 ) : Auditable() {
     // constructor without status
-    constructor(eventTaskId: Long, eventTaskCategoryId: EventTaskCategory, eventId: Event, suspenseDate: OffsetDateTime, approver: TsrUser, resourcer: TsrUser, comments: Set<EventTaskComment>, lastModifiedDate: OffsetDateTime, lastModifiedBy: String, createdDate: OffsetDateTime, createdBy: String) :
+    constructor(eventTaskId: Long, eventTaskCategoryId: EventTaskCategory, eventId: Event, suspenseDate: OffsetDateTime, approver: TsrUser, resourcer: TsrUser, comments: MutableSet<EventTaskComment>, lastModifiedDate: OffsetDateTime, lastModifiedBy: String, createdDate: OffsetDateTime, createdBy: String) :
         this(eventTaskId = eventTaskId, eventTaskCategory = eventTaskCategoryId, event = eventId, suspenseDate = suspenseDate, approver = approver, resourcer = resourcer, comments = comments) {
         this.lastModifiedDate = lastModifiedDate
         this.lastModifiedBy = lastModifiedBy
@@ -74,7 +74,7 @@ data class EventTask(
     }
 
     fun addComment(comment: EventTaskComment) {
-        comments = comments.plus(comment)
+        this.comments.add(comment)
         comment.updateEventTask(this)
     }
 

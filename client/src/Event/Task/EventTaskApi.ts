@@ -82,7 +82,7 @@ export interface EventTaskStatus {
 }
 
 export interface EventTaskComment {
-    commentId: number;
+    commentId?: number;
     eventTaskId: number;
     annotation: string;
     audit?: Auditable;

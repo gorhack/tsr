@@ -88,7 +88,6 @@ class EventTaskService(
             ?: throw EmptyResultDataAccessException(1)
         val comment = commentDTO.toComment(eventTask)
         eventTask.addComment(comment)
-        // TODO verify this saves the comment in the correct table...
         val savedEventTask = eventTaskRepository.saveAndFlush(eventTask)
         val commentWithDisplayNames = getCommentDisplayNames(
             eventTaskId = eventTask.eventTaskId,

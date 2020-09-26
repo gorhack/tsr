@@ -46,6 +46,11 @@ data class EventTaskComment(
     override fun hashCode(): Int {
         return Objects.hash(this.commentId)
     }
+
+    @Override
+    override fun toString(): String {
+        return "EventTaskComment(commentId=${commentId}, eventTask=${eventTask.eventTaskId}, annotation=${annotation})"
+    }
 }
 
 data class EventTaskCommentDTO(
@@ -54,6 +59,13 @@ data class EventTaskCommentDTO(
     var annotation: String = "",
     var audit: AuditDTO? = null
 ) {
+    // required for jackson...
+    constructor() : this(
+        commentId = 0L,
+        eventTaskId = 0L,
+        annotation = "",
+        audit = null
+    )
     constructor(eventTaskId: Long, comment: EventTaskComment, createdByDisplayName: String, lastModifiedByDisplayName: String) : this(
         commentId = comment.commentId,
         eventTaskId = eventTaskId,
@@ -70,7 +82,7 @@ data class EventTaskCommentDTO(
 
     fun toComment(eventTask: EventTask): EventTaskComment {
         return EventTaskComment(
-            commentId = this.commentId,
+            commentId = 0L,
             eventTask = eventTask,
             annotation = this.annotation
         )

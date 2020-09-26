@@ -12,7 +12,7 @@ import javax.persistence.*
 data class Event(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val eventId: Long = 0,
+    val eventId: Long = 0L,
     var eventName: String = "",
     @Column(columnDefinition = "TIMESTAMP WITH TIME ZONE")
     var startDate: OffsetDateTime = OffsetDateTime.parse("1970-01-01T00:00:01-00:00"),

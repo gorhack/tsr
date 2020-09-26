@@ -1,13 +1,22 @@
-import React, { FormEvent, ReactElement, useEffect, useReducer, useState } from "react";
+import React, {
+    ChangeEvent,
+    FormEvent,
+    ReactElement,
+    useEffect,
+    useReducer,
+    useState,
+} from "react";
 import AsyncCreatable from "react-select/async-creatable";
 import { PrimaryButton } from "../../Buttons/Buttons";
 import { selectStyles } from "../../Styles";
 import { LONG_DATE_FORMAT, Option } from "../../api";
 import {
+    addComment,
     createEventTask,
     EventTask,
     EventTaskActionTypes,
     EventTaskCategory,
+    EventTaskComment,
     EventTaskReducerAction,
     getEventTaskCategoriesContains,
     getEventTasks,
@@ -114,7 +123,54 @@ export const EventTaskSection = ({ tsrEvent }: EventTaskSectionProps): ReactElem
         setSelectedTaskOption(undefined); // TODO: clear the value in the select
     };
 
-    const displayEventTasks = (): JSX.Element => {
+    const displayComments = (comments: EventTaskComment[]): ReactElement[] => {
+        return comments.map((comment) => {
+            return (
+                <div key={`task-comment-${comment.commentId}`} className="Event-Task-Comment">
+                    <span>{comment.audit && comment.audit.createdByDisplayName}</span>
+                    <span aria-label={comment.audit && comment.audit.createdByDisplayName}>
+                        {comment.annotation}
+                    </span>
+                </div>
+            );
+        });
+    };
+
+    const [commentAnnotation, setCommentAnnotation] = useState<string>("");
+
+    const submitComment = (e: FormEvent<HTMLFormElement>, eventTaskId: number): void => {
+        e.preventDefault();
+        (async () => {
+            try {
+                await addComment(eventTaskId, {
+                    eventTaskId,
+                    annotation: commentAnnotation,
+                });
+            } catch (error) {
+                console.error(`unable to add your comment, ${error.message}`);
+            }
+        })();
+        setCommentAnnotation("");
+    };
+
+    const handleCommentChange = (e: ChangeEvent<HTMLTextAreaElement>): void => {
+        setCommentAnnotation(e.target.value);
+    };
+
+    const displayCommentForm = (eventTaskId: number): ReactElement => {
+        return (
+            <form title="commentForm" onSubmit={(e) => submitComment(e, eventTaskId)}>
+                <textarea
+                    placeholder="add a comment..."
+                    onChange={handleCommentChange}
+                    value={commentAnnotation}
+                />
+                <PrimaryButton>post comment</PrimaryButton>
+            </form>
+        );
+    };
+
+    const displayEventTasks = (): ReactElement => {
         return (
             <>
                 {eventTasks.map((eventTask) => {
@@ -158,27 +214,8 @@ export const EventTaskSection = ({ tsrEvent }: EventTaskSectionProps): ReactElem
                                         label="resourcer"
                                         description={eventTask.resourcer.username}
                                     />
-                                    {eventTask.comments.map((comment) => {
-                                        return (
-                                            <div
-                                                key={`task-comment-${comment.commentId}`}
-                                                className="Event-Task-Comment"
-                                            >
-                                                <span>
-                                                    {comment.audit &&
-                                                        comment.audit.createdByDisplayName}
-                                                </span>
-                                                <span
-                                                    aria-label={
-                                                        comment.audit &&
-                                                        comment.audit.createdByDisplayName
-                                                    }
-                                                >
-                                                    {comment.annotation}
-                                                </span>
-                                            </div>
-                                        );
-                                    })}
+                                    {displayComments(eventTask.comments)}
+                                    {displayCommentForm(eventTask.eventTaskId)}
                                 </div>
                             )}
                         </div>
@@ -213,9 +250,6 @@ export const EventTaskSection = ({ tsrEvent }: EventTaskSectionProps): ReactElem
                                             setSelectedTaskOption(selection);
                                             break;
                                         }
-                                        case "create-option":
-                                            // TODO create the thing
-                                            break;
                                         default: {
                                             setSelectedTaskOption(undefined);
                                             break;
