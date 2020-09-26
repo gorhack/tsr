@@ -7,17 +7,24 @@
 }
 
 .EventsSection-SingleEvent {
+    display: flex;
     text-align: initial;
+    vertical-align: center;
     margin: 0 2rem .5rem 2rem;
-    padding: .25rem;
+    padding: .5rem;
     border: 2px solid var(--action-color);
     border-radius: .5rem;
+    flex-direction: column;
+}
+
+.EventsSection-SingleEvent:after {
+    padding: 1rem
 }
 
 .EventsSection-SingleEvent-Container {
     display: flex;
     justify-content: space-evenly;
-    max-width: 75%;
+
 }
 
 .EventsSection-Content {

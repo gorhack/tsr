@@ -138,28 +138,27 @@ export const EventsSection = (): ReactElement => {
 
 interface SingleEventProps {
     event: TsrEvent;
-    className?: string;
     dataTestId?: string;
 }
 
-const SingleEvent = ({ event, className = "", dataTestId }: SingleEventProps): ReactElement => {
+const SingleEvent = ({ event, dataTestId }: SingleEventProps): ReactElement => {
     const history = useHistory();
     const SHORT_DATE_FORMAT = "M/D/YY";
 
     const shortDateFormat = (date: Moment): string => `${date.local().format(SHORT_DATE_FORMAT)}`;
 
     return (
-        <div
-            className={`EventsSection-SingleEvent ${className}`}
-            data-testid={`${dataTestId}-${event.eventId}`}
-        >
-            {event.eventName}
-            <MenuButton
-                onClick={() => history.push(`/event/${event.eventId}`)}
-                className={"EventsSection-View-Button"}
-            >
-                View Event
-            </MenuButton>
+        <div className={`EventsSection-SingleEvent`} data-testid={`${dataTestId}-${event.eventId}`}>
+            <div>
+                <span style={{ fontSize: "26px" }}>{event.eventName}</span>
+                <MenuButton
+                    style={{ alignSelf: "end" }}
+                    onClick={() => history.push(`/event/${event.eventId}`)}
+                    className={"EventsSection-View-Button"}
+                >
+                    View Event
+                </MenuButton>
+            </div>
             <div className={"EventsSection-SingleEvent-Container"}>
                 <span>Start Date:{shortDateFormat(moment(event.startDate))}</span>
                 <span>End Date:{shortDateFormat(moment(event.endDate))}</span>

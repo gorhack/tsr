@@ -8,6 +8,7 @@
 }
 
 .Footer-Container {
+    display: flex;
     font-size: 42px;
     color: var(--action-color);
     font-style: italic;
@@ -15,7 +16,8 @@
 }
 
 .Footer-Content {
+    display: flex;
     align-content: space-between;
-    margin-left: 85%;
-    padding-left: 5rem;
+    margin-left: auto;
+    max-width: 20rem;
 }
