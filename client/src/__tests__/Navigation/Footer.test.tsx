@@ -6,12 +6,6 @@ import { fireEvent } from "@testing-library/dom";
 import { createMemoryHistory, MemoryHistory } from "history";
 
 describe("Footer", () => {
-    it("shows the title TSR", async () => {
-        const history = createMemoryHistory();
-        await renderFooter({ history });
-        expect(screen.getByText("TSR")).toBeInTheDocument();
-    });
-
     it("has about/contribute links", async () => {
         const history = createMemoryHistory();
         await renderFooter({ history });

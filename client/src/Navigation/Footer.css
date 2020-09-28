@@ -9,15 +9,6 @@
 
 .Footer-Container {
     display: flex;
-    font-size: 42px;
+    justify-content: center;
     color: var(--action-color);
-    font-style: italic;
-    font-weight: bold;
-}
-
-.Footer-Content {
-    display: flex;
-    align-content: space-between;
-    margin-left: auto;
-    max-width: 20rem;
 }

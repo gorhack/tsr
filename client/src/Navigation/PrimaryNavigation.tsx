@@ -28,7 +28,7 @@ export const PrimaryNavigation: React.FC<PrimaryNavigationProps> = ({
         <nav className="PrimaryNavigation">
             <div className="flex-row">
                 <DrawerMenu />
-                <span style={{ fontSize: "42px" }}>{tsrUser.username}</span>
+                <span style={{ fontSize: "42px", paddingRight: "2.5rem" }}>{tsrUser.username}</span>
             </div>
             {children}
         </nav>
