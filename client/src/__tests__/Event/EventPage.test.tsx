@@ -103,7 +103,7 @@ describe("displays event details", () => {
                 /(Tue|Wed) Aug (18|19), 2020 - (Thu|Fri) Aug (19|20), 2020/,
             );
             expect(subheading.tagName).toEqual("H2");
-            expect(screen.getByText("big")).toBeInTheDocument();
+            expect(screen.getByText("Big")).toBeInTheDocument();
             expect(findByAriaLabel(result.container, "End Date")).toHaveTextContent(
                 /^(Thursday|Wednesday), August (19th|20th) 2020, [0-9]{4} \(TIMEZONE\/timezone\)$/,
             );

@@ -64,7 +64,10 @@ export const EventDetails = React.memo(
                 <DetailRow
                     label="Event Type"
                     description={
-                        tsrEvent.eventType ? tsrEvent.eventType.displayName : "No Event Type"
+                        tsrEvent.eventType
+                            ? tsrEvent.eventType.displayName.charAt(0).toUpperCase() +
+                              tsrEvent.eventType.displayName.slice(1)
+                            : "No Event Type"
                     }
                 />
                 {startEndDate(moment.utc(tsrEvent.startDate), moment.utc(tsrEvent.endDate))}

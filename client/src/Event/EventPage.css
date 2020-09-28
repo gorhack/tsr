@@ -39,3 +39,15 @@
     padding: 0 18px;
     background-color: var(--level-one-color);
 }
+
+.Event-Task-Comment {
+    display: flex;
+    flex-direction: row;
+    min-width: 30rem;
+    min-height: 5rem;
+    background-color: var(--level-one-color);
+    color: var(--text-color);
+    font-size: 14px;
+    border-radius: .5rem;
+    border-color: var(--action-color);
+}

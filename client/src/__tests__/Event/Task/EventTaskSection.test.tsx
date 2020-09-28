@@ -146,7 +146,7 @@ describe("event tasks", () => {
         fireEvent.click(
             screen.getByRole("button", { name: firstEventTaskCategory.eventTaskDisplayName }),
         );
-        const inputBox = screen.getByPlaceholderText("add a comment...");
+        const inputBox = screen.getByPlaceholderText("Add a comment...");
         const commentAnnotation = "this is my very first comment";
         fireEvent.change(inputBox, {
             target: { value: commentAnnotation },

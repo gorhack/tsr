@@ -7,7 +7,7 @@ import React, {
     useState,
 } from "react";
 import AsyncCreatable from "react-select/async-creatable";
-import { PrimaryButton } from "../../Buttons/Buttons";
+import { MenuButton, PrimaryButton } from "../../Buttons/Buttons";
 import { selectStyles } from "../../Styles";
 import { LONG_DATE_FORMAT, Option } from "../../api";
 import {
@@ -151,11 +151,15 @@ export const EventTaskSection = ({ tsrEvent }: EventTaskSectionProps): ReactElem
     const displayComments = (comments: EventTaskComment[]): ReactElement[] => {
         return comments.map((comment) => {
             return (
-                <div key={`task-comment-${comment.commentId}`} className="Event-Task-Comment">
-                    <span>{comment.audit && comment.audit.createdByDisplayName}</span>
-                    <span aria-label={comment.audit && comment.audit.createdByDisplayName}>
+                <div key={`task-comment-${comment.commentId}`}>
+                    <span>{comment.audit && comment.audit.createdByDisplayName + ":"}</span>
+                    <span
+                        aria-label={comment.audit && comment.audit.createdByDisplayName}
+                        style={{ paddingLeft: "1rem" }}
+                    >
                         {comment.annotation}
                     </span>
+                    <div className={"space-1"} />
                 </div>
             );
         });
@@ -186,11 +190,12 @@ export const EventTaskSection = ({ tsrEvent }: EventTaskSectionProps): ReactElem
         return (
             <form title="commentForm" onSubmit={(e) => submitComment(e, eventTask)}>
                 <textarea
-                    placeholder="add a comment..."
+                    className={"Event-Task-Comment"}
+                    placeholder="Add a comment..."
                     onChange={handleCommentChange}
                     value={commentAnnotation}
                 />
-                <PrimaryButton>post comment</PrimaryButton>
+                <MenuButton>post comment</MenuButton>
             </form>
         );
     };
@@ -239,6 +244,7 @@ export const EventTaskSection = ({ tsrEvent }: EventTaskSectionProps): ReactElem
                                         label="resourcer"
                                         description={eventTask.resourcer.username}
                                     />
+                                    <div className={"space-2"} />
                                     {displayComments(eventTask.comments)}
                                     {displayCommentForm(eventTask)}
                                 </div>
