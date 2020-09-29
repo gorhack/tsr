@@ -4,12 +4,15 @@ import { act, render, RenderResult, screen } from "@testing-library/react";
 import td from "testdouble";
 import * as UserApi from "../../Users/UserApi";
 import { TsrUser } from "../../Users/UserApi";
+import * as EventTaskApi from "../../Event/Task/EventTaskApi";
+import { EventTask, EventTaskCategory } from "../../Event/Task/EventTaskApi";
 import * as OrganizationApi from "../../Organization/OrganizationApi";
 import { Organization } from "../../Organization/OrganizationApi";
 import { UserSettings } from "../../Users/UserSettings";
 import {
     fillInInputValueInForm,
     getInputValue,
+    makeEventTaskCategory,
     makeOrganization,
     makePage,
     reRender,
@@ -24,6 +27,7 @@ describe("User settings", () => {
     let mockGetUserInfo: typeof UserApi.getUserInfo;
     let mockGetOrganizationContains: typeof OrganizationApi.getOrganizationContains;
     let mockSetUserSettings: typeof UserApi.setUserSettings;
+    let mockGetEventTaskCatergories: typeof EventTaskApi.getEventTaskCategoriesContains;
     let userWithoutSettings: TsrUser;
     let org1: Organization;
     let org2: Organization;
@@ -33,6 +37,7 @@ describe("User settings", () => {
         mockGetUserInfo = td.replace(UserApi, "getUserInfo");
         mockGetOrganizationContains = td.replace(OrganizationApi, "getOrganizationContains");
         mockSetUserSettings = td.replace(UserApi, "setUserSettings");
+        mockGetEventTaskCatergories = td.replace(EventTaskApi, "getEventTaskCategoriesContains");
 
         userWithoutSettings = {
             userId: "1234",
@@ -63,6 +68,55 @@ describe("User settings", () => {
     });
 
     afterEach(td.reset);
+
+    describe("react select resourcer", () => {
+        const setupResourcerSelectPromise = async (): Promise<RenderResult> => {
+            const userPromise = Promise.resolve(userWithoutSettings);
+            const eventTaskCategories = [
+                makeEventTaskCategory({
+                    eventTaskId: 1,
+                    eventTaskDisplayName: "first",
+                    eventTaskName: "first",
+                }),
+                makeEventTaskCategory({
+                    eventTaskId: 2,
+                    eventTaskDisplayName: "second",
+                    eventTaskName: "second",
+                }),
+            ];
+            const eventTaskPromise = Promise.resolve(makePage({ items: eventTaskCategories }));
+            return renderUserSettings({ userPromise, eventTaskPromise });
+        };
+        it("can search for event tasks", async () => {
+            await setupResourcerSelectPromise();
+
+            td.when(mockGetEventTaskCatergories("thi")).thenResolve(
+                makePage({
+                    items: [
+                        makeEventTaskCategory({
+                            eventTaskId: 3,
+                            eventTaskName: "third",
+                            eventTaskDisplayName: "third",
+                        }),
+                    ],
+                }) as PageDTO<EventTaskCategory>,
+            );
+            await act(async () => {
+                fireEvent.change(screen.getByLabelText("eventTaskResourcer"), {
+                    target: { value: "thi" },
+                });
+            });
+            await selectEvent.select(screen.getByLabelText("eventTaskResourcer"), "third");
+            expect(screen.getByText("third")).toBeInTheDocument();
+        });
+        it("can select a task and clear it for resourcer", async () => {
+            await setupResourcerSelectPromise();
+            await selectEvent.select(screen.getByLabelText("eventTaskResourcer"), "first");
+            expect(screen.getByText("first")).toBeInTheDocument();
+            await selectEvent.clearAll(screen.getByText("first"));
+            expect(screen.queryByAltText("first")).toBeNull();
+        });
+    });
 
     it("shows user name", async () => {
         const userPromise = Promise.resolve(userWithoutSettings);
@@ -255,17 +309,21 @@ describe("User settings", () => {
         history?: MemoryHistory;
         userPromise: Promise<TsrUser>;
         organizationPromise?: Promise<PageDTO<Organization>>;
+        eventTaskPromise?: Promise<PageDTO<unknown>>;
     }
 
     const renderUserSettings = async ({
         history = createMemoryHistory(),
         userPromise,
         organizationPromise = Promise.resolve(makePage() as PageDTO<Organization>),
+        eventTaskPromise = Promise.resolve(makePage()),
     }: RenderUserSettingsProps): Promise<RenderResult> => {
         history.push("/settings");
 
         td.when(mockGetUserInfo()).thenDo(() => Promise.resolve(userPromise));
         td.when(mockGetOrganizationContains("")).thenDo(() => Promise.resolve(organizationPromise));
+        td.when(mockGetEventTaskCatergories("")).thenDo(() => Promise.resolve(eventTaskPromise));
+
         const result = render(
             <Router history={history}>
                 <Route path={"/settings"}>

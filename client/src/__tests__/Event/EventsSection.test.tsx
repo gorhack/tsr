@@ -127,8 +127,8 @@ describe("home page of the application", () => {
             userEvents: userEventList,
         });
 
-        expect(screen.getByText(/Start Date:8\/(19|18)\/20/)).toBeInTheDocument();
-        expect(screen.getByText(/End Date:8\/(19|20)\/20/)).toBeInTheDocument();
+        expect(screen.getByText(/Start Date: 8\/(19|18)\/20/)).toBeInTheDocument();
+        expect(screen.getByText(/End Date: 8\/(19|20)\/20/)).toBeInTheDocument();
         expect(screen.getByTestId("user-event-1")).toHaveTextContent("first event");
         expect(screen.getByTestId("user-event-2")).toHaveTextContent("second event");
     });
@@ -141,7 +141,7 @@ describe("home page of the application", () => {
                 "No active events. Ensure you are subscribed to the correct Organizations.",
             ),
         ).toHaveLength(2);
-        expect(screen.getAllByRole("button", { name: "Go To User Settings" })).toHaveLength(2);
+        expect(screen.getAllByRole("button", { name: "Add Organizations" })).toHaveLength(2);
     });
 
     it("shows next if more user event pages", async () => {

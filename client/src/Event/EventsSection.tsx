@@ -91,9 +91,7 @@ export const EventsSection = (): ReactElement => {
                 <div className={"EventsSection-No-Events"}>
                     No active events. Ensure you are subscribed to the correct Organizations.
                 </div>
-                <MenuButton onClick={() => history.push("/settings")}>
-                    Go To User Settings
-                </MenuButton>
+                <MenuButton onClick={() => history.push("/settings")}>Add Organizations</MenuButton>
             </div>
         );
     };
@@ -160,8 +158,8 @@ const SingleEvent = ({ event, dataTestId }: SingleEventProps): ReactElement => {
                 </MenuButton>
             </div>
             <div className={"EventsSection-SingleEvent-Container"}>
-                <span>Start Date:{shortDateFormat(moment(event.startDate))}</span>
-                <span>End Date:{shortDateFormat(moment(event.endDate))}</span>
+                <span>Start Date: {shortDateFormat(moment(event.startDate))}</span>
+                <span>End Date: {shortDateFormat(moment(event.endDate))}</span>
             </div>
         </div>
     );
