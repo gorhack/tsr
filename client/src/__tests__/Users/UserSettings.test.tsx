@@ -102,16 +102,16 @@ describe("User settings", () => {
                 }) as PageDTO<EventTaskCategory>,
             );
             await act(async () => {
-                fireEvent.change(screen.getByLabelText("eventTaskResourcer"), {
+                fireEvent.change(screen.getByLabelText("Tasks You Resource"), {
                     target: { value: "thi" },
                 });
             });
-            await selectEvent.select(screen.getByLabelText("eventTaskResourcer"), "third");
+            await selectEvent.select(screen.getByLabelText("Tasks You Resource"), "third");
             expect(screen.getByText("third")).toBeInTheDocument();
         });
         it("can select a task and clear it for resourcer", async () => {
             await setupResourcerSelectPromise();
-            await selectEvent.select(screen.getByLabelText("eventTaskResourcer"), "first");
+            await selectEvent.select(screen.getByLabelText("Tasks You Resource"), "first");
             expect(screen.getByText("first")).toBeInTheDocument();
             await selectEvent.clearAll(screen.getByText("first"));
             expect(screen.queryByAltText("first")).toBeNull();

@@ -92,8 +92,8 @@ describe("home page of the application", () => {
     it("lists all users org events with dates/status", async () => {
         await renderEventsSection({ orgEvents: orgEventList });
 
-        expect(screen.getByText(/Start Date:8\/(19|18)\/20/)).toBeInTheDocument();
-        expect(screen.getByText(/End Date:8\/(19|20)\/20/)).toBeInTheDocument();
+        expect(screen.getByText(/Start Date: 8\/(19|18)\/20/)).toBeInTheDocument();
+        expect(screen.getByText(/End Date: 8\/(19|20)\/20/)).toBeInTheDocument();
         expect(screen.getByTestId("org-event-2")).toHaveTextContent("second event");
         expect(screen.getByTestId("org-event-3")).toHaveTextContent("third event");
     });
