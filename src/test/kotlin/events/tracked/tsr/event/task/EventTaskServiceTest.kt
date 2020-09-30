@@ -63,7 +63,6 @@ internal class EventTaskServiceTest {
             event = eventWithId,
             suspenseDate = suspenseDate,
             approver = tsrUser,
-            resourcer = tsrUser
         )
 
         every {
@@ -95,7 +94,6 @@ internal class EventTaskServiceTest {
                 eventId = 1L,
                 suspenseDate = janFirstDate,
                 approver = TsrUserDTO(1L, "1234", "user", UserRole.USER, UserSettingsDTO()),
-                resourcer = TsrUserDTO(1L, "1234", "user", UserRole.USER, UserSettingsDTO()),
                 comments = listOf(
                     EventTaskCommentDTO(
                         commentId = 1L,

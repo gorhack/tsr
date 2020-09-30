@@ -45,4 +45,18 @@ internal class EventTaskCategoryControllerTest {
             mockEventTaskCategoryService.getEventTaskCategories("", 0, 10, Sort.by("eventTaskCategoryId"))
         }
     }
+
+    @Test
+    fun `createEventTaskCategory returns page of created task category` () {
+        val eventTaskCategoryToCreate = EventTaskCategoryDTO(0L, "third", "third")
+        val createdEventTaskCategoryDTO = eventTaskCategoryToCreate.copy(3L)
+        val expectedResponse: ResponseEntity<EventTaskCategoryDTO> = ResponseEntity(createdEventTaskCategoryDTO, HttpStatus.CREATED)
+
+        every{
+            mockEventTaskCategoryService.createEventTaskCategory(eventTaskCategoryToCreate)
+        } returns createdEventTaskCategoryDTO
+
+        assertEquals(expectedResponse, subject.createEventTaskCategory(eventTaskCategoryToCreate))
+        verifySequence { mockEventTaskCategoryService.createEventTaskCategory(eventTaskCategoryToCreate) }
+    }
 }

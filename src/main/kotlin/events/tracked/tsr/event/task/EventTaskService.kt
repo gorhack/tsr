@@ -27,7 +27,6 @@ class EventTaskService(
             event = event,
             suspenseDate = event.startDate,
             approver = tsrUser,
-            resourcer = tsrUser
         )
         val eventTask = eventTaskRepository.saveAndFlush(eventTaskToSave)
         applicationEventPublisher.publishEvent(NewTsrEventTaskSaveEvent(this, eventTask))

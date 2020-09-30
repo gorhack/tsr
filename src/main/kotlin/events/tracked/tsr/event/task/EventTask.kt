@@ -55,9 +55,6 @@ data class EventTask(
     @JoinColumn(name = "approver_id", referencedColumnName = "id")
     var approver: TsrUser = TsrUser(),
     @ManyToOne(fetch = FetchType.LAZY, cascade = [CascadeType.MERGE])
-    @JoinColumn(name = "resourcer_id", referencedColumnName = "id")
-    var resourcer: TsrUser = TsrUser(),
-    @ManyToOne(fetch = FetchType.LAZY, cascade = [CascadeType.MERGE])
     @JoinColumn(name = "status_id")
     var status: EventTaskStatus = EventTaskStatus(statusId = 1L, "CREATED", "created", EventTaskStatusCode.R, 2),
     @OneToMany(targetEntity = EventTaskComment::class, mappedBy = "eventTask", fetch = FetchType.LAZY, cascade = [CascadeType.ALL], orphanRemoval = true)
@@ -65,8 +62,8 @@ data class EventTask(
 
 ) : Auditable() {
     // constructor without status
-    constructor(eventTaskId: Long, eventTaskCategoryId: EventTaskCategory, eventId: Event, suspenseDate: OffsetDateTime, approver: TsrUser, resourcer: TsrUser, comments: MutableSet<EventTaskComment>, lastModifiedDate: OffsetDateTime, lastModifiedBy: String, createdDate: OffsetDateTime, createdBy: String) :
-        this(eventTaskId = eventTaskId, eventTaskCategory = eventTaskCategoryId, event = eventId, suspenseDate = suspenseDate, approver = approver, resourcer = resourcer, comments = comments) {
+    constructor(eventTaskId: Long, eventTaskCategoryId: EventTaskCategory, eventId: Event, suspenseDate: OffsetDateTime, approver: TsrUser, comments: MutableSet<EventTaskComment>, lastModifiedDate: OffsetDateTime, lastModifiedBy: String, createdDate: OffsetDateTime, createdBy: String) :
+        this(eventTaskId = eventTaskId, eventTaskCategory = eventTaskCategoryId, event = eventId, suspenseDate = suspenseDate, approver = approver, comments = comments) {
         this.lastModifiedDate = lastModifiedDate
         this.lastModifiedBy = lastModifiedBy
         this.createdDate = createdDate
@@ -85,7 +82,6 @@ data class EventTask(
             eventTaskCategory = this.eventTaskCategory,
             suspenseDate = this.suspenseDate,
             approver = TsrUserDTO(this.approver),
-            resourcer = TsrUserDTO(this.resourcer),
             status = this.status,
             comments = commentDTOs
         )
