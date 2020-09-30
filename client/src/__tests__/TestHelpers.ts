@@ -143,11 +143,11 @@ export const makeTsrUser = (partial: Partial<TsrUser>): TsrUser => {
 };
 
 export const makeEventTaskCategory = (partial: Partial<EventTaskCategory>): EventTaskCategory => {
-    if (!partial.eventTaskId) {
+    if (!partial.eventTaskCategoryId) {
         throw Error("event task category must have event task id");
     }
     return {
-        eventTaskId: partial.eventTaskId,
+        eventTaskCategoryId: partial.eventTaskCategoryId,
         eventTaskDisplayName: partial.eventTaskDisplayName || "",
         eventTaskName: partial.eventTaskName || "",
     };
@@ -177,7 +177,7 @@ export const makeEventTask = (partial: Partial<EventTask>): EventTask => {
     }
     return {
         eventId: partial.eventId,
-        eventTaskId: partial.eventTaskId || partial.eventTaskCategory.eventTaskId,
+        eventTaskId: partial.eventTaskId || partial.eventTaskCategory.eventTaskCategoryId,
         eventTaskCategory: partial.eventTaskCategory,
         suspenseDate: partial.suspenseDate || "",
         status: partial.status || makeEventTaskStatus({}),

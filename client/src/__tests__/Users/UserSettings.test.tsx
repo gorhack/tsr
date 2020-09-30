@@ -74,12 +74,12 @@ describe("User settings", () => {
             const userPromise = Promise.resolve(userWithoutSettings);
             const eventTaskCategories = [
                 makeEventTaskCategory({
-                    eventTaskId: 1,
+                    eventTaskCategoryId: 1,
                     eventTaskDisplayName: "first",
                     eventTaskName: "first",
                 }),
                 makeEventTaskCategory({
-                    eventTaskId: 2,
+                    eventTaskCategoryId: 2,
                     eventTaskDisplayName: "second",
                     eventTaskName: "second",
                 }),
@@ -94,7 +94,7 @@ describe("User settings", () => {
                 makePage({
                     items: [
                         makeEventTaskCategory({
-                            eventTaskId: 3,
+                            eventTaskCategoryId: 3,
                             eventTaskName: "third",
                             eventTaskDisplayName: "third",
                         }),

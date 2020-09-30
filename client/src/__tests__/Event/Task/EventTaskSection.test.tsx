@@ -29,6 +29,7 @@ describe("event tasks", () => {
     let mockCreateEventTask: typeof EventTaskApi.createEventTask;
     let mockGetEventTasks: typeof EventTaskApi.getEventTasks;
     let mockAddComment: typeof EventTaskApi.addComment;
+    let mockCreateEventTaskCategory: typeof EventTaskApi.createEventTaskCategory;
     let tsrEvent: TsrEvent;
     let firstEventTaskCategory: EventTaskCategory;
     let eventTask: EventTask;
@@ -38,9 +39,10 @@ describe("event tasks", () => {
         mockCreateEventTask = td.replace(EventTaskApi, "createEventTask");
         mockGetEventTasks = td.replace(EventTaskApi, "getEventTasks");
         mockAddComment = td.replace(EventTaskApi, "addComment");
+        mockCreateEventTaskCategory = td.replace(EventTaskApi, "createEventTaskCategory");
         tsrEvent = makeEvent({ eventId: 1 });
         firstEventTaskCategory = makeEventTaskCategory({
-            eventTaskId: 1,
+            eventTaskCategoryId: 1,
             eventTaskDisplayName: "task 1",
         });
         eventTask = {
@@ -67,12 +69,36 @@ describe("event tasks", () => {
         td.verify(mockCreateEventTask(tsrEvent.eventId, firstEventTaskCategory), { times: 1 });
     });
 
+    it("creates a task category", async () => {
+        await renderEventTasks({});
+        td.when(mockGetEventTaskCategories(td.matchers.anything())).thenResolve(
+            makePage() as PageDTO<EventTaskCategory>,
+        );
+        td.when(
+            mockCreateEventTaskCategory({
+                eventTaskCategoryId: 0,
+                eventTaskName: "first",
+                eventTaskDisplayName: "first",
+            }),
+        ).thenResolve({
+            eventTaskCategoryId: 1,
+            eventTaskName: "first",
+            eventTaskDisplayName: "first",
+        });
+        await act(async () => {
+            await selectEvent.create(screen.getByLabelText("add a task"), "first", {
+                waitForElement: false,
+            });
+        });
+        expect(screen.getByText("first")).toBeInTheDocument();
+    });
+
     it("shows tasks in order of status R->Y->G", async () => {
         const eventTasks: EventTask[] = [
             makeEventTask({
                 eventId: 1,
                 eventTaskCategory: makeEventTaskCategory({
-                    eventTaskId: 3,
+                    eventTaskCategoryId: 3,
                     eventTaskDisplayName: "last task",
                 }),
                 status: makeEventTaskStatus({
@@ -82,7 +108,7 @@ describe("event tasks", () => {
             makeEventTask({
                 eventId: 1,
                 eventTaskCategory: makeEventTaskCategory({
-                    eventTaskId: 2,
+                    eventTaskCategoryId: 2,
                     eventTaskDisplayName: "second task",
                 }),
                 status: makeEventTaskStatus({
@@ -176,7 +202,7 @@ describe("event tasks", () => {
             const socketTask = makeEventTask({
                 eventId: tsrEvent.eventId,
                 eventTaskCategory: makeEventTaskCategory({
-                    eventTaskId: 55,
+                    eventTaskCategoryId: 55,
                     eventTaskDisplayName: "socket task",
                 }),
                 status: makeEventTaskStatus({

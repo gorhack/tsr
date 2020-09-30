@@ -20,6 +20,19 @@ export const createEventTask = async (
         });
 };
 
+export const createEventTaskCategory = async (
+    eventTaskCategory: EventTaskCategory,
+): Promise<EventTaskCategory> => {
+    return axios
+        .post(baseUri + "/task/category", eventTaskCategory)
+        .then((response: AxiosResponse<EventTaskCategory>) => {
+            return response.data;
+        })
+        .catch((error) => {
+            throw new Error(error.message);
+        });
+};
+
 export const getEventTasks = async (eventId: number): Promise<EventTask[]> => {
     const uri = `${baseUri}/${eventId}/task`;
     return axios
@@ -62,7 +75,7 @@ export const addComment = async (
 };
 
 export interface EventTaskCategory {
-    eventTaskId: number;
+    eventTaskCategoryId: number;
     eventTaskName: string;
     eventTaskDisplayName: string;
 }

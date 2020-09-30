@@ -166,7 +166,6 @@ fun makeEventTask(): EventTask {
         eventId = makeEventWithId(),
         suspenseDate = janFirstDate,
         approver = tsrUser,
-        resourcer = tsrUser,
         comments = hashSetOf(),
         createdBy = "1234",
         createdDate = OffsetDateTime.parse("1970-01-01T00:00:01-08:00"),
@@ -181,7 +180,6 @@ fun makeEventTask2(): EventTask {
         eventId = makeEventWithId(),
         eventTaskCategoryId = EventTaskCategory(eventTaskCategoryId = 4L, eventTaskName = "CLASS_FOUR", eventTaskDisplayName = "Class IV"),
         suspenseDate = janFirstDate,
-        resourcer = tsrUser,
         approver = tsrUser,
         comments = hashSetOf(
             EventTaskComment(
@@ -216,7 +214,6 @@ fun makeEventTaskDTO(): EventTaskDTO {
         eventId = 1L,
         eventTaskCategory = EventTaskCategory(eventTaskCategoryId = 10L, eventTaskName = "CLASS_ONE", eventTaskDisplayName = "Class I"),
         suspenseDate = janFirstDate,
-        resourcer = TsrUserDTO(1L, "1234", "user", UserRole.USER, UserSettingsDTO()),
         approver = TsrUserDTO(1L, "1234", "user", UserRole.USER, UserSettingsDTO()),
     )
 }

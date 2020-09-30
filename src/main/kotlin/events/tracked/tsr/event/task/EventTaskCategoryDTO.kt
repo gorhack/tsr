@@ -8,4 +8,12 @@ data class EventTaskCategoryDTO (
     constructor(eventTaskCategory: EventTaskCategory): this(
         eventTaskCategoryId = eventTaskCategory.eventTaskCategoryId, eventTaskName = eventTaskCategory.eventTaskName, eventTaskDisplayName = eventTaskCategory.eventTaskDisplayName
     )
+
+    fun toEventTaskCategory(): EventTaskCategory {
+        return EventTaskCategory(
+            eventTaskCategoryId = this.eventTaskCategoryId,
+            eventTaskName = this.eventTaskName,
+            eventTaskDisplayName = this.eventTaskDisplayName
+        )
+    }
 }
