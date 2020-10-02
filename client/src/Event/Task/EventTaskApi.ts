@@ -122,3 +122,12 @@ export type EventTaskReducerAction =
     | { type: EventTaskActionTypes.LOAD; eventTasks: EventTask[] }
     | { type: EventTaskActionTypes.ADD; eventTask: EventTask }
     | { type: EventTaskActionTypes.ADD_COMMENT; comment: EventTaskComment };
+
+export enum EventTaskCategoryActionTypes {
+    LOAD,
+}
+
+export type EventTaskCategoryCacheReducerAction = {
+    type: EventTaskCategoryActionTypes.LOAD;
+    eventTaskCategories: EventTaskCategory[];
+}

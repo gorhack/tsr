@@ -14,10 +14,12 @@ import "./UserSettings.css";
 import { LabeledInput } from "../Inputs/LabeledInput";
 import sortedUniqBy from "lodash/sortedUniqBy";
 import { useHistory } from "react-router-dom";
-import { selectStyles } from "../Styles";
-import { ValueType } from "react-select";
-import AsyncCreatable from "react-select/async-creatable";
-import { EventTaskCategory, getEventTaskCategoriesContains } from "../Event/Task/EventTaskApi";
+import {
+    EventTaskCategory,
+    EventTaskCategoryActionTypes,
+    EventTaskCategoryCacheReducerAction,
+} from "../Event/Task/EventTaskApi";
+import { TaskCategorySelect } from "../Event/Task/TaskCategorySelect";
 
 type FormData = {
     email: string;
@@ -40,9 +42,26 @@ export const UserSettings: React.FC = (): ReactElement => {
                 return state;
         }
     };
+
+    const eventTaskCategoryReducer = (
+        state: EventTaskCategory[] = [],
+        action: EventTaskCategoryCacheReducerAction,
+    ): EventTaskCategory[] => {
+        switch (action.type) {
+            case EventTaskCategoryActionTypes.LOAD: {
+                return sortedUniqBy<EventTaskCategory>(
+                    [...state, ...action.eventTaskCategories],
+                    (e) => e.eventTaskCategoryId,
+                );
+            }
+            default:
+                return state;
+        }
+    };
     const [organizationsCache, organizationCacheDispatch] = useReducer(orgCacheReducer, []);
-    const [eventTaskCache, setEventTaskCache] = useState<EventTaskCategory[]>([]);
-    const [selectedTaskOption, setSelectedTaskOption] = useState<Option | undefined>(undefined);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const [eventTaskCache, eventTaskCacheDispatch] = useReducer(eventTaskCategoryReducer, []);
+    const [selectedTaskOptions, setSelectedTaskOptions] = useState<Option[]>([]);
     const [user, setUser] = useState<TsrUser>(emptyTsrUser);
     const [orgValues, setOrgValues] = useState<Option[]>([]);
     const { control, handleSubmit, setValue, register, errors } = useForm<FormData>({
@@ -82,20 +101,6 @@ export const UserSettings: React.FC = (): ReactElement => {
                 });
         })();
     }, [setUser, setFormValues]);
-
-    const loadEventCategories = async (searchTerm: string): Promise<Option[]> => {
-        return getEventTaskCategoriesContains(searchTerm).then((result) => {
-            setEventTaskCache((previousCache) => [...previousCache, ...result.items]);
-            return Promise.resolve(
-                result.items.map((task) => {
-                    return {
-                        value: task.eventTaskDisplayName,
-                        label: task.eventTaskDisplayName,
-                    };
-                }),
-            );
-        });
-    };
 
     const onSubmit: SubmitHandler<FormData> = async (data): Promise<void> => {
         const { phone, email } = data;
@@ -179,30 +184,11 @@ export const UserSettings: React.FC = (): ReactElement => {
                         Tasks You Resource
                     </label>
                     <div className={"space-1"} />
-                    <AsyncCreatable
-                        styles={selectStyles}
-                        isMulti
-                        isClearable
-                        defaultOptions
-                        loadOptions={loadEventCategories}
-                        getOptionValue={(option) => option.label}
-                        placeholder="Select a task..."
-                        name="eventTaskResourcer"
-                        inputId="eventTaskResourcer"
-                        onChange={(selection: ValueType<Option>, action) => {
-                            if (selection && "label" in selection) {
-                                switch (action.action) {
-                                    case "select-option": {
-                                        setSelectedTaskOption(selection);
-                                        break;
-                                    }
-                                    default: {
-                                        setSelectedTaskOption(undefined);
-                                        break;
-                                    }
-                                }
-                            }
-                        }}
+                    <TaskCategorySelect
+                        dispatchToEventTaskCategoryCache={eventTaskCacheDispatch}
+                        isMulti={true}
+                        selectedTaskOptions={selectedTaskOptions}
+                        setSelectedTaskOptions={setSelectedTaskOptions}
                     />
                     <div className="space-2" />
                     <div className="Form-Submit">

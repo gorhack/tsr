@@ -28,7 +28,9 @@ const START_DATE_PLACEHOLDER_TEXT = "Choose the Start Date...";
 const END_DATE_PLACEHOLDER_TEXT = "Choose the End Date...";
 
 describe("create an event", () => {
+    // TODO Find a way to use a static date for the test
     const dateToInput = new Date().toLocaleDateString();
+    const dateToInputDate = new Date();
     let mockSaveEvent: typeof EventApi.saveEvent;
     let mockUpdateEvent: typeof EventApi.updateEvent;
     let mockCreateEventType: typeof EventTypeApi.createEventType;
@@ -163,9 +165,18 @@ describe("create an event", () => {
 
         it("when passed an eventId create event pulls all event info and fills in default values", async () => {
             const result = await setupGetEventByIdPromise();
+            let date = dateToInput;
+            if (dateToInputDate.getDay() < 10) {
+                if (dateToInputDate.getDay() < 10) {
+                    date = `${dateToInput.slice(0, 3)}0${dateToInput.slice(-6)}`;
+                }
+                if (dateToInputDate.getMonth() < 9 && dateToInputDate.getDay() < 10) {
+                    date = `${dateToInput.slice(0, 2)}0${dateToInput.slice(-6)}`;
+                }
+            }
             expect(getInputValue(screen.getByLabelText("event name"))).toEqual("name");
-            expect(getInputValue(screen.getByLabelText("start date"))).toContain(dateToInput);
-            expect(getInputValue(screen.getByLabelText("end date"))).toContain(dateToInput);
+            expect(getInputValue(screen.getByLabelText("start date"))).toContain(date);
+            expect(getInputValue(screen.getByLabelText("end date"))).toContain(date);
             expect(result.container).toHaveTextContent(/.*second.*test type.*/);
         });
 
