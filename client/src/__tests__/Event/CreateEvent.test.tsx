@@ -28,7 +28,7 @@ const START_DATE_PLACEHOLDER_TEXT = "Choose the Start Date...";
 const END_DATE_PLACEHOLDER_TEXT = "Choose the End Date...";
 
 describe("create an event", () => {
-    const dateToInput = new Date().toLocaleDateString();
+    const dateToInput = new Date("2020-10-18T00:00:01").toLocaleDateString();
     let mockSaveEvent: typeof EventApi.saveEvent;
     let mockUpdateEvent: typeof EventApi.updateEvent;
     let mockCreateEventType: typeof EventTypeApi.createEventType;

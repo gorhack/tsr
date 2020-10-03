@@ -55,8 +55,12 @@ export const UserSettings: React.FC = (): ReactElement => {
                 };
             });
             setOrgValues(orgsAsOptions);
-            setValue("email", settings.emailAddress);
-            setValue("phone", settings.phoneNumber);
+            if (settings.emailAddress) {
+                setValue("email", settings.emailAddress);
+            }
+            if (settings.phoneNumber) {
+                setValue("phone", settings.phoneNumber);
+            }
         },
         [setOrgValues, setValue],
     );
