@@ -5,7 +5,7 @@ plugins {
 	id("org.springframework.boot") version "2.3.3.RELEASE"
 	id("io.spring.dependency-management") version "1.0.10.RELEASE"
 	id("com.moowork.node") version "1.3.1"
-	id("org.flywaydb.flyway") version "6.5.5"
+	id("org.flywaydb.flyway") version "7.0.0"
 	id("org.sonarqube") version "3.0"
 
 	id ("org.jetbrains.kotlin.plugin.jpa") version "1.4.10"
@@ -13,7 +13,7 @@ plugins {
 	kotlin("jvm") version "1.4.10"
 	kotlin("plugin.spring") version "1.4.10"
 
-	id("com.github.ben-manes.versions") version "0.31.0" // helps find latest dependency versions `./gradlew dependencyUpdates`
+	id("com.github.ben-manes.versions") version "0.33.0" // helps find latest dependency versions `./gradlew dependencyUpdates`
 }
 
 group = "events.tracked.tsr"
@@ -40,10 +40,10 @@ repositories {
 	maven { url = uri("https://repo.spring.io/snapshot") }
 }
 
-var springSecurityVersion = "5.3.4.RELEASE"
+var springSecurityVersion = "5.3.4.RELEASE" // TODO upgrade to 5.4.0
 var springBootVersion = "2.3.3.RELEASE"
 var keycloakVersion = "11.0.0"
-var jacksonVersion = "2.11.2"
+var jacksonVersion = "2.11.3"
 var jetBrainsKotlin = "1.4.10"
 
 dependencies {
@@ -78,7 +78,7 @@ dependencies {
 	runtimeOnly("org.postgresql:postgresql:42.2.16")
 
 	testImplementation("org.springframework.boot:spring-boot-starter-test:${springBootVersion}")
-	testImplementation("io.mockk:mockk:1.10.0")
+	testImplementation("io.mockk:mockk:1.10.2")
 }
 
 tasks.withType<KotlinCompile> {
