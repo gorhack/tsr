@@ -14,12 +14,12 @@ Dynamically manage and track planning requirements in a collaborative space.
     - [x] code quality - [sonarcloud](https://sonarcloud.io/dashboard?id=gorhack_tsr)
     - [x] dependency scan - Github's Dependabot
     - [x] deploy - [aws eb](https://tracked.events)
+    - [ ] deploy to Coding Repository and Transformation Environment (CReATE) platform (~DEC 2020)
 - [ ] SSO
     - [x] [keycloak](http://alcesleo.github.io/2020/01/30/setting-up-keycloak-on-aws/)
     - [ ] transition from dev/testing environment to deployment ready version of kc
     - [ ] third party SSO?
     - [x] user roles ("user" / "admin")
-- [ ] [MVP](https://github.com/gorhack/tsr/projects/2) (target 30 SEP 2020)
 - [ ] transition from [dev/testing rds](https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/using-features.managing.db.html?icmpid=docs_elasticbeanstalk_console)
 db to deployment db
 - [ ] integrate with 3rd party systems
