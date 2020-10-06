@@ -42,8 +42,8 @@ describe("event tasks", () => {
         mockCreateEventTaskCategory = td.replace(EventTaskApi, "createEventTaskCategory");
         tsrEvent = makeEvent({ eventId: 1 });
         firstEventTaskCategory = makeEventTaskCategory({
-            eventTaskCategoryId: 1,
-            eventTaskCategoryDisplayName: "task 1",
+            eventTaskId: 1,
+            eventTaskDisplayName: "task 1",
         });
         eventTask = {
             eventTaskId: 1,

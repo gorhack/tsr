@@ -137,14 +137,14 @@ describe("event task", () => {
 
     it("creates an event task category", async () => {
         const createdEventTaskCategory: EventTaskCategory = {
-            eventTaskCategoryId: 1,
-            eventTaskCategoryDisplayName: "first",
-            eventTaskCategoryName: "first",
+            eventTaskId: 1,
+            eventTaskDisplayName: "first",
+            eventTaskName: "first",
         };
         const eventTaskCategoryToCreate = {
-            eventTaskCategoryId: 0,
-            eventTaskCategoryDisplayName: "first",
-            eventTaskCategoryName: "first",
+            eventTaskId: 0,
+            eventTaskDisplayName: "first",
+            eventTaskName: "first",
         };
         nock("http://example.com")
             .post("/api/v1/event/task/category", eventTaskCategoryToCreate)

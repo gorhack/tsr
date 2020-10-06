@@ -121,8 +121,8 @@ export const EventTaskSection = ({ tsrEvent }: EventTaskSectionProps): ReactElem
             return Promise.resolve(
                 result.items.map((task) => {
                     return {
-                        value: task.eventTaskCategoryDisplayName,
-                        label: task.eventTaskCategoryDisplayName,
+                        value: task.eventTaskDisplayName,
+                        label: task.eventTaskDisplayName,
                     };
                 }),
             );
@@ -132,15 +132,15 @@ export const EventTaskSection = ({ tsrEvent }: EventTaskSectionProps): ReactElem
     const createAndMapEventTaskCategory = (inputVal: string): void => {
         (async () =>
             createEventTaskCategory({
-                eventTaskCategoryId: 0,
-                eventTaskCategoryDisplayName: inputVal,
-                eventTaskCategoryName: inputVal,
+                eventTaskId: 0,
+                eventTaskDisplayName: inputVal,
+                eventTaskName: inputVal,
             })
                 .then((result) => {
                     setEventTaskCache((oldCache) => [...oldCache, result]);
                     setSelectedTaskOption({
-                        value: result.eventTaskCategoryDisplayName,
-                        label: result.eventTaskCategoryDisplayName,
+                        value: result.eventTaskDisplayName,
+                        label: result.eventTaskDisplayName,
                     });
                 })
                 .catch((error) => {
@@ -151,7 +151,7 @@ export const EventTaskSection = ({ tsrEvent }: EventTaskSectionProps): ReactElem
     const addEventTask = async (e: FormEvent<HTMLFormElement>): Promise<void> => {
         e.preventDefault();
         const foundEventTask = eventTaskCache.find((eventTask) => {
-            if (selectedTaskOption?.label === eventTask.eventTaskCategoryDisplayName) {
+            if (selectedTaskOption?.label === eventTask.eventTaskDisplayName) {
                 return eventTask;
             }
             return undefined;
@@ -240,9 +240,9 @@ export const EventTaskSection = ({ tsrEvent }: EventTaskSectionProps): ReactElem
                                 }`}
                                 onClick={open ? closeHandler : openHandler}
                                 key={`task-header-${eventTask.eventTaskId}`}
-                                data-testid={`task-${eventTask.eventTaskCategory.eventTaskCategoryId}`}
+                                data-testid={`task-${eventTask.eventTaskCategory.eventTaskId}`}
                             >
-                                {eventTask.eventTaskCategory.eventTaskCategoryDisplayName}
+                                {eventTask.eventTaskCategory.eventTaskDisplayName}
                             </button>
                             {open && (
                                 <div
