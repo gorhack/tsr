@@ -6,31 +6,30 @@ import React, {
     useReducer,
     useState,
 } from "react";
-import AsyncCreatable from "react-select/async-creatable";
 import { MenuButton, PrimaryButton } from "../../Buttons/Buttons";
-import { selectStyles } from "../../Styles";
 import { LONG_DATE_FORMAT, Option } from "../../api";
 import {
     addComment,
     createEventTask,
-    createEventTaskCategory,
     EventTask,
     EventTaskActionTypes,
     EventTaskCategory,
+    EventTaskCategoryActionTypes,
+    EventTaskCategoryCacheReducerAction,
     EventTaskComment,
     EventTaskReducerAction,
-    getEventTaskCategoriesContains,
     getEventTasks,
 } from "./EventTaskApi";
 import "../EventPage.css";
 import { SocketSubscriptionTopics, TsrEvent } from "../EventApi";
-import { ValueType } from "react-select";
 import sortBy from "lodash/sortBy";
 import { useStompSocketContext } from "../../StompSocketContext";
 import { SocketStatus } from "../../SocketService";
 import { IMessage } from "@stomp/stompjs";
 import { DetailRow } from "../DetailRow";
 import moment from "moment";
+import { TaskCategorySelect } from "./TaskCategorySelect";
+import { sortedUniqBy } from "lodash";
 
 interface EventTaskSectionProps {
     tsrEvent: TsrEvent;
@@ -56,10 +55,26 @@ const eventTaskReducer = (state: EventTask[], action: EventTaskReducerAction): E
     }
 };
 
+const eventTaskCategoryReducer = (
+    state: EventTaskCategory[] = [],
+    action: EventTaskCategoryCacheReducerAction,
+): EventTaskCategory[] => {
+    switch (action.type) {
+        case EventTaskCategoryActionTypes.LOAD: {
+            return sortedUniqBy<EventTaskCategory>(
+                [...state, ...action.eventTaskCategories],
+                (e) => e.eventTaskCategoryId,
+            );
+        }
+        default:
+            return state;
+    }
+};
+
 export const EventTaskSection = ({ tsrEvent }: EventTaskSectionProps): ReactElement => {
     const { socketService } = useStompSocketContext();
-    const [selectedTaskOption, setSelectedTaskOption] = useState<Option | undefined>(undefined);
-    const [eventTaskCache, setEventTaskCache] = useState<EventTaskCategory[]>([]);
+    const [selectedTaskOption, setSelectedTaskOption] = useState<Option[]>([]);
+    const [eventTaskCache, eventTaskCacheDispatch] = useReducer(eventTaskCategoryReducer, []);
     const [taskOpen, setTaskOpen] = useState<number | undefined>(undefined);
     const reducerInitialState: EventTask[] = [];
     const [eventTasks, eventTasksDispatch] = useReducer(eventTaskReducer, reducerInitialState);
@@ -115,57 +130,32 @@ export const EventTaskSection = ({ tsrEvent }: EventTaskSectionProps): ReactElem
         })();
     }, [tsrEvent.eventId]);
 
-    const loadEventCategories = async (searchTerm: string): Promise<Option[]> => {
-        return getEventTaskCategoriesContains(searchTerm).then((result) => {
-            setEventTaskCache((previousCache) => [...previousCache, ...result.items]);
-            return Promise.resolve(
-                result.items.map((task) => {
-                    return {
-                        value: task.eventTaskDisplayName,
-                        label: task.eventTaskDisplayName,
-                    };
-                }),
-            );
-        });
-    };
-
-    const createAndMapEventTaskCategory = (inputVal: string): void => {
-        (async () =>
-            createEventTaskCategory({
-                eventTaskCategoryId: 0,
-                eventTaskDisplayName: inputVal,
-                eventTaskName: inputVal,
-            })
-                .then((result) => {
-                    setEventTaskCache((oldCache) => [...oldCache, result]);
-                    setSelectedTaskOption({
-                        value: result.eventTaskDisplayName,
-                        label: result.eventTaskDisplayName,
-                    });
-                })
-                .catch((error) => {
-                    console.error(`unable to create task category ${inputVal} ${error.message}`);
-                }))();
-    };
-
     const addEventTask = async (e: FormEvent<HTMLFormElement>): Promise<void> => {
         e.preventDefault();
-        const foundEventTask = eventTaskCache.find((eventTask) => {
-            if (selectedTaskOption?.label === eventTask.eventTaskDisplayName) {
-                return eventTask;
+        let foundEventTasks: EventTaskCategory[] = [];
+        selectedTaskOption.forEach((eventTaskCategoryOption): void => {
+            const foundEventTask = eventTaskCache.find((eventTask) => {
+                if (eventTask.eventTaskDisplayName === eventTaskCategoryOption.label) {
+                    return eventTask;
+                }
+                return undefined;
+            });
+            if (foundEventTask) {
+                foundEventTasks = [...foundEventTasks, foundEventTask];
             }
-            return undefined;
         });
-        if (!foundEventTask) {
+        if (foundEventTasks.length === 0) {
             console.error("must select a task to add");
             return Promise.resolve();
         }
-        try {
-            await createEventTask(tsrEvent.eventId, foundEventTask);
-        } catch (error) {
-            console.error(`could not add event task ${error.message}`);
+        for (const eventTask of foundEventTasks) {
+            try {
+                await createEventTask(tsrEvent.eventId, eventTask);
+            } catch (error) {
+                console.error(`could not add event task ${error.message}`);
+            }
         }
-        setSelectedTaskOption(undefined); // TODO: clear the value in the select
+        setSelectedTaskOption([]); // TODO: clear the value in the select
     };
 
     const displayComments = (comments: EventTaskComment[]): ReactElement[] => {
@@ -285,31 +275,10 @@ export const EventTaskSection = ({ tsrEvent }: EventTaskSectionProps): ReactElem
                     <div className="EventPage-AddTask">
                         <label htmlFor="eventTask">add a task</label>
                         <div className="space-1" />
-                        <AsyncCreatable
-                            styles={selectStyles}
-                            isClearable
-                            defaultOptions
-                            loadOptions={loadEventCategories}
-                            getOptionValue={(option) => option.label}
-                            placeholder="Select a task..."
-                            name="eventTask"
-                            inputId="eventTask"
-                            value={selectedTaskOption}
-                            onCreateOption={createAndMapEventTaskCategory}
-                            onChange={(selection: ValueType<Option>, action) => {
-                                if (selection && "label" in selection) {
-                                    switch (action.action) {
-                                        case "select-option": {
-                                            setSelectedTaskOption(selection);
-                                            break;
-                                        }
-                                        default: {
-                                            setSelectedTaskOption(undefined);
-                                            break;
-                                        }
-                                    }
-                                }
-                            }}
+                        <TaskCategorySelect
+                            dispatchToEventTaskCategoryCache={eventTaskCacheDispatch}
+                            selectedTaskOptions={selectedTaskOption}
+                            setSelectedTaskOptions={setSelectedTaskOption}
                         />
                     </div>
                     <PrimaryButton>add task</PrimaryButton>

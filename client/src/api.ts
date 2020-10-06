@@ -5,6 +5,11 @@ import {
     OrganizationActionTypes,
     OrgCacheReducerAction,
 } from "./Organization/OrganizationApi";
+import {
+    EventTaskCategoryActionTypes,
+    EventTaskCategoryCacheReducerAction,
+    getEventTaskCategoriesContains,
+} from "./Event/Task/EventTaskApi";
 
 export enum HttpStatus {
     OK = 200,
@@ -76,6 +81,34 @@ export const loadOrganizationSearchTerm = async (
         .catch((error) => {
             console.error(
                 `error loading organizations with search term ${searchTerm} ${error.message}`,
+            );
+            return Promise.resolve([]);
+        });
+};
+
+// breaks tests when in EventTaskApi due to td...
+export const loadTaskCategorySearchTerm = async (
+    searchTerm: string,
+    dispatchToEventTaskCategoryCache: React.Dispatch<EventTaskCategoryCacheReducerAction>,
+): Promise<Option[]> => {
+    return getEventTaskCategoriesContains(searchTerm)
+        .then((result) => {
+            dispatchToEventTaskCategoryCache({
+                type: EventTaskCategoryActionTypes.LOAD,
+                eventTaskCategories: result.items,
+            });
+            return Promise.resolve(
+                result.items.map((eventTaskCategory) => {
+                    return {
+                        value: eventTaskCategory.eventTaskDisplayName,
+                        label: eventTaskCategory.eventTaskDisplayName,
+                    };
+                }),
+            );
+        })
+        .catch((error) => {
+            console.error(
+                `error loading event task categories with search term ${searchTerm} ${error.message}`,
             );
             return Promise.resolve([]);
         });
