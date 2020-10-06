@@ -22,4 +22,8 @@ class EventTaskCategoryService (
         }
     }
 
+    fun createEventTaskCategory(eventTaskCategoryDTO: EventTaskCategoryDTO): EventTaskCategoryDTO {
+        val createdEventTaskCategory = eventTaskCategoryRepository.save(eventTaskCategoryDTO.toEventTaskCategory())
+        return EventTaskCategoryDTO(createdEventTaskCategory)
+    }
 }

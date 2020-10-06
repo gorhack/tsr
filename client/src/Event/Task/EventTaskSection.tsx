@@ -13,6 +13,7 @@ import { LONG_DATE_FORMAT, Option } from "../../api";
 import {
     addComment,
     createEventTask,
+    createEventTaskCategory,
     EventTask,
     EventTaskActionTypes,
     EventTaskCategory,
@@ -120,18 +121,37 @@ export const EventTaskSection = ({ tsrEvent }: EventTaskSectionProps): ReactElem
             return Promise.resolve(
                 result.items.map((task) => {
                     return {
-                        value: task.eventTaskDisplayName,
-                        label: task.eventTaskDisplayName,
+                        value: task.eventTaskCategoryDisplayName,
+                        label: task.eventTaskCategoryDisplayName,
                     };
                 }),
             );
         });
     };
 
+    const createAndMapEventTaskCategory = (inputVal: string): void => {
+        (async () =>
+            createEventTaskCategory({
+                eventTaskCategoryId: 0,
+                eventTaskCategoryDisplayName: inputVal,
+                eventTaskCategoryName: inputVal,
+            })
+                .then((result) => {
+                    setEventTaskCache((oldCache) => [...oldCache, result]);
+                    setSelectedTaskOption({
+                        value: result.eventTaskCategoryDisplayName,
+                        label: result.eventTaskCategoryDisplayName,
+                    });
+                })
+                .catch((error) => {
+                    console.error(`unable to create task category ${inputVal} ${error.message}`);
+                }))();
+    };
+
     const addEventTask = async (e: FormEvent<HTMLFormElement>): Promise<void> => {
         e.preventDefault();
         const foundEventTask = eventTaskCache.find((eventTask) => {
-            if (selectedTaskOption?.label === eventTask.eventTaskDisplayName) {
+            if (selectedTaskOption?.label === eventTask.eventTaskCategoryDisplayName) {
                 return eventTask;
             }
             return undefined;
@@ -220,9 +240,9 @@ export const EventTaskSection = ({ tsrEvent }: EventTaskSectionProps): ReactElem
                                 }`}
                                 onClick={open ? closeHandler : openHandler}
                                 key={`task-header-${eventTask.eventTaskId}`}
-                                data-testid={`task-${eventTask.eventTaskCategory.eventTaskId}`}
+                                data-testid={`task-${eventTask.eventTaskCategory.eventTaskCategoryId}`}
                             >
-                                {eventTask.eventTaskCategory.eventTaskDisplayName}
+                                {eventTask.eventTaskCategory.eventTaskCategoryDisplayName}
                             </button>
                             {open && (
                                 <div
@@ -274,6 +294,8 @@ export const EventTaskSection = ({ tsrEvent }: EventTaskSectionProps): ReactElem
                             placeholder="Select a task..."
                             name="eventTask"
                             inputId="eventTask"
+                            value={selectedTaskOption}
+                            onCreateOption={createAndMapEventTaskCategory}
                             onChange={(selection: ValueType<Option>, action) => {
                                 if (selection && "label" in selection) {
                                     switch (action.action) {

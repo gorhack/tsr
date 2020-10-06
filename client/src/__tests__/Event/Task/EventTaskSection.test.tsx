@@ -25,6 +25,7 @@ import { SocketService } from "../../../SocketService";
 import { StompSocketProvider } from "../../../StompSocketContext";
 
 describe("event tasks", () => {
+    let mockCreateEventTaskCategory: typeof EventTaskApi.createEventTaskCategory;
     let mockGetEventTaskCategories: typeof EventTaskApi.getEventTaskCategoriesContains;
     let mockCreateEventTask: typeof EventTaskApi.createEventTask;
     let mockGetEventTasks: typeof EventTaskApi.getEventTasks;
@@ -38,10 +39,11 @@ describe("event tasks", () => {
         mockCreateEventTask = td.replace(EventTaskApi, "createEventTask");
         mockGetEventTasks = td.replace(EventTaskApi, "getEventTasks");
         mockAddComment = td.replace(EventTaskApi, "addComment");
+        mockCreateEventTaskCategory = td.replace(EventTaskApi, "createEventTaskCategory");
         tsrEvent = makeEvent({ eventId: 1 });
         firstEventTaskCategory = makeEventTaskCategory({
-            eventTaskId: 1,
-            eventTaskDisplayName: "task 1",
+            eventTaskCategoryId: 1,
+            eventTaskCategoryDisplayName: "task 1",
         });
         eventTask = {
             eventTaskId: 1,

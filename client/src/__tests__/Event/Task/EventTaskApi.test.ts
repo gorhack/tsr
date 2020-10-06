@@ -3,6 +3,7 @@ import axios from "axios";
 import {
     addComment,
     createEventTask,
+    createEventTaskCategory,
     EventTask,
     EventTaskCategory,
     EventTaskComment,
@@ -132,5 +133,23 @@ describe("event task", () => {
             .reply(HttpStatus.CREATED, expectedResponse);
         const response = await addComment(1, comment);
         expect(expectedResponse).toEqual(response);
+    });
+
+    it("creates an event task category", async () => {
+        const createdEventTaskCategory: EventTaskCategory = {
+            eventTaskCategoryId: 1,
+            eventTaskCategoryDisplayName: "first",
+            eventTaskCategoryName: "first",
+        };
+        const eventTaskCategoryToCreate = {
+            eventTaskCategoryId: 0,
+            eventTaskCategoryDisplayName: "first",
+            eventTaskCategoryName: "first",
+        };
+        nock("http://example.com")
+            .post("/api/v1/event/task/category", eventTaskCategoryToCreate)
+            .reply(HttpStatus.CREATED, createdEventTaskCategory);
+        const response = await createEventTaskCategory(eventTaskCategoryToCreate);
+        expect(response).toEqual(createdEventTaskCategory);
     });
 });
