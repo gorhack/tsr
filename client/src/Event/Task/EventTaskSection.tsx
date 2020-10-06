@@ -132,7 +132,7 @@ export const EventTaskSection = ({ tsrEvent }: EventTaskSectionProps): ReactElem
     const createAndMapEventTaskCategory = (inputVal: string): void => {
         (async () =>
             createEventTaskCategory({
-                eventTaskId: 0,
+                eventTaskCategoryId: 0,
                 eventTaskDisplayName: inputVal,
                 eventTaskName: inputVal,
             })
@@ -240,7 +240,7 @@ export const EventTaskSection = ({ tsrEvent }: EventTaskSectionProps): ReactElem
                                 }`}
                                 onClick={open ? closeHandler : openHandler}
                                 key={`task-header-${eventTask.eventTaskId}`}
-                                data-testid={`task-${eventTask.eventTaskCategory.eventTaskId}`}
+                                data-testid={`task-${eventTask.eventTaskCategory.eventTaskCategoryId}`}
                             >
                                 {eventTask.eventTaskCategory.eventTaskDisplayName}
                             </button>

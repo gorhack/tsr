@@ -42,7 +42,7 @@ describe("event tasks", () => {
         mockCreateEventTaskCategory = td.replace(EventTaskApi, "createEventTaskCategory");
         tsrEvent = makeEvent({ eventId: 1 });
         firstEventTaskCategory = makeEventTaskCategory({
-            eventTaskId: 1,
+            eventTaskCategoryId: 1,
             eventTaskDisplayName: "task 1",
         });
         eventTask = {
@@ -74,7 +74,7 @@ describe("event tasks", () => {
             makeEventTask({
                 eventId: 1,
                 eventTaskCategory: makeEventTaskCategory({
-                    eventTaskId: 3,
+                    eventTaskCategoryId: 3,
                     eventTaskDisplayName: "last task",
                 }),
                 status: makeEventTaskStatus({
@@ -84,7 +84,7 @@ describe("event tasks", () => {
             makeEventTask({
                 eventId: 1,
                 eventTaskCategory: makeEventTaskCategory({
-                    eventTaskId: 2,
+                    eventTaskCategoryId: 2,
                     eventTaskDisplayName: "second task",
                 }),
                 status: makeEventTaskStatus({
@@ -178,7 +178,7 @@ describe("event tasks", () => {
             const socketTask = makeEventTask({
                 eventId: tsrEvent.eventId,
                 eventTaskCategory: makeEventTaskCategory({
-                    eventTaskId: 55,
+                    eventTaskCategoryId: 55,
                     eventTaskDisplayName: "socket task",
                 }),
                 status: makeEventTaskStatus({

@@ -23,7 +23,7 @@ describe("event task", () => {
 
     beforeEach(() => {
         eventTaskCategory = {
-            eventTaskId: 1,
+            eventTaskCategoryId: 1,
             eventTaskDisplayName: "first",
             eventTaskName: "FIRST",
         };
@@ -57,7 +57,7 @@ describe("event task", () => {
         const eventTaskCategories: EventTaskCategory[] = [
             eventTaskCategory,
             {
-                eventTaskId: 2,
+                eventTaskCategoryId: 2,
                 eventTaskDisplayName: "second",
                 eventTaskName: "SECOND",
             },
@@ -84,7 +84,7 @@ describe("event task", () => {
             {
                 eventTaskId: 2,
                 eventTaskCategory: {
-                    eventTaskId: 2,
+                    eventTaskCategoryId: 2,
                     eventTaskDisplayName: "second",
                     eventTaskName: "SECOND",
                 },
@@ -137,12 +137,12 @@ describe("event task", () => {
 
     it("creates an event task category", async () => {
         const createdEventTaskCategory: EventTaskCategory = {
-            eventTaskId: 1,
+            eventTaskCategoryId: 1,
             eventTaskDisplayName: "first",
             eventTaskName: "first",
         };
         const eventTaskCategoryToCreate = {
-            eventTaskId: 0,
+            eventTaskCategoryId: 0,
             eventTaskDisplayName: "first",
             eventTaskName: "first",
         };

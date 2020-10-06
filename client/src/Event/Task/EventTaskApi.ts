@@ -75,7 +75,7 @@ export const addComment = async (
 };
 
 export interface EventTaskCategory {
-    eventTaskId: number;
+    eventTaskCategoryId: number;
     eventTaskName: string;
     eventTaskDisplayName: string;
 }
