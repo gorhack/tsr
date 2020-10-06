@@ -1,3 +1,8 @@
+ALTER TABLE event_task_category ADD COLUMN created_date TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP;
+ALTER TABLE event_task_category ADD COLUMN created_by VARCHAR(255) NOT NULL DEFAULT '';
+ALTER TABLE event_task_category ADD COLUMN last_modified_date TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP;
+ALTER TABLE event_task_category ADD COLUMN last_modified_by VARCHAR(255) NOT NULL DEFAULT '';
+
 DELETE FROM organization;
 
 INSERT INTO organization (organization_name, organization_display_name, sort_order) VALUES ('2_75', '2/75', 1);

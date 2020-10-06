@@ -15,7 +15,15 @@ data class EventTaskCategory(
     val eventTaskCategoryId: Long = 0,
     val eventTaskName: String = "",
     val eventTaskDisplayName: String = ""
-)
+) : Auditable () {
+    constructor(eventTaskCategoryId: Long, eventTaskName: String, eventTaskDisplayName: String, lastModifiedDate: OffsetDateTime, lastModifiedBy: String, createdDate: OffsetDateTime, createdBy: String) :
+        this(eventTaskCategoryId = eventTaskCategoryId, eventTaskName = eventTaskName, eventTaskDisplayName = eventTaskDisplayName) {
+        this.lastModifiedDate = lastModifiedDate
+        this.lastModifiedBy = lastModifiedBy
+        this.createdDate = createdDate
+        this.createdBy = createdBy
+    }
+}
 
 enum class EventTaskStatusCode {
     R,

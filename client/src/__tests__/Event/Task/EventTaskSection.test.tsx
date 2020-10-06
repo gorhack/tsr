@@ -69,6 +69,30 @@ describe("event tasks", () => {
         td.verify(mockCreateEventTask(tsrEvent.eventId, firstEventTaskCategory), { times: 1 });
     });
 
+    it("creates a task category", async () => {
+        await renderEventTasks({});
+        td.when(mockGetEventTaskCategories(td.matchers.anything())).thenResolve(
+            makePage() as PageDTO<EventTaskCategory>,
+        );
+        td.when(
+            mockCreateEventTaskCategory({
+                eventTaskCategoryId: 0,
+                eventTaskName: "first",
+                eventTaskDisplayName: "first",
+            }),
+        ).thenResolve({
+            eventTaskCategoryId: 1,
+            eventTaskName: "first",
+            eventTaskDisplayName: "first",
+        });
+        await act(async () => {
+            await selectEvent.create(screen.getByLabelText("add a task"), "first", {
+                waitForElement: false,
+            });
+        });
+        expect(screen.getByText("first")).toBeInTheDocument();
+    });
+
     it("shows tasks in order of status R->Y->G", async () => {
         const eventTasks: EventTask[] = [
             makeEventTask({
