@@ -59,12 +59,24 @@ describe("event tasks", () => {
 
     afterEach(td.reset);
 
-    it("create a task creates a task", async () => {
+    it("create a task makes multiple tasks when passed more than 1", async () => {
         await renderEventTasks({});
-        await selectEvent.select(screen.getByLabelText("add a task"), "task 1");
-        expect(screen.queryByTestId("task-1")).not.toBeInTheDocument();
+        await selectEvent.select(screen.getByLabelText("add tasks"), "task 1");
+        expect(screen.queryByTestId("task 1")).not.toBeInTheDocument();
+        await selectEvent.select(screen.getByLabelText("add tasks"), "task 2");
+        expect(screen.queryByTestId("task 2")).not.toBeInTheDocument();
         await act(async () => {
-            await fireEvent.click(screen.getByRole("button", { name: "add task" }));
+            await fireEvent.click(screen.getByRole("button", { name: "add tasks" }));
+        });
+        td.verify(mockCreateEventTask(tsrEvent.eventId, td.matchers.anything()), { times: 2 });
+    });
+
+    it("create a task takes the task in as arg", async () => {
+        await renderEventTasks({});
+        await selectEvent.select(screen.getByLabelText("add tasks"), "task 1");
+        expect(screen.queryByTestId("task 1")).not.toBeInTheDocument();
+        await act(async () => {
+            await fireEvent.click(screen.getByRole("button", { name: "add tasks" }));
         });
         td.verify(mockCreateEventTask(tsrEvent.eventId, firstEventTaskCategory), { times: 1 });
     });
@@ -86,7 +98,7 @@ describe("event tasks", () => {
             eventTaskDisplayName: "first",
         });
         await act(async () => {
-            await selectEvent.create(screen.getByLabelText("add a task"), "first", {
+            await selectEvent.create(screen.getByLabelText("add tasks"), "first", {
                 waitForElement: false,
             });
         });

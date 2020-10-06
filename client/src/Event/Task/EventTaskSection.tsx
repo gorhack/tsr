@@ -273,7 +273,7 @@ export const EventTaskSection = ({ tsrEvent }: EventTaskSectionProps): ReactElem
             <form onSubmit={addEventTask}>
                 <div className="flex-row Event-Detail-Add-Task">
                     <div className="EventPage-AddTask">
-                        <label htmlFor="eventTask">add a task</label>
+                        <label htmlFor="eventTask">add tasks</label>
                         <div className="space-1" />
                         <TaskCategorySelect
                             dispatchToEventTaskCategoryCache={eventTaskCacheDispatch}
@@ -281,7 +281,7 @@ export const EventTaskSection = ({ tsrEvent }: EventTaskSectionProps): ReactElem
                             setSelectedTaskOptions={setSelectedTaskOption}
                         />
                     </div>
-                    <PrimaryButton>add task</PrimaryButton>
+                    <PrimaryButton>add tasks</PrimaryButton>
                 </div>
             </form>
             <div className="space-3" />
