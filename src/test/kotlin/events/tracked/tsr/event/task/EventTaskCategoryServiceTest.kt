@@ -3,6 +3,7 @@ package events.tracked.tsr.event.task
 import events.tracked.tsr.PageDTO
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.verifySequence
 import org.junit.Before
 import org.junit.Test
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -39,5 +40,16 @@ internal class EventTaskCategoryServiceTest {
             mockEventTaskCategoryRepository.findByEventTaskDisplayNameContainsIgnoreCase("", paging)
         } returns PageImpl(listOf(firstEventTask, secondEventTask), paging, 2)
         assertEquals(expectedPageDTO, subject.getEventTaskCategories("", 0, 10, Sort.by("eventTaskId")))
+    }
+
+    @Test
+    fun `createEventTaskCategory returns a page of the created task category`() {
+        val eventTaskCategoryToCreate = EventTaskCategory(0L,"third","third")
+        val createdEventTaskCategory = eventTaskCategoryToCreate.copy(3L)
+        val eventTaskCategoryToCreateDTO = EventTaskCategoryDTO(0L,"third","third")
+        val createdEventTaskCategoryDTO = eventTaskCategoryToCreateDTO.copy(3L)
+        every { mockEventTaskCategoryRepository.save(eventTaskCategoryToCreate) } returns createdEventTaskCategory
+        assertEquals(createdEventTaskCategoryDTO, subject.createEventTaskCategory(eventTaskCategoryToCreateDTO))
+        verifySequence { mockEventTaskCategoryRepository.save(eventTaskCategoryToCreate) }
     }
 }
