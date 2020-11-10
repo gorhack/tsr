@@ -69,7 +69,7 @@
     "@types/react-select": "^3.0.19",
     "@types/sockjs-client": "^1.1.1",
     "@types/testing-library__jest-dom": "^5.9.4",
-    "@typescript-eslint/eslint-plugin": "^4.1.0",
+    "@typescript-eslint/eslint-plugin": "^4.7.0",
     "@typescript-eslint/parser": "^4.1.0",
     "@welldone-software/why-did-you-render": "^4.3.1",
     "eslint": "^6.8.0",
