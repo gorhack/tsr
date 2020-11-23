@@ -10,6 +10,7 @@ import {
     getEventTaskCategoriesContains,
     getEventTasks,
     StatusCode,
+    updateEventTaskSuspense,
 } from "../../../Event/Task/EventTaskApi";
 import { makePage, NockBody } from "../../TestHelpers";
 import { HttpStatus } from "../../../api";
@@ -75,6 +76,14 @@ describe("event task", () => {
             .post("/api/v1/event/1/task", eventTaskCategory as NockBody)
             .reply(HttpStatus.CREATED, eventTask);
         const response = await createEventTask(1, eventTaskCategory);
+        expect(eventTask).toEqual(response);
+    });
+
+    it("updates an event task suspense", async () => {
+        nock("http://example.com")
+            .put("/api/v1/event/1/task/4/suspense", { suspenseDate: "2020-08-18T14:15:59" })
+            .reply(HttpStatus.OK, eventTask);
+        const response = await updateEventTaskSuspense(1, 4, "2020-08-18T14:15:59");
         expect(eventTask).toEqual(response);
     });
 

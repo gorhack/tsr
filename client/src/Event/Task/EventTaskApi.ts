@@ -33,6 +33,22 @@ export const createEventTaskCategory = async (
         });
 };
 
+export const updateEventTaskSuspense = (
+    eventId: number,
+    taskId: number,
+    updatedSuspenseDate: string,
+): Promise<EventTask> => {
+    const uri = `${baseUri}/${eventId}/task/${taskId}/suspense`;
+    return axios
+        .put(uri, { suspenseDate: updatedSuspenseDate })
+        .then((response: AxiosResponse<EventTask>) => {
+            return response.data;
+        })
+        .catch((error) => {
+            throw new Error(error.message);
+        });
+};
+
 export const getEventTasks = async (eventId: number): Promise<EventTask[]> => {
     const uri = `${baseUri}/${eventId}/task`;
     return axios

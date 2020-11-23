@@ -165,8 +165,8 @@ export const CreateEvent: React.FC = () => {
             const tsrEventToSave: CreatableTsrEvent = {
                 eventName,
                 organizations: foundOrgs,
-                startDate: startDate.toJSON(),
-                endDate: endDate.toJSON(),
+                startDate: startDate.toLocaleDateString(), // testing with .toJSON() more difficult w/ time...
+                endDate: endDate.toLocaleDateString(), // TODO: fix time of event
                 eventType: foundEventType,
             };
             await saveEvent(tsrEventToSave)
@@ -268,9 +268,9 @@ export const CreateEvent: React.FC = () => {
 
                     <FormDatePicker
                         control={control}
-                        name={"startDate"}
-                        label={"start date"}
-                        placeholder={"Choose the Start Date..."}
+                        name="startDate"
+                        label="start date"
+                        placeholder="Choose the Start Date..."
                         minDate={TODAYS_DATE}
                         maxDate={DATE_IN_10_YEARS}
                         error={errors.startDate && "start date is required MM/dd/YYYY"}
@@ -279,9 +279,9 @@ export const CreateEvent: React.FC = () => {
 
                     <FormDatePicker
                         control={control}
-                        name={"endDate"}
-                        label={"end date"}
-                        placeholder={"Choose the End Date..."}
+                        name="endDate"
+                        label="end date"
+                        placeholder="Choose the End Date..."
                         minDate={dateWatch.startDate ? dateWatch.startDate : TODAYS_DATE}
                         maxDate={
                             dateWatch.startDate

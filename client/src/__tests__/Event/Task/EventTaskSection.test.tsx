@@ -9,6 +9,8 @@ import selectEvent from "react-select-event";
 import { SocketSubscriptionTopics, TsrEvent } from "../../../Event/EventApi";
 import {
     callSocketSubscriptionHandler,
+    datePickerNextDay,
+    fillInInputValueInForm,
     makeAudit,
     makeEvent,
     makeEventTask,
@@ -30,6 +32,7 @@ describe("event tasks", () => {
     let mockCreateEventTask: typeof EventTaskApi.createEventTask;
     let mockGetEventTasks: typeof EventTaskApi.getEventTasks;
     let mockAddComment: typeof EventTaskApi.addComment;
+    let mockUpdateEventTaskSuspense: typeof EventTaskApi.updateEventTaskSuspense;
     let tsrEvent: TsrEvent;
     let firstEventTaskCategory: EventTaskCategory;
     let eventTask: EventTask;
@@ -41,6 +44,8 @@ describe("event tasks", () => {
         mockAddComment = td.replace(EventTaskApi, "addComment");
         mockCreateEventTaskCategory = td.replace(EventTaskApi, "createEventTaskCategory");
         tsrEvent = makeEvent({ eventId: 1 });
+        mockUpdateEventTaskSuspense = td.replace(EventTaskApi, "updateEventTaskSuspense");
+        tsrEvent = makeEvent({ eventId: 1, startDate: "2020-08-18T00:00:01" });
         firstEventTaskCategory = makeEventTaskCategory({
             eventTaskCategoryId: 1,
             eventTaskDisplayName: "task 1",
@@ -49,7 +54,7 @@ describe("event tasks", () => {
             eventTaskId: 1,
             eventTaskCategory: firstEventTaskCategory,
             eventId: tsrEvent.eventId,
-            suspenseDate: "2020-08-18T14:15:59",
+            suspenseDate: "2020-08-18T00:00:01",
             approver: makeTsrUser({ username: "approver user" }),
             resourcer: makeTsrUser({ username: "resourcer user" }),
             status: makeEventTaskStatus({ sortOrder: 2 }),
@@ -160,7 +165,7 @@ describe("event tasks", () => {
             screen.getByRole("button", { name: firstEventTaskCategory.eventTaskDisplayName }),
         );
         expect(screen.getByLabelText("suspense date")).toHaveTextContent(
-            /(Tue|Wed) Aug (18|19), 2020/,
+            /(Mon|Tue) Aug (17|18), 2020/,
         );
 
         expect(screen.getByLabelText("approver")).toHaveTextContent("user");
@@ -197,6 +202,22 @@ describe("event tasks", () => {
                 annotation: commentAnnotation,
             }),
             { times: 1 },
+        );
+    });
+
+    // TODO: edit suspense date...
+    // eslint-disable-next-line jest/no-disabled-tests
+    it.skip("updates task suspense date", async () => {
+        const updatedEventTask = { ...eventTask, suspenseDate: "2020-08-16T00:00:01" };
+        td.when(mockUpdateEventTaskSuspense(1, 1, "2020-08-17T00:00:01")).thenResolve(
+            updatedEventTask,
+        );
+        const result = await renderEventTasks({ eventTasks: [eventTask] });
+        fireEvent.click(screen.getByRole("button", { name: "edit task" }));
+        datePickerNextDay(result, "suspense date");
+        await fireEvent.submit(screen.getByRole("form", { name: "taskForm" }));
+        expect(screen.getByLabelText("suspense date")).toHaveTextContent(
+            /(Sun|Mon) Aug (16|17), 2020/,
         );
     });
 

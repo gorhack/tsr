@@ -1,11 +1,12 @@
 import "mutationobserver-shim";
-import { act, render, RenderResult, screen } from "@testing-library/react";
-import { fireEvent } from "@testing-library/dom";
+import { act, fireEvent, render, RenderResult, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { CreateEvent } from "../../Event/CreateEvent";
 import React from "react";
 import { Route, Router } from "react-router-dom";
 import { createMemoryHistory, MemoryHistory } from "history";
 import {
+    datePickerToday,
     fillInInputValueInForm,
     getInputValue,
     makeEvent,
@@ -24,11 +25,7 @@ import { Organization } from "../../Organization/OrganizationApi";
 import selectEvent from "react-select-event";
 import { PageDTO } from "../../api";
 
-const START_DATE_PLACEHOLDER_TEXT = "Choose the Start Date...";
-const END_DATE_PLACEHOLDER_TEXT = "Choose the End Date...";
-
 describe("create an event", () => {
-    const dateToInput = new Date("2020-10-18T00:00:01").toLocaleDateString();
     let mockSaveEvent: typeof EventApi.saveEvent;
     let mockUpdateEvent: typeof EventApi.updateEvent;
     let mockCreateEventType: typeof EventTypeApi.createEventType;
@@ -104,8 +101,8 @@ describe("create an event", () => {
                     sortOrder: 3,
                 }),
             ],
-            startDate: new Date(dateToInput).toJSON(),
-            endDate: new Date(dateToInput).toJSON(),
+            startDate: new Date().toLocaleDateString(),
+            endDate: new Date().toLocaleDateString(),
             eventType: undefined,
         };
         const saveEventPromise: Promise<TsrEvent> = Promise.resolve({
@@ -122,8 +119,8 @@ describe("create an event", () => {
         fillInInputValueInForm(result, "name", "event name");
         await selectEvent.select(screen.getByLabelText("organizations"), "second");
         await selectEvent.select(screen.getByLabelText("organizations"), "third");
-        fillInInputValueInForm(result, dateToInput, undefined, START_DATE_PLACEHOLDER_TEXT, false);
-        fillInInputValueInForm(result, dateToInput, undefined, END_DATE_PLACEHOLDER_TEXT, false);
+        datePickerToday(result, "start date");
+        datePickerToday(result, "end date");
 
         td.when(mockSaveEvent(tsrEvent)).thenDo(() => saveEventPromise);
 
@@ -135,6 +132,7 @@ describe("create an event", () => {
     });
 
     describe("edit event", () => {
+        const dateToInput = new Date("2020-10-18T00:00:01").toLocaleDateString();
         const setupGetEventByIdPromise = async (
             history: MemoryHistory = createMemoryHistory(),
         ): Promise<RenderResult> => {
@@ -386,20 +384,8 @@ describe("create an event", () => {
             expect(screen.queryByText(errorMsg)).toBeNull();
 
             fillInInputValueInForm(result, "name", "event name");
-            fillInInputValueInForm(
-                result,
-                dateToInput,
-                undefined,
-                START_DATE_PLACEHOLDER_TEXT,
-                false,
-            );
-            fillInInputValueInForm(
-                result,
-                dateToInput,
-                undefined,
-                END_DATE_PLACEHOLDER_TEXT,
-                false,
-            );
+            datePickerToday(result, "start date");
+            datePickerToday(result, "end date");
 
             await submitEventForm();
             expect(screen.getByText(errorMsg)).toBeInTheDocument();
@@ -418,17 +404,11 @@ describe("create an event", () => {
             await submitEventForm();
             expect(screen.getByText(errorMsg)).toBeInTheDocument();
 
-            fillInInputValueInForm(result, "1234", undefined, START_DATE_PLACEHOLDER_TEXT);
+            userEvent.type(result.getByRole("textbox", { name: "start date" }), "asdf");
             await submitEventForm();
             expect(screen.getByText(errorMsg)).toBeInTheDocument();
 
-            fillInInputValueInForm(
-                result,
-                dateToInput,
-                undefined,
-                START_DATE_PLACEHOLDER_TEXT,
-                false,
-            );
+            datePickerToday(result, "start date");
             await submitEventForm();
 
             expect(screen.queryByText(errorMsg)).toBeNull();
@@ -442,24 +422,11 @@ describe("create an event", () => {
             await submitEventForm();
             expect(screen.getByText(errorMsg)).toBeInTheDocument();
 
-            fillInInputValueInForm(result, "1234", undefined, END_DATE_PLACEHOLDER_TEXT);
+            userEvent.type(result.getByRole("textbox", { name: "end date" }), "asdf");
             await submitEventForm();
             expect(screen.getByText(errorMsg)).toBeInTheDocument();
 
-            const yesterday = new Date(dateToInput)
-                .setDate(new Date(dateToInput).getDate() - 1)
-                .toLocaleString();
-            fillInInputValueInForm(result, yesterday, undefined, END_DATE_PLACEHOLDER_TEXT);
-            await submitEventForm();
-            expect(screen.getByText(errorMsg)).toBeInTheDocument();
-
-            fillInInputValueInForm(
-                result,
-                dateToInput,
-                undefined,
-                END_DATE_PLACEHOLDER_TEXT,
-                false,
-            );
+            datePickerToday(result, "end date");
             await submitEventForm();
 
             expect(screen.queryByText(errorMsg)).toBeNull();

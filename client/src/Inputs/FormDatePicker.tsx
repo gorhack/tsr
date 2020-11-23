@@ -17,27 +17,31 @@ interface FormDatePickerProps {
 export const FormDatePicker = (props: FormDatePickerProps): ReactElement => {
     return (
         <Controller
-            name={props.name}
-            defaultValue={""}
             control={props.control}
+            name={props.name}
+            defaultValue=""
             rules={{
                 required: true,
             }}
-            as={({ onChange, onBlur, value }) => {
+            render={({ onChange, value }): ReactElement => {
                 return (
-                    <label className="Labeled-Input">
-                        <span className={"space-1"}>{props.label}</span>
+                    <>
+                        <label className="Labeled-Input" htmlFor={props.name}>
+                            {props.label}
+                        </label>
+                        <div className={"space-1"} />
                         <DatePicker
+                            id={props.name}
                             startDate={props.minDate}
                             minDate={props.minDate}
                             maxDate={props.maxDate}
                             placeholderText={props.placeholder}
-                            onBlur={onBlur}
+                            onChange={(val) => onChange(val)}
                             selected={value}
-                            onChange={onChange}
+                            value={value}
                         />
                         {props.error && <div className="error-message">{props.error}</div>}
-                    </label>
+                    </>
                 );
             }}
         />

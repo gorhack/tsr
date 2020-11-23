@@ -1,5 +1,4 @@
-import { act, RenderResult } from "@testing-library/react";
-import { fireEvent } from "@testing-library/dom";
+import { act, fireEvent, RenderResult } from "@testing-library/react";
 import { Auditable, TsrEvent } from "../Event/EventApi";
 import { EventType } from "../Event/Type/EventTypeApi";
 import { PageDTO } from "../api";
@@ -15,6 +14,7 @@ import {
     StatusCode,
 } from "../Event/Task/EventTaskApi";
 import { TsrUser } from "../Users/UserApi";
+import userEvent from "@testing-library/user-event";
 
 // Define a NockBody any to avoid linter warnings. Nock can take objects of any type.
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -35,11 +35,10 @@ export const findByAriaLabel = (container: HTMLElement, ariaLabel: string): Elem
 export const fillInInputValueInForm = (
     container: RenderResult,
     newValue: string | number,
-    labelText?: string,
-    placeholderText?: string,
+    labelText: string,
     includeValidation = true,
 ): void => {
-    const input = getInputValueType(container, labelText, placeholderText);
+    const input = container.getByLabelText(labelText) as HTMLInputElement;
     fireEvent.change(input, { target: { value: newValue } });
     fireEvent.blur(input); // lol HACK to trigger validation
     if (includeValidation) {
@@ -47,20 +46,18 @@ export const fillInInputValueInForm = (
     }
 };
 
-const getInputValueType = (
-    container: RenderResult,
-    label?: string,
-    placeholder?: string,
-): HTMLInputElement => {
-    if (label && placeholder) {
-        throw new Error("fillInInputValueInForm can take either a label OR a placeholder value");
-    } else if (label) {
-        return container.getByLabelText(label) as HTMLInputElement;
-    } else if (placeholder) {
-        return container.getByPlaceholderText(placeholder) as HTMLInputElement;
-    } else {
-        throw new Error("fillInInputValueInForm must take either a label OR a placeholder value");
-    }
+export const datePickerToday = (container: RenderResult, name: string): void => {
+    const datePicker = container.getByRole("textbox", { name });
+    userEvent.click(datePicker);
+    userEvent.tab();
+    userEvent.type(datePicker, "{enter}");
+};
+
+export const datePickerNextDay = (container: RenderResult, name: string): void => {
+    const datePicker = container.getByRole("textbox", { name });
+    userEvent.click(datePicker);
+    userEvent.tab();
+    userEvent.type(datePicker, "{arrowright}{enter}");
 };
 
 export function makeEventType(partial: Partial<EventType>): EventType {

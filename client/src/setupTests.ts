@@ -29,3 +29,29 @@ window.scrollTo = (global as any).td.func();
 HTMLElement.prototype.scrollIntoView = (global as any).td.func();
 window.confirm = (global as any).td.func();
 /* eslint-enable @typescript-eslint/no-explicit-any */
+
+// userEvent.type
+document.createRange = () => ({
+    setStart: jest.fn(),
+    setEnd: jest.fn(),
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    commonAncestorContainer: {
+        nodeName: "BODY",
+        ownerDocument: document,
+    },
+});
+jest.mock("popper.js", () => {
+    const PopperJS = jest.requireActual("popper.js");
+
+    return class {
+        static placements = PopperJS.placements;
+
+        constructor() {
+            return {
+                destroy: jest.fn(),
+                scheduleUpdate: jest.fn(),
+            };
+        }
+    };
+});
