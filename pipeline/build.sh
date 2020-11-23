@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
+ls -al /usr/local/share/.cache/yarn
 rm -rf /usr/local/share/.cache/yarn
 
 if [ -d "src/main/resources/static" ]; then

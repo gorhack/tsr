@@ -57,9 +57,15 @@ export const CreateEvent: React.FC = () => {
     // TODO fill in empty tsr event
     const [tsrEvent, setTsrEvent] = useState<TsrEvent>();
 
-    const { handleSubmit, register, errors, control, watch, setError, setValue } = useForm<
-        FormData
-    >({
+    const {
+        handleSubmit,
+        register,
+        errors,
+        control,
+        watch,
+        setError,
+        setValue,
+    } = useForm<FormData>({
         defaultValues: {
             eventTypeOption: { value: "", label: "" },
             organizationOption: orgValues,

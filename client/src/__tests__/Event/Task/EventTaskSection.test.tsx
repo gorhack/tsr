@@ -10,7 +10,6 @@ import { SocketSubscriptionTopics, TsrEvent } from "../../../Event/EventApi";
 import {
     callSocketSubscriptionHandler,
     datePickerNextDay,
-    fillInInputValueInForm,
     makeAudit,
     makeEvent,
     makeEventTask,
