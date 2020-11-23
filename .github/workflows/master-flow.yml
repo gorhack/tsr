@@ -52,23 +52,23 @@ jobs:
           RDS_USERNAME: tsr
           RDS_PASSWORD: tsr
       - uses: ./.github/actions/test-frontend
-  deploy_aws:
-    name: deploy to aws eb
-    runs-on: ubuntu-18.04
-    needs: test
-    steps:
-      - uses: actions/checkout@v2
-
-      - name: download build aritifact
-        uses: actions/download-artifact@v2
-        with:
-          name: tsr-jar
-          path: pipeline/eb/tsr
-
-      - name: Deploy to AWS EB
-        uses: ./.github/actions/deploy-eb
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_DEFAULT_REGION: us-west-2
-          SHA8: ${{ github.sha }}
+#  deploy_aws:
+#    name: deploy to aws eb
+#    runs-on: ubuntu-18.04
+#    needs: test
+#    steps:
+#      - uses: actions/checkout@v2
+#
+#      - name: download build aritifact
+#        uses: actions/download-artifact@v2
+#        with:
+#          name: tsr-jar
+#          path: pipeline/eb/tsr
+#
+#      - name: Deploy to AWS EB
+#        uses: ./.github/actions/deploy-eb
+#        env:
+#          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+#          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+#          AWS_DEFAULT_REGION: us-west-2
+#          SHA8: ${{ github.sha }}
