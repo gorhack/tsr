@@ -1845,10 +1845,10 @@
   dependencies:
     "@types/prop-types" "*"
 
-"@types/sockjs-client@^1.1.1":
-  version "1.1.1"
-  resolved "https://registry.yarnpkg.com/@types/sockjs-client/-/sockjs-client-1.1.1.tgz#1ef133b5a79d51447a93ce16164706c0164b5548"
-  integrity sha512-DaTdN4kfPNxu0otmQlxhmYeCjtY8cHmJsU6LqiFOrhytIkx8Txq06PwAWYzha7nMkEyju44a3NDpqCKiHn/NZQ==
+"@types/sockjs-client@^1.5.0":
+  version "1.5.0"
+  resolved "https://registry.yarnpkg.com/@types/sockjs-client/-/sockjs-client-1.5.0.tgz#141020645b279b462cdf82fae54bbcba51c18368"
+  integrity sha512-r8ENXtljrt8U6knz4fWsiuUVrDk9nkBeJOePWCzUJDRS20MN/OWoZj+gbsPhWSXSXF1aUaS4iAE4xa5jCFW9Dw==
 
 "@types/stack-utils@^1.0.1":
   version "1.0.1"
