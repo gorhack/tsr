@@ -41,7 +41,7 @@ repositories {
 }
 
 var springSecurityVersion = "5.3.4.RELEASE" // TODO upgrade to 5.4.0
-var springBootVersion = "2.3.3.RELEASE"
+var springBootVersion = "2.4.1"
 var keycloakVersion = "11.0.0"
 var jacksonVersion = "2.11.3"
 var jetBrainsKotlin = "1.4.10"
