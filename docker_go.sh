@@ -43,7 +43,7 @@ if [[ ! $(which docker-compose) ]]; then
 fi
 # =============================================================================== Get images from the repo
 
-docker pull postgres:12.2-alpine
+docker pull postgres:12.3-alpine
 docker pull g0rak/tsr-keycloak:latest
 # =============================================================================== Start services and index elasticsearch
 printf "\n\n\nStarting containers\n\n\n"

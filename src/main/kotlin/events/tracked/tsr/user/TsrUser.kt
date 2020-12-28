@@ -2,9 +2,9 @@ package events.tracked.tsr.user
 
 import events.tracked.tsr.organization.Organization
 import events.tracked.tsr.organization.OrganizationDTO
+import javax.persistence.*
 import org.springframework.security.oauth2.core.oidc.user.OidcUser
 import java.util.*
-import javax.persistence.*
 
 @Entity
 @Table(name = "tsr_user")

@@ -79,7 +79,7 @@ to `/actuator/health`.
 To create EB environment with Postgresql RDS, run
 ```
 eb create tracked-events \
---database.engine postgres --database.version 12.2 \
+--database.engine postgres --database.version 12.3 \
 --envvars TSR_KEYCLOAK_HOST=https://kc.tracked.events,TSR_KEYCLOAK_SECRET_KEY=random-password
 ```
 

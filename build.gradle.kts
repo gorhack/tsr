@@ -1,17 +1,19 @@
 import com.moowork.gradle.node.yarn.YarnTask
+import org.gradle.api.tasks.testing.logging.TestExceptionFormat
+import org.gradle.api.tasks.testing.logging.TestLogEvent
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-	id("org.springframework.boot") version "2.3.3.RELEASE"
+	id("org.springframework.boot") version "2.4.1"
 	id("io.spring.dependency-management") version "1.0.10.RELEASE"
 	id("com.moowork.node") version "1.3.1"
-	id("org.flywaydb.flyway") version "7.0.0"
+	id("org.flywaydb.flyway") version "7.3.2"
 	id("org.sonarqube") version "3.0"
 
-	id ("org.jetbrains.kotlin.plugin.jpa") version "1.4.10"
-	id ("org.jetbrains.kotlin.plugin.noarg") version "1.4.10"
-	kotlin("jvm") version "1.4.10"
-	kotlin("plugin.spring") version "1.4.10"
+	id ("org.jetbrains.kotlin.plugin.jpa") version "1.4.21"
+	id ("org.jetbrains.kotlin.plugin.noarg") version "1.4.21"
+	kotlin("jvm") version "1.4.21"
+	kotlin("plugin.spring") version "1.4.21"
 
 	id("com.github.ben-manes.versions") version "0.33.0" // helps find latest dependency versions `./gradlew dependencyUpdates`
 }
@@ -40,18 +42,18 @@ repositories {
 	maven { url = uri("https://repo.spring.io/snapshot") }
 }
 
-var springSecurityVersion = "5.3.4.RELEASE" // TODO upgrade to 5.4.0
-var springBootVersion = "2.3.3.RELEASE"
+var springSecurityVersion = "5.4.2"
+var springBootVersion = "2.4.1"
 var keycloakVersion = "11.0.0"
-var jacksonVersion = "2.11.3"
-var jetBrainsKotlin = "1.4.10"
+var jacksonVersion = "2.12.0"
+var jetBrainsKotlin = "1.4.21"
 
 dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-data-jpa:${springBootVersion}")
 	implementation("org.springframework.boot:spring-boot-starter-web:${springBootVersion}")
 	implementation("org.springframework.boot:spring-boot-starter-actuator:${springBootVersion}")
 	implementation("org.springframework.boot:spring-boot-starter-websocket:${springBootVersion}")
-	implementation("org.flywaydb:flyway-core:6.5.2")
+	implementation("org.flywaydb:flyway-core:7.3.2")
 
 	// Deserialize json
 	implementation("com.fasterxml.jackson.module:jackson-module-kotlin:${jacksonVersion}")
@@ -71,14 +73,14 @@ dependencies {
 	implementation("org.springframework.security:spring-security-oauth2-jose:${springSecurityVersion}")
 	implementation("org.springframework.security:spring-security-oauth2-resource-server:${springSecurityVersion}")
 	implementation("org.springframework.security.oauth:spring-security-oauth2:2.5.0.RELEASE")
-	implementation("org.springframework.session:spring-session-jdbc:2.3.0.RELEASE")
+	implementation("org.springframework.session:spring-session-jdbc:2.4.1")
 
-	implementation("org.hibernate.validator:hibernate-validator-cdi:6.1.5.Final")
+	implementation("org.hibernate.validator:hibernate-validator-cdi:7.0.0.Final")
 
-	runtimeOnly("org.postgresql:postgresql:42.2.16")
+	runtimeOnly("org.postgresql:postgresql:42.2.18")
 
 	testImplementation("org.springframework.boot:spring-boot-starter-test:${springBootVersion}")
-	testImplementation("io.mockk:mockk:1.10.2")
+	testImplementation("io.mockk:mockk:1.10.4")
 }
 
 tasks.withType<KotlinCompile> {
@@ -94,12 +96,12 @@ tasks.withType<Test> {
 	testLogging {
 		info {
 			events(
-					org.gradle.api.tasks.testing.logging.TestLogEvent.STARTED,
-					org.gradle.api.tasks.testing.logging.TestLogEvent.FAILED,
-					org.gradle.api.tasks.testing.logging.TestLogEvent.PASSED,
-					org.gradle.api.tasks.testing.logging.TestLogEvent.SKIPPED
+					TestLogEvent.STARTED,
+					TestLogEvent.FAILED,
+					TestLogEvent.PASSED,
+					TestLogEvent.SKIPPED
 			)
-			exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
+			exceptionFormat = TestExceptionFormat.FULL
 			showStandardStreams = true
 			showCauses = true
 			showStackTraces = true

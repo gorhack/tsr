@@ -9,9 +9,9 @@ import events.tracked.tsr.user.UserSettingsDTO
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verifySequence
-import org.junit.Before
-import org.junit.Test
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import java.time.OffsetDateTime
@@ -23,7 +23,7 @@ internal class EventTaskControllerTest {
     private lateinit var eventTask: EventTask
     private lateinit var eventTaskDTO: EventTaskDTO
 
-    @Before
+    @BeforeEach
     fun setup() {
         mockEventTaskService = mockk(relaxUnitFun = true)
         subject = EventTaskController(mockEventTaskService)

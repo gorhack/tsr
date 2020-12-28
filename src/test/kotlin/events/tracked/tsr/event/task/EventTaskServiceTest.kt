@@ -6,9 +6,9 @@ import events.tracked.tsr.event.Event
 import events.tracked.tsr.event.EventService
 import events.tracked.tsr.user.*
 import io.mockk.*
-import org.junit.Before
-import org.junit.Test
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.data.repository.findByIdOrNull
 import java.time.OffsetDateTime
@@ -28,7 +28,7 @@ internal class EventTaskServiceTest {
     private lateinit var eventTaskDTO: EventTaskDTO
     private lateinit var eventTask2: EventTask
 
-    @Before
+    @BeforeEach
     fun setup() {
         mockEventTaskRepository = mockk(relaxUnitFun = true)
         mockTsrUserService = mockk(relaxUnitFun = true)

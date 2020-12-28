@@ -29,7 +29,7 @@ jobs:
     needs: build
     services:
       postgres:
-        image: postgres:12.2-alpine
+        image: postgres:12.3-alpine
         env:
           POSTGRES_USER: tsr
           POSTGRES_PASSWORD: tsr

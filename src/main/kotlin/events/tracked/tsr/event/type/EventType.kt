@@ -1,8 +1,8 @@
 package events.tracked.tsr.event.type
 
 import events.tracked.tsr.jpa_ext.Auditable
-import java.time.OffsetDateTime
 import javax.persistence.*
+import java.time.OffsetDateTime
 
 @Entity
 @Table(name = "event_type")

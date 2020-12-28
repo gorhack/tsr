@@ -80,7 +80,7 @@ export const OrgSelect = ({
                         value={selectedOrgs}
                         getOptionValue={(option) => option.label}
                         onCreateOption={createAndMapOrganization}
-                        onChange={(selection: ValueType<Option>): void => {
+                        onChange={(selection: ValueType<Option, boolean>): void => {
                             const newValuesOrEmpty = (selection || []) as Option[];
                             setSelectedOrgs(newValuesOrEmpty);
                             props.onChange(selection);

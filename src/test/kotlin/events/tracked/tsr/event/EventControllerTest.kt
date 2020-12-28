@@ -9,9 +9,9 @@ import events.tracked.tsr.user.UserRole
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verifySequence
-import org.junit.Before
-import org.junit.Test
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 import org.springframework.data.domain.Sort
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -32,7 +32,7 @@ internal class EventControllerTest {
     private lateinit var defaultSortBy: Sort
     private lateinit var eventDTOWithIdAndDisplayNames: EventDTO
 
-    @Before
+    @BeforeEach
     fun setup() {
         mockEventService = mockk(relaxUnitFun = true)
         mockTsrUserService = mockk(relaxUnitFun = true)

@@ -5,8 +5,8 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verifySequence
 import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.Before
-import org.junit.Test
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 import org.springframework.data.domain.*
 
 class OrganizationServiceTest {
@@ -18,7 +18,7 @@ class OrganizationServiceTest {
     private lateinit var organization2DTO: OrganizationDTO
     private lateinit var expectedPageDTO: PageDTO<OrganizationDTO>
 
-    @Before
+    @BeforeEach
     fun setup() {
         mockOrganizationRepository = mockk(relaxUnitFun = true)
         subject = OrganizationService(mockOrganizationRepository)

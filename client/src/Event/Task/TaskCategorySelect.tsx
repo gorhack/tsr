@@ -59,7 +59,7 @@ export const TaskCategorySelect = ({
             inputId="eventTask"
             value={selectedTaskOptions}
             onCreateOption={createAndMapEventTaskCategory}
-            onChange={(selection: ValueType<Option>): void => {
+            onChange={(selection: ValueType<Option, boolean>): void => {
                 const newValuesOrEmpty = (selection || []) as Option[];
                 setSelectedTaskOptions(newValuesOrEmpty);
             }}

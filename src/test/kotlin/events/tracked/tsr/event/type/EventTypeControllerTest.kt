@@ -4,9 +4,9 @@ import events.tracked.tsr.PageDTO
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verifySequence
-import org.junit.Before
-import org.junit.Test
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 import org.springframework.data.domain.Sort
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -18,7 +18,7 @@ internal class EventTypeControllerTest {
     private lateinit var secondEventType: EventTypeDTO
     private lateinit var expectedPageDTO: PageDTO<EventTypeDTO>
 
-    @Before
+    @BeforeEach
     fun setup() {
         mockEventTypeService = mockk(relaxUnitFun = true)
         subject = EventTypeController(mockEventTypeService)
