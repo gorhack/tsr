@@ -14,7 +14,7 @@ Dynamically manage and track planning requirements in a collaborative space.
     - [x] code quality - [sonarcloud](https://sonarcloud.io/dashboard?id=gorhack_tsr)
     - [x] dependency scan - Github's Dependabot
     - [x] deploy - [aws eb](https://tracked.events)
-    - [ ] deploy to Coding Repository and Transformation Environment (CReATE) platform (~DEC 2020)
+    - [ ] deploy to Coding Repository and Transformation Environment (CReATE) platform (~FEB 2021)
 - [ ] SSO
     - [x] [keycloak](http://alcesleo.github.io/2020/01/30/setting-up-keycloak-on-aws/)
     - [ ] transition from dev/testing environment to deployment ready version of kc
@@ -27,11 +27,13 @@ db to deployment db
 - [ ] notifications
 
 ## Setup
-For setup, run `setup.sh`. If you need to deploy locally, install the [eb cli](https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/eb-cli3-install.html).
+For setup, run `setup.sh`. If you need to deploy to elastic beanstalk locally, install the
+[eb cli](https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/eb-cli3-install.html).
 
 ## Run
-Ensure docker is running the required containers with `./docker_go.sh`. `./run.sh` will run the full application.
-`./gradlew bootrun` will just run the backend. `yarn start` in the client directory will run just the front end.
+Ensure docker is running the required containers (`postgres:12.3-alpine` and `g0rak/tsr-keycloak`) with
+`./docker_go.sh`. `./run.sh` will run the full application. `./gradlew bootrun` will just run the backend. `yarn start`
+in the client directory will run just the front end.
 
 ## Testing
 Created with TDD principles. Run `test.sh` to run all tests.
