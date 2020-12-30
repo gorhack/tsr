@@ -24,7 +24,7 @@ export const getInputValue = (element: HTMLElement): string => {
     return (element as HTMLInputElement).value;
 };
 
-export const findByAriaLabel = (container: HTMLElement, ariaLabel: string): Element => {
+export const findByAriaLabel = (container: Element, ariaLabel: string): Element => {
     const element = container.querySelector(`[aria-label="${ariaLabel}"]`);
     if (element === null) {
         throw new Error(`Unable to find element with aria-label=${ariaLabel}`);
@@ -46,11 +46,9 @@ export const fillInInputValueInForm = (
     }
 };
 
-export const datePickerToday = (container: RenderResult, name: string): void => {
+export const fillInDatePicker = (container: RenderResult, name: string, dateVal: string): void => {
     const datePicker = container.getByRole("textbox", { name });
-    userEvent.click(datePicker);
-    userEvent.tab();
-    userEvent.type(datePicker, "{enter}");
+    userEvent.type(datePicker, dateVal);
 };
 
 export const datePickerNextDay = (container: RenderResult, name: string): void => {

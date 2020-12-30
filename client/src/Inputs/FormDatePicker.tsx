@@ -36,9 +36,8 @@ export const FormDatePicker = (props: FormDatePickerProps): ReactElement => {
                             minDate={props.minDate}
                             maxDate={props.maxDate}
                             placeholderText={props.placeholder}
-                            onChange={(val) => onChange(val)}
+                            onChange={onChange}
                             selected={value}
-                            value={value}
                         />
                         {props.error && <div className="error-message">{props.error}</div>}
                     </>

@@ -6,7 +6,7 @@ import React from "react";
 import { Route, Router } from "react-router-dom";
 import { createMemoryHistory, MemoryHistory } from "history";
 import {
-    datePickerToday,
+    fillInDatePicker,
     fillInInputValueInForm,
     getInputValue,
     makeEvent,
@@ -23,6 +23,7 @@ import { EventType } from "../../Event/Type/EventTypeApi";
 import * as OrganizationApi from "../../Organization/OrganizationApi";
 import { Organization } from "../../Organization/OrganizationApi";
 import selectEvent from "react-select-event";
+import * as Api from "../../api";
 import { PageDTO } from "../../api";
 
 describe("create an event", () => {
@@ -33,6 +34,8 @@ describe("create an event", () => {
     let mockCreateOrganization: typeof OrganizationApi.createOrganization;
     let mockGetOrganizationContains: typeof OrganizationApi.getOrganizationContains;
     let mockGetEventById: typeof EventApi.getEventById;
+    let mockCurrentDate: typeof Api.currentDate;
+    let mockDatePlusYears: typeof Api.datePlusYears;
     beforeEach(() => {
         mockSaveEvent = td.replace(EventApi, "saveEvent");
         mockUpdateEvent = td.replace(EventApi, "updateEvent");
@@ -41,6 +44,8 @@ describe("create an event", () => {
         mockGetOrganizationContains = td.replace(OrganizationApi, "getOrganizationContains");
         mockCreateOrganization = td.replace(OrganizationApi, "createOrganization");
         mockGetEventById = td.replace(EventApi, "getEventById");
+        mockCurrentDate = td.replace(Api, "currentDate");
+        mockDatePlusYears = td.replace(Api, "datePlusYears");
     });
 
     afterEach(td.reset);
@@ -73,6 +78,9 @@ describe("create an event", () => {
     });
 
     it("submitting the form saves event and goes to /eventId", async () => {
+        const startDate = new Date("12/14/2020").toJSON();
+        const endDate = new Date("12/14/2020").toJSON();
+
         const history = createMemoryHistory();
         const orgNames = [
             makeOrganization({
@@ -87,6 +95,7 @@ describe("create an event", () => {
             }),
         ];
         const orgNamesPromise = Promise.resolve(makePage({ items: orgNames }));
+        const result = await renderCreateEvent({ history, orgNamesPromise });
         const tsrEvent = {
             eventName: "name",
             organizations: [
@@ -101,8 +110,8 @@ describe("create an event", () => {
                     sortOrder: 3,
                 }),
             ],
-            startDate: new Date().toLocaleDateString(),
-            endDate: new Date().toLocaleDateString(),
+            startDate: startDate,
+            endDate: endDate,
             eventType: undefined,
         };
         const saveEventPromise: Promise<TsrEvent> = Promise.resolve({
@@ -115,12 +124,12 @@ describe("create an event", () => {
             },
             ...tsrEvent,
         });
-        const result = await renderCreateEvent({ history, orgNamesPromise });
+
         fillInInputValueInForm(result, "name", "event name");
         await selectEvent.select(screen.getByLabelText("organizations"), "second");
         await selectEvent.select(screen.getByLabelText("organizations"), "third");
-        datePickerToday(result, "start date");
-        datePickerToday(result, "end date");
+        fillInDatePicker(result, "start date", "12/14/2020");
+        fillInDatePicker(result, "end date", "12/14/2020");
 
         td.when(mockSaveEvent(tsrEvent)).thenDo(() => saveEventPromise);
 
@@ -384,8 +393,8 @@ describe("create an event", () => {
             expect(screen.queryByText(errorMsg)).toBeNull();
 
             fillInInputValueInForm(result, "name", "event name");
-            datePickerToday(result, "start date");
-            datePickerToday(result, "end date");
+            fillInDatePicker(result, "start date", "12/12/2020");
+            fillInDatePicker(result, "end date", "12/12/2020");
 
             await submitEventForm();
             expect(screen.getByText(errorMsg)).toBeInTheDocument();
@@ -404,11 +413,13 @@ describe("create an event", () => {
             await submitEventForm();
             expect(screen.getByText(errorMsg)).toBeInTheDocument();
 
-            userEvent.type(result.getByRole("textbox", { name: "start date" }), "asdf");
+            fillInDatePicker(result, "start date", "no");
             await submitEventForm();
             expect(screen.getByText(errorMsg)).toBeInTheDocument();
 
-            datePickerToday(result, "start date");
+            userEvent.clear(result.getByRole("textbox", { name: "start date" }));
+
+            fillInDatePicker(result, "start date", "12/12/2020");
             await submitEventForm();
 
             expect(screen.queryByText(errorMsg)).toBeNull();
@@ -422,11 +433,13 @@ describe("create an event", () => {
             await submitEventForm();
             expect(screen.getByText(errorMsg)).toBeInTheDocument();
 
-            userEvent.type(result.getByRole("textbox", { name: "end date" }), "asdf");
+            fillInDatePicker(result, "end date", "12/11/2020");
             await submitEventForm();
             expect(screen.getByText(errorMsg)).toBeInTheDocument();
 
-            datePickerToday(result, "end date");
+            userEvent.clear(result.getByRole("textbox", { name: "end date" }));
+
+            fillInDatePicker(result, "end date", "12/12/2020");
             await submitEventForm();
 
             expect(screen.queryByText(errorMsg)).toBeNull();
@@ -458,6 +471,8 @@ describe("create an event", () => {
         }
         td.when(mockGetEventTypeContains("")).thenDo(() => Promise.resolve(eventTypesPromise));
         td.when(mockGetOrganizationContains("")).thenDo(() => Promise.resolve(orgNamesPromise));
+        td.when(mockCurrentDate()).thenReturn(new Date(1607760000000));
+        td.when(mockDatePlusYears(10)).thenReturn(1923292800000);
 
         const path = event ? "/editEvent/:eventId" : "/createEvent";
         const result = render(

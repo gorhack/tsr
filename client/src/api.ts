@@ -61,6 +61,16 @@ export const currentTimeUtc = (): Moment => {
     return moment.utc();
 };
 
+export const currentDate = (): Date => {
+    console.log("do not see plz");
+    return new Date();
+};
+
+export const datePlusYears = (addYears: number): Date => {
+    const today = currentDate();
+    return new Date(today.getFullYear() + addYears, today.getMonth(), today.getDate());
+};
+
 // breaks tests when in orgApi due to td...
 export const loadOrganizationSearchTerm = async (
     searchTerm: string,
