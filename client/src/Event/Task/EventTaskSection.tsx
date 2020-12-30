@@ -56,18 +56,16 @@ const eventTaskReducer = (state: EventTask[], action: EventTaskReducerAction): E
 };
 
 const eventTaskCategoryReducer = (
-    state: EventTaskCategory[] = [],
+    state: EventTaskCategory[],
     action: EventTaskCategoryCacheReducerAction,
 ): EventTaskCategory[] => {
-    switch (action.type) {
-        case EventTaskCategoryActionTypes.LOAD: {
-            return sortedUniqBy<EventTaskCategory>(
-                [...state, ...action.eventTaskCategories],
-                (e) => e.eventTaskCategoryId,
-            );
-        }
-        default:
-            return state;
+    if (action.type === EventTaskCategoryActionTypes.LOAD) {
+        return sortedUniqBy<EventTaskCategory>(
+            [...state, ...action.eventTaskCategories],
+            (e) => e.eventTaskCategoryId,
+        );
+    } else {
+        return state;
     }
 };
 
@@ -107,11 +105,16 @@ export const EventTaskSection = ({ tsrEvent }: EventTaskSectionProps): ReactElem
             const newTaskSubId = socketService.findSubscriptionWithoutError(
                 `${SocketSubscriptionTopics.TASK_CREATED}${tsrEvent.eventId}`,
             )?.subscription.id;
-            if (newTaskSubId) socketService.unsubscribe(newTaskSubId);
+            if (newTaskSubId) {
+                socketService.unsubscribe(newTaskSubId);
+            }
             const newCommentSubId = socketService.findSubscriptionWithoutError(
                 `${SocketSubscriptionTopics.TASK_CREATED}${tsrEvent.eventId}`,
             )?.subscription.id;
-            if (newCommentSubId) socketService.unsubscribe(newCommentSubId);
+            if (newCommentSubId) {
+                socketService.unsubscribe(newCommentSubId);
+            }
+            return;
         };
     }, [socketService, tsrEvent.eventId]);
 
@@ -144,10 +147,6 @@ export const EventTaskSection = ({ tsrEvent }: EventTaskSectionProps): ReactElem
                 foundEventTasks = [...foundEventTasks, foundEventTask];
             }
         });
-        if (foundEventTasks.length === 0) {
-            console.error("must select a task to add");
-            return Promise.resolve();
-        }
         for (const eventTask of foundEventTasks) {
             try {
                 await createEventTask(tsrEvent.eventId, eventTask);

@@ -27,6 +27,8 @@ internal class EventTaskServiceTest {
     private lateinit var eventTask: EventTask
     private lateinit var eventTaskDTO: EventTaskDTO
     private lateinit var eventTask2: EventTask
+    private val janFirstDate = OffsetDateTime.parse("1970-01-01T00:00:01-08:00")
+    private val firstAnnotation = "first annotation"
 
     @BeforeEach
     fun setup() {
@@ -51,7 +53,7 @@ internal class EventTaskServiceTest {
 
     @Test
     fun `createEventTask creates an event task`() {
-        val suspenseDate = OffsetDateTime.parse("1970-01-01T00:00:01-08:00")
+        val suspenseDate = janFirstDate
 
         val oidcUser = makeOidcUser("1234", "user")
         val tsrUser = TsrUser(1L, "1234", "user", UserRole.USER, hashSetOf())
@@ -100,7 +102,7 @@ internal class EventTaskServiceTest {
                     EventTaskCommentDTO(
                         commentId = 1L,
                         eventTaskId = 2L,
-                        annotation = "first annotation",
+                        annotation = firstAnnotation,
                         audit = AuditDTO(
                             createdBy = "1234",
                             createdDate = janFirstDate,
@@ -148,26 +150,26 @@ internal class EventTaskServiceTest {
     fun `addComment adds a comment to an event task`() {
         val tsrUser = TsrUser(1L, "1234", "user")
 
-        val initialCommentDTO = EventTaskCommentDTO(commentId = 40L, eventTaskId = 1L, annotation = "first annotation")
+        val initialCommentDTO = EventTaskCommentDTO(commentId = 40L, eventTaskId = 1L, annotation = firstAnnotation)
         val savedComment = EventTaskComment(
             commentId = 40L,
             eventTask = EventTask(eventTaskId = 1L),
-            annotation = "first annotation",
+            annotation = firstAnnotation,
             createdBy = "1234",
-            createdDate = OffsetDateTime.parse("1970-01-01T00:00:01-08:00"),
+            createdDate = janFirstDate,
             lastModifiedBy = "1234",
-            lastModifiedDate = OffsetDateTime.parse("1970-01-01T00:00:01-08:00")
+            lastModifiedDate = janFirstDate
         )
         val savedCommentDTO = EventTaskCommentDTO(
             commentId = 40L,
             eventTaskId = 1L,
-            annotation = "first annotation",
+            annotation = firstAnnotation,
             audit = AuditDTO(
                 createdBy = "1234",
-                createdDate = OffsetDateTime.parse("1970-01-01T00:00:01-08:00"),
+                createdDate = janFirstDate,
                 createdByDisplayName = "user",
                 lastModifiedBy = "1234",
-                lastModifiedDate = OffsetDateTime.parse("1970-01-01T00:00:01-08:00"),
+                lastModifiedDate = janFirstDate,
                 lastModifiedByDisplayName = "user"
             )
         )

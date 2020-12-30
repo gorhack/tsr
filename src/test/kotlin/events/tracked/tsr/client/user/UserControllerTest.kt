@@ -21,6 +21,8 @@ class UserControllerTest {
     private val userId = "00000000-0000-0000-0000-000000000000"
     private val devUser = makeOidcUser(userId = userId, userName = "username")
     private val tsrUser = TsrUser(userId = userId, username = "username", role = UserRole.ADMIN)
+    private val regularUsername = "regular user"
+    private val emailAddress = "new@tracked.events"
     private val userRoleUpdate = UserRoleUpdateDTO(role = UserRole.ADMIN, userId = userId)
 
     @BeforeEach
@@ -69,7 +71,7 @@ class UserControllerTest {
 
     @Test
     fun `regular user cannot update any user roles`() {
-        val regularUser = TsrUser(4, "456", "regular", UserRole.USER)
+        val regularUser = TsrUser(4, "456", regularUsername, UserRole.USER)
         val regularOidcUser = makeOidcUser(regularUser.userId, regularUser.username)
 
         every { mockTsrUserService.assertUserIsAdmin(regularOidcUser) } returns false
@@ -111,10 +113,10 @@ class UserControllerTest {
         val regularUser = TsrUser(
             id = 4,
             userId= "1234",
-            username = "regular user",
+            username = regularUsername,
             role = UserRole.USER,
             organizations = hashSetOf(organization),
-            emailAddress = "test@example.com")
+            emailAddress = emailAddress)
         val regularOidcUser = makeOidcUser(regularUser.userId, regularUser.username)
         every {
             mockTsrUserService.setUserSettings(
@@ -122,7 +124,7 @@ class UserControllerTest {
                 UserSettingsDTO(
                     organizations = hashSetOf(organizationDTO, organizationDTO2),
                     phoneNumber = null,
-                    emailAddress = "test@example.com"
+                    emailAddress = emailAddress
                 )
             )
         } returns regularUser.copy(organizations = hashSetOf(organization, organization2))
@@ -130,11 +132,11 @@ class UserControllerTest {
         val expectedResponse: ResponseEntity<TsrUserDTO> = ResponseEntity(TsrUserDTO(
             id = 4,
             userId = "1234",
-            username = "regular user",
+            username = regularUsername,
             role = UserRole.USER,
             settings = UserSettingsDTO(
                 organizations = hashSetOf(organizationDTO, organizationDTO2),
-                emailAddress = "test@example.com",
+                emailAddress = emailAddress,
                 phoneNumber = null)),
             HttpStatus.OK
         )
@@ -146,7 +148,7 @@ class UserControllerTest {
                 UserSettingsDTO(
                     organizations = hashSetOf(organizationDTO, organizationDTO2),
                     phoneNumber = null,
-                    emailAddress = "test@example.com"
+                    emailAddress = emailAddress
                 )
             )
         )
@@ -156,7 +158,7 @@ class UserControllerTest {
                 UserSettingsDTO(
                     organizations = hashSetOf(organizationDTO, organizationDTO2),
                     phoneNumber = null,
-                    emailAddress = "test@example.com"
+                    emailAddress = emailAddress
                 )
             )
         }
@@ -167,7 +169,7 @@ class UserControllerTest {
         val regularUser = TsrUser(
             id = 4,
             userId = "1234",
-            username = "regular user",
+            username = regularUsername,
             role = UserRole.USER,
             organizations = hashSetOf(),
             phoneNumber = null,
@@ -180,24 +182,24 @@ class UserControllerTest {
                 UserSettingsDTO(
                     organizations = hashSetOf(),
                     phoneNumber = "1231231234",
-                    emailAddress = "new@tracked.events"
+                    emailAddress = emailAddress
                 )
             )
         } returns regularUser.copy(
             organizations = hashSetOf(),
             phoneNumber = "1231231234",
-            emailAddress = "new@tracked.events"
+            emailAddress = emailAddress
         )
         val expectedResponse = ResponseEntity(
             TsrUserDTO(
                 id = 4,
                 userId = "1234",
-                username = "regular user",
+                username = regularUsername,
                 role = UserRole.USER,
                 settings = UserSettingsDTO(
                     organizations = hashSetOf(),
                     phoneNumber = "1231231234",
-                    emailAddress = "new@tracked.events"
+                    emailAddress = emailAddress
                 )
             ), HttpStatus.OK
         )
@@ -208,7 +210,7 @@ class UserControllerTest {
                 UserSettingsDTO(
                     organizations = hashSetOf(),
                     phoneNumber = "1231231234",
-                    emailAddress = "new@tracked.events"
+                    emailAddress = emailAddress
                 )
             )
         )
@@ -218,7 +220,7 @@ class UserControllerTest {
                 UserSettingsDTO(
                     organizations = hashSetOf(),
                     phoneNumber = "1231231234",
-                    emailAddress = "new@tracked.events"
+                    emailAddress = emailAddress
                 )
             )
         }

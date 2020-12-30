@@ -14,6 +14,9 @@ import { HttpStatus, PageDTO } from "../../api";
 import { Organization } from "../../Organization/OrganizationApi";
 
 describe("event data", () => {
+    const BASE_URL = "http://example.com";
+    const START_DATE = "2020-08-18T14:15:59";
+    const END_DATE = "2020-08-20T01:00:01";
     let userEvent: TsrEvent;
     let user2Event: TsrEvent;
     let eventsPage: PageDTO<unknown>;
@@ -37,13 +40,13 @@ describe("event data", () => {
                 eventTypeName: "and hide",
                 sortOrder: 1,
             },
-            startDate: "2020-08-18T14:15:59",
-            endDate: "2020-08-20T01:00:01",
+            startDate: START_DATE,
+            endDate: END_DATE,
             audit: {
                 createdBy: "1234",
-                createdDate: "2020-08-18T14:15:59",
+                createdDate: START_DATE,
                 lastModifiedBy: "6789",
-                lastModifiedDate: "2020-08-18T14:15:59",
+                lastModifiedDate: START_DATE,
             },
         };
         user2Event = {
@@ -60,9 +63,9 @@ describe("event data", () => {
             endDate: "2020-08-20T01:01:01",
             audit: {
                 createdBy: "1234",
-                createdDate: "2020-08-18T14:15:59",
+                createdDate: START_DATE,
                 lastModifiedBy: "6789",
-                lastModifiedDate: "2020-08-18T14:15:59",
+                lastModifiedDate: START_DATE,
             },
         };
         eventsPage = makePage({
@@ -71,7 +74,7 @@ describe("event data", () => {
         });
     });
 
-    axios.defaults.baseURL = "http://example.com";
+    axios.defaults.baseURL = BASE_URL;
 
     it("saves an event", async () => {
         const event: CreatableTsrEvent = {
@@ -83,10 +86,10 @@ describe("event data", () => {
                 eventTypeName: "and hide",
                 sortOrder: 1,
             },
-            startDate: "2020-08-18T14:15:59",
-            endDate: "2020-08-20T01:00:01",
+            startDate: START_DATE,
+            endDate: END_DATE,
         };
-        nock("http://example.com")
+        nock(BASE_URL)
             .post("/api/v1/event", event as NockBody)
             .reply(HttpStatus.CREATED, { eventId: 1, ...event });
 
@@ -106,16 +109,16 @@ describe("event data", () => {
                 eventTypeName: "and hide",
                 sortOrder: 1,
             },
-            startDate: "2020-08-18T14:15:59",
-            endDate: "2020-08-20T01:00:01",
+            startDate: START_DATE,
+            endDate: END_DATE,
             audit: {
                 createdBy: "1234",
-                createdDate: "2020-08-18T14:15:59",
+                createdDate: START_DATE,
                 lastModifiedBy: "6789",
-                lastModifiedDate: "2020-08-18T14:15:59",
+                lastModifiedDate: START_DATE,
             },
         };
-        nock("http://example.com")
+        nock(BASE_URL)
             .put("/api/v1/event", event as NockBody)
             .reply(HttpStatus.CREATED, { ...event });
 
@@ -126,7 +129,7 @@ describe("event data", () => {
 
     describe("get active events", () => {
         it("gets page of events with default params", async () => {
-            nock("http://example.com").get("/api/v1/event/active").reply(200, eventsPage);
+            nock(BASE_URL).get("/api/v1/event/active").reply(200, eventsPage);
 
             const response = await getActiveEvents();
 
@@ -139,7 +142,7 @@ describe("event data", () => {
                 pageNumber: 1,
             };
 
-            nock("http://example.com").get("/api/v1/event/active?page=1").reply(200, events);
+            nock(BASE_URL).get("/api/v1/event/active?page=1").reply(200, events);
 
             const response = await getActiveEvents({ page: 1 });
 
@@ -147,7 +150,7 @@ describe("event data", () => {
         });
 
         it("gets page of events by user", async () => {
-            nock("http://example.com").get("/api/v1/event/active/user").reply(200, eventsPage);
+            nock(BASE_URL).get("/api/v1/event/active/user").reply(200, eventsPage);
             const response = await getActiveEventsByUserId();
             expect(response).toEqual(eventsPage);
         });
@@ -158,15 +161,13 @@ describe("event data", () => {
                 pageNumber: 1,
             };
 
-            nock("http://example.com").get("/api/v1/event/active/user?page=1").reply(200, events);
+            nock(BASE_URL).get("/api/v1/event/active/user?page=1").reply(200, events);
             const response = await getActiveEventsByUserId({ page: 1 });
             expect(response).toEqual(events);
         });
 
         it("gets page of events by organization ids", async () => {
-            nock("http://example.com")
-                .get("/api/v1/event/active/organizations")
-                .reply(200, eventsPage);
+            nock(BASE_URL).get("/api/v1/event/active/organizations").reply(200, eventsPage);
             const response = await getActiveEventsByOrganizationIds();
             expect(response).toEqual(eventsPage);
         });
@@ -177,9 +178,7 @@ describe("event data", () => {
                 pageNumber: 1,
             };
 
-            nock("http://example.com")
-                .get("/api/v1/event/active/organizations?page=1")
-                .reply(200, events);
+            nock(BASE_URL).get("/api/v1/event/active/organizations?page=1").reply(200, events);
             const response = await getActiveEventsByOrganizationIds({ page: 1 });
             expect(response).toEqual(events);
         });

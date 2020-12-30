@@ -26,6 +26,13 @@ import { SocketService } from "../../../SocketService";
 import { StompSocketProvider } from "../../../StompSocketContext";
 
 describe("event tasks", () => {
+    const APPROVER_LABEL_TEXT = "approver";
+    const RESOURCER_LABEL_TEXT = "resourcer";
+    const USER_ONE_DISPLAY_NAME = "someone";
+    const USER_TWO_DISPLAY_NAME = "someone else";
+    const SUSPENSE_DATE_LABEL = "suspense date";
+    const FIRST_COMMENT_TEXT = "my very first comment";
+
     let mockCreateEventTaskCategory: typeof EventTaskApi.createEventTaskCategory;
     let mockGetEventTaskCategories: typeof EventTaskApi.getEventTaskCategoriesContains;
     let mockCreateEventTask: typeof EventTaskApi.createEventTask;
@@ -147,13 +154,13 @@ describe("event tasks", () => {
                             commentId: 1,
                             eventTaskId: eventTask.eventTaskId,
                             annotation: "this is an annotation",
-                            audit: makeAudit({ createdByDisplayName: "someone" }),
+                            audit: makeAudit({ createdByDisplayName: USER_ONE_DISPLAY_NAME }),
                         }),
                         makeEventTaskComment({
                             commentId: 2,
                             eventTaskId: eventTask.eventTaskId,
                             annotation: "another annotation",
-                            audit: makeAudit({ createdByDisplayName: "someone else" }),
+                            audit: makeAudit({ createdByDisplayName: USER_TWO_DISPLAY_NAME }),
                         }),
                     ],
                 },
@@ -163,24 +170,28 @@ describe("event tasks", () => {
         fireEvent.click(
             screen.getByRole("button", { name: firstEventTaskCategory.eventTaskDisplayName }),
         );
-        expect(screen.getByLabelText("suspense date")).toHaveTextContent(
+        expect(screen.getByLabelText(SUSPENSE_DATE_LABEL)).toHaveTextContent(
             /(Mon|Tue) Aug (17|18), 2020/,
         );
 
-        expect(screen.getByLabelText("approver")).toHaveTextContent("user");
-        expect(screen.getByLabelText("resourcer")).toHaveTextContent("user");
-        expect(screen.getByLabelText("someone")).toHaveTextContent("this is an annotation");
-        expect(screen.getByLabelText("someone else")).toHaveTextContent("another annotation");
+        expect(screen.getByLabelText(APPROVER_LABEL_TEXT)).toHaveTextContent("user");
+        expect(screen.getByLabelText(RESOURCER_LABEL_TEXT)).toHaveTextContent("user");
+        expect(screen.getByLabelText(USER_ONE_DISPLAY_NAME)).toHaveTextContent(
+            "this is an annotation",
+        );
+        expect(screen.getByLabelText(USER_TWO_DISPLAY_NAME)).toHaveTextContent(
+            "another annotation",
+        );
 
         fireEvent.click(
             screen.getByRole("button", { name: firstEventTaskCategory.eventTaskDisplayName }),
         );
 
-        expect(screen.queryByLabelText("suspense date")).not.toBeInTheDocument();
-        expect(screen.queryByLabelText("approver")).not.toBeInTheDocument();
-        expect(screen.queryByLabelText("resourcer")).not.toBeInTheDocument();
-        expect(screen.queryByLabelText("someone")).not.toBeInTheDocument();
-        expect(screen.queryByLabelText("someone else")).not.toBeInTheDocument();
+        expect(screen.queryByLabelText(SUSPENSE_DATE_LABEL)).not.toBeInTheDocument();
+        expect(screen.queryByLabelText(APPROVER_LABEL_TEXT)).not.toBeInTheDocument();
+        expect(screen.queryByLabelText(RESOURCER_LABEL_TEXT)).not.toBeInTheDocument();
+        expect(screen.queryByLabelText(USER_ONE_DISPLAY_NAME)).not.toBeInTheDocument();
+        expect(screen.queryByLabelText(USER_TWO_DISPLAY_NAME)).not.toBeInTheDocument();
     });
 
     it("submits comment", async () => {
@@ -213,9 +224,9 @@ describe("event tasks", () => {
         );
         const result = await renderEventTasks({ eventTasks: [eventTask] });
         fireEvent.click(screen.getByRole("button", { name: "edit task" }));
-        datePickerNextDay(result, "suspense date");
+        datePickerNextDay(result, SUSPENSE_DATE_LABEL);
         await fireEvent.submit(screen.getByRole("form", { name: "taskForm" }));
-        expect(screen.getByLabelText("suspense date")).toHaveTextContent(
+        expect(screen.getByLabelText(SUSPENSE_DATE_LABEL)).toHaveTextContent(
             /(Sun|Mon) Aug (16|17), 2020/,
         );
     });
@@ -263,9 +274,9 @@ describe("event tasks", () => {
             const socketComment = makeEventTaskComment({
                 commentId: 1,
                 eventTaskId: eventTask.eventTaskId,
-                annotation: "my very first comment",
+                annotation: FIRST_COMMENT_TEXT,
             });
-            expect(screen.queryByText("my very first comment")).not.toBeInTheDocument();
+            expect(screen.queryByText(FIRST_COMMENT_TEXT)).not.toBeInTheDocument();
             const subscriptionId = fakeStompSocketService.findSubscription(
                 `${SocketSubscriptionTopics.TASK_COMMENT_CREATED}${tsrEvent.eventId}`,
             ).subscription.id;
@@ -278,11 +289,11 @@ describe("event tasks", () => {
                 );
             });
             await reRender();
-            expect(screen.queryByText("my very first comment")).not.toBeInTheDocument();
+            expect(screen.queryByText(FIRST_COMMENT_TEXT)).not.toBeInTheDocument();
             fireEvent.click(
                 screen.getByRole("button", { name: firstEventTaskCategory.eventTaskDisplayName }),
             );
-            expect(screen.queryByText("my very first comment")).toBeInTheDocument();
+            expect(screen.queryByText(FIRST_COMMENT_TEXT)).toBeInTheDocument();
         });
     });
 

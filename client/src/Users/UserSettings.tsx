@@ -24,16 +24,14 @@ type FormData = {
 export const UserSettings: React.FC = (): ReactElement => {
     const history = useHistory();
 
-    const orgCacheReducer = (state: Organization[] = [], action: OrgCacheReducerAction) => {
-        switch (action.type) {
-            case OrganizationActionTypes.LOAD: {
-                return sortedUniqBy<Organization>(
-                    [...state, ...action.organizations],
-                    (e) => e.sortOrder,
-                );
-            }
-            default:
-                return state;
+    const orgCacheReducer = (state: Organization[], action: OrgCacheReducerAction) => {
+        if (action.type === OrganizationActionTypes.LOAD) {
+            return sortedUniqBy<Organization>(
+                [...state, ...action.organizations],
+                (e) => e.sortOrder,
+            );
+        } else {
+            return state;
         }
     };
     const [organizationsCache, organizationCacheDispatch] = useReducer(orgCacheReducer, []);

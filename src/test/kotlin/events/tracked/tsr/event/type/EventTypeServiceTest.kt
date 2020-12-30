@@ -26,8 +26,9 @@ class EventTypeServiceTest {
     fun setup() {
         mockEventTypeRepository = mockk(relaxUnitFun = true)
         subject = EventTypeService(mockEventTypeRepository)
-        firstEventType = EventType(eventTypeId = 1L, eventTypeName = "first", displayName = "first event", sortOrder = 1, createdBy = "user", createdDate = OffsetDateTime.parse("1970-01-01T00:00:01-00:00"), lastModifiedBy = "user", lastModifiedDate = OffsetDateTime.parse("1970-01-01T00:00:01-00:00"))
-        secondEventType = EventType(eventTypeId = 2L, eventTypeName = "second", displayName = "second event", sortOrder = 2, createdBy = "user", createdDate = OffsetDateTime.parse("1970-01-01T00:00:01-00:00"), lastModifiedBy = "user", lastModifiedDate = OffsetDateTime.parse("1970-01-01T00:00:01-00:00"))
+        val janFirstDate = OffsetDateTime.parse("1970-01-01T00:00:01-00:00")
+        firstEventType = EventType(eventTypeId = 1L, eventTypeName = "first", displayName = "first event", sortOrder = 1, createdBy = "user", createdDate = janFirstDate, lastModifiedBy = "user", lastModifiedDate = janFirstDate)
+        secondEventType = EventType(eventTypeId = 2L, eventTypeName = "second", displayName = "second event", sortOrder = 2, createdBy = "user", createdDate = janFirstDate, lastModifiedBy = "user", lastModifiedDate = janFirstDate)
         firstEventTypeDTO = EventTypeDTO(1L, "first", "first event", 1)
         secondEventTypeDTO = EventTypeDTO(2L, "second", "second event", 2)
     }

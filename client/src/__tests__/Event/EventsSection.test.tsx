@@ -7,12 +7,15 @@ import * as EventApi from "../../Event/EventApi";
 import { TsrEvent } from "../../Event/EventApi";
 import { makeAudit, makeEvent, makeOrganization } from "../TestHelpers";
 import { Route, Router } from "react-router-dom";
+import * as Api from "../../api";
 import { PageDTO } from "../../api";
 import { Organization } from "../../Organization/OrganizationApi";
-import * as Api from "../../api";
 import moment from "moment";
 
 describe("home page of the application", () => {
+    const FIRST_EVENT_NAME = "first event";
+    const SECOND_EVENT_NAME = "second event";
+    const THIRD_EVENT_NAME = "third event";
     let mockUserTimeZone: typeof Api.userTimeZone;
     let mockCurrentTime: typeof Api.currentTimeUtc;
     let mockGetActiveEventsByOrganizationIds: typeof EventApi.getActiveEventsByOrganizationIds;
@@ -42,14 +45,14 @@ describe("home page of the application", () => {
         userEventList = [
             makeEvent({
                 eventId: 1,
-                eventName: "first event",
+                eventName: FIRST_EVENT_NAME,
                 startDate: "2020-08-18T14:15:59Z",
                 endDate: "2020-08-20T01:00:01Z",
                 audit: makeAudit({ createdBy: "1234" }),
             }),
             makeEvent({
                 eventId: 2,
-                eventName: "second event",
+                eventName: SECOND_EVENT_NAME,
                 organizations,
                 audit: makeAudit({ createdBy: "1234" }),
             }),
@@ -58,7 +61,7 @@ describe("home page of the application", () => {
             userEventList[1],
             makeEvent({
                 eventId: 3,
-                eventName: "third event",
+                eventName: THIRD_EVENT_NAME,
                 organizations,
                 startDate: "2020-08-18T14:15:59Z",
                 endDate: "2020-08-20T01:00:01Z",
@@ -94,8 +97,8 @@ describe("home page of the application", () => {
 
         expect(screen.getByText(/Start Date:8\/(19|18)\/20/)).toBeInTheDocument();
         expect(screen.getByText(/End Date:8\/(19|20)\/20/)).toBeInTheDocument();
-        expect(screen.getByTestId("org-event-2")).toHaveTextContent("second event");
-        expect(screen.getByTestId("org-event-3")).toHaveTextContent("third event");
+        expect(screen.getByTestId("org-event-2")).toHaveTextContent(SECOND_EVENT_NAME);
+        expect(screen.getByTestId("org-event-3")).toHaveTextContent(THIRD_EVENT_NAME);
     });
 
     it("shows load more if more org event pages", async () => {
@@ -104,8 +107,8 @@ describe("home page of the application", () => {
             orgPage: orgPage1,
         });
         const loadMoreButton = screen.getByTestId("org-event-more");
-        expect(screen.getByText("second event")).toBeInTheDocument();
-        expect(screen.queryByText("third event")).toBeNull();
+        expect(screen.getByText(SECOND_EVENT_NAME)).toBeInTheDocument();
+        expect(screen.queryByText(THIRD_EVENT_NAME)).toBeNull();
 
         expect(loadMoreButton).toHaveTextContent("load more");
         const moreEventsPromise: Promise<PageDTO<TsrEvent>> = Promise.resolve(orgPage2);
@@ -117,8 +120,8 @@ describe("home page of the application", () => {
             await moreEventsPromise;
         });
 
-        expect(screen.getByText("second event")).toBeInTheDocument();
-        expect(screen.getByText("third event")).toBeInTheDocument();
+        expect(screen.getByText(SECOND_EVENT_NAME)).toBeInTheDocument();
+        expect(screen.getByText(THIRD_EVENT_NAME)).toBeInTheDocument();
         expect(screen.queryByTestId("org-event-more")).toBeNull();
     });
 
@@ -129,8 +132,8 @@ describe("home page of the application", () => {
 
         expect(screen.getByText(/Start Date:8\/(19|18)\/20/)).toBeInTheDocument();
         expect(screen.getByText(/End Date:8\/(19|20)\/20/)).toBeInTheDocument();
-        expect(screen.getByTestId("user-event-1")).toHaveTextContent("first event");
-        expect(screen.getByTestId("user-event-2")).toHaveTextContent("second event");
+        expect(screen.getByTestId("user-event-1")).toHaveTextContent(FIRST_EVENT_NAME);
+        expect(screen.getByTestId("user-event-2")).toHaveTextContent(SECOND_EVENT_NAME);
     });
 
     it("shows no active events box if theres no org events", async () => {
@@ -150,8 +153,8 @@ describe("home page of the application", () => {
             userPage: userPage1,
         });
         const nextButton = screen.getByTestId("user-event-more");
-        expect(screen.getByText("first event")).toBeInTheDocument();
-        expect(screen.queryByText("second event")).toBeNull();
+        expect(screen.getByText(FIRST_EVENT_NAME)).toBeInTheDocument();
+        expect(screen.queryByText(SECOND_EVENT_NAME)).toBeNull();
 
         expect(nextButton).toHaveTextContent("load more");
         const moreEventsPromise: Promise<PageDTO<TsrEvent>> = Promise.resolve(userPage2);
@@ -163,8 +166,8 @@ describe("home page of the application", () => {
             await moreEventsPromise;
         });
 
-        expect(screen.queryByText("first event")).toBeInTheDocument();
-        expect(screen.getByText("second event")).toBeInTheDocument();
+        expect(screen.queryByText(FIRST_EVENT_NAME)).toBeInTheDocument();
+        expect(screen.getByText(SECOND_EVENT_NAME)).toBeInTheDocument();
         expect(screen.queryByTestId("user-event-more")).toBeNull();
     });
 

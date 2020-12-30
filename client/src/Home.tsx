@@ -52,8 +52,11 @@ export const Home: React.FC = () => {
                         )?.subscription.id,
                 )
                 .forEach((sub) => {
-                    if (sub) socketService.unsubscribe(sub);
+                    if (sub) {
+                        socketService.unsubscribe(sub);
+                    }
                 });
+            return;
         };
     }, [socketService, tsrUser]);
 

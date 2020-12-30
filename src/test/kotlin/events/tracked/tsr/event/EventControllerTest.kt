@@ -147,21 +147,25 @@ internal class EventControllerTest {
 
     @Test
     fun `edits already created event`() {
+        val eventName = "updated name"
+        val startDate = OffsetDateTime.parse("2020-01-02T00:00:01-09:00")
+        val endDate = OffsetDateTime.parse("2020-01-03T00:00:01-09:00")
+        val eventType = EventType(11L, "some other thing", "some other thing", 50)
         val eventDTOToUpdate = EventDTO(
             eventId = 1L,
-            eventName = "updated name",
+            eventName = eventName,
             organizations = hashSetOf(makeOrganizationDTO2()),
-            startDate = OffsetDateTime.parse("2020-01-02T00:00:01-09:00"),
-            endDate = OffsetDateTime.parse("2020-01-03T00:00:01-09:00"),
-            eventType = EventType(11L, "some other thing", "some other thing", 50)
+            startDate = startDate,
+            endDate = endDate,
+            eventType = eventType
         )
         val updatedEventDTO = EventDTO(
             eventId = 1L,
-            eventName = "updated name",
+            eventName = eventName,
             organizations = hashSetOf(makeOrganizationDTO2()),
-            startDate = OffsetDateTime.parse("2020-01-02T00:00:01-09:00"),
-            endDate = OffsetDateTime.parse("2020-01-03T00:00:01-09:00"),
-            eventType = EventType(11L, "some other thing", "some other thing", 50),
+            startDate = startDate,
+            endDate = endDate,
+            eventType = eventType,
             audit = AuditDTO(
                 lastModifiedBy = "9876",
                 lastModifiedDate = OffsetDateTime.parse("1970-01-02T00:00:01-09:00"),
@@ -171,11 +175,11 @@ internal class EventControllerTest {
         )
         val updatedEvent = Event(
             eventId = 1L,
-            eventName = "updated name",
+            eventName = eventName,
             organizations = hashSetOf(makeOrganization2()),
-            startDate = OffsetDateTime.parse("2020-01-02T00:00:01-09:00"),
-            endDate = OffsetDateTime.parse("2020-01-03T00:00:01-09:00"),
-            eventType = EventType(11L, "some other thing", "some other thing", 50),
+            startDate = startDate,
+            endDate = endDate,
+            eventType = eventType,
             lastModifiedBy = "9876",
             lastModifiedDate = OffsetDateTime.parse("1970-01-02T00:00:01-09:00"),
             createdBy = "1234",

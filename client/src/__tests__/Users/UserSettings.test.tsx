@@ -20,6 +20,9 @@ import { fireEvent } from "@testing-library/dom";
 import { createMemoryHistory, MemoryHistory } from "history";
 import { Route, Router } from "react-router";
 
+const EMAIL_ADDRESS = "test@example.com";
+const PHONE_NUMBER_LABEL = "phone number";
+const EMAIL_ADDRESS_LABEL = "email address";
 describe("User settings", () => {
     let mockGetUserInfo: typeof UserApi.getUserInfo;
     let mockGetOrganizationContains: typeof OrganizationApi.getOrganizationContains;
@@ -57,7 +60,7 @@ describe("User settings", () => {
             settings: {
                 organizations: [org2, org1],
                 phoneNumber: "1231231234",
-                emailAddress: "test@example.com",
+                emailAddress: EMAIL_ADDRESS,
             },
         };
     });
@@ -75,8 +78,8 @@ describe("User settings", () => {
         const userPromise = Promise.resolve(userWithSettings);
         const result = await renderUserSettings({ userPromise });
         expect(result.container).toHaveTextContent(/.*org 2.*org 1.*/);
-        expect(getInputValue(screen.getByLabelText("phone number"))).toEqual("1231231234");
-        expect(getInputValue(screen.getByLabelText("email address"))).toEqual("test@example.com");
+        expect(getInputValue(screen.getByLabelText(PHONE_NUMBER_LABEL))).toEqual("1231231234");
+        expect(getInputValue(screen.getByLabelText(EMAIL_ADDRESS_LABEL))).toEqual(EMAIL_ADDRESS);
     });
 
     it("submit form with select org, find org, and save orgs", async () => {
@@ -164,13 +167,13 @@ describe("User settings", () => {
         ) as Promise<PageDTO<Organization>>;
         const result = await renderUserSettings({ userPromise, organizationPromise, history });
         await selectEvent.select(screen.getByLabelText("organizations"), ["org 1", "org 2"]);
-        fillInInputValueInForm(result, "1231231234", "phone number");
-        fillInInputValueInForm(result, "test@example.com", "email address");
+        fillInInputValueInForm(result, "1231231234", PHONE_NUMBER_LABEL);
+        fillInInputValueInForm(result, EMAIL_ADDRESS, EMAIL_ADDRESS_LABEL);
         td.when(
             mockSetUserSettings({
                 organizations: [org1, org2],
                 phoneNumber: "1231231234",
-                emailAddress: "test@example.com",
+                emailAddress: EMAIL_ADDRESS,
             }),
         ).thenResolve({
             userId: "1234",
@@ -179,7 +182,7 @@ describe("User settings", () => {
             settings: {
                 organizations: [org1, org2],
                 phoneNumber: "1231231234",
-                emailAddress: "test@example.com",
+                emailAddress: EMAIL_ADDRESS,
             },
         });
         await submitSettingsForm();
@@ -199,13 +202,13 @@ describe("User settings", () => {
         const history = createMemoryHistory();
         const userPromise = Promise.resolve(userWithSettings);
         const result = await renderUserSettings({ userPromise, history });
-        fillInInputValueInForm(result, "0980980987", "phone number");
+        fillInInputValueInForm(result, "0980980987", PHONE_NUMBER_LABEL);
         await submitSettingsForm();
         td.verify(
             mockSetUserSettings({
                 organizations: [org2, org1],
                 phoneNumber: "0980980987",
-                emailAddress: "test@example.com",
+                emailAddress: EMAIL_ADDRESS,
             }),
         );
     });
@@ -214,25 +217,25 @@ describe("User settings", () => {
         const userPromise = Promise.resolve(userWithSettings);
         const result = await renderUserSettings({ userPromise });
         expect(result.container).toHaveTextContent(/.*org 2.*org 1.*/);
-        expect(getInputValue(screen.getByLabelText("phone number"))).toEqual("1231231234");
-        expect(getInputValue(screen.getByLabelText("email address"))).toEqual("test@example.com");
+        expect(getInputValue(screen.getByLabelText(PHONE_NUMBER_LABEL))).toEqual("1231231234");
+        expect(getInputValue(screen.getByLabelText(EMAIL_ADDRESS_LABEL))).toEqual(EMAIL_ADDRESS);
 
         await selectEvent.clearAll(screen.getByLabelText("organizations"));
         expect(result.container).not.toHaveTextContent(/.*org 2.*org 1.*/);
-        fillInInputValueInForm(result, "something", "phone number");
-        fillInInputValueInForm(result, "something", "email address");
+        fillInInputValueInForm(result, "something", PHONE_NUMBER_LABEL);
+        fillInInputValueInForm(result, "something", EMAIL_ADDRESS_LABEL);
 
         fireEvent.click(screen.getByRole("button", { name: "cancel" }));
         expect(result.container).toHaveTextContent(/.*org 2.*org 1.*/);
-        expect(getInputValue(screen.getByLabelText("phone number"))).toEqual("1231231234");
-        expect(getInputValue(screen.getByLabelText("email address"))).toEqual("test@example.com");
+        expect(getInputValue(screen.getByLabelText(PHONE_NUMBER_LABEL))).toEqual("1231231234");
+        expect(getInputValue(screen.getByLabelText(EMAIL_ADDRESS_LABEL))).toEqual(EMAIL_ADDRESS);
     });
 
     describe("form validation", () => {
         it("phone number max length 32 characters", async () => {
             const userPromise = Promise.resolve(userWithoutSettings);
             const result = await renderUserSettings({ userPromise });
-            fillInInputValueInForm(result, "123456789012345678901234567890123", "phone number");
+            fillInInputValueInForm(result, "123456789012345678901234567890123", PHONE_NUMBER_LABEL);
             await submitSettingsForm();
             expect(
                 screen.getByText("phone number can be a maximum of 32 characters"),
@@ -243,7 +246,7 @@ describe("User settings", () => {
             const result = await renderUserSettings({ userPromise });
             const longEmail = "a".repeat(255);
             expect(longEmail.length).toEqual(255);
-            fillInInputValueInForm(result, longEmail, "email address");
+            fillInInputValueInForm(result, longEmail, EMAIL_ADDRESS_LABEL);
             await submitSettingsForm();
             expect(
                 screen.getByText("email address can be a maximum of 254 characters"),

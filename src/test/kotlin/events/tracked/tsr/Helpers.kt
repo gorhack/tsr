@@ -72,6 +72,7 @@ fun makeOrganizationDTO2(): OrganizationDTO {
 
 val janFirstDate: OffsetDateTime = OffsetDateTime.parse("1970-01-01T00:00:01-08:00")
 val janSecondDate: OffsetDateTime = OffsetDateTime.parse("1970-01-02T00:00:01-08:00")
+val janThirdDate: OffsetDateTime = OffsetDateTime.parse("1970-01-03T00:00:01-08:00")
 val eventType = EventType(1, "rock", "rocks are fun", 1)
 val tsrUser = TsrUser(1L, "1234", "user", UserRole.USER)
 
@@ -132,8 +133,8 @@ fun makeEventWithId2(): Event {
         eventId = 2L,
         eventName = "second",
         organizations = hashSetOf(makeOrganization2()),
-        startDate = OffsetDateTime.parse("1970-01-03T00:00:01-08:00"),
-        endDate = OffsetDateTime.parse("1970-01-03T00:00:01-08:00"),
+        startDate = janThirdDate,
+        endDate = janThirdDate,
         eventType = null,
         lastModifiedBy = "6789",
         lastModifiedDate = janSecondDate,
@@ -146,8 +147,8 @@ fun makeEventDTOWithId2(): EventDTO {
     return EventDTO(
         eventId = 2L,
         eventName = "second",
-        startDate = OffsetDateTime.parse("1970-01-03T00:00:01-08:00"),
-        endDate = OffsetDateTime.parse("1970-01-03T00:00:01-08:00"),
+        startDate = janThirdDate,
+        endDate = janThirdDate,
         organizations = hashSetOf(makeOrganizationDTO2()),
         eventType = null,
         audit = AuditDTO(
@@ -169,9 +170,9 @@ fun makeEventTask(): EventTask {
         resourcer = tsrUser,
         comments = hashSetOf(),
         createdBy = "1234",
-        createdDate = OffsetDateTime.parse("1970-01-01T00:00:01-08:00"),
+        createdDate = janFirstDate,
         lastModifiedBy = "1234",
-        lastModifiedDate = OffsetDateTime.parse("1970-01-01T00:00:01-08:00")
+        lastModifiedDate = janFirstDate
     )
 }
 

@@ -15,11 +15,11 @@ describe("Footer", () => {
     });
 });
 
-interface renderFooterProps {
+interface RenderFooterProps {
     history: MemoryHistory;
 }
 
-const renderFooter = async ({ history }: renderFooterProps): Promise<RenderResult> => {
+const renderFooter = async ({ history }: RenderFooterProps): Promise<RenderResult> => {
     history.push("/");
     return render(
         <Router history={history}>

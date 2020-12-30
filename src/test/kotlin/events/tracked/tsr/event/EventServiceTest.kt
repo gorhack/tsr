@@ -148,29 +148,33 @@ class EventServiceTest {
 
     @Test
     fun `updateEvent returns eventDTO with updated event details`() {
+        val eventName = "updated name"
+        val startDate = OffsetDateTime.parse("2020-01-02T00:00:01-09:00")
+        val endDate = OffsetDateTime.parse("2020-01-03T00:00:01-09:00")
+        val eventType = EventType(11L, "some other thing", "some other thing", 50)
         val eventDTOToUpdate = EventDTO(
             eventId = 1L,
-            eventName = "updated name",
+            eventName = eventName,
             organizations = hashSetOf(makeOrganizationDTO2()),
-            startDate = OffsetDateTime.parse("2020-01-02T00:00:01-09:00"),
-            endDate = OffsetDateTime.parse("2020-01-03T00:00:01-09:00"),
-            eventType = EventType(11L, "some other thing", "some other thing", 50)
+            startDate = startDate,
+            endDate = endDate,
+            eventType = eventType
         )
         val eventToUpdate = Event(
             eventId = 1L,
-            eventName = "updated name",
+            eventName = eventName,
             organizations = hashSetOf(makeOrganization2()),
-            startDate = OffsetDateTime.parse("2020-01-02T00:00:01-09:00"),
-            endDate = OffsetDateTime.parse("2020-01-03T00:00:01-09:00"),
-            eventType = EventType(11L, "some other thing", "some other thing", 50)
+            startDate = startDate,
+            endDate = endDate,
+            eventType = eventType
         )
         val updatedEvent = Event(
             eventId = 1L,
-            eventName = "updated name",
+            eventName = eventName,
             organizations = hashSetOf(makeOrganization2()),
-            startDate = OffsetDateTime.parse("2020-01-02T00:00:01-09:00"),
-            endDate = OffsetDateTime.parse("2020-01-03T00:00:01-09:00"),
-            eventType = EventType(11L, "some other thing", "some other thing", 50),
+            startDate = startDate,
+            endDate = endDate,
+            eventType = eventType,
             lastModifiedBy = "9876",
             lastModifiedDate = OffsetDateTime.parse("1970-01-02T00:00:01-09:00"),
             createdBy = "1234",

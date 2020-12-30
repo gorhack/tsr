@@ -7,14 +7,16 @@ import { createMemoryHistory, MemoryHistory } from "history";
 import { Router } from "react-router";
 
 describe("Drawer menu", () => {
+    const CLOSE_MENU_BUTTON_NAME = "open menu";
+    const DRAWER_OVERLAY_TESTID = "drawer-overlay";
     it("displays button to open menu", () => {
         renderDrawer();
-        expect(screen.getByRole("button", { name: "open menu" })).toBeInTheDocument();
+        expect(screen.getByRole("button", { name: CLOSE_MENU_BUTTON_NAME })).toBeInTheDocument();
     });
 
     it("clicking menu button opens drawer", () => {
         const result = renderDrawer();
-        fireEvent.click(screen.getByRole("button", { name: "open menu" }));
+        fireEvent.click(screen.getByRole("button", { name: CLOSE_MENU_BUTTON_NAME }));
         expect(findByAriaLabel(result.container, "close menu")).toBeInTheDocument();
         expect(screen.getByText("tsr")).toBeInTheDocument();
     });
@@ -24,7 +26,7 @@ describe("Drawer menu", () => {
         const overlay = () => result.container.querySelector(`[aria-label="close menu"]`);
 
         expect(overlay()).not.toBeInTheDocument();
-        fireEvent.click(screen.getByRole("button", { name: "open menu" }));
+        fireEvent.click(screen.getByRole("button", { name: CLOSE_MENU_BUTTON_NAME }));
         expect(overlay()).toBeInTheDocument();
         fireEvent.click(findByAriaLabel(result.container, "close menu"));
         expect(overlay()).not.toBeInTheDocument();
@@ -33,7 +35,7 @@ describe("Drawer menu", () => {
     describe("menu contents", () => {
         const setupMenu = (history: MemoryHistory = createMemoryHistory()): RenderResult => {
             const result = renderDrawer(history);
-            fireEvent.click(result.getByRole("button", { name: "open menu" }));
+            fireEvent.click(result.getByRole("button", { name: CLOSE_MENU_BUTTON_NAME }));
             return result;
         };
         it("shows close button and tsr button", () => {
@@ -51,7 +53,7 @@ describe("Drawer menu", () => {
             expect(screen.getByText("Settings")).toBeInTheDocument();
             fireEvent.click(screen.getByText("user settings"));
             expect(history.location.pathname).toEqual("/settings");
-            expect(screen.queryByTestId("drawer-overlay")).toBeNull();
+            expect(screen.queryByTestId(DRAWER_OVERLAY_TESTID)).toBeNull();
         });
 
         it("shows support section with contribute link", () => {
@@ -61,7 +63,7 @@ describe("Drawer menu", () => {
                 "https://github.com/gorhack/tsr#readme",
             );
             fireEvent.click(screen.getByText("contribute"));
-            expect(screen.queryByTestId("drawer-overlay")).toBeNull();
+            expect(screen.queryByTestId(DRAWER_OVERLAY_TESTID)).toBeNull();
         });
 
         it("shows about us link", () => {
@@ -69,7 +71,7 @@ describe("Drawer menu", () => {
             setupMenu(history);
             fireEvent.click(screen.getByText("about us"));
             expect(history.location.pathname).toEqual("/about");
-            expect(screen.queryByTestId("drawer-overlay")).toBeNull();
+            expect(screen.queryByTestId(DRAWER_OVERLAY_TESTID)).toBeNull();
         });
     });
 

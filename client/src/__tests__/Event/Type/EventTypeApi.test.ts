@@ -10,7 +10,8 @@ import axios from "axios";
 import { makePage } from "../../TestHelpers";
 
 describe("event type", () => {
-    axios.defaults.baseURL = "http://example.com";
+    const BASE_URL = "http://example.com";
+    axios.defaults.baseURL = BASE_URL;
     const firstEventType = {
         eventTypeId: 1,
         eventTypeName: "first",
@@ -31,23 +32,21 @@ describe("event type", () => {
 
         const eventTypePage = makePage({ items: eventTypes });
 
-        nock("http://example.com").get("/api/v1/event/type").reply(HttpStatus.OK, eventTypePage);
+        nock(BASE_URL).get("/api/v1/event/type").reply(HttpStatus.OK, eventTypePage);
         const response = await getEventTypes();
         expect(response).toEqual(eventTypePage);
     });
 
     it("gets event type with parameter", async () => {
         const eventTypePage = makePage({ items: [firstEventType], pageNumber: 2 });
-        nock("http://example.com")
-            .get("/api/v1/event/type?page=2")
-            .reply(HttpStatus.OK, eventTypePage);
+        nock(BASE_URL).get("/api/v1/event/type?page=2").reply(HttpStatus.OK, eventTypePage);
         const response = await getEventTypes({ page: 2 });
         expect(response).toEqual(eventTypePage);
     });
 
     it("gets event types that contain search term", async () => {
         const eventTypePage = makePage({ items: [firstEventType] });
-        nock("http://example.com")
+        nock(BASE_URL)
             .get("/api/v1/event/type/search?searchTerm=fir")
             .reply(HttpStatus.OK, eventTypePage);
         const response = await getEventTypeContains("fir");
@@ -67,7 +66,7 @@ describe("event type", () => {
             eventTypeName: "one",
             sortOrder: 0,
         };
-        nock("http://example.com")
+        nock(BASE_URL)
             .post("/api/v1/event/type", eventToSave)
             .reply(HttpStatus.CREATED, newEventType);
         const response = await createEventType(eventToSave);

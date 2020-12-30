@@ -17,7 +17,9 @@ import { HttpStatus } from "../../../api";
 import { TsrUser } from "../../../Users/UserApi";
 
 describe("event task", () => {
-    axios.defaults.baseURL = "http://example.com";
+    const BASE_URL = "http://example.com";
+    const SUSPENSE_DATE = "2020-08-18T14:15:59";
+    axios.defaults.baseURL = BASE_URL;
     let eventTaskCategory: EventTaskCategory;
     let user: TsrUser;
     let eventTask: EventTask;
@@ -40,7 +42,7 @@ describe("event task", () => {
             eventTaskId: 4,
             eventTaskCategory: eventTaskCategory,
             eventId: 1,
-            suspenseDate: "2020-08-18T14:15:59",
+            suspenseDate: SUSPENSE_DATE,
             approver: user,
             resourcer: user,
             status: {
@@ -64,7 +66,7 @@ describe("event task", () => {
             },
         ];
         const eventTaskPage = makePage({ items: eventTaskCategories });
-        nock("http://example.com")
+        nock(BASE_URL)
             .get("/api/v1/event/task/category/search?searchTerm=")
             .reply(HttpStatus.OK, eventTaskPage);
         const response = await getEventTaskCategoriesContains("");
@@ -72,7 +74,7 @@ describe("event task", () => {
     });
 
     it("creates an event task", async () => {
-        nock("http://example.com")
+        nock(BASE_URL)
             .post("/api/v1/event/1/task", eventTaskCategory as NockBody)
             .reply(HttpStatus.CREATED, eventTask);
         const response = await createEventTask(1, eventTaskCategory);
@@ -80,10 +82,10 @@ describe("event task", () => {
     });
 
     it("updates an event task suspense", async () => {
-        nock("http://example.com")
-            .put("/api/v1/event/1/task/4/suspense", { suspenseDate: "2020-08-18T14:15:59" })
+        nock(BASE_URL)
+            .put("/api/v1/event/1/task/4/suspense", { suspenseDate: SUSPENSE_DATE })
             .reply(HttpStatus.OK, eventTask);
-        const response = await updateEventTaskSuspense(1, 4, "2020-08-18T14:15:59");
+        const response = await updateEventTaskSuspense(1, 4, SUSPENSE_DATE);
         expect(eventTask).toEqual(response);
     });
 
@@ -98,7 +100,7 @@ describe("event task", () => {
                     eventTaskName: "SECOND",
                 },
                 eventId: 1,
-                suspenseDate: "2020-08-18T14:15:59",
+                suspenseDate: SUSPENSE_DATE,
                 approver: user,
                 resourcer: user,
                 status: {
@@ -111,9 +113,7 @@ describe("event task", () => {
                 comments: [],
             },
         ];
-        nock("http://example.com")
-            .get("/api/v1/event/1/task")
-            .reply(HttpStatus.OK, expectedResponse);
+        nock(BASE_URL).get("/api/v1/event/1/task").reply(HttpStatus.OK, expectedResponse);
         const response = await getEventTasks(1);
         expect(expectedResponse).toEqual(response);
     });
@@ -131,13 +131,13 @@ describe("event task", () => {
             audit: {
                 createdBy: "1234",
                 createdByDisplayName: "user",
-                createdDate: "2020-08-18T14:15:59",
+                createdDate: SUSPENSE_DATE,
                 lastModifiedBy: "1234",
                 lastModifiedByDisplayName: "user",
-                lastModifiedDate: "2020-08-18T14:15:59",
+                lastModifiedDate: SUSPENSE_DATE,
             },
         };
-        nock("http://example.com")
+        nock(BASE_URL)
             .post("/api/v1/event/1/task/10/comment", comment as NockBody)
             .reply(HttpStatus.CREATED, expectedResponse);
         const response = await addComment(1, comment);
@@ -155,7 +155,7 @@ describe("event task", () => {
             eventTaskDisplayName: "first",
             eventTaskName: "first",
         };
-        nock("http://example.com")
+        nock(BASE_URL)
             .post("/api/v1/event/task/category", eventTaskCategoryToCreate)
             .reply(HttpStatus.CREATED, createdEventTaskCategory);
         const response = await createEventTaskCategory(eventTaskCategoryToCreate);

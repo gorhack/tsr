@@ -10,7 +10,8 @@ import {
 import { makePage } from "../TestHelpers";
 
 describe("organization", () => {
-    axios.defaults.baseURL = "http://example.com";
+    const BASE_URL = "http://example.com";
+    axios.defaults.baseURL = BASE_URL;
     const organization1 = {
         organizationId: 1,
         organizationName: "first org",
@@ -25,7 +26,7 @@ describe("organization", () => {
             organizationDisplayName: "second name",
             sortOrder: 2,
         };
-        nock("http://example.com")
+        nock(BASE_URL)
             .get("/api/v1/organization")
             .reply(HttpStatus.OK, [organization1, organization2]);
         const response = await getOrganizationNames();
@@ -34,7 +35,7 @@ describe("organization", () => {
 
     it("gets organizations that contain search term", async () => {
         const organizationPage = makePage({ items: [organization1] });
-        nock("http://example.com")
+        nock(BASE_URL)
             .get("/api/v1/organization/search?searchTerm=seco")
             .reply(HttpStatus.OK, organizationPage);
         const response = await getOrganizationContains("seco");
@@ -54,7 +55,7 @@ describe("organization", () => {
             organizationName: "first",
             sortOrder: 0,
         };
-        nock("http://example.com")
+        nock(BASE_URL)
             .post("/api/v1/organization", organizationToCreate)
             .reply(HttpStatus.CREATED, createdOrganization);
         const response = await createOrganization(organizationToCreate);

@@ -27,6 +27,13 @@ import * as Api from "../../api";
 import { PageDTO } from "../../api";
 
 describe("create an event", () => {
+    const EVENT_NAME_LABEL = "event name";
+    const EVENT_TYPE_LABEL = "event type";
+    const ORGANIZATIONS_LABEL = "organizations";
+    const START_DATE_LABEL = "start date";
+    const END_DATE_LABEL = "end date";
+    const TODAYS_DATE = "12/12/2020";
+
     let mockSaveEvent: typeof EventApi.saveEvent;
     let mockUpdateEvent: typeof EventApi.updateEvent;
     let mockCreateEventType: typeof EventTypeApi.createEventType;
@@ -61,11 +68,11 @@ describe("create an event", () => {
         await renderCreateEvent({});
 
         expect(screen.getByText("create an event")).toBeInTheDocument();
-        expect(screen.getByLabelText("event name")).toBeInTheDocument();
-        expect(screen.getByLabelText("organizations")).toBeInTheDocument();
-        expect(screen.getByLabelText("start date")).toBeInTheDocument();
-        expect(screen.getByLabelText("end date")).toBeInTheDocument();
-        expect(screen.getByText("event type")).toBeInTheDocument();
+        expect(screen.getByLabelText(EVENT_NAME_LABEL)).toBeInTheDocument();
+        expect(screen.getByLabelText(ORGANIZATIONS_LABEL)).toBeInTheDocument();
+        expect(screen.getByLabelText(START_DATE_LABEL)).toBeInTheDocument();
+        expect(screen.getByLabelText(END_DATE_LABEL)).toBeInTheDocument();
+        expect(screen.getByText(EVENT_TYPE_LABEL)).toBeInTheDocument();
         expect(screen.getByText("submit")).toBeInTheDocument();
         expect(screen.getByText("cancel")).toBeInTheDocument();
     });
@@ -78,8 +85,8 @@ describe("create an event", () => {
     });
 
     it("submitting the form saves event and goes to /eventId", async () => {
-        const startDate = new Date("12/14/2020").toJSON();
-        const endDate = new Date("12/14/2020").toJSON();
+        const startDate = new Date(TODAYS_DATE).toJSON();
+        const endDate = new Date(TODAYS_DATE).toJSON();
 
         const history = createMemoryHistory();
         const orgNames = [
@@ -125,11 +132,11 @@ describe("create an event", () => {
             ...tsrEvent,
         });
 
-        fillInInputValueInForm(result, "name", "event name");
-        await selectEvent.select(screen.getByLabelText("organizations"), "second");
-        await selectEvent.select(screen.getByLabelText("organizations"), "third");
-        fillInDatePicker(result, "start date", "12/14/2020");
-        fillInDatePicker(result, "end date", "12/14/2020");
+        fillInInputValueInForm(result, "name", EVENT_NAME_LABEL);
+        await selectEvent.select(screen.getByLabelText(ORGANIZATIONS_LABEL), "second");
+        await selectEvent.select(screen.getByLabelText(ORGANIZATIONS_LABEL), "third");
+        fillInDatePicker(result, START_DATE_LABEL, TODAYS_DATE);
+        fillInDatePicker(result, END_DATE_LABEL, TODAYS_DATE);
 
         td.when(mockSaveEvent(tsrEvent)).thenDo(() => saveEventPromise);
 
@@ -170,9 +177,9 @@ describe("create an event", () => {
 
         it("when passed an eventId create event pulls all event info and fills in default values", async () => {
             const result = await setupGetEventByIdPromise();
-            expect(getInputValue(screen.getByLabelText("event name"))).toEqual("name");
-            expect(getInputValue(screen.getByLabelText("start date"))).toContain(dateToInput);
-            expect(getInputValue(screen.getByLabelText("end date"))).toContain(dateToInput);
+            expect(getInputValue(screen.getByLabelText(EVENT_NAME_LABEL))).toEqual("name");
+            expect(getInputValue(screen.getByLabelText(START_DATE_LABEL))).toContain(dateToInput);
+            expect(getInputValue(screen.getByLabelText(END_DATE_LABEL))).toContain(dateToInput);
             expect(result.container).toHaveTextContent(/.*second.*test type.*/);
         });
 
@@ -207,7 +214,7 @@ describe("create an event", () => {
             });
             const updateEventPromise: Promise<TsrEvent> = Promise.resolve(tsrEvent);
             const result = await setupGetEventByIdPromise(history);
-            fillInInputValueInForm(result, "eman", "event name");
+            fillInInputValueInForm(result, "eman", EVENT_NAME_LABEL);
 
             td.when(mockUpdateEvent(tsrEvent)).thenDo(() => updateEventPromise);
 
@@ -232,9 +239,9 @@ describe("create an event", () => {
 
         it("can clear the event types", async () => {
             await setupEventSelectPromise();
-            await selectEvent.select(screen.getByLabelText("event type"), "second");
+            await selectEvent.select(screen.getByLabelText(EVENT_TYPE_LABEL), "second");
             expect(screen.getByText("second")).toBeInTheDocument();
-            await selectEvent.clearAll(screen.getByLabelText("event type"));
+            await selectEvent.clearAll(screen.getByLabelText(EVENT_TYPE_LABEL));
             expect(screen.queryByText("second")).toBeNull();
         });
 
@@ -257,7 +264,7 @@ describe("create an event", () => {
                 sortOrder: 4,
             });
             await act(async () => {
-                await selectEvent.create(screen.getByLabelText("event type"), "fourth", {
+                await selectEvent.create(screen.getByLabelText(EVENT_TYPE_LABEL), "fourth", {
                     waitForElement: false,
                 });
             });
@@ -280,9 +287,11 @@ describe("create an event", () => {
                 }) as PageDTO<EventType>,
             );
             await act(async () => {
-                fireEvent.change(screen.getByLabelText("event type"), { target: { value: "fou" } });
+                fireEvent.change(screen.getByLabelText(EVENT_TYPE_LABEL), {
+                    target: { value: "fou" },
+                });
             });
-            await selectEvent.select(screen.getByLabelText("event type"), "fourth");
+            await selectEvent.select(screen.getByLabelText(EVENT_TYPE_LABEL), "fourth");
             expect(screen.getByText("fourth")).toBeInTheDocument();
         });
     });
@@ -329,7 +338,7 @@ describe("create an event", () => {
                 sortOrder: 4,
             });
             await act(async () => {
-                await selectEvent.create(screen.getByLabelText("organizations"), "fourth", {
+                await selectEvent.create(screen.getByLabelText(ORGANIZATIONS_LABEL), "fourth", {
                     waitForElement: false,
                 });
             });
@@ -352,17 +361,17 @@ describe("create an event", () => {
                 }) as PageDTO<Organization>,
             );
             await act(async () => {
-                fireEvent.change(screen.getByLabelText("organizations"), {
+                fireEvent.change(screen.getByLabelText(ORGANIZATIONS_LABEL), {
                     target: { value: "fou" },
                 });
             });
-            await selectEvent.select(screen.getByLabelText("organizations"), "fourth");
+            await selectEvent.select(screen.getByLabelText(ORGANIZATIONS_LABEL), "fourth");
             expect(screen.getByText("fourth")).toBeInTheDocument();
         });
 
         it("can clear the org name", async () => {
             await setupOrgSelectPromise();
-            await selectEvent.select(screen.getByLabelText("organizations"), "second");
+            await selectEvent.select(screen.getByLabelText(ORGANIZATIONS_LABEL), "second");
             expect(screen.getByText("second")).toBeInTheDocument();
             await selectEvent.clearAll(screen.getByText("second"));
             expect(screen.queryByAltText("second")).toBeNull();
@@ -392,15 +401,15 @@ describe("create an event", () => {
             const result = await renderCreateEvent({ orgNamesPromise });
             expect(screen.queryByText(errorMsg)).toBeNull();
 
-            fillInInputValueInForm(result, "name", "event name");
-            fillInDatePicker(result, "start date", "12/12/2020");
-            fillInDatePicker(result, "end date", "12/12/2020");
+            fillInInputValueInForm(result, "name", EVENT_NAME_LABEL);
+            fillInDatePicker(result, START_DATE_LABEL, TODAYS_DATE);
+            fillInDatePicker(result, END_DATE_LABEL, TODAYS_DATE);
 
             await submitEventForm();
             expect(screen.getByText(errorMsg)).toBeInTheDocument();
 
             await act(async () => {
-                await selectEvent.select(screen.getByLabelText("organizations"), "2/75");
+                await selectEvent.select(screen.getByLabelText(ORGANIZATIONS_LABEL), "2/75");
             });
             expect(screen.queryByText(errorMsg)).toBeNull();
         });
@@ -413,13 +422,13 @@ describe("create an event", () => {
             await submitEventForm();
             expect(screen.getByText(errorMsg)).toBeInTheDocument();
 
-            fillInDatePicker(result, "start date", "no");
+            fillInDatePicker(result, START_DATE_LABEL, "no");
             await submitEventForm();
             expect(screen.getByText(errorMsg)).toBeInTheDocument();
 
-            userEvent.clear(result.getByRole("textbox", { name: "start date" }));
+            userEvent.clear(result.getByRole("textbox", { name: START_DATE_LABEL }));
 
-            fillInDatePicker(result, "start date", "12/12/2020");
+            fillInDatePicker(result, START_DATE_LABEL, TODAYS_DATE);
             await submitEventForm();
 
             expect(screen.queryByText(errorMsg)).toBeNull();
@@ -433,13 +442,13 @@ describe("create an event", () => {
             await submitEventForm();
             expect(screen.getByText(errorMsg)).toBeInTheDocument();
 
-            fillInDatePicker(result, "end date", "12/11/2020");
+            fillInDatePicker(result, END_DATE_LABEL, "12/11/2020");
             await submitEventForm();
             expect(screen.getByText(errorMsg)).toBeInTheDocument();
 
-            userEvent.clear(result.getByRole("textbox", { name: "end date" }));
+            userEvent.clear(result.getByRole("textbox", { name: END_DATE_LABEL }));
 
-            fillInDatePicker(result, "end date", "12/12/2020");
+            fillInDatePicker(result, END_DATE_LABEL, TODAYS_DATE);
             await submitEventForm();
 
             expect(screen.queryByText(errorMsg)).toBeNull();
@@ -471,8 +480,8 @@ describe("create an event", () => {
         }
         td.when(mockGetEventTypeContains("")).thenDo(() => Promise.resolve(eventTypesPromise));
         td.when(mockGetOrganizationContains("")).thenDo(() => Promise.resolve(orgNamesPromise));
-        td.when(mockCurrentDate()).thenReturn(new Date(1607760000000));
-        td.when(mockDatePlusYears(10)).thenReturn(1923292800000);
+        td.when(mockCurrentDate()).thenReturn(new Date(1607760000000)); // 12/12/2020
+        td.when(mockDatePlusYears(10)).thenReturn(1923292800000); // 12/12/2030
 
         const path = event ? "/editEvent/:eventId" : "/createEvent";
         const result = render(

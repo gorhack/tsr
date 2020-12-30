@@ -34,16 +34,14 @@ export const CreateEvent: React.FC = () => {
     const history = useHistory();
     const { eventId } = useParams<RouteParams>();
 
-    const orgCacheReducer = (state: Organization[] = [], action: OrgCacheReducerAction) => {
-        switch (action.type) {
-            case OrganizationActionTypes.LOAD: {
-                return sortedUniqBy<Organization>(
-                    [...state, ...action.organizations],
-                    (e) => e.sortOrder,
-                );
-            }
-            default:
-                return state;
+    const orgCacheReducer = (state: Organization[], action: OrgCacheReducerAction) => {
+        if (action.type === OrganizationActionTypes.LOAD) {
+            return sortedUniqBy<Organization>(
+                [...state, ...action.organizations],
+                (e) => e.sortOrder,
+            );
+        } else {
+            return state;
         }
     };
     const [organizationsCache, organizationCacheDispatch] = useReducer(orgCacheReducer, []);
@@ -93,24 +91,23 @@ export const CreateEvent: React.FC = () => {
     );
 
     useEffect(() => {
-        if (eventId) {
-            (async () => {
-                await getEventById(parseInt(eventId))
-                    .then((event) => {
-                        setTsrEvent(event);
-                        organizationCacheDispatch({
-                            type: OrganizationActionTypes.LOAD,
-                            organizations: event.organizations,
-                        });
-                        setFormValues(event);
-                    })
-                    .catch((error) => {
-                        console.error(
-                            `error getting event by id ${eventId}, ${error.message.value}`,
-                        );
-                    });
-            })();
+        if (!eventId) {
+            return;
         }
+        (async () => {
+            await getEventById(parseInt(eventId))
+                .then((event) => {
+                    setTsrEvent(event);
+                    organizationCacheDispatch({
+                        type: OrganizationActionTypes.LOAD,
+                        organizations: event.organizations,
+                    });
+                    setFormValues(event);
+                })
+                .catch((error) => {
+                    console.error(`error getting event by id ${eventId}, ${error.message.value}`);
+                });
+        })();
     }, [eventId, setFormValues, setTsrEvent]);
 
     const onCancel = (e: React.MouseEvent<HTMLButtonElement>): void => {

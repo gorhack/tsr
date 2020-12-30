@@ -12,10 +12,13 @@ import { HttpStatus } from "../../api";
 import { Organization } from "../../Organization/OrganizationApi";
 
 describe("user info", () => {
-    axios.defaults.baseURL = "http://example.com";
+    const BASE_URL = "http://example.com";
+    const USER_ID = "123-123-123";
+    const EMAIL_ADDRESS = "test@example.com";
+    axios.defaults.baseURL = BASE_URL;
 
     it("gets logged in user", async () => {
-        nock("http://example.com").get("/api/v1/user").reply(HttpStatus.OK, {
+        nock(BASE_URL).get("/api/v1/user").reply(HttpStatus.OK, {
             user: "Regular User",
             username: "just_a_regular_user",
         });
@@ -27,19 +30,19 @@ describe("user info", () => {
 
     it("updates user role", async () => {
         const userChange: UserRoleUpdate = {
-            userId: "123-123-123",
+            userId: USER_ID,
             role: "ADMIN",
         };
 
-        nock("http://example.com")
+        nock(BASE_URL)
             .put("/api/v1/user/role", userChange as NockBody)
             .reply(HttpStatus.OK, {
                 ...userChange,
                 username: "just_a_regular_user",
             } as TsrUser);
-        const response = await saveUserRole("ADMIN", "123-123-123");
+        const response = await saveUserRole("ADMIN", USER_ID);
         expect(response).toEqual({
-            userId: "123-123-123",
+            userId: USER_ID,
             username: "just_a_regular_user",
             role: "ADMIN",
         } as TsrUser);
@@ -61,13 +64,13 @@ describe("user info", () => {
             },
         ];
 
-        nock("http://example.com")
+        nock(BASE_URL)
             .put(
                 "/api/v1/user/settings",
                 JSON.stringify({
                     organizations: organizations,
                     phoneNumber: "1234",
-                    emailAddress: "test@example.com",
+                    emailAddress: EMAIL_ADDRESS,
                 }),
             )
             .reply(HttpStatus.OK, {
@@ -76,13 +79,13 @@ describe("user info", () => {
                 role: "USER",
                 organizations: organizations,
                 phoneNumber: "1234",
-                emailAddress: "test@example.com",
+                emailAddress: EMAIL_ADDRESS,
             });
 
         const response = await setUserSettings({
             organizations,
             phoneNumber: "1234",
-            emailAddress: "test@example.com",
+            emailAddress: EMAIL_ADDRESS,
         });
 
         expect(response).toEqual({
@@ -91,7 +94,7 @@ describe("user info", () => {
             role: "USER",
             organizations: organizations,
             phoneNumber: "1234",
-            emailAddress: "test@example.com",
+            emailAddress: EMAIL_ADDRESS,
         });
     });
 });
