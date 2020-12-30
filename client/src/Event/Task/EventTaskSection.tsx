@@ -114,7 +114,6 @@ export const EventTaskSection = ({ tsrEvent }: EventTaskSectionProps): ReactElem
             if (newCommentSubId) {
                 socketService.unsubscribe(newCommentSubId);
             }
-            return;
         };
     }, [socketService, tsrEvent.eventId]);
 

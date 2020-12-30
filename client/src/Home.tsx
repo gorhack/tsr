@@ -56,7 +56,6 @@ export const Home: React.FC = () => {
                         socketService.unsubscribe(sub);
                     }
                 });
-            return;
         };
     }, [socketService, tsrUser]);
 

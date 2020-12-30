@@ -1,4 +1,5 @@
 import { StylesConfig } from "react-select";
+import { Option } from "./api";
 
 const textColor = "#afafb1";
 const levelOneColor = "#181c23";
@@ -15,7 +16,7 @@ export const fonts = {
     "font-family-regular": "Roboto, Arial, sans-serif",
 };
 
-export const selectStyles: StylesConfig = {
+export const selectStyles: StylesConfig<Option, boolean> = {
     input: (base) => ({
         ...base,
         color: colors["text-color"],
