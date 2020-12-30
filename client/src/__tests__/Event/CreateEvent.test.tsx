@@ -80,7 +80,9 @@ describe("create an event", () => {
     it("cancel create event goes back to home page", async () => {
         const history = createMemoryHistory();
         await renderCreateEvent({ history });
-        screen.getByText("cancel").click();
+        await act(async () => {
+            screen.getByText("cancel").click();
+        });
         expect(history.location.pathname).toEqual("/");
     });
 
@@ -188,7 +190,9 @@ describe("create an event", () => {
             await setupGetEventByIdPromise(history);
             expect(history.location.pathname).toEqual(`/editEvent/1`);
             expect(screen.getByText("edit event")).toBeInTheDocument();
-            screen.getByText("cancel").click();
+            await act(async () => {
+                screen.getByText("cancel").click();
+            });
             expect(history.location.pathname).toEqual(`/event/1`);
         });
 
@@ -286,10 +290,8 @@ describe("create an event", () => {
                     ],
                 }) as PageDTO<EventType>,
             );
-            await act(async () => {
-                fireEvent.change(screen.getByLabelText(EVENT_TYPE_LABEL), {
-                    target: { value: "fou" },
-                });
+            fireEvent.change(screen.getByLabelText(EVENT_TYPE_LABEL), {
+                target: { value: "fou" },
             });
             await selectEvent.select(screen.getByLabelText(EVENT_TYPE_LABEL), "fourth");
             expect(screen.getByText("fourth")).toBeInTheDocument();

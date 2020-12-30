@@ -23,12 +23,10 @@ process.on("unhandledRejection", (reason, p) => {
     console.log("Unhandled Rejection at: Promise", p, "reason:", reason);
 });
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
-window.location.reload = (global as any).td.func();
+/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-var-requires */
 window.scrollTo = (global as any).td.func();
 HTMLElement.prototype.scrollIntoView = (global as any).td.func();
 window.confirm = (global as any).td.func();
-/* eslint-enable @typescript-eslint/no-explicit-any */
 
 // userEvent.type
 document.createRange = () => ({
