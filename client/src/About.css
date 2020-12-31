@@ -1,3 +1,6 @@
-.About-content span, a {
+.About-content {
+    display: flex;
+    flex-direction: column;
+    align-content: center;
     text-transform: none;
 }

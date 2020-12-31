@@ -61,7 +61,7 @@ export const Home: React.FC = () => {
 
     return (
         <>
-            <div className="Home-Header flex-row">
+            <div className="Home-Header flex-row-wrap">
                 <h1>events</h1>
                 <PrimaryButton
                     className={"CreateEvent-Button"}

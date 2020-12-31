@@ -61,11 +61,14 @@ input[type=text],input[type=number],input[type=search] {
   margin-bottom: 50px;
 }
 
-.flex-row {
+.flex-row, .flex-row-wrap {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
+}
+
+.flex-row-wrap {
   flex-wrap: wrap;
 }
 
@@ -92,7 +95,7 @@ a {
   color: var(--action-color);
   font-size: 16px;
   font-family: var(--font-family-bold);
-  text-transform: uppercase;
+  text-transform: none;
   text-decoration: none;
 }
 

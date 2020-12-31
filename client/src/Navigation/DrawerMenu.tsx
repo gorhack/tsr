@@ -4,7 +4,7 @@ import "./DrawerMenu.css";
 import { LinkButton } from "../Buttons/Buttons";
 import { DrawerCloseIcon } from "./DrawerCloseIcon";
 import { NavLink } from "react-router-dom";
-import LogoBold from "../Icons/LogoBold.svg";
+import LogoBold from "../Icons/TrackedIconBold.svg";
 
 export const DrawerMenu: React.FC = (): ReactElement => {
     const [drawerOpen, setDrawerOpen] = useState<true | false>(false);

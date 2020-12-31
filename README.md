@@ -2,7 +2,7 @@
 [![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=gorhack_tsr&metric=security_rating)](https://sonarcloud.io/dashboard?id=gorhack_tsr)
 [![Vulnerabilities](https://sonarcloud.io/api/project_badges/measure?project=gorhack_tsr&metric=vulnerabilities)](https://sonarcloud.io/dashboard?id=gorhack_tsr)
 
-
+![](./Logo/logo492.png)
 # _TSR_
 #### Track, Synchronize, Reporting Tool
 Dynamic tracking management tool. _TSR_ is built on Spring and React.
@@ -23,12 +23,11 @@ Dynamically manage and track planning requirements in a collaborative space.
 - [ ] transition from [dev/testing rds](https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/using-features.managing.db.html?icmpid=docs_elasticbeanstalk_console)
 db to deployment db
 - [ ] integrate with 3rd party systems
-- [ ] real time
+- [x] real time web socket updates
 - [ ] notifications
 
 ## Setup
-For setup, run `setup.sh`. If you need to deploy to elastic beanstalk locally, install the
-[eb cli](https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/eb-cli3-install.html).
+For setup, run `setup.sh`.
 
 ## Run
 Ensure docker is running the required containers (`postgres:12.3-alpine` and `g0rak/tsr-keycloak`) with
@@ -50,9 +49,11 @@ keycloak runs within [docker](https://hub.docker.com/repository/docker/g0rak/tsr
 credentials tsr:tsr and user credentials tsr:password /and/ tsrAdmin:password
 
 ## AWS
+#### **No longer deployed to AWS\**
 ### App
 The Elastic Beanstalk (EB) setup is complete for _TSR_ in the `./pipeline/eb` directory with configuration and docker
-files.
+files. If you need to deploy to elastic beanstalk locally, install the
+[eb cli](https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/eb-cli3-install.html).
 
 The application deploys to AWS during CI/CD pipeline on the `master` branch. Manual steps to deploy your
 local changes:

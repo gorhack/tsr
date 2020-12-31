@@ -269,7 +269,7 @@ export const EventTaskSection = ({ tsrEvent }: EventTaskSectionProps): ReactElem
             <h2>Event Requirements</h2>
             <div className="space-3" />
             <form onSubmit={addEventTask}>
-                <div className="flex-row Event-Detail-Add-Task">
+                <div className="flex-row-wrap Event-Detail-Add-Task">
                     <div className="EventPage-AddTask">
                         <label htmlFor="eventTask">add tasks</label>
                         <div className="space-1" />

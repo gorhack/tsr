@@ -27,7 +27,7 @@ export const PrimaryNavigation: React.FC<PrimaryNavigationProps> = ({
 
     return (
         <nav className="PrimaryNavigation">
-            <div className="flex-row">
+            <div className="flex-row-wrap">
                 <DrawerMenu />
                 <img src={TrackedName} alt="Tracked" height="30" />
                 <span style={{ fontSize: "42px", paddingRight: "2.5rem" }}>{tsrUser.username}</span>
