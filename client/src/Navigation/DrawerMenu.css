@@ -30,19 +30,25 @@
 
 .DrawerMenu-header-bar{
     border-bottom: 1px solid var(--level-two-accent);
-    align-items: center;
 }
 
 .DrawerMenu-Logo-Link {
-    text-decoration: none;
-    font-size: 24px;
+    display: flex;
+    align-items: center;
+    font-size: 28px;
     font-family: var(--font-family-regular);
     padding: 20px 30px;
     color: var(--action-color);
     text-transform: uppercase;
 }
 
+.DrawerMenu-Logo {
+    padding-right: 10px;
+    padding-bottom: 4px;
+}
+
 .DrawerMenu-Logo-Link:hover {
+    text-decoration: none;
     color: var(--action-hover-color);
 }
 

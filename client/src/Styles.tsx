@@ -1,15 +1,15 @@
 import { StylesConfig } from "react-select";
 import { Option } from "./api";
 
-const textColor = "#afafb1";
-const levelOneColor = "#181c23";
+const textColor = "#858382";
+const levelOneColor = "#141310";
 
 export const colors = {
     "text-color": textColor,
     "non-essential-color": "#b9bdc5",
-    "level-one-accent": "#303744",
+    "level-one-accent": "#301E17",
     "level-one-color": levelOneColor,
-    "level-two-color": "#282D3A",
+    "level-two-color": "#1D1712",
 };
 
 export const fonts = {
@@ -52,12 +52,12 @@ export const selectStyles: StylesConfig<Option, boolean> = {
         // match with the menu
         borderRadius: "3px",
         // Overwrites the different states of border
-        borderColor: "#e69a3d",
+        borderColor: "#c3573e",
         // Removes weird border around container
         boxShadow: undefined,
         "&:hover": {
             // Overwrites the different states of border
-            borderColor: "#e69a3d",
+            borderColor: "#c3573e",
         },
     }),
     menu: (base) => ({

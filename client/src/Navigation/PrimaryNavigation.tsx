@@ -2,6 +2,7 @@ import React, { ReactElement, ReactFragment, useEffect, useState } from "react";
 import { emptyTsrUser, getUserInfo, TsrUser } from "../Users/UserApi";
 import "./PrimaryNavigation.css";
 import { DrawerMenu } from "./DrawerMenu";
+import TrackedName from "../Icons/TrackedName.svg";
 
 interface PrimaryNavigationProps {
     children?: ReactFragment;
@@ -28,6 +29,7 @@ export const PrimaryNavigation: React.FC<PrimaryNavigationProps> = ({
         <nav className="PrimaryNavigation">
             <div className="flex-row">
                 <DrawerMenu />
+                <img src={TrackedName} alt="Tracked" height="30" />
                 <span style={{ fontSize: "42px", paddingRight: "2.5rem" }}>{tsrUser.username}</span>
             </div>
             {children}

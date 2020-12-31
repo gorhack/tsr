@@ -21,7 +21,7 @@
 }
 
 .Event-Task-Collapsible {
-    background-color: var(--level-two-color);
+    background-color: var(--level-one-color);
     color: var(--text-color);
     cursor: pointer;
     padding: 18px;
@@ -31,13 +31,13 @@
     outline: none;
 }
 
-.active, .Event-Task-Collapsible:hover {
-    background-color: var(--level-two-accent);
+.Event-Task-Collapsible:hover {
+    background-color: var(--level-one-accent);
 }
 
 .Event-Task-Details {
     padding: 0 18px;
-    background-color: var(--level-one-color);
+    background-color: var(--level-two-color);
 }
 
 .Event-Task-Comment {
@@ -45,7 +45,7 @@
     flex-direction: row;
     min-width: 30rem;
     min-height: 5rem;
-    background-color: var(--level-one-color);
+    background-color: var(--level-two-accent);
     color: var(--text-color);
     font-size: 14px;
     border-radius: .5rem;

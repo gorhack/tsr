@@ -145,18 +145,18 @@ h2 {
 
 :root {
   /*basics*/
-  --background-color: #181C23;
-  --action-color: #E69A3D;
-  --action-hover-color: #AD742D;
-  --text-color: #AfAFB1;
+  --background-color: #141310;
+   --action-color: #C3573E;
+  --action-hover-color: #A14833;
+  --text-color: #858382;
   --error-color: #FF4D55;
 
-  --level-one-color: #1E222C;
-  --level-two-color: #282D3A;
-  --base-accent-color: #242933;
+  --level-one-color: #562C20;
+  --level-two-color: #1D1712;
+  --base-accent-color: #7C3A2A;
 
-  --level-one-accent: #303744;
-  --level-two-accent: #383D4D;
+  --level-one-accent: #301E17;
+  --level-two-accent: #191511;
 
   --non-essential-color: #B9BDC5;
   --non-essential-hover-color: #9CA3B0;

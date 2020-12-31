@@ -4,6 +4,7 @@ import "./DrawerMenu.css";
 import { LinkButton } from "../Buttons/Buttons";
 import { DrawerCloseIcon } from "./DrawerCloseIcon";
 import { NavLink } from "react-router-dom";
+import LogoBold from "../Icons/LogoBold.svg";
 
 export const DrawerMenu: React.FC = (): ReactElement => {
     const [drawerOpen, setDrawerOpen] = useState<true | false>(false);
@@ -30,6 +31,12 @@ export const DrawerMenu: React.FC = (): ReactElement => {
                     <div className="DrawerMenu-container pull-drawer-open">
                         <div className="DrawerMenu-header-bar flex-row">
                             <NavLink className="DrawerMenu-Logo-Link" to="/" onClick={closeDrawer}>
+                                <img
+                                    className="DrawerMenu-Logo"
+                                    src={LogoBold}
+                                    alt=""
+                                    height="30"
+                                />
                                 <span>tsr</span>
                             </NavLink>
                             <LinkButton aria-label="close menu" onClick={closeDrawer}>
