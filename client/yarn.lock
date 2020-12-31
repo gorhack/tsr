@@ -1903,9 +1903,9 @@
     "@types/react" "*"
 
 "@types/react-select@^3.0.19":
-  version "3.1.0"
-  resolved "https://registry.yarnpkg.com/@types/react-select/-/react-select-3.1.0.tgz#6d63bb0d8d44a71a0d5fa984a77c61ce3805d296"
-  integrity sha512-INfN1SkxmmhQxwHizPck2sBmdh7rEe0WrP4bMf1t7HAoQAX0G0nEqVrgX67h56hoaeA6+OImj/caIKEhwPkViQ==
+  version "3.1.2"
+  resolved "https://registry.yarnpkg.com/@types/react-select/-/react-select-3.1.2.tgz#38627df4b49be9b28f800ed72b35d830369a624b"
+  integrity sha512-ygvR/2FL87R2OLObEWFootYzkvm67LRA+URYEAcBuvKk7IXmdsnIwSGm60cVXGaqkJQHozb2Cy1t94tCYb6rJA==
   dependencies:
     "@types/react" "*"
     "@types/react-dom" "*"
@@ -9370,9 +9370,9 @@ react-error-overlay@^6.0.8:
   integrity sha512-HvPuUQnLp5H7TouGq3kzBeioJmXms1wHy9EGjz2OURWBp4qZO6AfGEcnxts1D/CbwPLRAgTMPCEgYhA3sEM4vw==
 
 react-hook-form@^6.8.6:
-  version "6.13.1"
-  resolved "https://registry.yarnpkg.com/react-hook-form/-/react-hook-form-6.13.1.tgz#b9c0aa61f746db8169ed5e1050de21cacb1947d6"
-  integrity sha512-Q0N7MYcbA8SigYufb02h9z97ZKCpIbe62rywOTPsK4Ntvh6fRTGDXSuzWuRhLHhArLoWbGrWYSNSS4tlb+OFXg==
+  version "6.14.0"
+  resolved "https://registry.yarnpkg.com/react-hook-form/-/react-hook-form-6.14.0.tgz#d11f81f2d9d2b457806cb425a79954a1eeba1871"
+  integrity sha512-yj4aqASmyxFPyDtDLKBae+AazFv5vcC5CEpDlh1+r5k5BTH/J/CTG6q0H5lSinm0B0F6P7oTmXIYB75ZmuQz6g==
 
 react-input-autosize@^2.2.2:
   version "2.2.2"

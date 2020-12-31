@@ -2,7 +2,7 @@
 [![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=gorhack_tsr&metric=security_rating)](https://sonarcloud.io/dashboard?id=gorhack_tsr)
 [![Vulnerabilities](https://sonarcloud.io/api/project_badges/measure?project=gorhack_tsr&metric=vulnerabilities)](https://sonarcloud.io/dashboard?id=gorhack_tsr)
 
-![](./Logo/logo492.png)
+![](logo/logo492.png)
 # _TSR_
 #### Track, Synchronize, Reporting Tool
 Dynamic tracking management tool. _TSR_ is built on Spring and React.
