@@ -7,7 +7,7 @@ plugins {
 	id("org.springframework.boot") version "2.4.1"
 	id("io.spring.dependency-management") version "1.0.10.RELEASE"
 	id("com.moowork.node") version "1.3.1"
-	id("org.flywaydb.flyway") version "7.3.2"
+	id("org.flywaydb.flyway") version "7.4.0"
 	id("org.sonarqube") version "3.0"
 
 	id ("org.jetbrains.kotlin.plugin.jpa") version "1.4.21"
@@ -53,7 +53,7 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-web:${springBootVersion}")
 	implementation("org.springframework.boot:spring-boot-starter-actuator:${springBootVersion}")
 	implementation("org.springframework.boot:spring-boot-starter-websocket:${springBootVersion}")
-	implementation("org.flywaydb:flyway-core:7.3.2")
+	implementation("org.flywaydb:flyway-core:7.4.0")
 
 	// Deserialize json
 	implementation("com.fasterxml.jackson.module:jackson-module-kotlin:${jacksonVersion}")
