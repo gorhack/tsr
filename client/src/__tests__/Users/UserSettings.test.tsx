@@ -194,7 +194,9 @@ describe("User settings", () => {
         const userPromise = Promise.resolve(userWithSettings);
         await renderUserSettings({ userPromise, history });
         expect(screen.getByRole("button", { name: "< back to events" })).toBeInTheDocument();
-        fireEvent.click(screen.getByText("< back to events"));
+        act(() => {
+            fireEvent.click(screen.getByText("< back to events"));
+        });
         expect(history.location.pathname).toEqual("/");
     });
 
