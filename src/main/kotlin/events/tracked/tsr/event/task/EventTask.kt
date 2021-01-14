@@ -60,10 +60,10 @@ data class EventTask(
     @Column(columnDefinition = "TIMESTAMP WITH TIME ZONE")
     var suspenseDate: OffsetDateTime = OffsetDateTime.parse("1970-01-01T00:00:01-00:00"),
     @ManyToOne(fetch = FetchType.LAZY, cascade = [CascadeType.MERGE])
-    @JoinColumn(name = "approver_id", referencedColumnName = "id")
+    @JoinColumn(name = "approver_id")
     var approver: TsrUser = TsrUser(),
     @ManyToOne(fetch = FetchType.LAZY, cascade = [CascadeType.MERGE])
-    @JoinColumn(name = "resourcer_id", referencedColumnName = "id")
+    @JoinColumn(name = "resourcer_id")
     var resourcer: TsrUser = TsrUser(),
     @ManyToOne(fetch = FetchType.LAZY, cascade = [CascadeType.MERGE])
     @JoinColumn(name = "status_id")

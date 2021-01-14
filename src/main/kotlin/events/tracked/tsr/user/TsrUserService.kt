@@ -16,8 +16,7 @@ class TsrUserService(private val tsrUserRepository: TsrUserRepository) {
             val hasAdminRole = user.authorities.contains(SimpleGrantedAuthority("SCOPE_tsr.admin"))
             val role: UserRole = if (isEmpty() || hasAdminRole) UserRole.ADMIN else UserRole.USER
             val userName = user.preferredUsername ?: user.userName
-            val newUser = TsrUser(userId = user.userId, username = userName, role = role)
-            return tsrUserRepository.save(newUser)
+            return tsrUserRepository.saveAndFlush(TsrUser(userId = user.userId, username = userName, role = role))
         }
         return maybeUser
     }
