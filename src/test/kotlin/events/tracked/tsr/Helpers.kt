@@ -217,7 +217,7 @@ fun makeEventTaskDTO(): EventTaskDTO {
         eventId = 1L,
         eventTaskCategory = EventTaskCategory(eventTaskCategoryId = 10L, eventTaskName = "CLASS_ONE", eventTaskDisplayName = "Class I"),
         suspenseDate = janFirstDate,
-        resourcer = TsrUserDTO(1L, "1234", "user", UserRole.USER, UserSettingsDTO()),
-        approver = TsrUserDTO(1L, "1234", "user", UserRole.USER, UserSettingsDTO()),
+        resourcer = TsrUserDTO("1234", "user", UserRole.USER, UserSettingsDTO()),
+        approver = TsrUserDTO("1234", "user", UserRole.USER, UserSettingsDTO()),
     )
 }

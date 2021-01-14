@@ -58,8 +58,8 @@ internal class EventTaskControllerTest {
                 eventId = 1L,
                 eventTaskCategory = EventTaskCategory(eventTaskCategoryId = 4L, eventTaskName = "CLASS_FOUR", eventTaskDisplayName = "Class IV"),
                 suspenseDate = OffsetDateTime.parse("1970-01-01T00:00:01-08:00"),
-                resourcer = TsrUserDTO(1L, "1234", "user", UserRole.USER, UserSettingsDTO()),
-                approver = TsrUserDTO(1L, "1234", "user", UserRole.USER, UserSettingsDTO()),
+                resourcer = TsrUserDTO("1234", "user", UserRole.USER, UserSettingsDTO()),
+                approver = TsrUserDTO("1234", "user", UserRole.USER, UserSettingsDTO()),
                 status = EventTaskStatus(1L, "CREATED", "created", EventTaskStatusCode.R, 2),
             )
         )

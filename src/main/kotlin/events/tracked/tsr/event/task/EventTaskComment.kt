@@ -54,18 +54,11 @@ data class EventTaskComment(
 }
 
 data class EventTaskCommentDTO(
-    val commentId: Long,
+    val commentId: Long = 0L,
     var eventTaskId: Long = 0L,
     var annotation: String = "",
     var audit: AuditDTO? = null
 ) {
-    // required for jackson...
-    constructor() : this(
-        commentId = 0L,
-        eventTaskId = 0L,
-        annotation = "",
-        audit = null
-    )
     constructor(eventTaskId: Long, comment: EventTaskComment, createdByDisplayName: String, lastModifiedByDisplayName: String) : this(
         commentId = comment.commentId,
         eventTaskId = eventTaskId,
