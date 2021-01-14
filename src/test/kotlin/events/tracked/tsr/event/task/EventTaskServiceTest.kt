@@ -96,8 +96,8 @@ internal class EventTaskServiceTest {
                 eventTaskCategory = EventTaskCategory(eventTaskCategoryId = 4L, eventTaskName = "CLASS_FOUR", eventTaskDisplayName = "Class IV"),
                 eventId = 1L,
                 suspenseDate = janFirstDate,
-                approver = TsrUserDTO(1L, "1234", "user", UserRole.USER, UserSettingsDTO()),
-                resourcer = TsrUserDTO(1L, "1234", "user", UserRole.USER, UserSettingsDTO()),
+                approver = TsrUserDTO("1234", "user", UserRole.USER, UserSettingsDTO()),
+                resourcer = TsrUserDTO("1234", "user", UserRole.USER, UserSettingsDTO()),
                 comments = listOf(
                     EventTaskCommentDTO(
                         commentId = 1L,

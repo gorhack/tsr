@@ -44,7 +44,7 @@ internal class EventControllerTest {
             makeOrganization2()
         )
         tsrUser = TsrUser(
-            id = 1L,
+            tsrUserId = 1L,
             userId = "1234",
             username = "user",
             role = UserRole.USER,

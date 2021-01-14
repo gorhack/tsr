@@ -111,7 +111,7 @@ class UserControllerTest {
         )
 
         val regularUser = TsrUser(
-            id = 4,
+            tsrUserId = 4,
             userId= "1234",
             username = regularUsername,
             role = UserRole.USER,
@@ -130,7 +130,6 @@ class UserControllerTest {
         } returns regularUser.copy(organizations = hashSetOf(organization, organization2))
 
         val expectedResponse: ResponseEntity<TsrUserDTO> = ResponseEntity(TsrUserDTO(
-            id = 4,
             userId = "1234",
             username = regularUsername,
             role = UserRole.USER,
@@ -167,7 +166,7 @@ class UserControllerTest {
     @Test
     fun `any user can update their phone number and email address`() {
         val regularUser = TsrUser(
-            id = 4,
+            tsrUserId = 4,
             userId = "1234",
             username = regularUsername,
             role = UserRole.USER,
@@ -192,7 +191,6 @@ class UserControllerTest {
         )
         val expectedResponse = ResponseEntity(
             TsrUserDTO(
-                id = 4,
                 userId = "1234",
                 username = regularUsername,
                 role = UserRole.USER,

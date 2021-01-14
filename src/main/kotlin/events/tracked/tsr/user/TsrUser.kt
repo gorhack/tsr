@@ -2,21 +2,21 @@ package events.tracked.tsr.user
 
 import events.tracked.tsr.organization.Organization
 import events.tracked.tsr.organization.OrganizationDTO
-import javax.persistence.*
 import org.springframework.security.oauth2.core.oidc.user.OidcUser
 import java.util.*
+import javax.persistence.*
 
 @Entity
 @Table(name = "tsr_user")
 data class TsrUser(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Long = 0,
+    val tsrUserId: Long = 0L,
     val userId: String = "",
     val username: String = "",
     @Enumerated(EnumType.STRING)
     var role: UserRole = UserRole.ADMIN,
-    @ManyToMany(cascade = [CascadeType.MERGE])
+    @ManyToMany(cascade = [CascadeType.MERGE], fetch = FetchType.LAZY)
     @JoinTable(
         name = "tsr_user_organization",
         joinColumns = [JoinColumn(name = "tsr_user_id")],
@@ -27,12 +27,12 @@ data class TsrUser(
     var emailAddress: String? = null
 ) {
     // https://vladmihalcea.com/the-best-way-to-use-the-manytomany-annotation-with-jpa-and-hibernate/
-    fun addOrganization(organization: Organization) {
+    private fun addOrganization(organization: Organization) {
         organizations = organizations.plus(organization)
         organization.tsrUsers = organization.tsrUsers.plus(this)
     }
 
-    fun removeOrganization(organization: Organization) {
+    private fun removeOrganization(organization: Organization) {
         organizations = organizations.minus(organization)
         organization.tsrUsers = organization.tsrUsers.minus(this)
     }
@@ -48,12 +48,12 @@ data class TsrUser(
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other !is TsrUser) return false
-        return id == other.id
+        return tsrUserId == other.tsrUserId
     }
 
     @Override
     override fun hashCode(): Int {
-        return Objects.hash(this.id)
+        return Objects.hash(this.tsrUserId)
     }
 }
 
@@ -71,27 +71,18 @@ data class UserRoleUpdateDTO(
 )
 
 data class UserSettingsDTO(
-    val organizations: Set<OrganizationDTO>,
-    val phoneNumber: String?,
-    val emailAddress: String?
-) {
-    // required for jackson
-    constructor() : this(
-        organizations = hashSetOf(),
-        phoneNumber = null,
-        emailAddress = null
-    )
-}
+    val organizations: Set<OrganizationDTO> = hashSetOf(),
+    val phoneNumber: String? = null,
+    val emailAddress: String? = null
+)
 
 data class TsrUserDTO(
-    val id: Long = 0,
     val userId: String = "",
     val username: String = "",
     val role: UserRole = UserRole.USER,
     val settings: UserSettingsDTO = UserSettingsDTO()
 ) {
     constructor(tsrUser: TsrUser) : this(
-        id = tsrUser.id,
         userId = tsrUser.userId,
         username = tsrUser.username,
         role = tsrUser.role,

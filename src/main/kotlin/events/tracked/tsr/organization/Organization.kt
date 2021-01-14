@@ -16,9 +16,9 @@ data class Organization(
     var organizationName: String = "",
     var organizationDisplayName: String = "",
     var sortOrder: Int = 0,
-    @ManyToMany(mappedBy = "organizations", cascade = [CascadeType.MERGE])
+    @ManyToMany(mappedBy = "organizations")
     var events: Set<Event> = hashSetOf(),
-    @ManyToMany(mappedBy = "organizations", cascade = [CascadeType.MERGE])
+    @ManyToMany(mappedBy = "organizations")
     var tsrUsers: Set<TsrUser> = hashSetOf()
 ) : Auditable() {
     constructor(organizationId: Long, organizationName: String, organizationDisplayName: String, sortOrder: Int, lastModifiedDate: OffsetDateTime, lastModifiedBy: String, createdDate: OffsetDateTime, createdBy: String) :

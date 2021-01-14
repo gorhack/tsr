@@ -1,1 +1,0 @@
-ALTER TABLE event ALTER column created_date SET DEFAULT CURRENT_TIMESTAMP;

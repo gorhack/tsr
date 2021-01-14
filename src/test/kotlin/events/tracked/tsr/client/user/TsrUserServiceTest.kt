@@ -4,10 +4,7 @@ import events.tracked.tsr.makeOidcUser
 import events.tracked.tsr.organization.Organization
 import events.tracked.tsr.organization.OrganizationDTO
 import events.tracked.tsr.user.*
-import io.mockk.Called
-import io.mockk.every
-import io.mockk.mockk
-import io.mockk.verify
+import io.mockk.*
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
@@ -47,10 +44,13 @@ class TsrUserServiceTest {
         every { user.authorities } returns listOf()
 
         val tsrUserWithPreferred = tsrUser.copy(username = "preferredUserName")
-        every { mockTsrUserRepository.save(tsrUserWithPreferred) } returns tsrUserWithPreferred
+        every { mockTsrUserRepository.saveAndFlush(tsrUserWithPreferred) } returns tsrUserWithPreferred
         subject.assertUserExistsAndReturnUser(user)
-        verify { mockTsrUserRepository.findByUserId(userId) }
-        verify { mockTsrUserRepository.save(tsrUserWithPreferred) }
+        verifySequence {
+            mockTsrUserRepository.findByUserId(userId)
+            mockTsrUserRepository.count()
+            mockTsrUserRepository.saveAndFlush(tsrUserWithPreferred)
+        }
     }
 
     @Test
@@ -61,10 +61,13 @@ class TsrUserServiceTest {
         every { user.preferredUsername } returns null
         every { user.authorities } returns listOf()
 
-        every { mockTsrUserRepository.save(tsrUser) } returns tsrUser
+        every { mockTsrUserRepository.saveAndFlush(tsrUser) } returns tsrUser
         subject.assertUserExistsAndReturnUser(user)
-        verify { mockTsrUserRepository.findByUserId(userId) }
-        verify { mockTsrUserRepository.save(tsrUser) }
+        verifySequence {
+            mockTsrUserRepository.findByUserId(userId)
+            mockTsrUserRepository.count()
+            mockTsrUserRepository.saveAndFlush(tsrUser)
+        }
     }
 
     @Test
@@ -81,7 +84,7 @@ class TsrUserServiceTest {
         every { mockTsrUserRepository.count() } returns 0
 
         val noUsers = subject.isEmpty()
-        assertThat(noUsers).isTrue()
+        assertThat(noUsers).isTrue
 
         verify { mockTsrUserRepository.count() }
     }
@@ -91,7 +94,7 @@ class TsrUserServiceTest {
         every { mockTsrUserRepository.count() } returns 1
 
         val noUsers = subject.isEmpty()
-        assertThat(noUsers).isFalse()
+        assertThat(noUsers).isFalse
 
         verify { mockTsrUserRepository.count() }
     }
@@ -103,7 +106,7 @@ class TsrUserServiceTest {
         every { mockTsrUserRepository.count() } returns 0
         every { user.preferredUsername } returns user.userName
         every { user.authorities } returns listOf()
-        every { mockTsrUserRepository.save(any() as TsrUser) } returns tsrUser
+        every { mockTsrUserRepository.saveAndFlush(any() as TsrUser) } returns tsrUser
 
 
         subject.assertUserExistsAndReturnUser(user) //should
@@ -111,8 +114,8 @@ class TsrUserServiceTest {
         verify { mockTsrUserRepository.findByUserId(userId) }
 
         verify(exactly = 1) {
-            mockTsrUserRepository.save(
-                withArg<TsrUser> {
+            mockTsrUserRepository.saveAndFlush(
+                withArg {
                     assertThat(it.role).isEqualTo(UserRole.ADMIN)
                 }
             )
@@ -126,15 +129,15 @@ class TsrUserServiceTest {
         every { mockTsrUserRepository.count() } returns 1
         every { user.preferredUsername } returns user.userName
         every { user.authorities } returns listOf()
-        every { mockTsrUserRepository.save(any() as TsrUser) } returns tsrUser
+        every { mockTsrUserRepository.saveAndFlush(any() as TsrUser) } returns tsrUser
 
         subject.assertUserExistsAndReturnUser(user)
 
         verify { mockTsrUserRepository.findByUserId(userId) }
 
         verify(exactly = 1) {
-            mockTsrUserRepository.save(
-                withArg<TsrUser> {
+            mockTsrUserRepository.saveAndFlush(
+                withArg {
                     assertThat(it.role).isEqualTo(UserRole.USER)
                 }
             )
@@ -148,15 +151,15 @@ class TsrUserServiceTest {
         every { mockTsrUserRepository.count() } returns 1
         every { user.preferredUsername } returns user.userName
         every { user.authorities } returns listOf(SimpleGrantedAuthority("SCOPE_tsr.admin"))
-        every { mockTsrUserRepository.save(any() as TsrUser) } returns adminTsrUser
+        every { mockTsrUserRepository.saveAndFlush(any() as TsrUser) } returns adminTsrUser
 
         subject.assertUserExistsAndReturnUser(user)
 
         verify { mockTsrUserRepository.findByUserId(userId) }
 
         verify(exactly = 1) {
-            mockTsrUserRepository.save(
-                withArg<TsrUser> {
+            mockTsrUserRepository.saveAndFlush(
+                withArg {
                     assertThat(it.role).isEqualTo(UserRole.ADMIN)
                 }
             )
@@ -186,11 +189,11 @@ class TsrUserServiceTest {
         try {
             subject.updateUserRole(userRoleUpdate)
         } catch (e: IllegalArgumentException) {
-            verify { mockTsrUserRepository.save(any<TsrUser>()) wasNot Called }
+            verify { mockTsrUserRepository.save(any()) wasNot Called }
             expectedErrorWasThrown = true
         }
 
-        assertThat(expectedErrorWasThrown).describedAs("Expected error was not thrown").isTrue()
+        assertThat(expectedErrorWasThrown).describedAs("Expected error was not thrown").isTrue
     }
 
     @Test
@@ -201,7 +204,7 @@ class TsrUserServiceTest {
 
         every { mockTsrUserRepository.findByUserId(aTsrUser.userId) } returns aTsrUser
         val userResult = subject.assertUserIsAdmin(oidcUser)
-        assertThat(userResult).isFalse()
+        assertThat(userResult).isFalse
     }
 
     @Test
@@ -224,7 +227,7 @@ class TsrUserServiceTest {
     }
 
     @Test
-    fun `setUserOrganiations updates users phone number and email`() {
+    fun `setUserOrganizations updates users phone number and email`() {
         val oidcUser = makeOidcUser("1234", "user")
         val userToUpdate = TsrUser(1L, "1234", "user", UserRole.USER, organizations = hashSetOf(), phoneNumber = "1231231234", emailAddress = null)
         val savedTsrUser = TsrUser(1L, "1234", "user", UserRole.USER, organizations = hashSetOf(), phoneNumber = "0980987", emailAddress = "test@example.com")
