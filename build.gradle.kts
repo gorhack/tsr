@@ -5,7 +5,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
 	id("org.springframework.boot") version "2.4.2"
-	id("io.spring.dependency-management") version "1.0.10.RELEASE"
+	id("io.spring.dependency-management") version "1.0.11.RELEASE"
 	id("com.moowork.node") version "1.3.1"
 	id("org.flywaydb.flyway") version "7.5.0"
 	id("org.sonarqube") version "3.1"
