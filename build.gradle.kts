@@ -4,11 +4,11 @@ import org.gradle.api.tasks.testing.logging.TestLogEvent
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-	id("org.springframework.boot") version "2.4.1"
+	id("org.springframework.boot") version "2.4.2"
 	id("io.spring.dependency-management") version "1.0.10.RELEASE"
 	id("com.moowork.node") version "1.3.1"
-	id("org.flywaydb.flyway") version "7.4.0"
-	id("org.sonarqube") version "3.0"
+	id("org.flywaydb.flyway") version "7.5.0"
+	id("org.sonarqube") version "3.1"
 
 	id ("org.jetbrains.kotlin.plugin.jpa") version "1.4.21"
 	id ("org.jetbrains.kotlin.plugin.noarg") version "1.4.21"
@@ -45,7 +45,7 @@ repositories {
 var springSecurityVersion = "5.4.2"
 var springBootVersion = "2.4.1"
 var keycloakVersion = "11.0.0"
-var jacksonVersion = "2.12.0"
+var jacksonVersion = "2.12.1"
 var jetBrainsKotlin = "1.4.21"
 
 dependencies {
@@ -53,7 +53,7 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-web:${springBootVersion}")
 	implementation("org.springframework.boot:spring-boot-starter-actuator:${springBootVersion}")
 	implementation("org.springframework.boot:spring-boot-starter-websocket:${springBootVersion}")
-	implementation("org.flywaydb:flyway-core:7.4.0")
+	implementation("org.flywaydb:flyway-core:7.5.0")
 
 	// Deserialize json
 	implementation("com.fasterxml.jackson.module:jackson-module-kotlin:${jacksonVersion}")
@@ -80,7 +80,7 @@ dependencies {
 	runtimeOnly("org.postgresql:postgresql:42.2.18")
 
 	testImplementation("org.springframework.boot:spring-boot-starter-test:${springBootVersion}")
-	testImplementation("io.mockk:mockk:1.10.4")
+	testImplementation("io.mockk:mockk:1.10.5")
 }
 
 tasks.withType<KotlinCompile> {
