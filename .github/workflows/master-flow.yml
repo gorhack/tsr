@@ -43,7 +43,7 @@ jobs:
 
       - uses: actions/setup-java@v1
         with:
-          java-version: 13
+          java-version: 15
       - run: ./gradlew test --info
         env:
           RDS_HOSTNAME: localhost
