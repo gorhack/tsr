@@ -1,4 +1,4 @@
-FROM openjdk:13-alpine
+FROM openjdk:15-alpine
 
 LABEL "name"="Backend Gradle Test"
 LABEL "maintainer"="Kyle Gorak"
