@@ -7,13 +7,13 @@ plugins {
 	id("org.springframework.boot") version "2.4.2"
 	id("io.spring.dependency-management") version "1.0.11.RELEASE"
 	id("com.moowork.node") version "1.3.1"
-	id("org.flywaydb.flyway") version "7.5.2"
+	id("org.flywaydb.flyway") version "7.5.3"
 	id("org.sonarqube") version "3.1.1"
 
-	id ("org.jetbrains.kotlin.plugin.jpa") version "1.4.21"
-	id ("org.jetbrains.kotlin.plugin.noarg") version "1.4.21"
-	kotlin("jvm") version "1.4.21"
-	kotlin("plugin.spring") version "1.4.21"
+	id ("org.jetbrains.kotlin.plugin.jpa") version "1.4.30"
+	id ("org.jetbrains.kotlin.plugin.noarg") version "1.4.30"
+	kotlin("jvm") version "1.4.30"
+	kotlin("plugin.spring") version "1.4.30"
 
 	id("com.github.ben-manes.versions") version "0.36.0" // helps find latest dependency versions `./gradlew dependencyUpdates`
 }
@@ -46,14 +46,14 @@ var springSecurityVersion = "5.4.2"
 var springBootVersion = "2.4.2"
 var keycloakVersion = "11.0.0"
 var jacksonVersion = "2.12.1"
-var jetBrainsKotlin = "1.4.21"
+var jetBrainsKotlin = "1.4.30"
 
 dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-data-jpa:${springBootVersion}")
 	implementation("org.springframework.boot:spring-boot-starter-web:${springBootVersion}")
 	implementation("org.springframework.boot:spring-boot-starter-actuator:${springBootVersion}")
 	implementation("org.springframework.boot:spring-boot-starter-websocket:${springBootVersion}")
-	implementation("org.flywaydb:flyway-core:7.5.2")
+	implementation("org.flywaydb:flyway-core:7.5.3")
 
 	// Deserialize json
 	implementation("com.fasterxml.jackson.module:jackson-module-kotlin:${jacksonVersion}")
@@ -75,12 +75,12 @@ dependencies {
 	implementation("org.springframework.security.oauth:spring-security-oauth2:2.5.0.RELEASE")
 	implementation("org.springframework.session:spring-session-jdbc:2.4.1")
 
-	implementation("org.hibernate.validator:hibernate-validator-cdi:7.0.0.Final")
+	implementation("org.hibernate.validator:hibernate-validator-cdi:7.0.1.Final")
 
-	runtimeOnly("org.postgresql:postgresql:42.2.18")
+	runtimeOnly("org.postgresql:postgresql:42.2.19")
 
 	testImplementation("org.springframework.boot:spring-boot-starter-test:${springBootVersion}")
-	testImplementation("io.mockk:mockk:1.10.5")
+	testImplementation("io.mockk:mockk:1.10.6")
 }
 
 tasks.withType<KotlinCompile> {
