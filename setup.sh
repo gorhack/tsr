@@ -104,7 +104,8 @@ fi
     rm openjdk-15+36_linux-x64_bin.tar.gz
     sudo update-alternatives --install /usr/bin/java java ${JAVA_HOME%*/}/bin/java 20000
     sudo update-alternatives --install /usr/bin/javac javac ${JAVA_HOME%*/}/bin/javac 20000
-    update-alternatives --config java
+    sudo update-alternatives --config java
+    sudo update-alternatives --config javac
  }
 
 printf "\n\nChecking Java installation and JAVA_PATH...\n\n"
