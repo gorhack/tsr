@@ -7,7 +7,7 @@ plugins {
 	id("org.springframework.boot") version "2.4.2"
 	id("io.spring.dependency-management") version "1.0.11.RELEASE"
 	id("com.moowork.node") version "1.3.1"
-	id("org.flywaydb.flyway") version "7.5.3"
+	id("org.flywaydb.flyway") version "7.5.4"
 	id("org.sonarqube") version "3.1.1"
 
 	id ("org.jetbrains.kotlin.plugin.jpa") version "1.4.30"
@@ -42,8 +42,8 @@ repositories {
 	maven { url = uri("https://repo.spring.io/snapshot") }
 }
 
-var springSecurityVersion = "5.4.2"
-var springBootVersion = "2.4.2"
+var springSecurityVersion = "5.4.5"
+var springBootVersion = "2.4.3"
 var keycloakVersion = "11.0.0"
 var jacksonVersion = "2.12.1"
 var jetBrainsKotlin = "1.4.30"
@@ -53,7 +53,7 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-web:${springBootVersion}")
 	implementation("org.springframework.boot:spring-boot-starter-actuator:${springBootVersion}")
 	implementation("org.springframework.boot:spring-boot-starter-websocket:${springBootVersion}")
-	implementation("org.flywaydb:flyway-core:7.5.3")
+	implementation("org.flywaydb:flyway-core:7.5.4")
 
 	// Deserialize json
 	implementation("com.fasterxml.jackson.module:jackson-module-kotlin:${jacksonVersion}")
@@ -73,7 +73,7 @@ dependencies {
 	implementation("org.springframework.security:spring-security-oauth2-jose:${springSecurityVersion}")
 	implementation("org.springframework.security:spring-security-oauth2-resource-server:${springSecurityVersion}")
 	implementation("org.springframework.security.oauth:spring-security-oauth2:2.5.0.RELEASE")
-	implementation("org.springframework.session:spring-session-jdbc:2.4.1")
+	implementation("org.springframework.session:spring-session-jdbc:2.4.2")
 
 	implementation("org.hibernate.validator:hibernate-validator-cdi:7.0.1.Final")
 
