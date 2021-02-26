@@ -13,7 +13,7 @@ plugins {
 	id ("org.jetbrains.kotlin.plugin.jpa") version "1.4.30"
 	id ("org.jetbrains.kotlin.plugin.noarg") version "1.4.30"
 	kotlin("jvm") version "1.4.30"
-	kotlin("plugin.spring") version "1.4.30"
+	kotlin("plugin.spring") version "1.4.31"
 
 	id("com.github.ben-manes.versions") version "0.36.0" // helps find latest dependency versions `./gradlew dependencyUpdates`
 }
