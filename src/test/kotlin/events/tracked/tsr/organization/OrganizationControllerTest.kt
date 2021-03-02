@@ -1,5 +1,6 @@
 package events.tracked.tsr.organization
 
+import events.tracked.tsr.NameTooLongException
 import events.tracked.tsr.PageDTO
 import io.mockk.every
 import io.mockk.mockk
@@ -7,6 +8,7 @@ import io.mockk.verifySequence
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import org.springframework.data.domain.Sort
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -33,6 +35,13 @@ internal class OrganizationControllerTest {
             isLast = true,
             pageSize = 10
         )
+    }
+
+    @Test
+    fun `returns HTTP 400 for invalid name`() {
+        assertThrows<NameTooLongException> {
+            subject.saveOrganization(OrganizationDTO(organizationName = "a".repeat(256)))
+        }
     }
 
     @Test
