@@ -1,5 +1,6 @@
 package events.tracked.tsr.organization
 
+import events.tracked.tsr.NameTooLongException
 import events.tracked.tsr.PageDTO
 import org.springframework.data.domain.Sort
 import org.springframework.http.HttpHeaders
@@ -27,9 +28,13 @@ class OrganizationController(
     }
 
     @PostMapping(value = [""])
+    @Throws(NameTooLongException::class)
     fun saveOrganization(
         @RequestBody organizationDTO: OrganizationDTO
     ): ResponseEntity<OrganizationDTO> {
+        if (organizationDTO.organizationName.length > 255) {
+            throw NameTooLongException("Organization name too long. Limited to 255 characters.")
+        }
         return ResponseEntity<OrganizationDTO>(organizationService.saveOrganization(organizationDTO), HttpHeaders(), HttpStatus.CREATED)
     }
 
@@ -41,12 +46,11 @@ class OrganizationController(
     ): ResponseEntity<PageDTO<OrganizationDTO>> {
         return when (sortBy) {
             "sortOrder" -> ResponseEntity<PageDTO<OrganizationDTO>>(
-                    organizationService.getOrganizationsContains(searchTerm, page, size, Sort.by(sortBy)),
-                    HttpHeaders(),
-                    HttpStatus.OK
+                organizationService.getOrganizationsContains(searchTerm, page, size, Sort.by(sortBy)),
+                HttpHeaders(),
+                HttpStatus.OK
             )
             else -> ResponseEntity(PageDTO(), HttpHeaders(), HttpStatus.BAD_REQUEST)
         }
     }
 }
-

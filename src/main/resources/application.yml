@@ -31,6 +31,8 @@ spring:
       max-request-size: 200MB
   jackson:
     time-zone: UTC
+    serialization:
+      WRITE_DATES_AS_TIMESTAMPS: false
   security:
     oauth2:
       client:
