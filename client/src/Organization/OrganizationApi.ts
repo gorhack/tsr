@@ -23,7 +23,7 @@ export const createOrganization = async (organization: Organization): Promise<Or
             return response.data;
         })
         .catch((error) => {
-            throw new Error(error.message);
+            throw new Error(`${error.message}. ${error.response.data.message}`);
         });
 };
 

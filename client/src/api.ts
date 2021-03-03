@@ -2,6 +2,7 @@ import moment, { Moment } from "moment";
 import React from "react";
 import {
     getOrganizationContains,
+    Organization,
     OrganizationActionTypes,
     OrgCacheReducerAction,
 } from "./Organization/OrganizationApi";
@@ -10,6 +11,7 @@ import {
     EventTaskCategoryCacheReducerAction,
     getEventTaskCategoriesContains,
 } from "./Event/Task/EventTaskApi";
+import sortedUniqBy from "lodash/sortedUniqBy";
 
 export enum HttpStatus {
     OK = 200,
@@ -18,6 +20,8 @@ export enum HttpStatus {
     // NOT_FOUND = 404,
     INTERNAL_SERVER_ERROR = 500,
 }
+
+export const MAX_NAME_LENGTH = 255;
 
 export interface PageDTO<T> {
     items: T[];
@@ -62,7 +66,6 @@ export const currentTimeUtc = (): Moment => {
 };
 
 export const currentDate = (): Date => {
-    console.log("do not see plz");
     return new Date();
 };
 
@@ -94,6 +97,17 @@ export const loadOrganizationSearchTerm = async (
             );
             return Promise.resolve([]);
         });
+};
+
+export const orgCacheReducer = (
+    state: Organization[],
+    action: OrgCacheReducerAction,
+): Organization[] => {
+    if (action.type === OrganizationActionTypes.LOAD) {
+        return sortedUniqBy<Organization>([...state, ...action.organizations], (e) => e.sortOrder);
+    } else {
+        return state;
+    }
 };
 
 // breaks tests when in EventTaskApi due to td...

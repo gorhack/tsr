@@ -2,7 +2,7 @@ import React, { ReactElement } from "react";
 import AsyncCreatable from "react-select/async-creatable";
 import { selectStyles } from "../Styles";
 import { createFilter, ValueType } from "react-select";
-import { loadOrganizationSearchTerm, Option } from "../api";
+import { loadOrganizationSearchTerm, MAX_NAME_LENGTH, Option } from "../api";
 import { Control, Controller } from "react-hook-form";
 import {
     createOrganization,
@@ -49,7 +49,7 @@ export const OrgSelect = ({
                     ]);
                 })
                 .catch((error) => {
-                    console.error(`unable to create organization ${inputVal}: ${error.message}`);
+                    console.error(`Unable to create organization ${inputVal}: ${error.message}`);
                 }))();
     };
 
@@ -85,6 +85,7 @@ export const OrgSelect = ({
                             setSelectedOrgs(newValuesOrEmpty);
                             props.onChange(selection);
                         }}
+                        onInputChange={(i) => i.substr(0, MAX_NAME_LENGTH)}
                     />
                 </>
             )}
