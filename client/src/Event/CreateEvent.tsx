@@ -5,17 +5,13 @@ import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import AsyncCreatable from "react-select/async-creatable";
 import { createFilter } from "react-select";
 import { CreatableTsrEvent, getEventById, saveEvent, TsrEvent, updateEvent } from "./EventApi";
-import { currentDate, datePlusYears, Option } from "../api";
+import { currentDate, datePlusYears, Option, orgCacheReducer } from "../api";
 import { FormDatePicker } from "../Inputs/FormDatePicker";
 import "./CreateEvent.css";
 import "../Form.css";
 import { selectStyles } from "../Styles";
 import { createEventType, EventType, getEventTypeContains } from "./Type/EventTypeApi";
-import {
-    Organization,
-    OrganizationActionTypes,
-    OrgCacheReducerAction,
-} from "../Organization/OrganizationApi";
+import { Organization, OrganizationActionTypes } from "../Organization/OrganizationApi";
 import sortedUniqBy from "lodash/sortedUniqBy";
 import { LinkButton, PrimaryButton, SecondaryButton } from "../Buttons/Buttons";
 import { OrgSelect } from "../Organization/OrgSelect";
@@ -34,16 +30,6 @@ export const CreateEvent: React.FC = () => {
     const history = useHistory();
     const { eventId } = useParams<RouteParams>();
 
-    const orgCacheReducer = (state: Organization[], action: OrgCacheReducerAction) => {
-        if (action.type === OrganizationActionTypes.LOAD) {
-            return sortedUniqBy<Organization>(
-                [...state, ...action.organizations],
-                (e) => e.sortOrder,
-            );
-        } else {
-            return state;
-        }
-    };
     const [organizationsCache, organizationCacheDispatch] = useReducer(orgCacheReducer, []);
     const [orgValues, setOrgValues] = useState<Option[]>([]);
     const [eventTypeValue, setEventTypeValue] = useState<Option | undefined>(undefined);

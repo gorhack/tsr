@@ -21,7 +21,6 @@ import { TsrEvent } from "../../Event/EventApi";
 import * as EventTypeApi from "../../Event/Type/EventTypeApi";
 import { EventType } from "../../Event/Type/EventTypeApi";
 import * as OrganizationApi from "../../Organization/OrganizationApi";
-import { Organization } from "../../Organization/OrganizationApi";
 import selectEvent from "react-select-event";
 import * as Api from "../../api";
 import { PageDTO } from "../../api";
@@ -38,7 +37,6 @@ describe("create an event", () => {
     let mockUpdateEvent: typeof EventApi.updateEvent;
     let mockCreateEventType: typeof EventTypeApi.createEventType;
     let mockGetEventTypeContains: typeof EventTypeApi.getEventTypeContains;
-    let mockCreateOrganization: typeof OrganizationApi.createOrganization;
     let mockGetOrganizationContains: typeof OrganizationApi.getOrganizationContains;
     let mockGetEventById: typeof EventApi.getEventById;
     let mockCurrentDate: typeof Api.currentDate;
@@ -49,7 +47,6 @@ describe("create an event", () => {
         mockCreateEventType = td.replace(EventTypeApi, "createEventType");
         mockGetEventTypeContains = td.replace(EventTypeApi, "getEventTypeContains");
         mockGetOrganizationContains = td.replace(OrganizationApi, "getOrganizationContains");
-        mockCreateOrganization = td.replace(OrganizationApi, "createOrganization");
         mockGetEventById = td.replace(EventApi, "getEventById");
         mockCurrentDate = td.replace(Api, "currentDate");
         mockDatePlusYears = td.replace(Api, "datePlusYears");
@@ -295,88 +292,6 @@ describe("create an event", () => {
             });
             await selectEvent.select(screen.getByLabelText(EVENT_TYPE_LABEL), "fourth");
             expect(screen.getByText("fourth")).toBeInTheDocument();
-        });
-    });
-
-    describe("org select", () => {
-        const setupOrgSelectPromise = async (): Promise<RenderResult> => {
-            const orgNames = [
-                makeOrganization({
-                    organizationId: 1,
-                    sortOrder: 1,
-                    organizationDisplayName: "first",
-                }),
-                makeOrganization({
-                    organizationId: 2,
-                    sortOrder: 2,
-                    organizationDisplayName: "second",
-                }),
-                makeOrganization({
-                    organizationId: 3,
-                    sortOrder: 3,
-                    organizationDisplayName: "third",
-                }),
-            ];
-            const orgNamesPromise = Promise.resolve(makePage({ items: orgNames }));
-            return renderCreateEvent({ orgNamesPromise });
-        };
-
-        it("can create and select an organization", async () => {
-            await setupOrgSelectPromise();
-            td.when(mockGetOrganizationContains(td.matchers.anything())).thenResolve(
-                makePage() as PageDTO<Organization>,
-            );
-            td.when(
-                mockCreateOrganization({
-                    organizationId: 0,
-                    organizationDisplayName: "fourth",
-                    organizationName: "fourth",
-                    sortOrder: 0,
-                }),
-            ).thenResolve({
-                organizationId: 4,
-                organizationDisplayName: "fourth",
-                organizationName: "fourth",
-                sortOrder: 4,
-            });
-            await act(async () => {
-                await selectEvent.create(screen.getByLabelText(ORGANIZATIONS_LABEL), "fourth", {
-                    waitForElement: false,
-                });
-            });
-            expect(screen.getByText("fourth")).toBeInTheDocument();
-        });
-
-        it("can search for organizations", async () => {
-            await setupOrgSelectPromise();
-
-            td.when(mockGetOrganizationContains("fou")).thenResolve(
-                makePage({
-                    items: [
-                        makeOrganization({
-                            organizationId: 4,
-                            organizationDisplayName: "fourth",
-                            organizationName: "fourth",
-                            sortOrder: 4,
-                        }),
-                    ],
-                }) as PageDTO<Organization>,
-            );
-            await act(async () => {
-                fireEvent.change(screen.getByLabelText(ORGANIZATIONS_LABEL), {
-                    target: { value: "fou" },
-                });
-            });
-            await selectEvent.select(screen.getByLabelText(ORGANIZATIONS_LABEL), "fourth");
-            expect(screen.getByText("fourth")).toBeInTheDocument();
-        });
-
-        it("can clear the org name", async () => {
-            await setupOrgSelectPromise();
-            await selectEvent.select(screen.getByLabelText(ORGANIZATIONS_LABEL), "second");
-            expect(screen.getByText("second")).toBeInTheDocument();
-            await selectEvent.clearAll(screen.getByText("second"));
-            expect(screen.queryByAltText("second")).toBeNull();
         });
     });
 
