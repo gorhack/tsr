@@ -111,7 +111,9 @@ export const makeEvent = (partial: Partial<TsrEvent>): TsrEvent => {
         organizations: partial.organizations || [
             makeOrganization({ organizationId: 1, sortOrder: 1 }),
         ],
-        eventType: partial.eventType || undefined,
+        eventType: partial.eventType || [
+            makeEventType({ eventTypeId: 1, sortOrder: 1 }),
+        ],
         audit: partial.audit || makeAudit({}),
     };
 };

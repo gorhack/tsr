@@ -3,10 +3,10 @@ import { PageDTO, PageParams } from "../../api";
 
 const baseUri = "/api/v1/event/type";
 
-export const getEventTypes = async (pageParams: PageParams = {}): Promise<PageDTO<EventType>> => {
+export const getEventTypes = async (pageParams: PageParams = {}): Promise<PageDTO<EventTypeInterface>> => {
     return axios
         .get(baseUri, { params: pageParams })
-        .then((response: AxiosResponse<PageDTO<EventType>>) => {
+        .then((response: AxiosResponse<PageDTO<EventTypeInterface>>) => {
             return response.data;
         })
         .catch((error) => {
@@ -14,21 +14,10 @@ export const getEventTypes = async (pageParams: PageParams = {}): Promise<PageDT
         });
 };
 
-export const getEventTypeContains = async (searchTerm: string): Promise<PageDTO<EventType>> => {
-    return axios
-        .get(`${baseUri}/search`, { params: { searchTerm } })
-        .then((response: AxiosResponse<PageDTO<EventType>>) => {
-            return response.data;
-        })
-        .catch((error) => {
-            throw new Error(error.message);
-        });
-};
-
-export const createEventType = async (eventType: EventType): Promise<EventType> => {
+export const createEventType = async (eventType: EventTypeInterface): Promise<EventTypeInterface> => {
     return axios
         .post(baseUri, eventType)
-        .then((response: AxiosResponse<EventType>) => {
+        .then((response: AxiosResponse<EventTypeInterface>) => {
             return response.data;
         })
         .catch((error) => {
@@ -36,9 +25,29 @@ export const createEventType = async (eventType: EventType): Promise<EventType> 
         });
 };
 
-export interface EventType {
+export const getEventTypeContains = async (searchTerm: string): Promise<PageDTO<EventTypeInterface>> => {
+    return axios
+        .get(`${baseUri}/search`, { params: { searchTerm } })
+        .then((response: AxiosResponse<PageDTO<EventTypeInterface>>) => {
+            return response.data;
+        })
+        .catch((error) => {
+            throw new Error(error.message);
+        });
+};
+
+export interface EventTypeInterface {
     eventTypeId: number;
     eventTypeName: string;
     displayName: string;
     sortOrder: number;
 }
+
+export enum EventActionTypes {
+    LOAD,
+}
+
+export type EventTypeCacheReducerAction = {
+    type: EventActionTypes.LOAD;
+    eventTypes: EventTypeInterface[];
+};

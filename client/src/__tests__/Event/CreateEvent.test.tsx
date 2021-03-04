@@ -19,7 +19,6 @@ import td from "testdouble";
 import * as EventApi from "../../Event/EventApi";
 import { TsrEvent } from "../../Event/EventApi";
 import * as EventTypeApi from "../../Event/Type/EventTypeApi";
-import { EventType } from "../../Event/Type/EventTypeApi";
 import * as OrganizationApi from "../../Organization/OrganizationApi";
 import selectEvent from "react-select-event";
 import * as Api from "../../api";
@@ -35,16 +34,15 @@ describe("create an event", () => {
 
     let mockSaveEvent: typeof EventApi.saveEvent;
     let mockUpdateEvent: typeof EventApi.updateEvent;
-    let mockCreateEventType: typeof EventTypeApi.createEventType;
     let mockGetEventTypeContains: typeof EventTypeApi.getEventTypeContains;
     let mockGetOrganizationContains: typeof OrganizationApi.getOrganizationContains;
     let mockGetEventById: typeof EventApi.getEventById;
     let mockCurrentDate: typeof Api.currentDate;
     let mockDatePlusYears: typeof Api.datePlusYears;
+    let mockTsrEventContains = td.function("mockTsrEventContains");
     beforeEach(() => {
         mockSaveEvent = td.replace(EventApi, "saveEvent");
         mockUpdateEvent = td.replace(EventApi, "updateEvent");
-        mockCreateEventType = td.replace(EventTypeApi, "createEventType");
         mockGetEventTypeContains = td.replace(EventTypeApi, "getEventTypeContains");
         mockGetOrganizationContains = td.replace(OrganizationApi, "getOrganizationContains");
         mockGetEventById = td.replace(EventApi, "getEventById");
@@ -100,8 +98,13 @@ describe("create an event", () => {
                 sortOrder: 3,
             }),
         ];
+        const eventTypes = [
+            makeEventType({ eventTypeId: 1, sortOrder: 1, displayName: "first" }),
+        ];
+        const eventTypesPromise = Promise.resolve(makePage({ items: eventTypes }));
+
         const orgNamesPromise = Promise.resolve(makePage({ items: orgNames }));
-        const result = await renderCreateEvent({ history, orgNamesPromise });
+        const result = await renderCreateEvent({ history, orgNamesPromise, eventTypesPromise });
         const tsrEvent = {
             eventName: "name",
             organizations: [
@@ -118,7 +121,15 @@ describe("create an event", () => {
             ],
             startDate: startDate,
             endDate: endDate,
-            eventType: undefined,
+            eventType: [
+                makeEventType({
+                    eventTypeId: 1,
+                    sortOrder: 1,
+                    displayName: "first",
+                    eventTypeName: "first",
+
+                })
+            ],
         };
         const saveEventPromise: Promise<TsrEvent> = Promise.resolve({
             eventId: 1,
@@ -134,6 +145,7 @@ describe("create an event", () => {
         fillInInputValueInForm(result, "name", EVENT_NAME_LABEL);
         await selectEvent.select(screen.getByLabelText(ORGANIZATIONS_LABEL), "second");
         await selectEvent.select(screen.getByLabelText(ORGANIZATIONS_LABEL), "third");
+        await selectEvent.select(screen.getByLabelText(EVENT_TYPE_LABEL), "first");
         fillInDatePicker(result, START_DATE_LABEL, TODAYS_DATE);
         fillInDatePicker(result, END_DATE_LABEL, TODAYS_DATE);
 
@@ -144,6 +156,20 @@ describe("create an event", () => {
             await saveEventPromise;
         });
         expect(history.location.pathname).toEqual("/event/1");
+    });
+    //TODO(BONFIRE)
+    it("event name limited to 255 characters", async () => {
+        await renderCreateEvent;
+        //TODO(...conintue? 03 actual test. It is similiar to org select but there are issues)
+        const invalidString = "a".repeat(256);
+        //like what is this when statement even doing, does it need a mock.function, mock.object, wtf?
+        td.when(mockTsrEventContains(invalidString)).thenReturn(Error);
+        //is this just saying expect to see an invalid string, to be null? why not error?
+        expect(screen.queryByText(invalidString)).toBeNull();
+        const validString = "a".repeat(255);
+        //so this is the parameter that passes the test after first failing
+        expect(screen.getByText(validString)).toBeInTheDocument();
+
     });
 
     describe("edit event", () => {
@@ -211,7 +237,7 @@ describe("create an event", () => {
                     eventTypeId: 1,
                     displayName: "test type",
                     sortOrder: 1,
-                }),
+                })
             });
             const updateEventPromise: Promise<TsrEvent> = Promise.resolve(tsrEvent);
             const result = await setupGetEventByIdPromise(history);
@@ -224,74 +250,6 @@ describe("create an event", () => {
                 await updateEventPromise;
             });
             expect(history.location.pathname).toEqual("/event/1");
-        });
-    });
-
-    describe("event type select", () => {
-        const setupEventSelectPromise = async (): Promise<RenderResult> => {
-            const eventTypes = [
-                makeEventType({ eventTypeId: 1, sortOrder: 1, displayName: "first" }),
-                makeEventType({ eventTypeId: 2, sortOrder: 2, displayName: "second" }),
-                makeEventType({ eventTypeId: 3, sortOrder: 3, displayName: "third" }),
-            ];
-            const eventTypesPromise = Promise.resolve(makePage({ items: eventTypes }));
-            return renderCreateEvent({ eventTypesPromise });
-        };
-
-        it("can clear the event types", async () => {
-            await setupEventSelectPromise();
-            await selectEvent.select(screen.getByLabelText(EVENT_TYPE_LABEL), "second");
-            expect(screen.getByText("second")).toBeInTheDocument();
-            await selectEvent.clearAll(screen.getByLabelText(EVENT_TYPE_LABEL));
-            expect(screen.queryByText("second")).toBeNull();
-        });
-
-        it("can create and select an event type", async () => {
-            await setupEventSelectPromise();
-            td.when(mockGetEventTypeContains(td.matchers.anything())).thenResolve(
-                makePage() as PageDTO<EventType>,
-            );
-            td.when(
-                mockCreateEventType({
-                    eventTypeId: 0,
-                    eventTypeName: "fourth",
-                    displayName: "fourth",
-                    sortOrder: 0,
-                }),
-            ).thenResolve({
-                eventTypeId: 4,
-                displayName: "fourth",
-                eventTypeName: "fourth",
-                sortOrder: 4,
-            });
-            await act(async () => {
-                await selectEvent.create(screen.getByLabelText(EVENT_TYPE_LABEL), "fourth", {
-                    waitForElement: false,
-                });
-            });
-            expect(screen.getByText("fourth")).toBeInTheDocument();
-        });
-
-        it("can search for event types", async () => {
-            await setupEventSelectPromise();
-
-            td.when(mockGetEventTypeContains("fou")).thenResolve(
-                makePage({
-                    items: [
-                        makeEventType({
-                            eventTypeId: 4,
-                            eventTypeName: "fourth",
-                            displayName: "fourth",
-                            sortOrder: 4,
-                        }),
-                    ],
-                }) as PageDTO<EventType>,
-            );
-            fireEvent.change(screen.getByLabelText(EVENT_TYPE_LABEL), {
-                target: { value: "fou" },
-            });
-            await selectEvent.select(screen.getByLabelText(EVENT_TYPE_LABEL), "fourth");
-            expect(screen.getByText("fourth")).toBeInTheDocument();
         });
     });
 

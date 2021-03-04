@@ -1,5 +1,6 @@
 import clsx from "clsx";
 import React, { ReactElement } from "react";
+import { MAX_NAME_LENGTH } from "../api";
 
 interface LabeledInputProps {
     label: string;
@@ -27,6 +28,7 @@ export const LabeledInput = (props: LabeledInputProps): ReactElement => {
                 aria-label={label}
                 onChange={onChange}
                 type="text"
+                maxLength={MAX_NAME_LENGTH}
                 {...inputProps}
             />
             {hint && <div className="hint-message">{hint}</div>}
