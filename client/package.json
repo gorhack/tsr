@@ -85,7 +85,7 @@
     "history": "^5.0.0",
     "http-proxy-middleware": "^1.0.5",
     "mutationobserver-shim": "^0.3.7",
-    "nock": "^13.0.9",
+    "nock": "^13.0.10",
     "prettier": "^2.1.0",
     "react-select-event": "^5.2.0",
     "testdouble": "^3.16.1",
