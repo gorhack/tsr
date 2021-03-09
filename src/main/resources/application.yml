@@ -65,3 +65,11 @@ logging:
             MessageTracing:
               send: off
               recevied: off
+
+server:
+  servlet:
+    session:
+      cookie:
+        http-only: true
+        secure: true
+      tracking-modes: COOKIE
