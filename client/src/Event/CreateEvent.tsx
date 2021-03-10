@@ -1,22 +1,19 @@
-import React, { ReactElement, useCallback, useEffect, useReducer, useState } from "react";
-import { LabeledInput } from "../Inputs/LabeledInput";
-import { useHistory } from "react-router";
-import { Controller, SubmitHandler, useForm } from "react-hook-form";
-import AsyncCreatable from "react-select/async-creatable";
+import React, {ReactElement,useCallback, useEffect, useReducer, useState} from "react";
+import {LabeledInput} from "../Inputs/LabeledInput";
+import {useHistory} from "react-router";
+import {Controller,SubmitHandler, useForm} from "react-hook-form";import AsyncCreatable from "react-select/async-creatable";
 import { createFilter } from "react-select";
-import { CreatableTsrEvent, getEventById, saveEvent, TsrEvent, updateEvent } from "./EventApi";
-import { currentDate, datePlusYears, Option, orgCacheReducer } from "../api";
-import { FormDatePicker } from "../Inputs/FormDatePicker";
+import {CreatableTsrEvent, getEventById, saveEvent, TsrEvent, updateEvent} from "./EventApi";
+import {currentDate, datePlusYears,  Option, orgCacheReducer} from "../api";
+import {FormDatePicker} from "../Inputs/FormDatePicker";
 import "./CreateEvent.css";
 import "../Form.css";
 import { selectStyles } from "../Styles";
-import { createEventType, EventType, getEventTypeContains } from "./Type/EventTypeApi";
-import { Organization, OrganizationActionTypes } from "../Organization/OrganizationApi";
-import sortedUniqBy from "lodash/sortedUniqBy";
-import { LinkButton, PrimaryButton, SecondaryButton } from "../Buttons/Buttons";
-import { OrgSelect } from "../Organization/OrgSelect";
-import { useParams } from "react-router-dom";
-import { RouteParams } from "./EventPage";
+import { createEventType, EventType, getEventTypeContains } from "./Type/EventTypeApi";import {Organization, OrganizationActionTypes} from "../Organization/OrganizationApi";import sortedUniqBy from "lodash/sortedUniqBy";
+import {LinkButton, PrimaryButton, SecondaryButton} from "../Buttons/Buttons";
+import {OrgSelect} from "../Organization/OrgSelect";
+import {useParams} from "react-router-dom";
+import {RouteParams} from "./EventPage";
 
 type FormData = {
     eventName: string;
