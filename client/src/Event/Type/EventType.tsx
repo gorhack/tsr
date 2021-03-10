@@ -37,9 +37,9 @@ export const EventTypeSelect = ({
                         eventTypes: [result],
                     });
                     setSelectedEventType({
-                            value: result.displayName,
-                            label: result.displayName,
-                    })
+                        value: result.eventTypeName,
+                        label: result.displayName,
+                    });
                 })
                 .catch((error) => {
                     console.error(`unable to create event type ${inputVal}: ${error.message}`);
@@ -55,7 +55,7 @@ export const EventTypeSelect = ({
                 <>
                     <label
                         data-testid="event-type-select"
-                        htmlFor="eventType"
+                        htmlFor="event type"
                         style={{ textAlign: "initial" }}
                     >
                         event type
@@ -67,10 +67,10 @@ export const EventTypeSelect = ({
                         defaultOptions
                         isClearable
                         placeholder="Select an Event Type..."
-                        name="eventType"
+                        name="event type"
                         defaultValue={selectedEventType}
                         getOptionValue={(option) => option.label}
-                        inputId="eventType"
+                        inputId="event type"
                         value={selectedEventType}
                         onCreateOption={createAndMapEventType}
                         onChange={(selection): void => {

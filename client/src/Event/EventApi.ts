@@ -76,7 +76,6 @@ export interface CreatableTsrEvent {
     organizations: Organization[];
     startDate: string;
     endDate: string;
-    //TODO(Objectify)
     eventType?: EventTypeInterface;
 }
 

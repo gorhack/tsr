@@ -1,6 +1,6 @@
 import { act, fireEvent, RenderResult } from "@testing-library/react";
 import { Auditable, TsrEvent } from "../Event/EventApi";
-import { EventType } from "../Event/Type/EventTypeApi";
+import { EventTypeInterface } from "../Event/Type/EventTypeApi";
 import { PageDTO } from "../api";
 import { Organization } from "../Organization/OrganizationApi";
 import td from "testdouble";
@@ -58,7 +58,7 @@ export const datePickerNextDay = (container: RenderResult, name: string): void =
     userEvent.type(datePicker, "{arrowright}{enter}");
 };
 
-export function makeEventType(partial: Partial<EventType>): EventType {
+export function makeEventType(partial: Partial<EventTypeInterface>): EventTypeInterface {
     if (!partial.eventTypeId) {
         throw Error("event types must have an id");
     }
@@ -111,9 +111,7 @@ export const makeEvent = (partial: Partial<TsrEvent>): TsrEvent => {
         organizations: partial.organizations || [
             makeOrganization({ organizationId: 1, sortOrder: 1 }),
         ],
-        eventType: partial.eventType || [
-            makeEventType({ eventTypeId: 1, sortOrder: 1 }),
-        ],
+        eventType: partial.eventType || undefined,
         audit: partial.audit || makeAudit({}),
     };
 };

@@ -1,19 +1,24 @@
-import React, {useCallback, useEffect, useReducer, useState} from "react";
-import {LabeledInput} from "../Inputs/LabeledInput";
-import {useHistory} from "react-router";
-import {SubmitHandler, useForm} from "react-hook-form";
-import {CreatableTsrEvent, getEventById, saveEvent, TsrEvent, updateEvent} from "./EventApi";
-import {currentDate, datePlusYears, eventTypesCacheReducer, Option, orgCacheReducer} from "../api";
-import {FormDatePicker} from "../Inputs/FormDatePicker";
+import React, { useCallback, useEffect, useReducer, useState } from "react";
+import { LabeledInput } from "../Inputs/LabeledInput";
+import { useHistory } from "react-router";
+import { SubmitHandler, useForm } from "react-hook-form";
+import { CreatableTsrEvent, getEventById, saveEvent, TsrEvent, updateEvent } from "./EventApi";
+import {
+    currentDate,
+    datePlusYears,
+    eventTypesCacheReducer,
+    Option,
+    orgCacheReducer,
+} from "../api";
+import { FormDatePicker } from "../Inputs/FormDatePicker";
 import "./CreateEvent.css";
 import "../Form.css";
-import {Organization, OrganizationActionTypes} from "../Organization/OrganizationApi";
-import {LinkButton, PrimaryButton, SecondaryButton} from "../Buttons/Buttons";
-import {OrgSelect} from "../Organization/OrgSelect";
-import {useParams} from "react-router-dom";
-import {RouteParams} from "./EventPage";
-import {EventTypeSelect} from "./Type/EventType";
-import {EventTypeInterface, EventActionTypes} from "./Type/EventTypeApi";
+import { Organization, OrganizationActionTypes } from "../Organization/OrganizationApi";
+import { LinkButton, PrimaryButton, SecondaryButton } from "../Buttons/Buttons";
+import { OrgSelect } from "../Organization/OrgSelect";
+import { useParams } from "react-router-dom";
+import { RouteParams } from "./EventPage";
+import { EventTypeSelect } from "./Type/EventType";
 
 type FormData = {
     eventName: string;
@@ -32,7 +37,6 @@ export const CreateEvent: React.FC = () => {
     const [eventTypesCache, eventTypesCacheDispatch] = useReducer(eventTypesCacheReducer, []);
     const [eventTypeValue, setEventTypeValue] = useState<Option | undefined>(undefined);
 
-    // const [eventTypesCache, eventTypesCacheDispatch] = useState<EventTypeInterface[]>([]);
     // TODO fill in empty tsr event
     const [tsrEvent, setTsrEvent] = useState<TsrEvent>();
 
@@ -46,7 +50,7 @@ export const CreateEvent: React.FC = () => {
         setValue,
     } = useForm<FormData>({
         defaultValues: {
-            eventTypeOption: { value: "", label: "" },
+            eventTypeOption: eventTypeValue,
             organizationOption: orgValues,
         },
     });
@@ -118,7 +122,7 @@ export const CreateEvent: React.FC = () => {
             }
         });
         const foundEventType = eventTypesCache.find(
-            eventType => eventType.displayName === eventTypeValue?.label,
+            (eventType) => eventType.displayName === eventTypeValue?.label,
         );
 
         if (foundOrgs.length === 0) {
@@ -240,7 +244,11 @@ export const CreateEvent: React.FC = () => {
                         }
                     />
                     <span className={"space-2"} />
-                    <EventTypeSelect control={control} dispatchToEventTypeCache={eventTypesCacheDispatch} setSelectedEventType={setEventTypeValue} />
+                    <EventTypeSelect
+                        control={control}
+                        dispatchToEventTypeCache={eventTypesCacheDispatch}
+                        setSelectedEventType={setEventTypeValue}
+                    />
                     <span className={"space-2"} />
                     <div className="Form-Submit">
                         <PrimaryButton>submit</PrimaryButton>

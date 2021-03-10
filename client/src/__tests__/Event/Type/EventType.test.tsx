@@ -1,13 +1,13 @@
-import React, {ReactElement, useReducer, useState} from "react";
-import {act, fireEvent, render, RenderResult, screen} from "@testing-library/react";
-import {makeEventType, makePage} from "../../TestHelpers";
+import React, { ReactElement, useReducer, useState } from "react";
+import { act, fireEvent, render, RenderResult, screen } from "@testing-library/react";
+import { makeEventType, makePage } from "../../TestHelpers";
 import td from "testdouble";
-import {eventTypeCacheReducer, Option, PageDTO} from "../../../api";
+import { eventTypesCacheReducer, Option, PageDTO } from "../../../api";
 import * as EventTypeApi from "../../../Event/Type/EventTypeApi";
-import {EventType} from "../../../Event/Type/EventTypeApi";
+import { EventTypeInterface } from "../../../Event/Type/EventTypeApi";
 import selectEvent from "react-select-event";
-import {EventTypeSelect} from "../../../Event/Type/EventType";
-import {useForm} from "react-hook-form";
+import { EventTypeSelect } from "../../../Event/Type/EventType";
+import { useForm } from "react-hook-form";
 import "mutationobserver-shim";
 
 describe("event type select", () => {
@@ -32,7 +32,7 @@ describe("event type select", () => {
     it("can create and select an event type", async () => {
         await setupEventSelectPromise();
         td.when(mockGetEventTypeContains(td.matchers.anything())).thenResolve(
-            makePage() as PageDTO<EventType>,
+            makePage() as PageDTO<EventTypeInterface>,
         );
         td.when(
             mockCreateEventType({
@@ -68,7 +68,7 @@ describe("event type select", () => {
                         sortOrder: 4,
                     }),
                 ],
-            }) as PageDTO<EventType>,
+            }) as PageDTO<EventTypeInterface>,
         );
         fireEvent.change(screen.getByLabelText(EVENT_TYPE_LABEL), {
             target: { value: "fou" },
@@ -101,7 +101,7 @@ const EventSelectTestComponent = (): ReactElement => {
     return (
         <EventTypeSelect
             control={control}
-            dispatchToEventTypeCache={useReducer(eventTypeCacheReducer, [])[1]}
+            dispatchToEventTypeCache={useReducer(eventTypesCacheReducer, [])[1]}
             selectedEventType={eventTypeValue}
             setSelectedEventType={setEventTypeValue}
         />

@@ -115,8 +115,6 @@ export const orgCacheReducer = (
     }
 };
 
-//TODO(Objectify)
-//Following the rest of the group...
 export const loadEventTypeSearchTerm = async (
     searchTerm: string,
     dispatchToEventTypeCache: React.Dispatch<EventTypeCacheReducerAction>,
@@ -146,7 +144,7 @@ export const eventTypesCacheReducer = (
     action: EventTypeCacheReducerAction,
 ): EventTypeInterface[] => {
     if (action.type === EventActionTypes.LOAD) {
-        return action.eventTypes
+        return action.eventTypes;
     } else {
         return state;
     }
