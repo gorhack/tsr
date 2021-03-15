@@ -66,6 +66,9 @@ logging:
               send: off
               recevied: off
 
+
+#Sets all session cookies to HttpOnly and to Secure in the browser
+#STIG ID: APSC-DV-002220, STIG ID: APSC-DV-002210
 server:
   servlet:
     session:

@@ -11,6 +11,7 @@ class CommonSecurityConfigurer : HttpSecurityConfigurer {
     }
 
     //line gives react the ability to read XSRF tokens
+    // STIG ID: APSC-DV-002500
     private fun configureCsrfProtection(http: HttpSecurity) {
         http.csrf().csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
     }
