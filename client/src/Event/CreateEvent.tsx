@@ -245,6 +245,7 @@ export const CreateEvent: React.FC = () => {
                     />
                     <span className={"space-2"} />
                     <EventTypeSelect
+                        selectedEventType={eventTypeValue}
                         control={control}
                         dispatchToEventTypeCache={eventTypesCacheDispatch}
                         setSelectedEventType={setEventTypeValue}
