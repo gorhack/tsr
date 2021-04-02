@@ -1,11 +1,11 @@
 import "mutationobserver-shim";
 import { act, fireEvent, render, RenderResult, screen } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
 import { CreateEvent } from "../../Event/CreateEvent";
 import React from "react";
 import { Route, Router } from "react-router-dom";
 import { createMemoryHistory, MemoryHistory } from "history";
 import {
+    clearDatePicker,
     fillInDatePicker,
     fillInInputValueInForm,
     getInputValue,
@@ -283,7 +283,7 @@ describe("create an event", () => {
             await submitEventForm();
             expect(screen.getByText(errorMsg)).toBeInTheDocument();
 
-            userEvent.clear(result.getByRole("textbox", { name: START_DATE_LABEL }));
+            clearDatePicker(result, START_DATE_LABEL);
 
             fillInDatePicker(result, START_DATE_LABEL, TODAYS_DATE);
             await submitEventForm();
@@ -304,7 +304,7 @@ describe("create an event", () => {
             await submitEventForm();
             expect(screen.getByText(errorMsg)).toBeInTheDocument();
 
-            userEvent.clear(result.getByRole("textbox", { name: END_DATE_LABEL }));
+            clearDatePicker(result, END_DATE_LABEL);
 
             fillInDatePicker(result, END_DATE_LABEL, TODAYS_DATE);
             await submitEventForm();

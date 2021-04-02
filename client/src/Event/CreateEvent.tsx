@@ -1,7 +1,9 @@
 import React, { useCallback, useEffect, useReducer, useState } from "react";
 import { LabeledInput } from "../Inputs/LabeledInput";
 import { useHistory } from "react-router";
-import { SubmitHandler, useForm } from "react-hook-form";
+import { Controller, FieldValues, SubmitHandler, useForm, useWatch } from "react-hook-form";
+import AsyncCreatable from "react-select/async-creatable";
+import { createFilter } from "react-select";
 import { CreatableTsrEvent, getEventById, saveEvent, TsrEvent, updateEvent } from "./EventApi";
 import {
     currentDate,
@@ -43,18 +45,18 @@ export const CreateEvent: React.FC = () => {
     const {
         handleSubmit,
         register,
-        errors,
         control,
-        watch,
         setError,
         setValue,
-    } = useForm<FormData>({
+        formState: { errors },
+    } = useForm<FieldValues>({
         defaultValues: {
             eventTypeOption: eventTypeValue,
             organizationOption: orgValues,
         },
     });
-    const dateWatch = watch(["startDate", "endDate"]);
+    const startDateWatch = useWatch({ control, name: "startDate", defaultValue: "" });
+    const endDateWatch = useWatch({ control, name: "endDate", defaultValue: "" });
 
     const setFormValues = useCallback(
         (event: TsrEvent): void => {
@@ -189,8 +191,7 @@ export const CreateEvent: React.FC = () => {
                         error={errors.eventName && "event name is required"}
                         inputProps={{
                             placeholder: "Enter Event Name...",
-                            name: "eventName",
-                            ref: register({
+                            ...register("eventName", {
                                 required: true,
                             }),
                         }}
@@ -227,18 +228,18 @@ export const CreateEvent: React.FC = () => {
                         name="endDate"
                         label="end date"
                         placeholder="Choose the End Date..."
-                        minDate={dateWatch.startDate ? dateWatch.startDate : currentDate()}
+                        minDate={startDateWatch ? startDateWatch : currentDate()}
                         maxDate={
-                            dateWatch.startDate
+                            startDateWatch
                                 ? new Date(
-                                      new Date(dateWatch.startDate.toString()).setFullYear(
-                                          dateWatch.startDate.getFullYear() + 10,
+                                      new Date(startDateWatch.toString()).setFullYear(
+                                          startDateWatch.getFullYear() + 10,
                                       ),
                                   )
                                 : datePlusYears(10)
                         }
                         error={
-                            !!(errors.endDate || dateWatch.startDate > dateWatch.endDate)
+                            !!(errors.endDate || startDateWatch > endDateWatch)
                                 ? "end date after the start date is required MM/dd/YYYY"
                                 : undefined
                         }

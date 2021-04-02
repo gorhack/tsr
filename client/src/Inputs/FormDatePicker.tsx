@@ -14,36 +14,45 @@ interface FormDatePickerProps {
     placeholder?: string;
 }
 
-export const FormDatePicker = (props: FormDatePickerProps): ReactElement => {
+export const FormDatePicker = ({
+    control,
+    label,
+    error,
+    name,
+    minDate,
+    maxDate,
+    placeholder,
+}: FormDatePickerProps): ReactElement => {
     return (
         <Controller
-            control={props.control}
-            name={props.name}
+            control={control}
+            name={name}
             defaultValue=""
             rules={{
                 required: true,
             }}
-            render={({ onChange, value }): ReactElement => {
+            render={({ field: { onChange, value } }): ReactElement => {
                 return (
                     <>
-                        <label className="Labeled-Input" htmlFor={props.name}>
-                            {props.label}
+                        <label className="Labeled-Input" htmlFor={name}>
+                            {label}
                         </label>
                         <div className={"space-1"} />
                         <DatePicker
-                            id={props.name}
-                            startDate={props.minDate}
-                            minDate={props.minDate}
-                            maxDate={props.maxDate}
-                            placeholderText={props.placeholder}
+                            id={name}
+                            startDate={minDate}
+                            minDate={minDate}
+                            maxDate={maxDate}
+                            placeholderText={placeholder}
                             onChange={onChange}
                             selected={value}
                         />
-                        {props.error && <div className="error-message">{props.error}</div>}
+                        {error && <div className="error-message">{error}</div>}
                     </>
                 );
             }}
         />
     );
 };
+
 FormDatePicker.displayName = "FormDatePicker";
