@@ -1,5 +1,6 @@
 package events.tracked.tsr.event
 
+import events.tracked.tsr.NameTooLongException
 import events.tracked.tsr.PageDTO
 import events.tracked.tsr.user.TsrUserService
 import events.tracked.tsr.user.userId
@@ -18,13 +19,21 @@ class EventController(
     private val tsrUserService: TsrUserService
 ) {
     @PostMapping(value = [""])
+    @Throws(NameTooLongException::class)
     fun saveEvent(@RequestBody eventDTO: EventDTO): EventDTO {
+        if (eventDTO.eventName.length > 255) {
+            throw NameTooLongException("Event name must be 255 characters or less.")
+        }
         // TODO return ResponseEntity
         return eventService.saveEvent(eventDTO)
     }
 
     @PutMapping(value = [""])
+    @Throws(NameTooLongException::class)
     fun updateEvent(@RequestBody eventDTO: EventDTO): EventDTO {
+        if (eventDTO.eventName.length > 255) {
+            throw NameTooLongException("Event name must be 255 characters or less.")
+        }
         return eventService.updateEvent(eventDTO).toEventDTO()
     }
 
