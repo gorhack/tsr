@@ -4,16 +4,16 @@ import org.gradle.api.tasks.testing.logging.TestLogEvent
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-	id("org.springframework.boot") version "2.4.3"
+	id("org.springframework.boot") version "2.4.4"
 	id("io.spring.dependency-management") version "1.0.11.RELEASE"
 	id("com.moowork.node") version "1.3.1"
-	id("org.flywaydb.flyway") version "7.7.1"
+	id("org.flywaydb.flyway") version "7.7.2"
 	id("org.sonarqube") version "3.1.1"
 
-	id ("org.jetbrains.kotlin.plugin.jpa") version "1.4.31"
-	id ("org.jetbrains.kotlin.plugin.noarg") version "1.4.31"
-	kotlin("jvm") version "1.4.31"
-	kotlin("plugin.spring") version "1.4.31"
+	id ("org.jetbrains.kotlin.plugin.jpa") version "1.4.32"
+	id ("org.jetbrains.kotlin.plugin.noarg") version "1.4.32"
+	kotlin("jvm") version "1.4.32"
+	kotlin("plugin.spring") version "1.4.32"
 
 	id("com.github.ben-manes.versions") version "0.38.0" // helps find latest dependency versions `./gradlew dependencyUpdates`
 }
@@ -43,10 +43,10 @@ repositories {
 }
 
 var springSecurityVersion = "5.4.5"
-var springBootVersion = "2.4.3"
+var springBootVersion = "2.4.4"
 var keycloakVersion = "11.0.0"
 var jacksonVersion = "2.12.2"
-var jetBrainsKotlin = "1.4.31"
+var jetBrainsKotlin = "1.4.32"
 
 dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-data-jpa:${springBootVersion}")
