@@ -289,7 +289,7 @@ export const CreateEvent: React.FC = () => {
                         control={control}
                         name="eventTypeOption"
                         defaultValue={eventTypeValue}
-                        render={(props): ReactElement => (
+                        render={({ field: { onChange } }): ReactElement => (
                             <>
                                 <label
                                     data-testid="event-type-select"
@@ -314,7 +314,7 @@ export const CreateEvent: React.FC = () => {
                                     onChange={(selection): void => {
                                         const newValuesOrEmpty = (selection || undefined) as Option;
                                         setEventTypeValue(newValuesOrEmpty);
-                                        props.field.onChange(selection);
+                                        onChange(selection);
                                     }}
                                     filterOption={createFilter({
                                         ignoreCase: true,
