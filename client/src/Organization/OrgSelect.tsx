@@ -58,7 +58,7 @@ export const OrgSelect = ({
             name="organizationOption"
             control={control}
             defaultValue={selectedOrgs}
-            render={(props): ReactElement => (
+            render={({ field: { onChange } }): ReactElement => (
                 <>
                     <label
                         data-testid="organization-select"
@@ -83,16 +83,16 @@ export const OrgSelect = ({
                         onChange={(selection: ValueType<Option, boolean>): void => {
                             const newValuesOrEmpty = (selection || []) as Option[];
                             setSelectedOrgs(newValuesOrEmpty);
-                            props.onChange(selection);
+                            onChange(selection);
                         }}
                         onInputChange={(i) => i.substr(0, MAX_NAME_LENGTH)}
+                        filterOption={createFilter({
+                            ignoreCase: true,
+                            matchFrom: "any",
+                        })}
                     />
                 </>
             )}
-            filterOption={createFilter({
-                ignoreCase: true,
-                matchFrom: "any",
-            })}
         />
     );
 };

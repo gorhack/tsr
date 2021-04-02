@@ -1,7 +1,7 @@
 import React, { ReactElement, useCallback, useEffect, useReducer, useState } from "react";
 import { emptyTsrUser, getUserInfo, setUserSettings, TsrUser, TsrUserSettings } from "./UserApi";
 import { Option } from "../api";
-import { SubmitHandler, useForm } from "react-hook-form";
+import { FieldValues, SubmitHandler, useForm, useFormState } from "react-hook-form";
 import {
     Organization,
     OrganizationActionTypes,
@@ -15,11 +15,11 @@ import { LabeledInput } from "../Inputs/LabeledInput";
 import sortedUniqBy from "lodash/sortedUniqBy";
 import { useHistory } from "react-router-dom";
 
-type FormData = {
+interface FormData extends FieldValues {
     email: string;
     phone: string;
     organizationOption: Option[];
-};
+}
 
 export const UserSettings: React.FC = (): ReactElement => {
     const history = useHistory();
@@ -38,7 +38,13 @@ export const UserSettings: React.FC = (): ReactElement => {
 
     const [user, setUser] = useState<TsrUser>(emptyTsrUser);
     const [orgValues, setOrgValues] = useState<Option[]>([]);
-    const { control, handleSubmit, setValue, register, errors } = useForm<FormData>({
+    const {
+        control,
+        handleSubmit,
+        setValue,
+        register,
+        formState: { errors },
+    } = useForm<FieldValues>({
         defaultValues: {
             organizationOption: orgValues,
         },
@@ -127,8 +133,7 @@ export const UserSettings: React.FC = (): ReactElement => {
                         label={"phone number"}
                         inputProps={{
                             placeholder: "Enter Your Phone Number...",
-                            name: "phone",
-                            ref: register({
+                            ...register("phone", {
                                 maxLength: 32,
                             }),
                         }}
@@ -139,8 +144,7 @@ export const UserSettings: React.FC = (): ReactElement => {
                         label={"email address"}
                         inputProps={{
                             placeholder: "Enter Your Email Address...",
-                            name: "email",
-                            ref: register({
+                            ...register("email", {
                                 maxLength: 254,
                             }),
                         }}
