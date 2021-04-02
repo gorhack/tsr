@@ -51,6 +51,19 @@ export const fillInDatePicker = (container: RenderResult, name: string, dateVal:
     userEvent.type(datePicker, dateVal);
 };
 
+export const clearDatePicker = (container: RenderResult, name: string): void => {
+    /*
+     * TODO wait for fix of userEvent
+     * userEvent.clear or type "{selectall}" results in console error
+     * TypeError: range.selectNodeContents is not a function
+     */
+    const datePicker = container.getByRole("textbox", { name });
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    for (const _ of (datePicker as HTMLTextAreaElement).value) {
+        userEvent.type(datePicker, "{backspace}");
+    }
+};
+
 export const datePickerNextDay = (container: RenderResult, name: string): void => {
     const datePicker = container.getByRole("textbox", { name });
     userEvent.click(datePicker);

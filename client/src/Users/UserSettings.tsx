@@ -1,7 +1,7 @@
 import React, { ReactElement, useCallback, useEffect, useReducer, useState } from "react";
 import { emptyTsrUser, getUserInfo, setUserSettings, TsrUser, TsrUserSettings } from "./UserApi";
 import { Option } from "../api";
-import { FieldValues, SubmitHandler, useForm, useFormState } from "react-hook-form";
+import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
 import {
     Organization,
     OrganizationActionTypes,
