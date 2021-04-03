@@ -141,19 +141,7 @@ describe("create an event", () => {
         });
         expect(history.location.pathname).toEqual("/event/1");
     });
-    //TODO(...continue?) test tbd
-    // eslint-disable-next-line jest/no-commented-out-tests
-    /*
-    it("event name limited to 255 characters", async () => {
-        await renderCreateEvent;
-        const invalidString = "a".repeat(256);
-        td.when(mockTsrEventContains(invalidString)).thenReturn(Error);
-        expect(screen.queryByText(invalidString)).toBeNull();
-        const validString = "a".repeat(255);
-        expect(screen.getByText(validString)).toBeInTheDocument();
-    });
-*/
-    //TODO(...continue?)
+
     describe("edit event", () => {
         const dateToInput = new Date("2020-10-18T00:00:01").toLocaleDateString();
         const setupGetEventByIdPromise = async (
@@ -237,10 +225,20 @@ describe("create an event", () => {
 
     describe("handle errors", () => {
         it("requires event name", async () => {
-            const errorMsg = "event name is required";
+            const errorMsg = "event name is required and must be less than 255 characters";
             await renderCreateEvent({});
             expect(screen.queryByText(errorMsg)).toBeNull();
 
+            await submitEventForm();
+            expect(screen.getByText(errorMsg)).toBeInTheDocument();
+        });
+
+        it("event name limited to 255 characters", async () => {
+            const errorMsg = "event name is required and must be less than 255 characters";
+            const result = await renderCreateEvent({});
+            expect(screen.queryByText(errorMsg)).toBeNull();
+            const invalidString = "a".repeat(256);
+            fillInInputValueInForm(result, invalidString, EVENT_NAME_LABEL);
             await submitEventForm();
             expect(screen.getByText(errorMsg)).toBeInTheDocument();
         });

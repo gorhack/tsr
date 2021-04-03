@@ -51,7 +51,7 @@ export const EventTypeSelect = ({
             name="eventTypeOption"
             control={control}
             defaultValue={selectedEventType}
-            render={(props): ReactElement => (
+            render={({ field: { onChange } }): ReactElement => (
                 <>
                     <label
                         data-testid="event-type-select"
@@ -76,16 +76,16 @@ export const EventTypeSelect = ({
                         onChange={(selection): void => {
                             const newValuesOrEmpty = (selection || undefined) as Option;
                             setSelectedEventType(newValuesOrEmpty);
-                            props.onChange(selection);
+                            onChange(selection);
                         }}
                         onInputChange={(i) => i.substr(0, MAX_NAME_LENGTH)}
+                        filterOption={createFilter({
+                            ignoreCase: true,
+                            matchFrom: "any",
+                        })}
                     />
                 </>
             )}
-            filterOption={createFilter({
-                ignoreCase: true,
-                matchFrom: "any",
-            })}
         />
     );
 };

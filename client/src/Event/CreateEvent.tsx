@@ -1,9 +1,7 @@
 import React, { useCallback, useEffect, useReducer, useState } from "react";
 import { LabeledInput } from "../Inputs/LabeledInput";
 import { useHistory } from "react-router";
-import { Controller, FieldValues, SubmitHandler, useForm, useWatch } from "react-hook-form";
-import AsyncCreatable from "react-select/async-creatable";
-import { createFilter } from "react-select";
+import { FieldValues, SubmitHandler, useForm, useWatch } from "react-hook-form";
 import { CreatableTsrEvent, getEventById, saveEvent, TsrEvent, updateEvent } from "./EventApi";
 import {
     currentDate,
@@ -188,11 +186,15 @@ export const CreateEvent: React.FC = () => {
                 >
                     <LabeledInput
                         label={"event name"}
-                        error={errors.eventName && "event name is required"}
+                        error={
+                            errors.eventName &&
+                            "event name is required and must be less than 255 characters"
+                        }
                         inputProps={{
                             placeholder: "Enter Event Name...",
                             ...register("eventName", {
                                 required: true,
+                                maxLength: 255,
                             }),
                         }}
                     />
