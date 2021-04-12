@@ -11,6 +11,7 @@ class CommonSecurityConfigurer : HttpSecurityConfigurer {
     override fun configure(http: HttpSecurity) {
         configureCsrfProtection(http)
         clearBrowserDataOnLogout(http)
+        configureXssPreventionHeaders(http)
     }
 
     //line gives react the ability to read XSRF tokens
@@ -26,5 +27,15 @@ class CommonSecurityConfigurer : HttpSecurityConfigurer {
                 ClearSiteDataHeaderWriter(ClearSiteDataHeaderWriter.Directive.ALL)
         )
         http.logout().addLogoutHandler(logoutHandler)
+    }
+
+    //send xss prevention headers to browser
+    //as per some STIG story
+    private fun configureXssPreventionHeaders(http: HttpSecurity) {
+        http.headers()
+                .contentTypeOptions().and()
+                .xssProtection()
+                .xssProtectionEnabled(true)
+                .block(true);
     }
 }
