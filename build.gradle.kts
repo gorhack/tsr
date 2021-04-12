@@ -72,7 +72,7 @@ dependencies {
 	implementation("org.springframework.security:spring-security-core:${springSecurityVersion}")
 	implementation("org.springframework.security:spring-security-oauth2-jose:${springSecurityVersion}")
 	implementation("org.springframework.security:spring-security-oauth2-resource-server:${springSecurityVersion}")
-	implementation("org.springframework.security.oauth:spring-security-oauth2:2.5.0.RELEASE")
+	implementation("org.springframework.security.oauth:spring-security-oauth2:2.5.1.RELEASE")
 	implementation("org.springframework.session:spring-session-jdbc:2.4.2")
 
 	implementation("org.hibernate.validator:hibernate-validator-cdi:7.0.1.Final")
