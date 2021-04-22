@@ -14,7 +14,7 @@ Dynamically manage and track planning requirements in a collaborative space.
     - [x] code quality - [sonarcloud](https://sonarcloud.io/dashboard?id=gorhack_tsr)
     - [x] dependency scan - Github's Dependabot
     - [x] deploy - [aws eb](https://tracked.events)
-    - [ ] deploy to Coding Repository and Transformation Environment (CReATE) platform (~FEB 2021)
+    - [ ] deploy to Coding Repository and Transformation Environment (CReATE) platform (~JUN 2021)
 - [ ] SSO
     - [x] [keycloak](http://alcesleo.github.io/2020/01/30/setting-up-keycloak-on-aws/)
     - [ ] transition from dev/testing environment to deployment ready version of kc

@@ -70,7 +70,7 @@ printf "\n\ndirenv installation not found: Installing direnv!\n\n"
     fi
 fi
 
-# =============================================================================== Java 13
+# =============================================================================== Java 15
 
 grep -q "JAVA_HOME.*adoptopenjdk-15" ${profileHome}
 if [[ $? != 0 ]]; then
