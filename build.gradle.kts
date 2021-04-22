@@ -20,7 +20,7 @@ plugins {
 
 group = "events.tracked.tsr"
 version = "0.0.1-SNAPSHOT"
-java.sourceCompatibility = JavaVersion.VERSION_13
+java.sourceCompatibility = JavaVersion.VERSION_15
 
 node {
 	nodeModulesDir = file("${project.projectDir}/client")
@@ -43,7 +43,7 @@ repositories {
 }
 
 var springSecurityVersion = "5.4.5"
-var springBootVersion = "2.4.4"
+var springBootVersion = "2.4.5"
 var keycloakVersion = "11.0.0"
 var jacksonVersion = "2.12.3"
 var jetBrainsKotlin = "1.4.32"
