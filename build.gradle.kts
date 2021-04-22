@@ -42,8 +42,8 @@ repositories {
 	maven { url = uri("https://repo.spring.io/snapshot") }
 }
 
-var springSecurityVersion = "5.4.5"
-var springBootVersion = "2.4.4"
+var springSecurityVersion = "5.4.6"
+var springBootVersion = "2.4.5"
 var keycloakVersion = "11.0.0"
 var jacksonVersion = "2.12.3"
 var jetBrainsKotlin = "1.4.32"
@@ -72,7 +72,7 @@ dependencies {
 	implementation("org.springframework.security:spring-security-core:${springSecurityVersion}")
 	implementation("org.springframework.security:spring-security-oauth2-jose:${springSecurityVersion}")
 	implementation("org.springframework.security:spring-security-oauth2-resource-server:${springSecurityVersion}")
-	implementation("org.springframework.security.oauth:spring-security-oauth2:2.5.0.RELEASE")
+	implementation("org.springframework.security.oauth:spring-security-oauth2:2.5.1.RELEASE")
 	implementation("org.springframework.session:spring-session-jdbc:2.4.2")
 
 	implementation("org.hibernate.validator:hibernate-validator-cdi:7.0.1.Final")
