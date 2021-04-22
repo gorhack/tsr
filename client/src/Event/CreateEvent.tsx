@@ -7,6 +7,7 @@ import {
     currentDate,
     datePlusYears,
     eventTypesCacheReducer,
+    MAX_NAME_LENGTH,
     Option,
     orgCacheReducer,
 } from "../api";
@@ -194,7 +195,7 @@ export const CreateEvent: React.FC = () => {
                             placeholder: "Enter Event Name...",
                             ...register("eventName", {
                                 required: true,
-                                maxLength: 255,
+                                maxLength: MAX_NAME_LENGTH,
                             }),
                         }}
                     />
