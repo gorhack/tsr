@@ -4,7 +4,7 @@ import org.gradle.api.tasks.testing.logging.TestLogEvent
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-	id("org.springframework.boot") version "2.4.4"
+	id("org.springframework.boot") version "2.4.5"
 	id("io.spring.dependency-management") version "1.0.11.RELEASE"
 	id("com.moowork.node") version "1.3.1"
 	id("org.flywaydb.flyway") version "7.8.1"
@@ -73,7 +73,7 @@ dependencies {
 	implementation("org.springframework.security:spring-security-oauth2-jose:${springSecurityVersion}")
 	implementation("org.springframework.security:spring-security-oauth2-resource-server:${springSecurityVersion}")
 	implementation("org.springframework.security.oauth:spring-security-oauth2:2.5.1.RELEASE")
-	implementation("org.springframework.session:spring-session-jdbc:2.4.2")
+	implementation("org.springframework.session:spring-session-jdbc:2.4.3")
 
 	implementation("org.hibernate.validator:hibernate-validator-cdi:7.0.1.Final")
 
