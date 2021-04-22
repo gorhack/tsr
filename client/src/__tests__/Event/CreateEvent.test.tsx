@@ -19,7 +19,6 @@ import td from "testdouble";
 import * as EventApi from "../../Event/EventApi";
 import { TsrEvent } from "../../Event/EventApi";
 import * as EventTypeApi from "../../Event/Type/EventTypeApi";
-import { EventType } from "../../Event/Type/EventTypeApi";
 import * as OrganizationApi from "../../Organization/OrganizationApi";
 import selectEvent from "react-select-event";
 import * as Api from "../../api";
@@ -35,7 +34,6 @@ describe("create an event", () => {
 
     let mockSaveEvent: typeof EventApi.saveEvent;
     let mockUpdateEvent: typeof EventApi.updateEvent;
-    let mockCreateEventType: typeof EventTypeApi.createEventType;
     let mockGetEventTypeContains: typeof EventTypeApi.getEventTypeContains;
     let mockGetOrganizationContains: typeof OrganizationApi.getOrganizationContains;
     let mockGetEventById: typeof EventApi.getEventById;
@@ -44,7 +42,6 @@ describe("create an event", () => {
     beforeEach(() => {
         mockSaveEvent = td.replace(EventApi, "saveEvent");
         mockUpdateEvent = td.replace(EventApi, "updateEvent");
-        mockCreateEventType = td.replace(EventTypeApi, "createEventType");
         mockGetEventTypeContains = td.replace(EventTypeApi, "getEventTypeContains");
         mockGetOrganizationContains = td.replace(OrganizationApi, "getOrganizationContains");
         mockGetEventById = td.replace(EventApi, "getEventById");
@@ -69,7 +66,7 @@ describe("create an event", () => {
         expect(screen.getByLabelText(ORGANIZATIONS_LABEL)).toBeInTheDocument();
         expect(screen.getByLabelText(START_DATE_LABEL)).toBeInTheDocument();
         expect(screen.getByLabelText(END_DATE_LABEL)).toBeInTheDocument();
-        expect(screen.getByText(EVENT_TYPE_LABEL)).toBeInTheDocument();
+        expect(screen.getByLabelText(EVENT_TYPE_LABEL)).toBeInTheDocument();
         expect(screen.getByText("submit")).toBeInTheDocument();
         expect(screen.getByText("cancel")).toBeInTheDocument();
     });
@@ -82,11 +79,10 @@ describe("create an event", () => {
         });
         expect(history.location.pathname).toEqual("/");
     });
-
+    //TODO(BONFIRE)
     it("submitting the form saves event and goes to /eventId", async () => {
         const startDate = new Date(TODAYS_DATE).toJSON();
         const endDate = new Date(TODAYS_DATE).toJSON();
-
         const history = createMemoryHistory();
         const orgNames = [
             makeOrganization({
@@ -227,80 +223,22 @@ describe("create an event", () => {
         });
     });
 
-    describe("event type select", () => {
-        const setupEventSelectPromise = async (): Promise<RenderResult> => {
-            const eventTypes = [
-                makeEventType({ eventTypeId: 1, sortOrder: 1, displayName: "first" }),
-                makeEventType({ eventTypeId: 2, sortOrder: 2, displayName: "second" }),
-                makeEventType({ eventTypeId: 3, sortOrder: 3, displayName: "third" }),
-            ];
-            const eventTypesPromise = Promise.resolve(makePage({ items: eventTypes }));
-            return renderCreateEvent({ eventTypesPromise });
-        };
-
-        it("can clear the event types", async () => {
-            await setupEventSelectPromise();
-            await selectEvent.select(screen.getByLabelText(EVENT_TYPE_LABEL), "second");
-            expect(screen.getByText("second")).toBeInTheDocument();
-            await selectEvent.clearAll(screen.getByLabelText(EVENT_TYPE_LABEL));
-            expect(screen.queryByText("second")).toBeNull();
-        });
-
-        it("can create and select an event type", async () => {
-            await setupEventSelectPromise();
-            td.when(mockGetEventTypeContains(td.matchers.anything())).thenResolve(
-                makePage() as PageDTO<EventType>,
-            );
-            td.when(
-                mockCreateEventType({
-                    eventTypeId: 0,
-                    eventTypeName: "fourth",
-                    displayName: "fourth",
-                    sortOrder: 0,
-                }),
-            ).thenResolve({
-                eventTypeId: 4,
-                displayName: "fourth",
-                eventTypeName: "fourth",
-                sortOrder: 4,
-            });
-            await act(async () => {
-                await selectEvent.create(screen.getByLabelText(EVENT_TYPE_LABEL), "fourth", {
-                    waitForElement: false,
-                });
-            });
-            expect(screen.getByText("fourth")).toBeInTheDocument();
-        });
-
-        it("can search for event types", async () => {
-            await setupEventSelectPromise();
-
-            td.when(mockGetEventTypeContains("fou")).thenResolve(
-                makePage({
-                    items: [
-                        makeEventType({
-                            eventTypeId: 4,
-                            eventTypeName: "fourth",
-                            displayName: "fourth",
-                            sortOrder: 4,
-                        }),
-                    ],
-                }) as PageDTO<EventType>,
-            );
-            fireEvent.change(screen.getByLabelText(EVENT_TYPE_LABEL), {
-                target: { value: "fou" },
-            });
-            await selectEvent.select(screen.getByLabelText(EVENT_TYPE_LABEL), "fourth");
-            expect(screen.getByText("fourth")).toBeInTheDocument();
-        });
-    });
-
     describe("handle errors", () => {
         it("requires event name", async () => {
-            const errorMsg = "event name is required";
+            const errorMsg = "event name is required and must be less than 255 characters";
             await renderCreateEvent({});
             expect(screen.queryByText(errorMsg)).toBeNull();
 
+            await submitEventForm();
+            expect(screen.getByText(errorMsg)).toBeInTheDocument();
+        });
+
+        it("event name limited to 255 characters", async () => {
+            const errorMsg = "event name is required and must be less than 255 characters";
+            const result = await renderCreateEvent({});
+            expect(screen.queryByText(errorMsg)).toBeNull();
+            const invalidString = "a".repeat(256);
+            fillInInputValueInForm(result, invalidString, EVENT_NAME_LABEL);
             await submitEventForm();
             expect(screen.getByText(errorMsg)).toBeInTheDocument();
         });

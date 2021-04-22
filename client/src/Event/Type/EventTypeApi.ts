@@ -14,10 +14,10 @@ export const getEventTypes = async (pageParams: PageParams = {}): Promise<PageDT
         });
 };
 
-export const getEventTypeContains = async (searchTerm: string): Promise<PageDTO<EventType>> => {
+export const createEventType = async (eventType: EventType): Promise<EventType> => {
     return axios
-        .get(`${baseUri}/search`, { params: { searchTerm } })
-        .then((response: AxiosResponse<PageDTO<EventType>>) => {
+        .post(baseUri, eventType)
+        .then((response: AxiosResponse<EventType>) => {
             return response.data;
         })
         .catch((error) => {
@@ -25,10 +25,10 @@ export const getEventTypeContains = async (searchTerm: string): Promise<PageDTO<
         });
 };
 
-export const createEventType = async (eventType: EventType): Promise<EventType> => {
+export const getEventTypeContains = async (searchTerm: string): Promise<PageDTO<EventType>> => {
     return axios
-        .post(baseUri, eventType)
-        .then((response: AxiosResponse<EventType>) => {
+        .get(`${baseUri}/search`, { params: { searchTerm } })
+        .then((response: AxiosResponse<PageDTO<EventType>>) => {
             return response.data;
         })
         .catch((error) => {
@@ -42,3 +42,12 @@ export interface EventType {
     displayName: string;
     sortOrder: number;
 }
+
+export enum EventActionTypes {
+    LOAD,
+}
+
+export type EventTypeCacheReducerAction = {
+    type: EventActionTypes.LOAD;
+    eventTypes: EventType[];
+};

@@ -12,6 +12,7 @@ import io.mockk.verifySequence
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import org.springframework.data.domain.Sort
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -28,6 +29,7 @@ internal class EventControllerTest {
     private lateinit var eventDTOWithoutId: EventDTO
     private lateinit var eventDTOWithId: EventDTO
     private lateinit var eventDTOWithId2: EventDTO
+    private lateinit var eventDTOWithNameTooLong: EventDTO
     private lateinit var expectedPageDTO: PageDTO<EventDTO>
     private lateinit var defaultSortBy: Sort
     private lateinit var eventDTOWithIdAndDisplayNames: EventDTO
@@ -53,6 +55,7 @@ internal class EventControllerTest {
         eventDTOWithoutId = makeEventDTOWithoutId()
         eventDTOWithId = makeEventDTOWithId()
         eventDTOWithId2 = makeEventDTOWithId2()
+        eventDTOWithNameTooLong = makeEventDTOWithNameTooLong()
         expectedPageDTO = PageDTO(
             items = listOf(eventDTOWithId, eventDTOWithId2),
             totalPages = 1,
@@ -69,6 +72,13 @@ internal class EventControllerTest {
             )
         )
         defaultSortBy = Sort.by("startDate").and(Sort.by("endDate"))
+    }
+
+    @Test
+    fun `returns HTTP 400 for invalid event name`() {
+        assertThrows<NameTooLongException> {
+            subject.saveEvent(eventDTOWithNameTooLong)
+        }
     }
 
     @Test

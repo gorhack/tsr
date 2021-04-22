@@ -12,6 +12,12 @@ import {
     getEventTaskCategoriesContains,
 } from "./Event/Task/EventTaskApi";
 import sortedUniqBy from "lodash/sortedUniqBy";
+import {
+    getEventTypeContains,
+    EventType,
+    EventActionTypes,
+    EventTypeCacheReducerAction,
+} from "./Event/Type/EventTypeApi";
 
 export enum HttpStatus {
     OK = 200,
@@ -56,7 +62,7 @@ export interface Option {
 
 export const LONG_DATE_FORMAT = "ddd MMM D, YYYY";
 
-// TODO user pref, then use user-set timezone with moment-timezome
+// TODO user pref, then use user-set timezone with moment-timezone
 export const userTimeZone = (): string => {
     return Intl.DateTimeFormat().resolvedOptions().timeZone;
 };
@@ -73,7 +79,6 @@ export const datePlusYears = (addYears: number): Date => {
     const today = currentDate();
     return new Date(today.getFullYear() + addYears, today.getMonth(), today.getDate());
 };
-
 // breaks tests when in orgApi due to td...
 export const loadOrganizationSearchTerm = async (
     searchTerm: string,
@@ -105,6 +110,41 @@ export const orgCacheReducer = (
 ): Organization[] => {
     if (action.type === OrganizationActionTypes.LOAD) {
         return sortedUniqBy<Organization>([...state, ...action.organizations], (e) => e.sortOrder);
+    } else {
+        return state;
+    }
+};
+
+export const loadEventTypeSearchTerm = async (
+    searchTerm: string,
+    dispatchToEventTypeCache: React.Dispatch<EventTypeCacheReducerAction>,
+): Promise<Option[]> => {
+    return getEventTypeContains(searchTerm)
+        .then((result) => {
+            dispatchToEventTypeCache({ type: EventActionTypes.LOAD, eventTypes: result.items });
+            return Promise.resolve(
+                result.items.map((eventType) => {
+                    return {
+                        value: eventType.displayName,
+                        label: eventType.displayName,
+                    };
+                }),
+            );
+        })
+        .catch((error) => {
+            console.error(
+                `error loading event types with search term ${searchTerm} ${error.message}`,
+            );
+            return Promise.resolve([]);
+        });
+};
+
+export const eventTypesCacheReducer = (
+    state: EventType[],
+    action: EventTypeCacheReducerAction,
+): EventType[] => {
+    if (action.type === EventActionTypes.LOAD) {
+        return action.eventTypes;
     } else {
         return state;
     }

@@ -1,22 +1,25 @@
-import React, { ReactElement, useCallback, useEffect, useReducer, useState } from "react";
+import React, { useCallback, useEffect, useReducer, useState } from "react";
 import { LabeledInput } from "../Inputs/LabeledInput";
 import { useHistory } from "react-router";
-import { Controller, FieldValues, SubmitHandler, useForm, useWatch } from "react-hook-form";
-import AsyncCreatable from "react-select/async-creatable";
-import { createFilter } from "react-select";
+import { FieldValues, SubmitHandler, useForm, useWatch } from "react-hook-form";
 import { CreatableTsrEvent, getEventById, saveEvent, TsrEvent, updateEvent } from "./EventApi";
-import { currentDate, datePlusYears, Option, orgCacheReducer } from "../api";
+import {
+    currentDate,
+    datePlusYears,
+    eventTypesCacheReducer,
+    MAX_NAME_LENGTH,
+    Option,
+    orgCacheReducer,
+} from "../api";
 import { FormDatePicker } from "../Inputs/FormDatePicker";
 import "./CreateEvent.css";
 import "../Form.css";
-import { selectStyles } from "../Styles";
-import { createEventType, EventType, getEventTypeContains } from "./Type/EventTypeApi";
 import { Organization, OrganizationActionTypes } from "../Organization/OrganizationApi";
-import sortedUniqBy from "lodash/sortedUniqBy";
 import { LinkButton, PrimaryButton, SecondaryButton } from "../Buttons/Buttons";
 import { OrgSelect } from "../Organization/OrgSelect";
 import { useParams } from "react-router-dom";
 import { RouteParams } from "./EventPage";
+import { EventTypeSelect } from "./Type/EventType";
 
 type FormData = {
     eventName: string;
@@ -32,9 +35,9 @@ export const CreateEvent: React.FC = () => {
 
     const [organizationsCache, organizationCacheDispatch] = useReducer(orgCacheReducer, []);
     const [orgValues, setOrgValues] = useState<Option[]>([]);
+    const [eventTypesCache, eventTypesCacheDispatch] = useReducer(eventTypesCacheReducer, []);
     const [eventTypeValue, setEventTypeValue] = useState<Option | undefined>(undefined);
 
-    const [eventTypesCache, setEventTypesCache] = useState<EventType[]>([]);
     // TODO fill in empty tsr event
     const [tsrEvent, setTsrEvent] = useState<TsrEvent>();
 
@@ -47,7 +50,7 @@ export const CreateEvent: React.FC = () => {
         formState: { errors },
     } = useForm<FieldValues>({
         defaultValues: {
-            eventTypeOption: { value: "", label: "" },
+            eventTypeOption: eventTypeValue,
             organizationOption: orgValues,
         },
     });
@@ -165,49 +168,6 @@ export const CreateEvent: React.FC = () => {
         }
     };
 
-    const loadEventTypeSearchTerm = async (searchTerm: string): Promise<Option[]> => {
-        return getEventTypeContains(searchTerm)
-            .then((result) => {
-                setEventTypesCache((oldCache) => {
-                    return sortedUniqBy<EventType>(
-                        [...oldCache, ...result.items],
-                        (e) => e.sortOrder,
-                    );
-                });
-                return Promise.resolve(
-                    result.items.map((eventType) => {
-                        return {
-                            value: eventType.displayName,
-                            label: eventType.displayName,
-                        };
-                    }),
-                );
-            })
-            .catch((error) => {
-                console.error(
-                    `error loading event types with search term ${searchTerm} ${error.message}`,
-                );
-                return Promise.resolve([]);
-            });
-    };
-
-    const createAndMapEventType = (inputVal: string): void => {
-        (async () =>
-            createEventType({
-                eventTypeId: 0,
-                eventTypeName: inputVal,
-                displayName: inputVal,
-                sortOrder: 0,
-            })
-                .then((result) => {
-                    setEventTypesCache((oldCache) => [...oldCache, result]);
-                    setEventTypeValue({ value: result.displayName, label: result.displayName });
-                })
-                .catch((error) => {
-                    console.error(`unable to create event type ${inputVal}: ${error.message}`);
-                }))();
-    };
-
     const createEventHeader = eventId ? (
         <h1 className="CreateEvent-Header">edit event</h1>
     ) : (
@@ -227,11 +187,15 @@ export const CreateEvent: React.FC = () => {
                 >
                     <LabeledInput
                         label={"event name"}
-                        error={errors.eventName && "event name is required"}
+                        error={
+                            errors.eventName &&
+                            "event name is required and must be less than 255 characters"
+                        }
                         inputProps={{
                             placeholder: "Enter Event Name...",
                             ...register("eventName", {
                                 required: true,
+                                maxLength: MAX_NAME_LENGTH,
                             }),
                         }}
                     />
@@ -284,45 +248,11 @@ export const CreateEvent: React.FC = () => {
                         }
                     />
                     <span className={"space-2"} />
-
-                    <Controller
+                    <EventTypeSelect
+                        selectedEventType={eventTypeValue}
                         control={control}
-                        name="eventTypeOption"
-                        defaultValue={eventTypeValue}
-                        render={({ field: { onChange } }): ReactElement => (
-                            <>
-                                <label
-                                    data-testid="event-type-select"
-                                    htmlFor="eventType"
-                                    style={{ textAlign: "initial" }}
-                                >
-                                    event type
-                                </label>
-                                <div className={"space-1"} />
-                                <AsyncCreatable
-                                    styles={selectStyles}
-                                    isClearable
-                                    defaultValue={eventTypeValue}
-                                    defaultOptions
-                                    loadOptions={loadEventTypeSearchTerm}
-                                    getOptionValue={(option) => option.label}
-                                    placeholder="Select an Event Type..."
-                                    name="eventType"
-                                    value={eventTypeValue}
-                                    inputId="eventType"
-                                    onCreateOption={createAndMapEventType}
-                                    onChange={(selection): void => {
-                                        const newValuesOrEmpty = (selection || undefined) as Option;
-                                        setEventTypeValue(newValuesOrEmpty);
-                                        onChange(selection);
-                                    }}
-                                    filterOption={createFilter({
-                                        ignoreCase: true,
-                                        matchFrom: "any",
-                                    })}
-                                />
-                            </>
-                        )}
+                        dispatchToEventTypeCache={eventTypesCacheDispatch}
+                        setSelectedEventType={setEventTypeValue}
                     />
                     <span className={"space-2"} />
                     <div className="Form-Submit">

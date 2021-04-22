@@ -160,6 +160,23 @@ fun makeEventDTOWithId2(): EventDTO {
     )
 }
 
+fun makeEventDTOWithNameTooLong(): EventDTO {
+    return EventDTO(
+        eventId = 2L,
+        eventName = "a".repeat(256),
+        startDate = janThirdDate,
+        endDate = janThirdDate,
+        organizations = hashSetOf(makeOrganizationDTO2()),
+        eventType = null,
+        audit = AuditDTO(
+            lastModifiedBy = "6789",
+            lastModifiedDate = janSecondDate,
+            createdBy = "1234",
+            createdDate = janSecondDate
+        )
+    )
+}
+
 fun makeEventTask(): EventTask {
     return EventTask(
         eventTaskId = 1L,
