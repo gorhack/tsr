@@ -2,7 +2,7 @@ import nock from "nock";
 import { HttpStatus } from "../../../api";
 import {
     createEventType,
-    EventTypeInterface,
+    EventType,
     getEventTypeContains,
     getEventTypes,
 } from "../../../Event/Type/EventTypeApi";
@@ -20,7 +20,7 @@ describe("event type", () => {
     };
 
     it("gets event types", async () => {
-        const eventTypes: EventTypeInterface[] = [
+        const eventTypes: EventType[] = [
             firstEventType,
             {
                 eventTypeId: 2,
@@ -54,7 +54,7 @@ describe("event type", () => {
     });
 
     it("creates an event type", async () => {
-        const newEventType: EventTypeInterface = {
+        const newEventType: EventType = {
             eventTypeId: 1,
             eventTypeName: "one",
             displayName: "one",

@@ -1,6 +1,6 @@
 import { act, fireEvent, RenderResult } from "@testing-library/react";
 import { Auditable, TsrEvent } from "../Event/EventApi";
-import { EventTypeInterface } from "../Event/Type/EventTypeApi";
+import { EventType } from "../Event/Type/EventTypeApi";
 import { PageDTO } from "../api";
 import { Organization } from "../Organization/OrganizationApi";
 import td from "testdouble";
@@ -71,7 +71,7 @@ export const datePickerNextDay = (container: RenderResult, name: string): void =
     userEvent.type(datePicker, "{arrowright}{enter}");
 };
 
-export function makeEventType(partial: Partial<EventTypeInterface>): EventTypeInterface {
+export function makeEventType(partial: Partial<EventType>): EventType {
     if (!partial.eventTypeId) {
         throw Error("event types must have an id");
     }

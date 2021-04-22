@@ -1,7 +1,7 @@
 import axios, { AxiosResponse } from "axios";
 import { PageDTO, PageParams } from "../api";
 import { Organization } from "../Organization/OrganizationApi";
-import { EventTypeInterface } from "./Type/EventTypeApi";
+import { EventType } from "./Type/EventTypeApi";
 
 const baseUri = "/api/v1/event";
 
@@ -76,7 +76,7 @@ export interface CreatableTsrEvent {
     organizations: Organization[];
     startDate: string;
     endDate: string;
-    eventType?: EventTypeInterface;
+    eventType?: EventType;
 }
 
 export interface TsrEvent {
@@ -85,7 +85,7 @@ export interface TsrEvent {
     organizations: Organization[];
     startDate: string;
     endDate: string;
-    eventType?: EventTypeInterface;
+    eventType?: EventType;
     audit: Auditable;
 }
 

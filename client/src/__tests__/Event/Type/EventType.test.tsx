@@ -4,7 +4,7 @@ import { makeEventType, makePage } from "../../TestHelpers";
 import td from "testdouble";
 import { eventTypesCacheReducer, Option, PageDTO } from "../../../api";
 import * as EventTypeApi from "../../../Event/Type/EventTypeApi";
-import { EventTypeInterface } from "../../../Event/Type/EventTypeApi";
+import { EventType } from "../../../Event/Type/EventTypeApi";
 import selectEvent from "react-select-event";
 import { EventTypeSelect } from "../../../Event/Type/EventType";
 import { useForm } from "react-hook-form";
@@ -32,7 +32,7 @@ describe("event type select", () => {
     it("can create and select an event type", async () => {
         await setupEventSelectPromise();
         td.when(mockGetEventTypeContains(td.matchers.anything())).thenResolve(
-            makePage() as PageDTO<EventTypeInterface>,
+            makePage() as PageDTO<EventType>,
         );
         td.when(
             mockCreateEventType({
@@ -68,7 +68,7 @@ describe("event type select", () => {
                         sortOrder: 4,
                     }),
                 ],
-            }) as PageDTO<EventTypeInterface>,
+            }) as PageDTO<EventType>,
         );
         fireEvent.change(screen.getByLabelText(EVENT_TYPE_LABEL), {
             target: { value: "fou" },

@@ -3,12 +3,10 @@ import { PageDTO, PageParams } from "../../api";
 
 const baseUri = "/api/v1/event/type";
 
-export const getEventTypes = async (
-    pageParams: PageParams = {},
-): Promise<PageDTO<EventTypeInterface>> => {
+export const getEventTypes = async (pageParams: PageParams = {}): Promise<PageDTO<EventType>> => {
     return axios
         .get(baseUri, { params: pageParams })
-        .then((response: AxiosResponse<PageDTO<EventTypeInterface>>) => {
+        .then((response: AxiosResponse<PageDTO<EventType>>) => {
             return response.data;
         })
         .catch((error) => {
@@ -16,12 +14,10 @@ export const getEventTypes = async (
         });
 };
 
-export const createEventType = async (
-    eventType: EventTypeInterface,
-): Promise<EventTypeInterface> => {
+export const createEventType = async (eventType: EventType): Promise<EventType> => {
     return axios
         .post(baseUri, eventType)
-        .then((response: AxiosResponse<EventTypeInterface>) => {
+        .then((response: AxiosResponse<EventType>) => {
             return response.data;
         })
         .catch((error) => {
@@ -29,12 +25,10 @@ export const createEventType = async (
         });
 };
 
-export const getEventTypeContains = async (
-    searchTerm: string,
-): Promise<PageDTO<EventTypeInterface>> => {
+export const getEventTypeContains = async (searchTerm: string): Promise<PageDTO<EventType>> => {
     return axios
         .get(`${baseUri}/search`, { params: { searchTerm } })
-        .then((response: AxiosResponse<PageDTO<EventTypeInterface>>) => {
+        .then((response: AxiosResponse<PageDTO<EventType>>) => {
             return response.data;
         })
         .catch((error) => {
@@ -42,7 +36,7 @@ export const getEventTypeContains = async (
         });
 };
 
-export interface EventTypeInterface {
+export interface EventType {
     eventTypeId: number;
     eventTypeName: string;
     displayName: string;
@@ -55,5 +49,5 @@ export enum EventActionTypes {
 
 export type EventTypeCacheReducerAction = {
     type: EventActionTypes.LOAD;
-    eventTypes: EventTypeInterface[];
+    eventTypes: EventType[];
 };

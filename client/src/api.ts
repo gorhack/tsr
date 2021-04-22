@@ -14,7 +14,7 @@ import {
 import sortedUniqBy from "lodash/sortedUniqBy";
 import {
     getEventTypeContains,
-    EventTypeInterface,
+    EventType,
     EventActionTypes,
     EventTypeCacheReducerAction,
 } from "./Event/Type/EventTypeApi";
@@ -140,9 +140,9 @@ export const loadEventTypeSearchTerm = async (
 };
 
 export const eventTypesCacheReducer = (
-    state: EventTypeInterface[],
+    state: EventType[],
     action: EventTypeCacheReducerAction,
-): EventTypeInterface[] => {
+): EventType[] => {
     if (action.type === EventActionTypes.LOAD) {
         return action.eventTypes;
     } else {
