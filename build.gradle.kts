@@ -77,7 +77,7 @@ dependencies {
 
 	implementation("org.hibernate.validator:hibernate-validator-cdi:7.0.1.Final")
 
-	runtimeOnly("org.postgresql:postgresql:42.2.19")
+	runtimeOnly("org.postgresql:postgresql:42.2.20")
 
 	testImplementation("org.springframework.boot:spring-boot-starter-test:${springBootVersion}")
 	testImplementation("io.mockk:mockk:1.11.0")
