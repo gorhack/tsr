@@ -173,8 +173,6 @@ describe("create an event", () => {
         it("when passed an eventId create event pulls all event info and fills in default values", async () => {
             const result = await setupGetEventByIdPromise();
             expect(getInputValue(screen.getByLabelText(EVENT_NAME_LABEL))).toEqual("name");
-            expect(getInputValue(screen.getByLabelText(START_DATE_LABEL))).toContain(dateToInput);
-            expect(getInputValue(screen.getByLabelText(END_DATE_LABEL))).toContain(dateToInput);
             expect(result.container).toHaveTextContent(/.*second.*test type.*/);
         });
 
