@@ -30,5 +30,8 @@ class ApiError: Throwable {
         this.message = message
         this.debugMessage = ex.localizedMessage
     }
-
+    override fun fillInStackTrace(): Throwable {
+        // do not fill in the stack trace
+        return this
+    }
 }

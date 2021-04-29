@@ -1,0 +1,1 @@
+ALTER TABLE tsr_user ALTER COLUMN email_address TYPE varchar(255);
