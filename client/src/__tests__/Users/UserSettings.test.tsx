@@ -243,15 +243,16 @@ describe("User settings", () => {
                 screen.getByText("phone number can be a maximum of 32 characters"),
             ).toBeInTheDocument();
         });
-        it("email can have max length 254 characters", async () => {
+
+        it("email can have max length 255 characters", async () => {
             const userPromise = Promise.resolve(userWithoutSettings);
             const result = await renderUserSettings({ userPromise });
-            const longEmail = "a".repeat(255);
-            expect(longEmail.length).toEqual(255);
+            const longEmail = "a".repeat(256);
+            expect(longEmail.length).toEqual(256);
             fillInInputValueInForm(result, longEmail, EMAIL_ADDRESS_LABEL);
             await submitSettingsForm();
             expect(
-                screen.getByText("email address can be a maximum of 254 characters"),
+                screen.getByText("email address can be a maximum of 255 characters"),
             ).toBeInTheDocument();
         });
     });

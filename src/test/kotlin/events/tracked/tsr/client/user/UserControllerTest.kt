@@ -1,5 +1,6 @@
 package events.tracked.tsr.client.user
 
+import events.tracked.tsr.NameTooLongException
 import events.tracked.tsr.makeOidcUser
 import events.tracked.tsr.organization.Organization
 import events.tracked.tsr.organization.OrganizationDTO
@@ -11,6 +12,7 @@ import io.mockk.verifySequence
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 
@@ -112,11 +114,12 @@ class UserControllerTest {
 
         val regularUser = TsrUser(
             tsrUserId = 4,
-            userId= "1234",
+            userId = "1234",
             username = regularUsername,
             role = UserRole.USER,
             organizations = hashSetOf(organization),
-            emailAddress = emailAddress)
+            emailAddress = emailAddress
+        )
         val regularOidcUser = makeOidcUser(regularUser.userId, regularUser.username)
         every {
             mockTsrUserService.setUserSettings(
@@ -129,14 +132,17 @@ class UserControllerTest {
             )
         } returns regularUser.copy(organizations = hashSetOf(organization, organization2))
 
-        val expectedResponse: ResponseEntity<TsrUserDTO> = ResponseEntity(TsrUserDTO(
-            userId = "1234",
-            username = regularUsername,
-            role = UserRole.USER,
-            settings = UserSettingsDTO(
-                organizations = hashSetOf(organizationDTO, organizationDTO2),
-                emailAddress = emailAddress,
-                phoneNumber = null)),
+        val expectedResponse: ResponseEntity<TsrUserDTO> = ResponseEntity(
+            TsrUserDTO(
+                userId = "1234",
+                username = regularUsername,
+                role = UserRole.USER,
+                settings = UserSettingsDTO(
+                    organizations = hashSetOf(organizationDTO, organizationDTO2),
+                    emailAddress = emailAddress,
+                    phoneNumber = null
+                )
+            ),
             HttpStatus.OK
         )
 
@@ -172,7 +178,7 @@ class UserControllerTest {
             role = UserRole.USER,
             organizations = hashSetOf(),
             phoneNumber = null,
-            emailAddress = "test@example.com"
+            emailAddress = "bober@tracked.com"
         )
         val regularOidcUser = makeOidcUser(regularUser.userId, regularUser.username)
         every {
@@ -219,6 +225,18 @@ class UserControllerTest {
                     organizations = hashSetOf(),
                     phoneNumber = "1231231234",
                     emailAddress = emailAddress
+                )
+            )
+        }
+    }
+
+    @Test
+    fun `returns HTTP 400 for invalid user email`() {
+        assertThrows<NameTooLongException> {
+            subject.setUserSettings(
+                devUser,
+                UserSettingsDTO(
+                    emailAddress = "a".repeat(256)
                 )
             )
         }

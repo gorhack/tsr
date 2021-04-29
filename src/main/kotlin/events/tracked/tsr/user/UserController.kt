@@ -1,5 +1,7 @@
 package events.tracked.tsr.user
 
+import events.tracked.tsr.ApiError
+import events.tracked.tsr.NameTooLongException
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -32,6 +34,9 @@ class UserController(private val tsrUserService: TsrUserService) {
         @AuthenticationPrincipal user: OidcUser,
         @RequestBody userSettings: UserSettingsDTO
     ): ResponseEntity<TsrUserDTO> {
+        if (userSettings.emailAddress?.length !== null && userSettings.emailAddress.length > 255) {
+            throw NameTooLongException("Email address too long. Limited to 255 characters.")
+        }
         val updatedTsrUser = tsrUserService.setUserSettings(user, userSettings)
         return ResponseEntity<TsrUserDTO>(TsrUserDTO(updatedTsrUser), HttpHeaders(), HttpStatus.OK)
     }

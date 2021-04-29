@@ -145,10 +145,10 @@ export const UserSettings: React.FC = (): ReactElement => {
                         inputProps={{
                             placeholder: "Enter Your Email Address...",
                             ...register("email", {
-                                maxLength: 254,
+                                maxLength: 255,
                             }),
                         }}
-                        error={errors.email && "email address can be a maximum of 254 characters"}
+                        error={errors.email && "email address can be a maximum of 255 characters"}
                     />
                     <span className={"space-2"} />
                     <OrgSelect
