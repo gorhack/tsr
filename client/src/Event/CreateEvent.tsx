@@ -30,8 +30,7 @@ export const CreateEvent: React.FC = () => {
         })();
     }, [eventId, setTsrEvent]);
 
-    const onCancel = (e: React.MouseEvent<HTMLButtonElement>): void => {
-        e.preventDefault();
+    const onCancel = (): void => {
         if (history.location.pathname.startsWith(`/editEvent/${eventId}`)) {
             history.push(`/event/${eventId}`);
         } else {
@@ -59,25 +58,28 @@ export const CreateEvent: React.FC = () => {
         }
     };
 
-    const createEventHeader = eventId ? (
-        <h1 className="CreateEvent-Header">edit event</h1>
-    ) : (
-        <h1 className="CreateEvent-Header">create an event</h1>
-    );
-
     return (
         <>
             <LinkButton onClick={() => history.push("/")}>{"< back to events"}</LinkButton>
-            {createEventHeader}
             <EventForm
-                event={tsrEvent}
-                onCancel={() => onCancel}
-                submitData={(data) => handleSubmit(data)}
+                event={tsrEvent ? tsrEvent : makeBlankCreateableTsrEvent()}
+                formHeader="Create an Event"
+                onCancel={onCancel}
+                submitData={handleSubmit}
             />
         </>
     );
 };
 
-function isTsrEvent(event: CreatableTsrEvent | TsrEvent): event is TsrEvent {
+export function isTsrEvent(event: CreatableTsrEvent | TsrEvent): event is TsrEvent {
     return !!event.eventId;
+}
+
+export function makeBlankCreateableTsrEvent(): CreatableTsrEvent {
+    return {
+        eventName: "",
+        organizations: [],
+        startDate: "",
+        endDate: "",
+    };
 }

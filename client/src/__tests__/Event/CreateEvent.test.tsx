@@ -5,10 +5,8 @@ import React from "react";
 import { Route, Router } from "react-router-dom";
 import { createMemoryHistory, MemoryHistory } from "history";
 import {
-    clearDatePicker,
     fillInDatePicker,
     fillInInputValueInForm,
-    getInputValue,
     makeEvent,
     makeEventType,
     makeOrganization,
@@ -51,17 +49,16 @@ describe("create an event", () => {
 
     afterEach(td.reset);
 
-    it("shows back to events", async () => {
+    it("has back to events button", async () => {
         const history = createMemoryHistory();
         await renderCreateEvent({ history });
         fireEvent.click(screen.getByText("< back to events"));
         expect(history.location.pathname).toEqual("/");
     });
 
-    it("displays all required event fields", async () => {
+    it("createEvent renders EventForm", async () => {
         await renderCreateEvent({});
 
-        expect(screen.getByText("create an event")).toBeInTheDocument();
         expect(screen.getByLabelText(EVENT_NAME_LABEL)).toBeInTheDocument();
         expect(screen.getByLabelText(ORGANIZATIONS_LABEL)).toBeInTheDocument();
         expect(screen.getByLabelText(START_DATE_LABEL)).toBeInTheDocument();
@@ -77,6 +74,7 @@ describe("create an event", () => {
         await act(async () => {
             screen.getByText("cancel").click();
         });
+
         expect(history.location.pathname).toEqual("/");
     });
     //TODO(BONFIRE)
@@ -152,55 +150,54 @@ describe("create an event", () => {
                 displayName: "test type",
                 sortOrder: 1,
             });
+            const orgNames = [
+                makeOrganization({
+                    organizationId: 1,
+                    sortOrder: 1,
+                    organizationDisplayName: "first",
+                }),
+            ];
             const tsrEvent = makeEvent({
                 eventId: 1,
                 eventName: "name",
-                organizations: [
-                    makeOrganization({
-                        organizationId: 2,
-                        organizationDisplayName: "second",
-                        sortOrder: 2,
-                    }),
-                ],
+                organizations: orgNames,
                 startDate: new Date(dateToInput).toJSON(),
                 endDate: new Date(dateToInput).toJSON(),
                 eventType: eventType1,
             });
+            const orgNamesPromise = Promise.resolve(makePage({ items: orgNames }));
             const eventTypesPromise = Promise.resolve(makePage({ items: [eventType1] }));
-            return renderCreateEvent({ history, event: tsrEvent, eventTypesPromise });
+            return renderCreateEvent({
+                history,
+                event: tsrEvent,
+                eventTypesPromise,
+                orgNamesPromise,
+            });
         };
 
-        it("when passed an eventId create event pulls all event info and fills in default values", async () => {
-            const result = await setupGetEventByIdPromise();
-            expect(getInputValue(screen.getByLabelText(EVENT_NAME_LABEL))).toEqual("name");
-            expect(result.container).toHaveTextContent(/.*second.*test type.*/);
+        it("when passed an eventId create event calls getEventById", async () => {
+            await setupGetEventByIdPromise();
+            // console.warn as redundant assertion, however this is necessary because stubbing doesnt
+            // verify a function is called unless you assert on the data which is unnecessary in this case
+            // ex. comment out getEventId and all tests will still pass
+            // TODO: This functionality will be getting refactored anyways
+            td.verify(mockGetEventById(1));
         });
 
-        it("cancel button when editing goes back to event details page and correct header", async () => {
-            const history = createMemoryHistory();
-            await setupGetEventByIdPromise(history);
-            expect(history.location.pathname).toEqual(`/editEvent/1`);
-            expect(screen.getByText("edit event")).toBeInTheDocument();
-            await act(async () => {
-                screen.getByText("cancel").click();
-            });
-            expect(history.location.pathname).toEqual(`/event/1`);
-        });
-
-        it("uses updateEvent function when submitting and leads back to /event/eventId", async () => {
+        it("uses updateEvent function when submitting an update and leads back to /event/eventId", async () => {
             const history = createMemoryHistory();
             const tsrEvent = makeEvent({
                 eventId: 1,
                 eventName: "eman",
                 organizations: [
                     makeOrganization({
-                        organizationId: 2,
-                        organizationDisplayName: "second",
-                        sortOrder: 2,
+                        organizationId: 1,
+                        organizationDisplayName: "first",
+                        sortOrder: 1,
                     }),
                 ],
-                startDate: new Date(dateToInput).toJSON(),
-                endDate: new Date(dateToInput).toJSON(),
+                startDate: new Date(TODAYS_DATE).toJSON(),
+                endDate: new Date(TODAYS_DATE).toJSON(),
                 eventType: makeEventType({
                     eventTypeId: 1,
                     displayName: "test type",
@@ -210,6 +207,10 @@ describe("create an event", () => {
             const updateEventPromise: Promise<TsrEvent> = Promise.resolve(tsrEvent);
             const result = await setupGetEventByIdPromise(history);
             fillInInputValueInForm(result, "eman", EVENT_NAME_LABEL);
+            await selectEvent.select(screen.getByLabelText(ORGANIZATIONS_LABEL), "first");
+            await selectEvent.select(screen.getByLabelText(EVENT_TYPE_LABEL), "test type");
+            fillInDatePicker(result, START_DATE_LABEL, TODAYS_DATE);
+            fillInDatePicker(result, END_DATE_LABEL, TODAYS_DATE);
 
             td.when(mockUpdateEvent(tsrEvent)).thenDo(() => updateEventPromise);
 
@@ -221,96 +222,8 @@ describe("create an event", () => {
         });
     });
 
-    describe("handle errors", () => {
-        it("requires event name", async () => {
-            const errorMsg = "event name is required and must be less than 255 characters";
-            await renderCreateEvent({});
-            expect(screen.queryByText(errorMsg)).toBeNull();
-
-            await submitEventForm();
-            expect(screen.getByText(errorMsg)).toBeInTheDocument();
-        });
-
-        it("event name limited to 255 characters", async () => {
-            const errorMsg = "event name is required and must be less than 255 characters";
-            const result = await renderCreateEvent({});
-            expect(screen.queryByText(errorMsg)).toBeNull();
-            const invalidString = "a".repeat(256);
-            fillInInputValueInForm(result, invalidString, EVENT_NAME_LABEL);
-            await submitEventForm();
-            expect(screen.getByText(errorMsg)).toBeInTheDocument();
-        });
-
-        it("requires event organization", async () => {
-            const errorMsg = "Must select an organization.";
-            const orgNames = [
-                makeOrganization({
-                    organizationId: 1,
-                    sortOrder: 1,
-                    organizationDisplayName: "2/75",
-                }),
-            ];
-            const orgNamesPromise = Promise.resolve(makePage({ items: orgNames }));
-            const result = await renderCreateEvent({ orgNamesPromise });
-            expect(screen.queryByText(errorMsg)).toBeNull();
-
-            fillInInputValueInForm(result, "name", EVENT_NAME_LABEL);
-            fillInDatePicker(result, START_DATE_LABEL, TODAYS_DATE);
-            fillInDatePicker(result, END_DATE_LABEL, TODAYS_DATE);
-
-            await submitEventForm();
-            expect(screen.getByText(errorMsg)).toBeInTheDocument();
-
-            await act(async () => {
-                await selectEvent.select(screen.getByLabelText(ORGANIZATIONS_LABEL), "2/75");
-            });
-            expect(screen.queryByText(errorMsg)).toBeNull();
-        });
-
-        it("requires start date", async () => {
-            const errorMsg = "start date is required MM/dd/YYYY";
-            const result = await renderCreateEvent({});
-            expect(screen.queryByText(errorMsg)).toBeNull();
-
-            await submitEventForm();
-            expect(screen.getByText(errorMsg)).toBeInTheDocument();
-
-            fillInDatePicker(result, START_DATE_LABEL, "no");
-            await submitEventForm();
-            expect(screen.getByText(errorMsg)).toBeInTheDocument();
-
-            clearDatePicker(result, START_DATE_LABEL);
-
-            fillInDatePicker(result, START_DATE_LABEL, TODAYS_DATE);
-            await submitEventForm();
-
-            expect(screen.queryByText(errorMsg)).toBeNull();
-        });
-
-        it("requires end date", async () => {
-            const errorMsg = "end date after the start date is required MM/dd/YYYY";
-            const result = await renderCreateEvent({});
-            expect(screen.queryByText(errorMsg)).toBeNull();
-
-            await submitEventForm();
-            expect(screen.getByText(errorMsg)).toBeInTheDocument();
-            // react-date-picker will always try to make a valid date with a number input
-            // TODO? make a test that makes sure end date will always be after start date
-            fillInDatePicker(result, END_DATE_LABEL, "asdf");
-            await submitEventForm();
-            expect(screen.getByText(errorMsg)).toBeInTheDocument();
-
-            clearDatePicker(result, END_DATE_LABEL);
-
-            fillInDatePicker(result, END_DATE_LABEL, TODAYS_DATE);
-            await submitEventForm();
-
-            expect(screen.queryByText(errorMsg)).toBeNull();
-        });
-    });
-
     const submitEventForm = async () => {
-        fireEvent.submit(screen.getByTitle("createEventForm"));
+        fireEvent.click(screen.getByRole("button", { name: /submit/i }));
         await reRender();
     };
 

@@ -1,4 +1,4 @@
-import { render, RenderResult, screen } from "@testing-library/react";
+import {act, render, RenderResult, screen} from "@testing-library/react";
 import { fireEvent } from "@testing-library/dom";
 import React from "react";
 import td from "testdouble";
@@ -10,9 +10,11 @@ import { EventPage } from "../../Event/EventPage";
 import { createMemoryHistory, MemoryHistory } from "history";
 import { Route, Router } from "react-router-dom";
 import {
+    fillInInputValueInForm,
     findByAriaLabel,
     makeAudit,
     makeEvent,
+    makeEventType,
     makeOrganization,
     makePage,
     reRender,
@@ -21,6 +23,8 @@ import * as EventTaskApi from "../../Event/Task/EventTaskApi";
 import { EventTaskCategory } from "../../Event/Task/EventTaskApi";
 import moment from "moment";
 import selectEvent from "react-select-event";
+import * as EventTypeApi from "../../Event/Type/EventTypeApi";
+import * as OrganizationApi from "../../Organization/OrganizationApi";
 
 describe("displays event details", () => {
     let mockGetEventById: typeof EventApi.getEventById;
@@ -30,15 +34,21 @@ describe("displays event details", () => {
      */
     let mockUserTimeZone: typeof Api.userTimeZone;
     let mockCurrentTime: typeof Api.currentTimeUtc;
+    let mockGetEventTypeContains: typeof EventTypeApi.getEventTypeContains;
+    let mockGetOrganizationContains: typeof OrganizationApi.getOrganizationContains;
     let mockGetEventTaskCategories: typeof EventTaskApi.getEventTaskCategoriesContains;
     let mockGetEventTasks: typeof EventTaskApi.getEventTasks;
+    let mockUpdateEvent: typeof EventApi.updateEvent;
 
     beforeEach(() => {
         mockGetEventById = td.replace(EventApi, "getEventById");
         mockUserTimeZone = td.replace(Api, "userTimeZone");
         mockCurrentTime = td.replace(Api, "currentTimeUtc");
+        mockGetEventTypeContains = td.replace(EventTypeApi, "getEventTypeContains");
+        mockGetOrganizationContains = td.replace(OrganizationApi, "getOrganizationContains");
         mockGetEventTaskCategories = td.replace(EventTaskApi, "getEventTaskCategoriesContains");
         mockGetEventTasks = td.replace(EventTaskApi, "getEventTasks");
+        mockUpdateEvent = td.replace(EventApi, "updateEvent");
         td.when(mockGetEventTasks(td.matchers.anything())).thenResolve([]);
     });
     afterEach(td.reset);
@@ -51,12 +61,70 @@ describe("displays event details", () => {
         expect(history.location.pathname).toEqual("/");
     });
 
-    it("edit event button is present pushes you to /editEvent", async () => {
-        const history = createMemoryHistory();
-        await renderEventDetails({ history });
-        expect(screen.getByRole("button", { name: "edit event" })).toBeInTheDocument();
-        fireEvent.click(screen.getByRole("button", { name: "edit event" }));
-        expect(history.location.pathname).toEqual("/editEvent/1");
+    describe("editing an event", () => {
+        const dateToInput = new Date("2020-10-18T00:00:01").toLocaleDateString();
+        const eventType1 = makeEventType({
+            eventTypeId: 1,
+            displayName: "test type",
+            sortOrder: 1,
+        });
+        const orgNames = [
+            makeOrganization({
+                organizationId: 1,
+                sortOrder: 1,
+                organizationDisplayName: "first",
+            }),
+        ];
+        const tsrEvent = makeEvent({
+            eventId: 1,
+            eventName: "name",
+            organizations: orgNames,
+            startDate: new Date(dateToInput).toJSON(),
+            endDate: new Date(dateToInput).toJSON(),
+            eventType: eventType1,
+        });
+
+        it("edit event button is present and switches to an editing state", async () => {
+            await renderEventDetails({ event: tsrEvent });
+
+            const editButton = screen.getByRole("button", { name: "edit event" });
+
+            expect(editButton).toBeVisible();
+            fireEvent.click(editButton);
+            expect(screen.queryByRole("button", { name: "edit event" })).not.toBeInTheDocument();
+        });
+
+        it("can update an event and takes user back to details", async () => {
+            const eventType2 = makeEventType({
+                eventTypeId: 1,
+                displayName: "new event type",
+                sortOrder: 1,
+            });
+            const orgNames = [
+                makeOrganization({
+                    organizationId: 1,
+                    sortOrder: 1,
+                    organizationDisplayName: "first",
+                }),
+            ];
+            const orgNamesPromise = Promise.resolve(makePage({ items: orgNames }));
+            const eventTypesPromise = Promise.resolve(makePage({ items: [eventType2] }));
+
+            const newEvent = { ...tsrEvent, eventName: "new name", eventType: eventType2 };
+
+            td.when(mockUpdateEvent(newEvent)).thenResolve(newEvent);
+            td.when(mockGetEventTypeContains("")).thenDo(() => Promise.resolve(eventTypesPromise));
+            td.when(mockGetOrganizationContains("")).thenDo(() => Promise.resolve(orgNamesPromise));
+
+            const result = await renderEventDetails({ event: tsrEvent });
+
+            fireEvent.click(screen.getByRole("button", { name: "edit event" }));
+            fillInInputValueInForm(result, "new name", "event name");
+            await selectEvent.select(screen.getByLabelText("event type"), "new event type");
+            fireEvent.click(screen.getByRole("button", { name: "submit" }));
+            await idleForIO()
+            expect(screen.getByRole('button', {name: /add tasks/i})).toBeVisible()
+        });
     });
 
     describe("headers", () => {
@@ -242,4 +310,11 @@ describe("displays event details", () => {
         await reRender();
         return result;
     };
+
+    const idleForIO = async () => {
+        await act(async () => {
+            await new Promise((resolve) => setImmediate(resolve));
+        });
+    };
 });
+
