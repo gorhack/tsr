@@ -170,10 +170,9 @@ describe("create an event", () => {
             return renderCreateEvent({ history, event: tsrEvent, eventTypesPromise });
         };
 
-        it("when passed an eventId create event pulls all event info and fills in default values", async () => {
-            const result = await setupGetEventByIdPromise();
-            expect(getInputValue(screen.getByLabelText(EVENT_NAME_LABEL))).toEqual("name");
-            expect(result.container).toHaveTextContent(/.*second.*test type.*/);
+        it("when passed an eventId create event calls getEventById", async () => {
+            await setupGetEventByIdPromise();
+            expect(mockGetEventById(1)).toHaveBeenCalled()
         });
 
         it("cancel button when editing goes back to event details page and correct header", async () => {
@@ -218,94 +217,6 @@ describe("create an event", () => {
                 await updateEventPromise;
             });
             expect(history.location.pathname).toEqual("/event/1");
-        });
-    });
-
-    describe("handle errors", () => {
-        it("requires event name", async () => {
-            const errorMsg = "event name is required and must be less than 255 characters";
-            await renderCreateEvent({});
-            expect(screen.queryByText(errorMsg)).toBeNull();
-
-            await submitEventForm();
-            expect(screen.getByText(errorMsg)).toBeInTheDocument();
-        });
-
-        it("event name limited to 255 characters", async () => {
-            const errorMsg = "event name is required and must be less than 255 characters";
-            const result = await renderCreateEvent({});
-            expect(screen.queryByText(errorMsg)).toBeNull();
-            const invalidString = "a".repeat(256);
-            fillInInputValueInForm(result, invalidString, EVENT_NAME_LABEL);
-            await submitEventForm();
-            expect(screen.getByText(errorMsg)).toBeInTheDocument();
-        });
-
-        it("requires event organization", async () => {
-            const errorMsg = "Must select an organization.";
-            const orgNames = [
-                makeOrganization({
-                    organizationId: 1,
-                    sortOrder: 1,
-                    organizationDisplayName: "2/75",
-                }),
-            ];
-            const orgNamesPromise = Promise.resolve(makePage({ items: orgNames }));
-            const result = await renderCreateEvent({ orgNamesPromise });
-            expect(screen.queryByText(errorMsg)).toBeNull();
-
-            fillInInputValueInForm(result, "name", EVENT_NAME_LABEL);
-            fillInDatePicker(result, START_DATE_LABEL, TODAYS_DATE);
-            fillInDatePicker(result, END_DATE_LABEL, TODAYS_DATE);
-
-            await submitEventForm();
-            expect(screen.getByText(errorMsg)).toBeInTheDocument();
-
-            await act(async () => {
-                await selectEvent.select(screen.getByLabelText(ORGANIZATIONS_LABEL), "2/75");
-            });
-            expect(screen.queryByText(errorMsg)).toBeNull();
-        });
-
-        it("requires start date", async () => {
-            const errorMsg = "start date is required MM/dd/YYYY";
-            const result = await renderCreateEvent({});
-            expect(screen.queryByText(errorMsg)).toBeNull();
-
-            await submitEventForm();
-            expect(screen.getByText(errorMsg)).toBeInTheDocument();
-
-            fillInDatePicker(result, START_DATE_LABEL, "no");
-            await submitEventForm();
-            expect(screen.getByText(errorMsg)).toBeInTheDocument();
-
-            clearDatePicker(result, START_DATE_LABEL);
-
-            fillInDatePicker(result, START_DATE_LABEL, TODAYS_DATE);
-            await submitEventForm();
-
-            expect(screen.queryByText(errorMsg)).toBeNull();
-        });
-
-        it("requires end date", async () => {
-            const errorMsg = "end date after the start date is required MM/dd/YYYY";
-            const result = await renderCreateEvent({});
-            expect(screen.queryByText(errorMsg)).toBeNull();
-
-            await submitEventForm();
-            expect(screen.getByText(errorMsg)).toBeInTheDocument();
-            // react-date-picker will always try to make a valid date with a number input
-            // TODO? make a test that makes sure end date will always be after start date
-            fillInDatePicker(result, END_DATE_LABEL, "asdf");
-            await submitEventForm();
-            expect(screen.getByText(errorMsg)).toBeInTheDocument();
-
-            clearDatePicker(result, END_DATE_LABEL);
-
-            fillInDatePicker(result, END_DATE_LABEL, TODAYS_DATE);
-            await submitEventForm();
-
-            expect(screen.queryByText(errorMsg)).toBeNull();
         });
     });
 
