@@ -30,8 +30,7 @@ export const CreateEvent: React.FC = () => {
         })();
     }, [eventId, setTsrEvent]);
 
-    const onCancel = (e: React.MouseEvent<HTMLButtonElement>): void => {
-        e.preventDefault();
+    const onCancel = (): void => {
         if (history.location.pathname.startsWith(`/editEvent/${eventId}`)) {
             history.push(`/event/${eventId}`);
         } else {
@@ -69,11 +68,7 @@ export const CreateEvent: React.FC = () => {
         <>
             <LinkButton onClick={() => history.push("/")}>{"< back to events"}</LinkButton>
             {createEventHeader}
-            <EventForm
-                event={tsrEvent}
-                onCancel={() => onCancel}
-                submitData={(data) => handleSubmit(data)}
-            />
+            <EventForm event={tsrEvent} onCancel={onCancel} submitData={handleSubmit} />
         </>
     );
 };

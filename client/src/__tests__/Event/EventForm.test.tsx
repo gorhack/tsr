@@ -73,13 +73,38 @@ describe("Event Form", () => {
 
             await act(async () => {
                 fireEvent.click(screen.getByRole("button", { name: /cancel/i }));
-            })
-
+            });
 
             expect(doNothingFn).toHaveBeenCalled();
         });
 
-        // it("when submit is clicked calls the submitData function", () => {});
+        it("when submit is clicked calls the submitData function", async () => {
+            const orgNames = [
+                makeOrganization({
+                    organizationId: 2,
+                    sortOrder: 2,
+                    organizationDisplayName: "first",
+                }),
+            ];
+            const orgNamesPromise = Promise.resolve(makePage({ items: orgNames }));
+
+            const result = await renderEventForm({
+                submitData: doNothingFn,
+                onCancel: doNothingFn,
+                orgNamesPromise: orgNamesPromise,
+            });
+
+            fillInInputValueInForm(result, "name", EVENT_NAME_LABEL);
+            await selectEvent.select(screen.getByLabelText(ORGANIZATIONS_LABEL), "first");
+            fillInDatePicker(result, START_DATE_LABEL, TODAYS_DATE);
+            fillInDatePicker(result, END_DATE_LABEL, TODAYS_DATE);
+
+            await act(async () => {
+                fireEvent.click(screen.getByRole("button", { name: /submit/i }));
+            });
+
+            expect(doNothingFn).toHaveBeenCalled();
+        });
     });
 
     describe("handle errors", () => {

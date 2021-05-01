@@ -5,10 +5,8 @@ import React from "react";
 import { Route, Router } from "react-router-dom";
 import { createMemoryHistory, MemoryHistory } from "history";
 import {
-    clearDatePicker,
     fillInDatePicker,
     fillInInputValueInForm,
-    getInputValue,
     makeEvent,
     makeEventType,
     makeOrganization,
@@ -51,14 +49,14 @@ describe("create an event", () => {
 
     afterEach(td.reset);
 
-    it("shows back to events", async () => {
+    it("has back to events button", async () => {
         const history = createMemoryHistory();
         await renderCreateEvent({ history });
         fireEvent.click(screen.getByText("< back to events"));
         expect(history.location.pathname).toEqual("/");
     });
 
-    it("displays all required event fields", async () => {
+    it("createEvent renders EventForm", async () => {
         await renderCreateEvent({});
 
         expect(screen.getByText("create an event")).toBeInTheDocument();
@@ -77,6 +75,7 @@ describe("create an event", () => {
         await act(async () => {
             screen.getByText("cancel").click();
         });
+
         expect(history.location.pathname).toEqual("/");
     });
     //TODO(BONFIRE)
@@ -152,27 +151,38 @@ describe("create an event", () => {
                 displayName: "test type",
                 sortOrder: 1,
             });
+            const orgNames = [
+                makeOrganization({
+                    organizationId: 1,
+                    sortOrder: 1,
+                    organizationDisplayName: "first",
+                }),
+            ];
             const tsrEvent = makeEvent({
                 eventId: 1,
                 eventName: "name",
-                organizations: [
-                    makeOrganization({
-                        organizationId: 2,
-                        organizationDisplayName: "second",
-                        sortOrder: 2,
-                    }),
-                ],
+                organizations: orgNames,
                 startDate: new Date(dateToInput).toJSON(),
                 endDate: new Date(dateToInput).toJSON(),
                 eventType: eventType1,
             });
+            const orgNamesPromise = Promise.resolve(makePage({ items: orgNames }));
             const eventTypesPromise = Promise.resolve(makePage({ items: [eventType1] }));
-            return renderCreateEvent({ history, event: tsrEvent, eventTypesPromise });
+            return renderCreateEvent({
+                history,
+                event: tsrEvent,
+                eventTypesPromise,
+                orgNamesPromise,
+            });
         };
 
         it("when passed an eventId create event calls getEventById", async () => {
             await setupGetEventByIdPromise();
-            expect(mockGetEventById(1)).toHaveBeenCalled()
+            // console.warn as redundant assertion, however this is necessary because stubbing doesnt
+            // verify a function is called unless you assert on the data which is unnecessary in this case
+            // ex. comment out getEventId and all tests will still pass
+            // TODO: This functionality will be getting refactored anyways
+            td.verify(mockGetEventById(1));
         });
 
         it("cancel button when editing goes back to event details page and correct header", async () => {
@@ -186,20 +196,20 @@ describe("create an event", () => {
             expect(history.location.pathname).toEqual(`/event/1`);
         });
 
-        it("uses updateEvent function when submitting and leads back to /event/eventId", async () => {
+        it("uses updateEvent function when submitting an update and leads back to /event/eventId", async () => {
             const history = createMemoryHistory();
             const tsrEvent = makeEvent({
                 eventId: 1,
                 eventName: "eman",
                 organizations: [
                     makeOrganization({
-                        organizationId: 2,
-                        organizationDisplayName: "second",
-                        sortOrder: 2,
+                        organizationId: 1,
+                        organizationDisplayName: "first",
+                        sortOrder: 1,
                     }),
                 ],
-                startDate: new Date(dateToInput).toJSON(),
-                endDate: new Date(dateToInput).toJSON(),
+                startDate: new Date(TODAYS_DATE).toJSON(),
+                endDate: new Date(TODAYS_DATE).toJSON(),
                 eventType: makeEventType({
                     eventTypeId: 1,
                     displayName: "test type",
@@ -209,6 +219,10 @@ describe("create an event", () => {
             const updateEventPromise: Promise<TsrEvent> = Promise.resolve(tsrEvent);
             const result = await setupGetEventByIdPromise(history);
             fillInInputValueInForm(result, "eman", EVENT_NAME_LABEL);
+            await selectEvent.select(screen.getByLabelText(ORGANIZATIONS_LABEL), "first");
+            await selectEvent.select(screen.getByLabelText(EVENT_TYPE_LABEL), "test type");
+            fillInDatePicker(result, START_DATE_LABEL, TODAYS_DATE);
+            fillInDatePicker(result, END_DATE_LABEL, TODAYS_DATE);
 
             td.when(mockUpdateEvent(tsrEvent)).thenDo(() => updateEventPromise);
 
@@ -221,7 +235,7 @@ describe("create an event", () => {
     });
 
     const submitEventForm = async () => {
-        fireEvent.submit(screen.getByTitle("createEventForm"));
+        fireEvent.click(screen.getByRole("button", { name: /submit/i }));
         await reRender();
     };
 
