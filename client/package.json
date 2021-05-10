@@ -61,7 +61,7 @@
     "@types/luxon": "^1.26.5",
     "@types/nock": "^11.1.0",
     "@types/node": "^15.0.1",
-    "@types/react": "^17.0.4",
+    "@types/react": "^17.0.5",
     "@types/react-datepicker": "^3.1.8",
     "@types/react-dom": "^17.0.3",
     "@types/react-router": "^5.1.13",
