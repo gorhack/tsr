@@ -7,7 +7,7 @@ plugins {
 	id("org.springframework.boot") version "2.4.5"
 	id("io.spring.dependency-management") version "1.0.11.RELEASE"
 	id("com.moowork.node") version "1.3.1"
-	id("org.flywaydb.flyway") version "7.8.2"
+	id("org.flywaydb.flyway") version "7.9.0"
 	id("org.sonarqube") version "3.2.0"
 
 	id ("org.jetbrains.kotlin.plugin.jpa") version "1.5.0"
