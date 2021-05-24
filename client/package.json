@@ -70,7 +70,7 @@
     "@types/sockjs-client": "^1.1.1",
     "@types/testing-library__jest-dom": "^5.9.4",
     "@typescript-eslint/eslint-plugin": "^4.22.0",
-    "@typescript-eslint/parser": "^4.22.0",
+    "@typescript-eslint/parser": "^4.24.0",
     "eslint": "^7.25.0",
     "eslint-config-prettier": "^8.3.0",
     "eslint-config-standard": "^16.0.2",
