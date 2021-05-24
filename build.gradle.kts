@@ -43,7 +43,7 @@ repositories {
 }
 
 var springSecurityVersion = "5.4.6"
-var springBootVersion = "2.4.5"
+var springBootVersion = "2.5.0"
 var keycloakVersion = "11.0.0"
 var jacksonVersion = "2.12.3"
 var jetBrainsKotlin = "1.5.0"
