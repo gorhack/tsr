@@ -1,4 +1,4 @@
-FROM jboss/keycloak:11.0.0
+FROM quay.io/keycloak/keycloak:13.0.0
 COPY /tsr-realm.json /
 ENV KEYCLOAK_IMPORT=/tsr-realm.json
 ENV KEYCLOAK_USER=tsr
