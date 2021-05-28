@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 set -euo pipefail
-#rm -rf /usr/local/share/.cache/yarn
 
 if [ -d "src/main/resources/static" ]; then
   rm -rf src/main/resources/static/*
@@ -22,7 +21,7 @@ echo "******* Building Backend"
 ./gradlew build -x test
 
 echo "******* Creating jar"
-./gradlew jar
+./gradlew bootJar
 
 cp ./build/libs/tsr*.jar ./pipeline/eb/tsr.jar
 
