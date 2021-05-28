@@ -4,10 +4,10 @@ import org.gradle.api.tasks.testing.logging.TestLogEvent
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-	id("org.springframework.boot") version "2.4.5"
+	id("org.springframework.boot") version "2.5.0"
 	id("io.spring.dependency-management") version "1.0.11.RELEASE"
 	id("com.moowork.node") version "1.3.1"
-	id("org.flywaydb.flyway") version "7.8.2"
+	id("org.flywaydb.flyway") version "7.9.1"
 	id("org.sonarqube") version "3.2.0"
 
 	id ("org.jetbrains.kotlin.plugin.jpa") version "1.5.0"
@@ -42,8 +42,8 @@ repositories {
 	maven { url = uri("https://repo.spring.io/snapshot") }
 }
 
-var springSecurityVersion = "5.4.6"
-var springBootVersion = "2.4.5"
+var springSecurityVersion = "5.5.0"
+var springBootVersion = "2.5.0"
 var keycloakVersion = "11.0.0"
 var jacksonVersion = "2.12.3"
 var jetBrainsKotlin = "1.5.0"
@@ -53,7 +53,7 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-web:${springBootVersion}")
 	implementation("org.springframework.boot:spring-boot-starter-actuator:${springBootVersion}")
 	implementation("org.springframework.boot:spring-boot-starter-websocket:${springBootVersion}")
-	implementation("org.flywaydb:flyway-core:7.8.2")
+	implementation("org.flywaydb:flyway-core:7.9.1")
 
 	// Deserialize json
 	implementation("com.fasterxml.jackson.module:jackson-module-kotlin:${jacksonVersion}")
@@ -67,13 +67,12 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-security:${springBootVersion}")
 
 	implementation("org.springframework.security:spring-security-oauth2-client:${springSecurityVersion}")
-	implementation("org.springframework.security:spring-security-web:${springSecurityVersion}")
 	implementation("org.springframework.security:spring-security-config:${springSecurityVersion}")
 	implementation("org.springframework.security:spring-security-core:${springSecurityVersion}")
 	implementation("org.springframework.security:spring-security-oauth2-jose:${springSecurityVersion}")
 	implementation("org.springframework.security:spring-security-oauth2-resource-server:${springSecurityVersion}")
 	implementation("org.springframework.security.oauth:spring-security-oauth2:2.5.1.RELEASE")
-	implementation("org.springframework.session:spring-session-jdbc:2.4.3")
+	implementation("org.springframework.session:spring-session-jdbc:2.5.0")
 
 	implementation("org.hibernate.validator:hibernate-validator-cdi:7.0.1.Final")
 
