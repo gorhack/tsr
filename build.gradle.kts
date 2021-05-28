@@ -12,10 +12,10 @@ plugins {
 
 	id ("org.jetbrains.kotlin.plugin.jpa") version "1.5.0"
 	id ("org.jetbrains.kotlin.plugin.noarg") version "1.5.0"
-	kotlin("jvm") version "1.5.0"
-	kotlin("plugin.spring") version "1.5.0"
+	kotlin("jvm") version "1.5.10"
+	kotlin("plugin.spring") version "1.5.10"
 
-	id("com.github.ben-manes.versions") version "0.38.0" // helps find latest dependency versions `./gradlew dependencyUpdates`
+	id("com.github.ben-manes.versions") version "0.39.0" // helps find latest dependency versions `./gradlew dependencyUpdates`
 }
 
 group = "events.tracked.tsr"
@@ -46,7 +46,7 @@ var springSecurityVersion = "5.5.0"
 var springBootVersion = "2.5.0"
 var keycloakVersion = "11.0.0"
 var jacksonVersion = "2.12.3"
-var jetBrainsKotlin = "1.5.0"
+var jetBrainsKotlin = "1.5.10"
 
 dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-data-jpa:${springBootVersion}")
@@ -72,7 +72,7 @@ dependencies {
 	implementation("org.springframework.security:spring-security-oauth2-jose:${springSecurityVersion}")
 	implementation("org.springframework.security:spring-security-oauth2-resource-server:${springSecurityVersion}")
 	implementation("org.springframework.security.oauth:spring-security-oauth2:2.5.1.RELEASE")
-	implementation("org.springframework.session:spring-session-jdbc:2.4.3")
+	implementation("org.springframework.session:spring-session-jdbc:2.5.0")
 
 	implementation("org.hibernate.validator:hibernate-validator-cdi:7.0.1.Final")
 
@@ -116,6 +116,11 @@ tasks.register("yarnBuild", YarnTask::class) {
 tasks.register("yarnInstall", YarnTask::class) {
 	setWorkingDir("client")
 	args = listOf("install")
+}
+
+tasks.getByName<Jar>("jar") {
+	// disable plain archive
+	enabled = false
 }
 
 subprojects {
