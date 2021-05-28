@@ -15,7 +15,7 @@ plugins {
 	kotlin("jvm") version "1.5.10"
 	kotlin("plugin.spring") version "1.5.10"
 
-	id("com.github.ben-manes.versions") version "0.38.0" // helps find latest dependency versions `./gradlew dependencyUpdates`
+	id("com.github.ben-manes.versions") version "0.39.0" // helps find latest dependency versions `./gradlew dependencyUpdates`
 }
 
 group = "events.tracked.tsr"
