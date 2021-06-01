@@ -24,5 +24,6 @@ echo "******* Creating jar"
 ./gradlew bootJar
 
 cp ./build/libs/tsr*.jar ./pipeline/eb/tsr.jar
+cp ./build/libs/tsr*.jar ./pipeline/do/tsr.jar
 
 exit 0

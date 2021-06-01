@@ -57,6 +57,7 @@ logging:
         SQL: OFF
         type: OFF
       springframework:
+        security: error
         web: INFO
         ws:
           server:
@@ -74,3 +75,4 @@ server:
         http-only: true
         secure: true
       tracking-modes: COOKIE
+  forward-headers-strategy: native
