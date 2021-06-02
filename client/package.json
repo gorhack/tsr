@@ -31,7 +31,7 @@
     "postbuild": "echo copying files; rm -rf ../src/main/resources/static && mkdir -p ../src/main/resources/static  && cp -f -R build/* ../src/main/resources/static",
     "test": "react-scripts test --testPathIgnorePatterns=.*Helper.*",
     "eject": "react-scripts eject",
-    "format": "prettier --write src/**/*.{js,jsx,ts,tsx}",
+    "format": "prettier --write \"src/**/*.{js,jsx,ts,tsx}\"",
     "lint": "eslint . --ext .tsx,.js,.ts,.jsx",
     "lint:fix": "eslint . --fix --ext .tsx,.js,.ts,.jsx",
     "lint:ci": "eslint . --max-warnings 0 --ext .js,.jsx,.ts,.tsx"
