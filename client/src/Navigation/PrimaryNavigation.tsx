@@ -1,8 +1,8 @@
-import React, { ReactElement, ReactFragment, useEffect, useState } from "react";
-import { emptyTsrUser, getUserInfo, TsrUser } from "../Users/UserApi";
+import React, { ReactElement, ReactFragment, useContext, useEffect } from "react";
 import "./PrimaryNavigation.css";
 import { DrawerMenu } from "./DrawerMenu";
 import TrackedName from "../Icons/TrackedName.svg";
+import UserContext from "../Users/UserContext";
 
 interface PrimaryNavigationProps {
     children?: ReactFragment;
@@ -11,19 +11,17 @@ interface PrimaryNavigationProps {
 export const PrimaryNavigation: React.FC<PrimaryNavigationProps> = ({
     children,
 }: PrimaryNavigationProps): ReactElement => {
-    const [tsrUser, setTsrUser] = useState<TsrUser>(emptyTsrUser);
+    const tsrUser = useContext(UserContext);
 
     useEffect(() => {
-        (async () => {
-            await getUserInfo()
-                .then((result) => {
-                    setTsrUser(result);
-                })
-                .catch((error) => {
-                    console.error(`unable to get user info ${error.message}`);
-                });
-        })();
-    }, [setTsrUser]);
+        if (tsrUser === undefined) {
+            return;
+        }
+    }, [tsrUser]);
+
+    if (tsrUser === undefined) {
+        return <></>;
+    }
 
     return (
         <nav className="PrimaryNavigation">

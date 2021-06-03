@@ -1,5 +1,12 @@
-import React, { ReactElement, useCallback, useEffect, useReducer, useState } from "react";
-import { emptyTsrUser, getUserInfo, setUserSettings, TsrUser, TsrUserSettings } from "./UserApi";
+import React, {
+    ReactElement,
+    useCallback,
+    useContext,
+    useEffect,
+    useReducer,
+    useState,
+} from "react";
+import { setUserSettings, TsrUserSettings } from "./UserApi";
 import { Option } from "../api";
 import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
 import {
@@ -14,6 +21,7 @@ import "./UserSettings.css";
 import { LabeledInput } from "../Inputs/LabeledInput";
 import sortedUniqBy from "lodash/sortedUniqBy";
 import { useHistory } from "react-router-dom";
+import UserContext from "./UserContext";
 
 interface FormData extends FieldValues {
     email: string;
@@ -23,6 +31,7 @@ interface FormData extends FieldValues {
 
 export const UserSettings: React.FC = (): ReactElement => {
     const history = useHistory();
+    const tsrUser = useContext(UserContext);
 
     const orgCacheReducer = (state: Organization[], action: OrgCacheReducerAction) => {
         if (action.type === OrganizationActionTypes.LOAD) {
@@ -36,7 +45,6 @@ export const UserSettings: React.FC = (): ReactElement => {
     };
     const [organizationsCache, organizationCacheDispatch] = useReducer(orgCacheReducer, []);
 
-    const [user, setUser] = useState<TsrUser>(emptyTsrUser);
     const [orgValues, setOrgValues] = useState<Option[]>([]);
     const {
         control,
@@ -70,21 +78,19 @@ export const UserSettings: React.FC = (): ReactElement => {
     );
 
     useEffect((): void => {
-        (async () => {
-            await getUserInfo()
-                .then((result) => {
-                    setUser(result);
-                    organizationCacheDispatch({
-                        type: OrganizationActionTypes.LOAD,
-                        organizations: result.settings.organizations,
-                    });
-                    setFormValues(result.settings);
-                })
-                .catch((error) => {
-                    console.error(`unable to get current user ${error.message}`);
-                });
-        })();
-    }, [setUser, setFormValues]);
+        if (tsrUser === undefined) {
+            return;
+        }
+        organizationCacheDispatch({
+            type: OrganizationActionTypes.LOAD,
+            organizations: tsrUser.settings.organizations,
+        });
+        setFormValues(tsrUser.settings);
+    }, [tsrUser, setFormValues]);
+
+    if (tsrUser === undefined) {
+        return <></>;
+    }
 
     const onSubmit: SubmitHandler<FormData> = async (data): Promise<void> => {
         const { phone, email } = data;
@@ -116,13 +122,13 @@ export const UserSettings: React.FC = (): ReactElement => {
     };
     const onCancel = (e: React.MouseEvent<HTMLButtonElement>): void => {
         e.preventDefault();
-        setFormValues(user.settings);
+        setFormValues(tsrUser.settings);
     };
 
     return (
         <>
             <LinkButton onClick={() => history.push("/")}>{"< back to events"}</LinkButton>
-            <h1 className="UserSettings-Header">{`${user.username} settings`}</h1>
+            <h1 className="UserSettings-Header">{`${tsrUser.username} settings`}</h1>
             <div className="UserSettings-Content">
                 <form
                     className="Form-Content"

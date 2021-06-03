@@ -10,28 +10,31 @@ import { PrimaryNavigation } from "./Navigation/PrimaryNavigation";
 import { Footer } from "./Navigation/Footer";
 import { About } from "./About";
 import { UserSettings } from "./Users/UserSettings";
+import { UserContextProvider } from "./Users/UserContext";
 
 const App: React.FC = () => {
     return (
         <StompSocketProvider>
-            <BrowserRouter>
-                <div className="App">
-                    <div className="App-Container">
-                        <PrimaryNavigation />
-                        <main className="App-Content">
-                            <Switch>
-                                <Route path="/createEvent" component={CreateEvent} />
-                                <Route path="/editEvent/:eventId" component={CreateEvent} />
-                                <Route path="/event/:eventId" component={EventPage} />
-                                <Route path="/about" component={About} />
-                                <Route path="/settings" component={UserSettings} />
-                                <Route path="/" component={Home} />
-                            </Switch>
-                        </main>
-                        <Footer />
+            <UserContextProvider>
+                <BrowserRouter>
+                    <div className="App">
+                        <div className="App-Container">
+                            <PrimaryNavigation />
+                            <main className="App-Content">
+                                <Switch>
+                                    <Route path="/createEvent" component={CreateEvent} />
+                                    <Route path="/editEvent/:eventId" component={CreateEvent} />
+                                    <Route path="/event/:eventId" component={EventPage} />
+                                    <Route path="/about" component={About} />
+                                    <Route path="/settings" component={UserSettings} />
+                                    <Route path="/" component={Home} />
+                                </Switch>
+                            </main>
+                            <Footer />
+                        </div>
                     </div>
-                </div>
-            </BrowserRouter>
+                </BrowserRouter>
+            </UserContextProvider>
         </StompSocketProvider>
     );
 };

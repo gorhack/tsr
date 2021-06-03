@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect } from "react";
 import { useHistory } from "react-router-dom";
 import { EventsSection } from "./Event/EventsSection";
 import { useStompSocketContext } from "./StompSocketContext";
@@ -7,29 +7,28 @@ import { IMessage } from "@stomp/stompjs";
 import { SocketSubscriptionTopics, TsrEvent } from "./Event/EventApi";
 import { PrimaryButton } from "./Buttons/Buttons";
 import "./Home.css";
-import { emptyTsrUser, getUserInfo, TsrUser } from "./Users/UserApi";
+import UserContext from "./Users/UserContext";
 
 export const Home: React.FC = () => {
     const { socketService } = useStompSocketContext();
-    const [tsrUser, setTsrUser] = useState<TsrUser>(emptyTsrUser);
+    const tsrUser = useContext(UserContext);
     const history = useHistory();
 
     useEffect(() => {
-        (async () => {
-            await getUserInfo()
-                .then((result) => {
-                    setTsrUser(result);
-                })
-                .catch((error) => {
-                    console.error(`unable to get current user ${error.message}`);
-                });
-        })();
-    }, [setTsrUser]);
+        if (tsrUser === undefined) {
+            return;
+        }
+    }, [tsrUser]);
 
     useEffect(() => {
+        if (tsrUser === undefined) {
+            return;
+        }
+
         if (socketService.status !== SocketStatus.CONNECTED || tsrUser.userId.length === 0) {
             return;
         }
+
         tsrUser.settings.organizations.forEach((org) => {
             socketService.subscribe({
                 topic: `${SocketSubscriptionTopics.EVENT_CREATED}${org.organizationId}`,
@@ -58,6 +57,10 @@ export const Home: React.FC = () => {
                 });
         };
     }, [socketService, tsrUser]);
+
+    if (tsrUser === undefined) {
+        return <></>;
+    }
 
     return (
         <>

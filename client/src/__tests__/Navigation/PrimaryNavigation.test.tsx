@@ -4,6 +4,7 @@ import * as UserApi from "../../Users/UserApi";
 import { act, render, RenderResult, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router";
 import { PrimaryNavigation } from "../../Navigation/PrimaryNavigation";
+import { UserContextProvider } from "../../Users/UserContext";
 
 describe("Primary nav", () => {
     let mockGetUserInfo: typeof UserApi.getUserInfo;
@@ -29,7 +30,9 @@ describe("Primary nav", () => {
     const renderPrimaryNavigation = async (): Promise<RenderResult> => {
         return render(
             <MemoryRouter>
-                <PrimaryNavigation />
+                <UserContextProvider>
+                    <PrimaryNavigation />
+                </UserContextProvider>
             </MemoryRouter>,
         );
     };
