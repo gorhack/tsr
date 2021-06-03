@@ -19,6 +19,7 @@ import selectEvent from "react-select-event";
 import { fireEvent } from "@testing-library/dom";
 import { createMemoryHistory, MemoryHistory } from "history";
 import { Route, Router } from "react-router";
+import { UserContextProvider } from "../../Users/UserContext";
 
 const EMAIL_ADDRESS = "test@example.com";
 const PHONE_NUMBER_LABEL = "phone number";
@@ -273,11 +274,13 @@ describe("User settings", () => {
         td.when(mockGetUserInfo()).thenDo(() => Promise.resolve(userPromise));
         td.when(mockGetOrganizationContains("")).thenDo(() => Promise.resolve(organizationPromise));
         const result = render(
-            <Router history={history}>
-                <Route path={"/settings"}>
-                    <UserSettings />
-                </Route>
-            </Router>,
+            <UserContextProvider>
+                <Router history={history}>
+                    <Route path={"/settings"}>
+                        <UserSettings />
+                    </Route>
+                </Router>
+            </UserContextProvider>,
         );
 
         await act(async () => {

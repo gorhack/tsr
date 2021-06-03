@@ -18,6 +18,7 @@ import { TsrUser } from "../Users/UserApi";
 import { PageDTO } from "../api";
 import { StompSocketProvider } from "../StompSocketContext";
 import { SocketService } from "../SocketService";
+import { UserContextProvider } from "../Users/UserContext";
 
 describe("home page of the application", () => {
     let mockGetActiveEventsByUserId: typeof EventApi.getActiveEventsByUserId;
@@ -152,11 +153,13 @@ describe("home page of the application", () => {
 
         const result = render(
             <StompSocketProvider {...socketProps}>
-                <Router history={history}>
-                    <Route path="/">
-                        <Home />
-                    </Route>
-                </Router>
+                <UserContextProvider>
+                    <Router history={history}>
+                        <Route path="/">
+                            <Home />
+                        </Route>
+                    </Router>
+                </UserContextProvider>
             </StompSocketProvider>,
         );
         await act(async () => {

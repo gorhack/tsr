@@ -41,6 +41,7 @@ export interface TsrUser {
 }
 
 export const emptyTsrUser: TsrUser = {
+    // TODO shouldn't need
     userId: "",
     username: "",
     role: "USER",
