@@ -32,7 +32,6 @@ export interface TsrUserSettings {
 }
 
 export type UserRole = "ADMIN" | "USER";
-
 export interface TsrUser {
     userId: string;
     username: string;
