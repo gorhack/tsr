@@ -53,7 +53,7 @@ export const DrawerMenu: React.FC = (): ReactElement => {
                                         return (
                                             <NavLink
                                                 key={`${tsrUser.username}-${org.organizationDisplayName}`}
-                                                to={`${org.organizationId}`}
+                                                to={`organization/${org.organizationId}`}
                                             >
                                                 {org.organizationDisplayName}
                                             </NavLink>
