@@ -4,7 +4,7 @@
 
 operatingSystem=$(uname -s)
 
-if [[ !$(which docker) ]]; then
+if [[ ! $(which docker) ]]; then
   printf "\n\nDocker not installed, please visit https://docs.docker.com/get-docker/ to install and try again.\n\n"
   exit 1
 fi
