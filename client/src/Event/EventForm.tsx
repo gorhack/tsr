@@ -15,6 +15,7 @@ import { PrimaryButton, SecondaryButton } from "../Buttons/Buttons";
 import { LabeledInput } from "../Inputs/LabeledInput";
 import { OrgSelect } from "../Organization/OrgSelect";
 import { Organization, OrganizationActionTypes } from "../Organization/OrganizationApi";
+import { isTsrEvent } from "./CreateEvent";
 
 type FormData = {
     eventName: string;
@@ -24,17 +25,17 @@ type FormData = {
     eventTypeOption?: Option;
 };
 
-interface EventFormProps {
-    event?: TsrEvent;
+interface EventFormProps<E extends CreatableTsrEvent | TsrEvent> {
+    event: E;
     onCancel: () => void;
-    submitData: (data: CreatableTsrEvent | TsrEvent) => void;
+    submitData: (data: E) => void;
 }
 
-export const EventForm: React.FC<EventFormProps> = ({
+export function EventForm<E extends CreatableTsrEvent | TsrEvent>({
     event,
     onCancel,
     submitData,
-}: EventFormProps) => {
+}: EventFormProps<E>) {
     const [organizationsCache, organizationCacheDispatch] = useReducer(orgCacheReducer, []);
     const [orgValues, setOrgValues] = useState<Option[]>([]);
     const [eventTypesCache, eventTypesCacheDispatch] = useReducer(eventTypesCacheReducer, []);
@@ -77,7 +78,7 @@ export const EventForm: React.FC<EventFormProps> = ({
     );
 
     useEffect(() => {
-        if (event) {
+        if (isTsrEvent(event)) {
             organizationCacheDispatch({
                 type: OrganizationActionTypes.LOAD,
                 organizations: event.organizations,
@@ -115,26 +116,15 @@ export const EventForm: React.FC<EventFormProps> = ({
             return;
         }
 
-        if (event) {
-            const tsrEventToUpdate: TsrEvent = {
-                ...event,
-                eventName,
-                organizations: foundOrgs,
-                startDate: startDate.toJSON(),
-                endDate: endDate.toJSON(),
-                eventType: foundEventType,
-            };
-            submitData(tsrEventToUpdate);
-        } else {
-            const tsrEventToSave: CreatableTsrEvent = {
-                eventName,
-                organizations: foundOrgs,
-                startDate: startDate.toJSON(),
-                endDate: endDate.toJSON(), // TODO: fix time of event
-                eventType: foundEventType,
-            };
-            submitData(tsrEventToSave);
-        }
+        const tsrEventToUpdate = {
+            ...event,
+            eventName,
+            organizations: foundOrgs,
+            startDate: startDate.toJSON(),
+            endDate: endDate.toJSON(),
+            eventType: foundEventType,
+        };
+        submitData(tsrEventToUpdate);
     };
 
     return (
@@ -225,4 +215,4 @@ export const EventForm: React.FC<EventFormProps> = ({
             </div>
         </>
     );
-};
+}

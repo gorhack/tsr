@@ -68,11 +68,24 @@ export const CreateEvent: React.FC = () => {
         <>
             <LinkButton onClick={() => history.push("/")}>{"< back to events"}</LinkButton>
             {createEventHeader}
-            <EventForm event={tsrEvent} onCancel={onCancel} submitData={handleSubmit} />
+            <EventForm
+                event={tsrEvent ? tsrEvent : makeBlankCreateableTsrEvent()}
+                onCancel={onCancel}
+                submitData={handleSubmit}
+            />
         </>
     );
 };
 
-function isTsrEvent(event: CreatableTsrEvent | TsrEvent): event is TsrEvent {
+export function isTsrEvent(event: CreatableTsrEvent | TsrEvent): event is TsrEvent {
     return !!event.eventId;
+}
+
+function makeBlankCreateableTsrEvent(): CreatableTsrEvent {
+    return {
+        eventName: "",
+        organizations: [],
+        startDate: "",
+        endDate: "",
+    };
 }
