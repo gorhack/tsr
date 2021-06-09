@@ -27,12 +27,14 @@ type FormData = {
 
 interface EventFormProps<E extends CreatableTsrEvent | TsrEvent> {
     event: E;
+    formHeader: string;
     onCancel: () => void;
     submitData: (data: E) => void;
 }
 
 export function EventForm<E extends CreatableTsrEvent | TsrEvent>({
     event,
+    formHeader,
     onCancel,
     submitData,
 }: EventFormProps<E>) {
@@ -130,6 +132,7 @@ export function EventForm<E extends CreatableTsrEvent | TsrEvent>({
     return (
         <>
             <div className={"CreateEvent-Content"}>
+                <h1>{formHeader}</h1>
                 <form
                     data-testid={"create-event-form"}
                     className={"Form-Content"}

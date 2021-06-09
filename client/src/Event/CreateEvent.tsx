@@ -58,18 +58,12 @@ export const CreateEvent: React.FC = () => {
         }
     };
 
-    const createEventHeader = eventId ? (
-        <h1 className="CreateEvent-Header">edit event</h1>
-    ) : (
-        <h1 className="CreateEvent-Header">create an event</h1>
-    );
-
     return (
         <>
             <LinkButton onClick={() => history.push("/")}>{"< back to events"}</LinkButton>
-            {createEventHeader}
             <EventForm
                 event={tsrEvent ? tsrEvent : makeBlankCreateableTsrEvent()}
+                formHeader="Create an Event"
                 onCancel={onCancel}
                 submitData={handleSubmit}
             />
@@ -81,7 +75,7 @@ export function isTsrEvent(event: CreatableTsrEvent | TsrEvent): event is TsrEve
     return !!event.eventId;
 }
 
-function makeBlankCreateableTsrEvent(): CreatableTsrEvent {
+export function makeBlankCreateableTsrEvent(): CreatableTsrEvent {
     return {
         eventName: "",
         organizations: [],

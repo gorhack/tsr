@@ -18,6 +18,7 @@ import td from "testdouble";
 import { PageDTO } from "../../api";
 import * as OrganizationApi from "../../Organization/OrganizationApi";
 import * as EventTypeApi from "../../Event/Type/EventTypeApi";
+import { makeBlankCreateableTsrEvent } from "../../Event/CreateEvent";
 
 describe("Event Form", () => {
     const EVENT_NAME_LABEL = "event name";
@@ -37,6 +38,11 @@ describe("Event Form", () => {
     });
 
     describe("Event Form", () => {
+        it("displays form title header", async () => {
+            await renderEventForm({ submitData: doNothingFn, onCancel: doNothingFn });
+
+            expect(screen.getByRole("heading", { name: "Event Form" })).toBeVisible();
+        });
         it("when passed an event, uses it to autofill input fields", () => {
             const dateToInput = new Date("2020-10-18T00:00:01").toLocaleDateString();
             const eventType1 = makeEventType({
@@ -59,7 +65,12 @@ describe("Event Form", () => {
                 eventType: eventType1,
             });
             const result = render(
-                <EventForm event={tsrEvent} onCancel={doNothingFn} submitData={doNothingFn} />,
+                <EventForm
+                    event={tsrEvent}
+                    formHeader="Event Form"
+                    onCancel={doNothingFn}
+                    submitData={doNothingFn}
+                />,
             );
 
             expect(getInputValue(screen.getByLabelText(EVENT_NAME_LABEL))).toEqual("name");
@@ -217,11 +228,19 @@ describe("Event Form", () => {
         submitData = jest.fn(),
         eventTypesPromise = Promise.resolve(makePage()),
         orgNamesPromise = Promise.resolve(makePage()),
+        event = makeBlankCreateableTsrEvent(),
     }: renderEventFormProps): Promise<RenderResult> => {
         td.when(mockGetEventTypeContains("")).thenDo(() => Promise.resolve(eventTypesPromise));
         td.when(mockGetOrganizationContains("")).thenDo(() => Promise.resolve(orgNamesPromise));
 
-        const result = render(<EventForm onCancel={onCancel} submitData={submitData} />);
+        const result = render(
+            <EventForm
+                event={event}
+                formHeader="Event Form"
+                onCancel={onCancel}
+                submitData={submitData}
+            />,
+        );
 
         await act(async () => {
             await orgNamesPromise;

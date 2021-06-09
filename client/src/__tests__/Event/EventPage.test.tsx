@@ -1,5 +1,5 @@
 import {act, render, RenderResult, screen} from "@testing-library/react";
-import { fireEvent, getByRole } from "@testing-library/dom";
+import { fireEvent } from "@testing-library/dom";
 import React from "react";
 import td from "testdouble";
 import * as EventApi from "../../Event/EventApi";
@@ -12,7 +12,6 @@ import { Route, Router } from "react-router-dom";
 import {
     fillInInputValueInForm,
     findByAriaLabel,
-    getInputValue,
     makeAudit,
     makeEvent,
     makeEventType,
@@ -93,13 +92,12 @@ describe("displays event details", () => {
             expect(editButton).toBeVisible();
             fireEvent.click(editButton);
             expect(screen.queryByRole("button", { name: "edit event" })).not.toBeInTheDocument();
-            expect(screen.getByRole("heading", { name: "Edit Event" })).toBeVisible();
         });
 
         it("can update an event and takes user back to details", async () => {
-            const eventType1 = makeEventType({
+            const eventType2 = makeEventType({
                 eventTypeId: 1,
-                displayName: "test type",
+                displayName: "new event type",
                 sortOrder: 1,
             });
             const orgNames = [
@@ -110,9 +108,9 @@ describe("displays event details", () => {
                 }),
             ];
             const orgNamesPromise = Promise.resolve(makePage({ items: orgNames }));
-            const eventTypesPromise = Promise.resolve(makePage({ items: [eventType1] }));
+            const eventTypesPromise = Promise.resolve(makePage({ items: [eventType2] }));
 
-            const newEvent = { ...tsrEvent, eventName: "new name" };
+            const newEvent = { ...tsrEvent, eventName: "new name", eventType: eventType2 };
 
             td.when(mockUpdateEvent(newEvent)).thenResolve(newEvent);
             td.when(mockGetEventTypeContains("")).thenDo(() => Promise.resolve(eventTypesPromise));
@@ -122,8 +120,8 @@ describe("displays event details", () => {
 
             fireEvent.click(screen.getByRole("button", { name: "edit event" }));
             fillInInputValueInForm(result, "new name", "event name");
+            await selectEvent.select(screen.getByLabelText("event type"), "new event type");
             fireEvent.click(screen.getByRole("button", { name: "submit" }));
-            screen.debug()
             await idleForIO()
             expect(screen.getByRole('button', {name: /add tasks/i})).toBeVisible()
         });

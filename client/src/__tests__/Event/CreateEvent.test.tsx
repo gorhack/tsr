@@ -59,7 +59,6 @@ describe("create an event", () => {
     it("createEvent renders EventForm", async () => {
         await renderCreateEvent({});
 
-        expect(screen.getByText("create an event")).toBeInTheDocument();
         expect(screen.getByLabelText(EVENT_NAME_LABEL)).toBeInTheDocument();
         expect(screen.getByLabelText(ORGANIZATIONS_LABEL)).toBeInTheDocument();
         expect(screen.getByLabelText(START_DATE_LABEL)).toBeInTheDocument();
@@ -183,17 +182,6 @@ describe("create an event", () => {
             // ex. comment out getEventId and all tests will still pass
             // TODO: This functionality will be getting refactored anyways
             td.verify(mockGetEventById(1));
-        });
-
-        it("cancel button when editing goes back to event details page and correct header", async () => {
-            const history = createMemoryHistory();
-            await setupGetEventByIdPromise(history);
-            expect(history.location.pathname).toEqual(`/editEvent/1`);
-            expect(screen.getByText("edit event")).toBeInTheDocument();
-            await act(async () => {
-                screen.getByText("cancel").click();
-            });
-            expect(history.location.pathname).toEqual(`/event/1`);
         });
 
         it("uses updateEvent function when submitting an update and leads back to /event/eventId", async () => {

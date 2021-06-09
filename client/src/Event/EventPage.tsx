@@ -59,7 +59,7 @@ export const EventPage: React.FC = () => {
     const handleUpdate = async (event: TsrEvent) => {
         await updateEvent(event).then((data) => {
             setTsrEvent(data);
-            setEditing(false)
+            setEditing(false);
         });
     };
 
@@ -68,14 +68,12 @@ export const EventPage: React.FC = () => {
             <LinkButton onClick={() => history.push("/")}>{"< back to events"}</LinkButton>
             <div className="space-3" />
             {editing ? (
-                <>
-                    <h1>Edit Event</h1>
-                    <EventForm
-                        event={tsrEvent}
-                        onCancel={() => setEditing(false)}
-                        submitData={handleUpdate}
-                    />
-                </>
+                <EventForm
+                    event={tsrEvent}
+                    formHeader="Edit Event"
+                    onCancel={() => setEditing(false)}
+                    submitData={handleUpdate}
+                />
             ) : (
                 <>
                     <div className={"EventPage-Header flex-row"}>
