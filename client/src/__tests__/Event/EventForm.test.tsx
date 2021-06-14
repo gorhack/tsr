@@ -43,6 +43,7 @@ describe("Event Form", () => {
 
             expect(screen.getByRole("heading", { name: "Event Form" })).toBeVisible();
         });
+
         it("when passed an event, uses it to autofill input fields", () => {
             const dateToInput = new Date("2020-10-18T00:00:01").toLocaleDateString();
             const eventType1 = makeEventType({

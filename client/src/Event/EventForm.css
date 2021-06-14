@@ -1,8 +1,8 @@
-.CreateEvent-Header {
+.EventForm-Content > h1 {
     text-align: center;
 }
 
-.CreateEvent-Content {
+.EventForm-Content {
     margin-left: 25%;
     max-width: 50%;
     padding: 2rem;
