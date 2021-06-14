@@ -7,8 +7,6 @@ import { createMemoryHistory, MemoryHistory } from "history";
 import {
     fillInDatePicker,
     fillInInputValueInForm,
-    makeEvent,
-    makeEventType,
     makeOrganization,
     makePage,
     reRender,
@@ -31,23 +29,25 @@ describe("create an event", () => {
     const TODAYS_DATE = "12/12/2020";
 
     let mockSaveEvent: typeof EventApi.saveEvent;
-    let mockUpdateEvent: typeof EventApi.updateEvent;
     let mockGetEventTypeContains: typeof EventTypeApi.getEventTypeContains;
     let mockGetOrganizationContains: typeof OrganizationApi.getOrganizationContains;
-    let mockGetEventById: typeof EventApi.getEventById;
     let mockCurrentDate: typeof Api.currentDate;
     let mockDatePlusYears: typeof Api.datePlusYears;
     beforeEach(() => {
         mockSaveEvent = td.replace(EventApi, "saveEvent");
-        mockUpdateEvent = td.replace(EventApi, "updateEvent");
         mockGetEventTypeContains = td.replace(EventTypeApi, "getEventTypeContains");
         mockGetOrganizationContains = td.replace(OrganizationApi, "getOrganizationContains");
-        mockGetEventById = td.replace(EventApi, "getEventById");
         mockCurrentDate = td.replace(Api, "currentDate");
         mockDatePlusYears = td.replace(Api, "datePlusYears");
     });
 
     afterEach(td.reset);
+
+    it("displays correct event form header", async () => {
+        await renderCreateEvent({});
+
+        expect(screen.getByRole("heading", { name: "Create an Event" })).toBeVisible();
+    });
 
     it("has back to events button", async () => {
         const history = createMemoryHistory();
@@ -77,7 +77,7 @@ describe("create an event", () => {
 
         expect(history.location.pathname).toEqual("/");
     });
-    //TODO(BONFIRE)
+
     it("submitting the form saves event and goes to /eventId", async () => {
         const startDate = new Date(TODAYS_DATE).toJSON();
         const endDate = new Date(TODAYS_DATE).toJSON();
@@ -134,92 +134,7 @@ describe("create an event", () => {
         td.when(mockSaveEvent(tsrEvent)).thenDo(() => saveEventPromise);
 
         await submitEventForm();
-        await act(async () => {
-            await saveEventPromise;
-        });
         expect(history.location.pathname).toEqual("/event/1");
-    });
-
-    describe("edit event", () => {
-        const dateToInput = new Date("2020-10-18T00:00:01").toLocaleDateString();
-        const setupGetEventByIdPromise = async (
-            history: MemoryHistory = createMemoryHistory(),
-        ): Promise<RenderResult> => {
-            const eventType1 = makeEventType({
-                eventTypeId: 1,
-                displayName: "test type",
-                sortOrder: 1,
-            });
-            const orgNames = [
-                makeOrganization({
-                    organizationId: 1,
-                    sortOrder: 1,
-                    organizationDisplayName: "first",
-                }),
-            ];
-            const tsrEvent = makeEvent({
-                eventId: 1,
-                eventName: "name",
-                organizations: orgNames,
-                startDate: new Date(dateToInput).toJSON(),
-                endDate: new Date(dateToInput).toJSON(),
-                eventType: eventType1,
-            });
-            const orgNamesPromise = Promise.resolve(makePage({ items: orgNames }));
-            const eventTypesPromise = Promise.resolve(makePage({ items: [eventType1] }));
-            return renderCreateEvent({
-                history,
-                event: tsrEvent,
-                eventTypesPromise,
-                orgNamesPromise,
-            });
-        };
-
-        it("when passed an eventId create event calls getEventById", async () => {
-            await setupGetEventByIdPromise();
-            // console.warn as redundant assertion, however this is necessary because stubbing doesnt
-            // verify a function is called unless you assert on the data which is unnecessary in this case
-            // ex. comment out getEventId and all tests will still pass
-            // TODO: This functionality will be getting refactored anyways
-            td.verify(mockGetEventById(1));
-        });
-
-        it("uses updateEvent function when submitting an update and leads back to /event/eventId", async () => {
-            const history = createMemoryHistory();
-            const tsrEvent = makeEvent({
-                eventId: 1,
-                eventName: "eman",
-                organizations: [
-                    makeOrganization({
-                        organizationId: 1,
-                        organizationDisplayName: "first",
-                        sortOrder: 1,
-                    }),
-                ],
-                startDate: new Date(TODAYS_DATE).toJSON(),
-                endDate: new Date(TODAYS_DATE).toJSON(),
-                eventType: makeEventType({
-                    eventTypeId: 1,
-                    displayName: "test type",
-                    sortOrder: 1,
-                }),
-            });
-            const updateEventPromise: Promise<TsrEvent> = Promise.resolve(tsrEvent);
-            const result = await setupGetEventByIdPromise(history);
-            fillInInputValueInForm(result, "eman", EVENT_NAME_LABEL);
-            await selectEvent.select(screen.getByLabelText(ORGANIZATIONS_LABEL), "first");
-            await selectEvent.select(screen.getByLabelText(EVENT_TYPE_LABEL), "test type");
-            fillInDatePicker(result, START_DATE_LABEL, TODAYS_DATE);
-            fillInDatePicker(result, END_DATE_LABEL, TODAYS_DATE);
-
-            td.when(mockUpdateEvent(tsrEvent)).thenDo(() => updateEventPromise);
-
-            await submitEventForm();
-            await act(async () => {
-                await updateEventPromise;
-            });
-            expect(history.location.pathname).toEqual("/event/1");
-        });
     });
 
     const submitEventForm = async () => {
@@ -231,26 +146,21 @@ describe("create an event", () => {
         history?: MemoryHistory;
         eventTypesPromise?: Promise<PageDTO<unknown>>;
         orgNamesPromise?: Promise<PageDTO<unknown>>;
-        event?: TsrEvent;
     }
 
     const renderCreateEvent = async ({
         history = createMemoryHistory(),
         eventTypesPromise = Promise.resolve(makePage()),
         orgNamesPromise = Promise.resolve(makePage()),
-        event,
     }: RenderCreateEventProps): Promise<RenderResult> => {
-        history.push(event ? `/editEvent/${event.eventId}` : "/createEvent");
+        history.push("/createEvent");
 
-        if (event) {
-            td.when(mockGetEventById(td.matchers.anything())).thenResolve(event);
-        }
         td.when(mockGetEventTypeContains("")).thenDo(() => Promise.resolve(eventTypesPromise));
         td.when(mockGetOrganizationContains("")).thenDo(() => Promise.resolve(orgNamesPromise));
         td.when(mockCurrentDate()).thenReturn(new Date(1607760000000)); // 12/12/2020
         td.when(mockDatePlusYears(10)).thenReturn(1923292800000); // 12/12/2030
 
-        const path = event ? "/editEvent/:eventId" : "/createEvent";
+        const path = "/createEvent";
         const result = render(
             <Router history={history}>
                 <Route path={path}>

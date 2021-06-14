@@ -15,7 +15,8 @@ import { PrimaryButton, SecondaryButton } from "../Buttons/Buttons";
 import { LabeledInput } from "../Inputs/LabeledInput";
 import { OrgSelect } from "../Organization/OrgSelect";
 import { Organization, OrganizationActionTypes } from "../Organization/OrganizationApi";
-import { isTsrEvent } from "./CreateEvent";
+import "./EventForm.css";
+import "../Form.css";
 
 type FormData = {
     eventName: string;
@@ -37,7 +38,7 @@ export function EventForm<E extends CreatableTsrEvent | TsrEvent>({
     formHeader,
     onCancel,
     submitData,
-}: EventFormProps<E>) {
+}: EventFormProps<E>): React.ReactElement {
     const [organizationsCache, organizationCacheDispatch] = useReducer(orgCacheReducer, []);
     const [orgValues, setOrgValues] = useState<Option[]>([]);
     const [eventTypesCache, eventTypesCacheDispatch] = useReducer(eventTypesCacheReducer, []);
@@ -131,13 +132,14 @@ export function EventForm<E extends CreatableTsrEvent | TsrEvent>({
 
     return (
         <>
-            <div className={"CreateEvent-Content"}>
+            <div className={"EventForm-Content"}>
                 <h1>{formHeader}</h1>
                 <form
                     data-testid={"create-event-form"}
                     className={"Form-Content"}
                     title="createEventForm"
                     onSubmit={handleSubmit(onSubmit)}
+                    autoComplete="off"
                 >
                     <LabeledInput
                         label={"event name"}
@@ -218,4 +220,8 @@ export function EventForm<E extends CreatableTsrEvent | TsrEvent>({
             </div>
         </>
     );
+}
+
+function isTsrEvent(event: CreatableTsrEvent | TsrEvent): event is TsrEvent {
+    return !!event.eventId;
 }

@@ -1,4 +1,4 @@
-import {act, render, RenderResult, screen} from "@testing-library/react";
+import { render, RenderResult, screen } from "@testing-library/react";
 import { fireEvent } from "@testing-library/dom";
 import React from "react";
 import td from "testdouble";
@@ -84,6 +84,13 @@ describe("displays event details", () => {
             eventType: eventType1,
         });
 
+        it("displays correct event form header", async () => {
+            await renderEventDetails({ event: tsrEvent });
+            fireEvent.click(screen.getByRole("button", { name: "edit event" }));
+
+            expect(screen.getByRole("heading", { name: "Edit Event" })).toBeVisible();
+        });
+
         it("edit event button is present and switches to an editing state", async () => {
             await renderEventDetails({ event: tsrEvent });
 
@@ -122,8 +129,8 @@ describe("displays event details", () => {
             fillInInputValueInForm(result, "new name", "event name");
             await selectEvent.select(screen.getByLabelText("event type"), "new event type");
             fireEvent.click(screen.getByRole("button", { name: "submit" }));
-            await idleForIO()
-            expect(screen.getByRole('button', {name: /add tasks/i})).toBeVisible()
+            await reRender();
+            expect(screen.getByRole("button", { name: /add tasks/i })).toBeVisible();
         });
     });
 
@@ -310,11 +317,4 @@ describe("displays event details", () => {
         await reRender();
         return result;
     };
-
-    const idleForIO = async () => {
-        await act(async () => {
-            await new Promise((resolve) => setImmediate(resolve));
-        });
-    };
 });
-
