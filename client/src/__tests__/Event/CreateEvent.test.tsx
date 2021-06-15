@@ -37,7 +37,6 @@ describe("create an event", () => {
     let mockGetEventTypeContains: typeof EventTypeApi.getEventTypeContains;
     let mockGetOrganizationContains: typeof OrganizationApi.getOrganizationContains;
     let mockGetEventById: typeof EventApi.getEventById;
-    let mockCurrentDate: typeof Api.currentDate;
     let mockDatePlusYears: typeof Api.datePlusYears;
     beforeEach(() => {
         mockSaveEvent = td.replace(EventApi, "saveEvent");
@@ -45,7 +44,6 @@ describe("create an event", () => {
         mockGetEventTypeContains = td.replace(EventTypeApi, "getEventTypeContains");
         mockGetOrganizationContains = td.replace(OrganizationApi, "getOrganizationContains");
         mockGetEventById = td.replace(EventApi, "getEventById");
-        mockCurrentDate = td.replace(Api, "currentDate");
         mockDatePlusYears = td.replace(Api, "datePlusYears");
     });
 
@@ -81,8 +79,8 @@ describe("create an event", () => {
     });
     //TODO(BONFIRE)
     it("submitting the form saves event and goes to /eventId", async () => {
-        const startDate = new Date(TODAYS_DATE).toJSON();
-        const endDate = new Date(TODAYS_DATE).toJSON();
+        const startDate = new Date(TODAYS_DATE);
+        const endDate = new Date(TODAYS_DATE);
         const history = createMemoryHistory();
         const orgNames = [
             makeOrganization({
@@ -336,7 +334,6 @@ describe("create an event", () => {
         }
         td.when(mockGetEventTypeContains("")).thenDo(() => Promise.resolve(eventTypesPromise));
         td.when(mockGetOrganizationContains("")).thenDo(() => Promise.resolve(orgNamesPromise));
-        td.when(mockCurrentDate()).thenReturn(new Date(1607760000000)); // 12/12/2020
         td.when(mockDatePlusYears(10)).thenReturn(1923292800000); // 12/12/2030
 
         const path = event ? "/editEvent/:eventId" : "/createEvent";

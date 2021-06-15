@@ -7,7 +7,7 @@ import React, {
     useState,
 } from "react";
 import { MenuButton, PrimaryButton } from "../../Buttons/Buttons";
-import { LONG_DATE_FORMAT, Option } from "../../api";
+import { Option } from "../../api";
 import {
     addComment,
     createEventTask,
@@ -27,7 +27,6 @@ import { useStompSocketContext } from "../../StompSocketContext";
 import { SocketStatus } from "../../SocketService";
 import { IMessage } from "@stomp/stompjs";
 import { DetailRow } from "../DetailRow";
-import moment from "moment";
 import { TaskCategorySelect } from "./TaskCategorySelect";
 import { sortedUniqBy } from "lodash";
 
@@ -239,10 +238,7 @@ export const EventTaskSection = ({ tsrEvent }: EventTaskSectionProps): ReactElem
                                 >
                                     <DetailRow
                                         label="suspense date"
-                                        description={moment
-                                            .utc(eventTask.suspenseDate)
-                                            .local()
-                                            .format(LONG_DATE_FORMAT)}
+                                        description={new Date(eventTask.suspenseDate).toDateString()}
                                     />
                                     <DetailRow
                                         label="approver"

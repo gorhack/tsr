@@ -19,7 +19,6 @@ import {
 } from "../TestHelpers";
 import * as EventTaskApi from "../../Event/Task/EventTaskApi";
 import { EventTaskCategory } from "../../Event/Task/EventTaskApi";
-import moment from "moment";
 import selectEvent from "react-select-event";
 
 describe("displays event details", () => {
@@ -29,7 +28,7 @@ describe("displays event details", () => {
         UTCs: -12:00 to +14:00
      */
     let mockUserTimeZone: typeof Api.userTimeZone;
-    let mockCurrentTime: typeof Api.currentTimeUtc;
+    let mockCurrentTime: typeof Api.currentDateTime;
     let mockGetEventTaskCategories: typeof EventTaskApi.getEventTaskCategoriesContains;
     let mockGetEventTasks: typeof EventTaskApi.getEventTasks;
 
@@ -70,8 +69,8 @@ describe("displays event details", () => {
                     displayName: "big",
                     eventTypeName: "BIG_GUY",
                 },
-                startDate: "2020-08-18T14:15:59Z",
-                endDate: "2020-08-20T01:00:01Z",
+                startDate: new Date("2020-08-18T14:15:59Z"),
+                endDate: new Date("2020-08-20T01:00:01Z"),
                 organizations: [
                     makeOrganization({
                         organizationId: 1,
@@ -119,8 +118,8 @@ describe("displays event details", () => {
             const event = makeEvent({
                 eventId: 2,
                 eventName: "another event",
-                startDate: "2020-08-18T01:01:01",
-                endDate: "2020-08-18T01:01:01",
+                startDate: new Date("2020-08-18T01:01:01"),
+                endDate: new Date("2020-08-18T01:01:01"),
             });
             const result = await renderEventDetails({ event });
             expect(screen.getByText(/(Mon|Tue) Aug (17|18), 2020/).tagName).toEqual("H2");
@@ -214,7 +213,7 @@ describe("displays event details", () => {
         history.push(`/event/${event.eventId}`);
         td.when(mockGetEventById(event.eventId)).thenResolve(event);
         td.when(mockUserTimeZone()).thenReturn("TIMEZONE/timezone");
-        td.when(mockCurrentTime()).thenReturn(moment(currentTime));
+        td.when(mockCurrentTime()).thenReturn(new Date(currentTime));
         td.when(mockGetEventTaskCategories(td.matchers.anything())).thenResolve(
             makePage({
                 items: [

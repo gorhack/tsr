@@ -24,7 +24,7 @@ export const updateEvent = async (event: TsrEvent): Promise<TsrEvent> => {
 export const getEventById = async (eventId: number): Promise<TsrEvent> => {
     const uri = `${baseUri}/${eventId}`;
     try {
-        return (await axios.get(uri)).data;
+        return toTsrEvent((await axios.get(uri)).data);
     } catch (error) {
         throw new Error(error.message);
     }
@@ -74,17 +74,27 @@ export interface CreatableTsrEvent {
     eventId?: number;
     eventName: string;
     organizations: Organization[];
+    startDate: Date;
+    endDate: Date;
+    eventType?: EventType;
+}
+
+interface TsrEventDto {
+    eventId: number;
+    eventName: string;
+    organizations: Organization[];
     startDate: string;
     endDate: string;
     eventType?: EventType;
+    audit: Auditable;
 }
 
 export interface TsrEvent {
     eventId: number;
     eventName: string;
     organizations: Organization[];
-    startDate: string;
-    endDate: string;
+    startDate: Date;
+    endDate: Date;
     eventType?: EventType;
     audit: Auditable;
 }
@@ -104,3 +114,9 @@ export enum SocketSubscriptionTopics {
     TASK_CREATED = "/topic/newEventTask/",
     TASK_COMMENT_CREATED = "/topic/newTaskComment/",
 }
+
+export const toTsrEvent = (eventDto: TsrEventDto): TsrEvent => ({
+    ...eventDto,
+    startDate: new Date(eventDto.startDate),
+    endDate: new Date(eventDto.endDate)
+});

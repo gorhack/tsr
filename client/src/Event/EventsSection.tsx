@@ -5,7 +5,6 @@ import { useHistory } from "react-router-dom";
 import { emptyPage, PageDTO } from "../api";
 import uniqBy from "lodash/uniqBy";
 import { MenuButton } from "../Buttons/Buttons";
-import moment, { Moment } from "moment";
 
 export const EventsSection = (): ReactElement => {
     const history = useHistory();
@@ -143,9 +142,8 @@ interface SingleEventProps {
 
 const SingleEvent = ({ event, dataTestId }: SingleEventProps): ReactElement => {
     const history = useHistory();
-    const SHORT_DATE_FORMAT = "M/D/YY";
 
-    const shortDateFormat = (date: Moment): string => `${date.local().format(SHORT_DATE_FORMAT)}`;
+    const shortDateFormat = (date: Date): string => `${date.toLocaleDateString()}`;
 
     return (
         <div className={`EventsSection-SingleEvent`} data-testid={`${dataTestId}-${event.eventId}`}>
@@ -160,8 +158,8 @@ const SingleEvent = ({ event, dataTestId }: SingleEventProps): ReactElement => {
                 </MenuButton>
             </div>
             <div className={"EventsSection-SingleEvent-Container"}>
-                <span>Start Date:{shortDateFormat(moment(event.startDate))}</span>
-                <span>End Date:{shortDateFormat(moment(event.endDate))}</span>
+                <span>Start Date:{shortDateFormat(new Date(event.startDate))}</span>
+                <span>End Date:{shortDateFormat(new Date(event.endDate))}</span>
             </div>
         </div>
     );

@@ -10,14 +10,13 @@ import { Route, Router } from "react-router-dom";
 import * as Api from "../../api";
 import { PageDTO } from "../../api";
 import { Organization } from "../../Organization/OrganizationApi";
-import moment from "moment";
 
 describe("home page of the application", () => {
     const FIRST_EVENT_NAME = "first event";
     const SECOND_EVENT_NAME = "second event";
     const THIRD_EVENT_NAME = "third event";
     let mockUserTimeZone: typeof Api.userTimeZone;
-    let mockCurrentTime: typeof Api.currentTimeUtc;
+    let mockCurrentTime: typeof Api.currentDateTime;
     let mockGetActiveEventsByOrganizationIds: typeof EventApi.getActiveEventsByOrganizationIds;
     let mockGetActiveEventsByUserId: typeof EventApi.getActiveEventsByUserId;
     let userEventList: TsrEvent[];
@@ -214,7 +213,7 @@ describe("home page of the application", () => {
         const userEventsPromise = Promise.resolve(userPage);
         const orgEventsPromise = Promise.resolve(orgPage);
         td.when(mockUserTimeZone()).thenReturn("TIMEZONE/timezone");
-        td.when(mockCurrentTime()).thenReturn(moment(currentTime));
+        td.when(mockCurrentTime()).thenReturn(new Date(currentTime));
         td.when(mockGetActiveEventsByOrganizationIds()).thenDo(() =>
             Promise.resolve(orgEventsPromise),
         );

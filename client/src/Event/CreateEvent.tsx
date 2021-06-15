@@ -4,7 +4,6 @@ import { useHistory } from "react-router";
 import { FieldValues, SubmitHandler, useForm, useWatch } from "react-hook-form";
 import { CreatableTsrEvent, getEventById, saveEvent, TsrEvent, updateEvent } from "./EventApi";
 import {
-    currentDate,
     datePlusYears,
     eventTypesCacheReducer,
     MAX_NAME_LENGTH,
@@ -20,6 +19,7 @@ import { OrgSelect } from "../Organization/OrgSelect";
 import { useParams } from "react-router-dom";
 import { RouteParams } from "./EventPage";
 import { EventTypeSelect } from "./Type/EventType";
+import {now} from "../dateTimeHelpers/DateProvider";
 
 type FormData = {
     eventName: string;
@@ -139,8 +139,8 @@ export const CreateEvent: React.FC = () => {
                 ...tsrEvent,
                 eventName,
                 organizations: foundOrgs,
-                startDate: startDate.toJSON(),
-                endDate: endDate.toJSON(),
+                startDate: startDate,
+                endDate: endDate,
                 eventType: foundEventType,
             };
             await updateEvent(tsrEventToUpdate)
@@ -154,8 +154,8 @@ export const CreateEvent: React.FC = () => {
             const tsrEventToSave: CreatableTsrEvent = {
                 eventName,
                 organizations: foundOrgs,
-                startDate: startDate.toJSON(),
-                endDate: endDate.toJSON(), // TODO: fix time of event
+                startDate: startDate,
+                endDate: endDate, // TODO: fix time of event
                 eventType: foundEventType,
             };
             await saveEvent(tsrEventToSave)
@@ -220,7 +220,7 @@ export const CreateEvent: React.FC = () => {
                         name="startDate"
                         label="start date"
                         placeholder="Choose the Start Date..."
-                        minDate={currentDate()}
+                        minDate={now()}
                         maxDate={datePlusYears(10)}
                         error={errors.startDate && "start date is required MM/dd/YYYY"}
                     />
@@ -231,7 +231,7 @@ export const CreateEvent: React.FC = () => {
                         name="endDate"
                         label="end date"
                         placeholder="Choose the End Date..."
-                        minDate={startDateWatch ? startDateWatch : currentDate()}
+                        minDate={startDateWatch ? startDateWatch : now()}
                         maxDate={
                             startDateWatch
                                 ? new Date(

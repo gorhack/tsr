@@ -1,12 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { useHistory, useParams } from "react-router-dom";
 import { getEventById, TsrEvent } from "./EventApi";
-import moment from "moment";
 import { EventDetails } from "./EventDetails";
 import { LinkButton, PrimaryButton } from "../Buttons/Buttons";
 import "./EventPage.css";
 import { EventTaskSection } from "./Task/EventTaskSection";
-import { LONG_DATE_FORMAT } from "../api";
 
 export interface RouteParams {
     eventId: string;
@@ -35,8 +33,8 @@ export const EventPage: React.FC = () => {
     const setEditEventFunc = (): void => {
         history.push(`/editEvent/${tsrEvent.eventId}`);
     };
-    const startDate = moment.utc(tsrEvent.startDate);
-    const endDate = moment.utc(tsrEvent.endDate);
+    const startDate = new Date(tsrEvent.startDate).toLocaleString();
+    const endDate = new Date(tsrEvent.endDate).toLocaleString();
 
     const headerEventName = (): string => {
         if (tsrEvent.eventName === "") {
@@ -47,12 +45,10 @@ export const EventPage: React.FC = () => {
     };
 
     const headerDates = (): string => {
-        if (startDate.isSame(endDate)) {
-            return startDate.local().format(LONG_DATE_FORMAT);
+        if (startDate === endDate) {
+            return startDate;
         } else {
-            return `${startDate.local().format(LONG_DATE_FORMAT)} - ${endDate.format(
-                LONG_DATE_FORMAT,
-            )}`;
+            return `${startDate} - ${endDate}`;
         }
     };
 

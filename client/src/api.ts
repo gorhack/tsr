@@ -1,4 +1,3 @@
-import moment, { Moment } from "moment";
 import React from "react";
 import {
     getOrganizationContains,
@@ -18,6 +17,7 @@ import {
     EventActionTypes,
     EventTypeCacheReducerAction,
 } from "./Event/Type/EventTypeApi";
+import {now} from "./dateTimeHelpers/DateProvider";
 
 export enum HttpStatus {
     OK = 200,
@@ -60,23 +60,17 @@ export interface Option {
     label: string;
 }
 
-export const LONG_DATE_FORMAT = "ddd MMM D, YYYY";
-
 // TODO user pref, then use user-set timezone with moment-timezone
 export const userTimeZone = (): string => {
     return Intl.DateTimeFormat().resolvedOptions().timeZone;
 };
 
-export const currentTimeUtc = (): Moment => {
-    return moment.utc();
-};
-
-export const currentDate = (): Date => {
-    return new Date();
+export const currentDateTime = (): Date => {
+    return now();
 };
 
 export const datePlusYears = (addYears: number): Date => {
-    const today = currentDate();
+    const today = now();
     return new Date(today.getFullYear() + addYears, today.getMonth(), today.getDate());
 };
 // breaks tests when in orgApi due to td...
