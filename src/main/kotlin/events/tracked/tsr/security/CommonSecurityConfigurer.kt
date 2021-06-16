@@ -5,13 +5,22 @@ import org.springframework.security.web.authentication.logout.HeaderWriterLogout
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository
 import org.springframework.security.web.header.writers.ClearSiteDataHeaderWriter
 import org.springframework.stereotype.Component
+import java.util.*
 
 @Component
 class CommonSecurityConfigurer : HttpSecurityConfigurer {
     override fun configure(http: HttpSecurity) {
+        configureCsp(http)
         configureCsrfProtection(http)
         clearBrowserDataOnLogout(http)
         configureXssPreventionHeaders(http)
+    }
+
+    //configure CSP/XSS protection
+    private fun configureCsp(http: HttpSecurity) {
+        val cspParts = StringJoiner(";")
+        cspParts.add("default-src 'self'")
+        http.headers().contentSecurityPolicy(cspParts.toString())
     }
 
     //line gives react the ability to read XSRF tokens
