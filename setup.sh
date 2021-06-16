@@ -37,7 +37,7 @@ printf "\n\nDetected Operating System: '%s'\n\n" "$operatingSystem"
 if [[ ${operatingSystem} == "Darwin" ]]; then
   if [ ! "$(which brew)" ]; then
     printf "\n\nHomeBrew installation not detected: Installing Brew!\n\n"
-    /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
   else
     brew update
   fi
@@ -76,9 +76,8 @@ fi
 
 # =============================================================================== Java 15
 
-grep -q "JAVA_HOME.*adoptopenjdk-15" ${profileHome}
-if [[ $? != 0 ]]; then
-  if [[ -v JAVA_HOME ]]; then
+if ! grep -q "JAVA_HOME.*adoptopenjdk-15" "$profileHome"; then
+  if [ -z "${JAVA_HOME+x}" ]; then
     printf "JAVA_HOME previously set to an incorrect version, you may have to remove previous env from '%s'" "$profileHome"
   fi
   printf "\n\nSetting JAVA_HOME\n\n"
@@ -106,16 +105,17 @@ installOpenJDKUbuntu() {
   sudo mkdir -p /usr/java
   sudo tar -xzf openjdk-15+36_linux-x64_bin.tar.gz -C /usr/java
   rm openjdk-15+36_linux-x64_bin.tar.gz
-  sudo update-alternatives --install /usr/bin/java java ${JAVA_HOME%*/}/bin/java 20000
-  sudo update-alternatives --install /usr/bin/javac javac ${JAVA_HOME%*/}/bin/javac 20000
+  sudo update-alternatives --install /usr/bin/java java "${JAVA_HOME%*/}"/bin/java 20000
+  sudo update-alternatives --install /usr/bin/javac javac "${JAVA_HOME%*/}"/bin/javac 20000
   sudo update-alternatives --config java
   sudo update-alternatives --config javac
 }
 
 printf "\n\nChecking Java installation and JAVA_PATH...\n\n"
-printf "\n\n'%s'\n\n" "$(java -version)"
+JAVA_VERSION=$(java -version)
+printf "\n\n%s\n\n" "${JAVA_VERSION:-Unable to locate java}"
 
-if [[ ! $(whic hjava) ]]; then
+if [[ ! $(which java) ]]; then
   printf "\n\nJava installation not found: Installing Java!\n\n"
   if [[ ${operatingSystem} == "Linux" ]]; then
     installOpenJDKUbuntu
