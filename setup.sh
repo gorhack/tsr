@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -e
+
 promptAndWaitForAnyKeyPress() {
   printf "%s" "$1"
   read -r
@@ -35,7 +37,7 @@ printf "\n\nDetected Operating System: '%s'\n\n" "$operatingSystem"
 # =============================================================================== Brew(Mac Only)
 
 if [[ ${operatingSystem} == "Darwin" ]]; then
-  if [ ! "$(which brew)" ]; then
+  if ! command -v brew &> /dev/null ; then
     printf "\n\nHomeBrew installation not detected: Installing Brew!\n\n"
     /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
   else
@@ -51,7 +53,7 @@ fi
 
 # =============================================================================== Yarn
 
-if [ ! "$(which yarn)" ]; then
+if ! command -v yarn &> /dev/null; then
   printf "\n\nYarn installation not found: Installing Yarn!\n\n"
   if [[ ${operatingSystem} == "Linux" ]]; then
     curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
@@ -65,7 +67,7 @@ fi
 
 # =============================================================================== Direnv
 
-if [ ! "$(which direnv)" ]; then
+if ! command -v direnv &> /dev/null; then
   printf "\n\ndirenv installation not found: Installing direnv!\n\n"
   if [[ ${operatingSystem} == "Linux" ]]; then
     sudo apt-get install direnv
@@ -112,10 +114,8 @@ installOpenJDKUbuntu() {
 }
 
 printf "\n\nChecking Java installation and JAVA_PATH...\n\n"
-JAVA_VERSION=$(java -version)
-printf "\n\n%s\n\n" "${JAVA_VERSION:-Unable to locate java}"
 
-if [[ ! $(which java) ]]; then
+if ! command -v java &> /dev/null; then
   printf "\n\nJava installation not found: Installing Java!\n\n"
   if [[ ${operatingSystem} == "Linux" ]]; then
     installOpenJDKUbuntu
@@ -137,29 +137,17 @@ fi
 
 # =============================================================================== Geckodriver
 
-if [[ ${operatingSystem} == "Darwin" && ! $(which geckodriver) ]]; then
+if ! command -v geckodriver &> /dev/null && "${operatingSystem}" == "Darwin"; then
   printf "\n\nInstalling geckodriver...\n\n"
   brew install geckodriver
 fi
 
-printf "\n\nSuccess!\n\n"
-
-if [[ "$SHELL" == *"bash"* ]]; then
-  grep -q "direnv hook bash" ${profileHome}
-  if [[ $? != 0 ]]; then
-    echo "eval ""$(direnv hook bash)" >>$profileHome
-  fi
-elif [[ "$SHELL" == *"zsh"* ]]; then
-  grep -q "direnv hook zsh" ${profileHome}
-  if [[ $? != 0 ]]; then
-    echo "eval ""$(direnv hook zsh)" >>$profileHome
-  fi
+if ! grep -q "direnv hook" "${profileHome}"; then
+    echo "eval \"\$(direnv hook ${SHELL})\"" >>$profileHome
 fi
 
-# shellcheck disable=SC1090
-source $profileHome
+printf "\n\nRequired software downloaded successfully.\n\n"
 
-source ./.envrc
 ./docker_go.sh
 
 ## =============================================================================== Linking dependencies
