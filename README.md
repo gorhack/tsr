@@ -27,12 +27,21 @@ db to deployment db
 - [ ] notifications
 
 ## Setup
-For setup, run `setup.sh`.
+On Ubuntu or OSX with bash or zsh: run `setup.sh`.
+
+### Prerequisites Installed:
+ - Java 15 (JDK)
+ - `yarn`
+ - `direnv`
+ - Docker / `docker-compose`
+ - OSX specific: `homebrew` and `geckodriver`
 
 ## Run
-Ensure docker is running the required containers (`postgres:12.3-alpine` and `g0rak/tsr-keycloak`) with
-`./docker_go.sh`. `./run.sh` will run the full application. `./gradlew bootrun` will just run the backend. `yarn start`
-in the client directory will run just the front end.
+ - Ensure docker is running the required containers (`postgres:12.3-alpine` and `g0rak/tsr-keycloak`)
+with `./docker_go.sh`.
+ - `./run.sh` will run the full application.
+   - `./gradlew bootrun` will just run the backend.
+   - `yarn start` in the client directory will run just the front end.
 
 ## Testing
 Created with TDD principles. Run `test.sh` to run all tests.
