@@ -38,7 +38,7 @@ export function makeBlankCreateableTsrEvent(): CreatableTsrEvent {
     return {
         eventName: "",
         organizations: [],
-        startDate: "",
-        endDate: "",
+        startDate: new Date(),
+        endDate: new Date(),
     };
 }

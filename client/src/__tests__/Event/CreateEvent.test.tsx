@@ -31,13 +31,13 @@ describe("create an event", () => {
     let mockSaveEvent: typeof EventApi.saveEvent;
     let mockGetEventTypeContains: typeof EventTypeApi.getEventTypeContains;
     let mockGetOrganizationContains: typeof OrganizationApi.getOrganizationContains;
-    let mockCurrentDate: typeof Api.currentDate;
+    let mockCurrentDateTime: typeof Api.currentDateTime;
     let mockDatePlusYears: typeof Api.datePlusYears;
     beforeEach(() => {
         mockSaveEvent = td.replace(EventApi, "saveEvent");
         mockGetEventTypeContains = td.replace(EventTypeApi, "getEventTypeContains");
         mockGetOrganizationContains = td.replace(OrganizationApi, "getOrganizationContains");
-        mockCurrentDate = td.replace(Api, "currentDate");
+        mockCurrentDateTime = td.replace(Api, "currentDateTime");
         mockDatePlusYears = td.replace(Api, "datePlusYears");
     });
 
@@ -157,6 +157,7 @@ describe("create an event", () => {
 
         td.when(mockGetEventTypeContains("")).thenDo(() => Promise.resolve(eventTypesPromise));
         td.when(mockGetOrganizationContains("")).thenDo(() => Promise.resolve(orgNamesPromise));
+        td.when(mockCurrentDateTime()).thenReturn(new Date(1607760000000)); // 12/12/2020
         td.when(mockDatePlusYears(10)).thenReturn(1923292800000); // 12/12/2030
 
         const path = "/createEvent";

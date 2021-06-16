@@ -32,17 +32,17 @@ describe("displays event details", () => {
         UTCs: -12:00 to +14:00
      */
     let mockUserTimeZone: typeof Api.userTimeZone;
-    let mockCurrentTime: typeof Api.currentTimeUtc;
     let mockGetEventTypeContains: typeof EventTypeApi.getEventTypeContains;
     let mockGetOrganizationContains: typeof OrganizationApi.getOrganizationContains;
     let mockGetEventTaskCategories: typeof EventTaskApi.getEventTaskCategoriesContains;
     let mockGetEventTasks: typeof EventTaskApi.getEventTasks;
     let mockUpdateEvent: typeof EventApi.updateEvent;
+    let mockCurrentDateTime: typeof Api.currentDateTime;
 
     beforeEach(() => {
         mockGetEventById = td.replace(EventApi, "getEventById");
         mockUserTimeZone = td.replace(Api, "userTimeZone");
-        mockCurrentTime = td.replace(Api, "currentTimeUtc");
+        mockCurrentDateTime = td.replace(Api, "currentDateTime");
         mockGetEventTypeContains = td.replace(EventTypeApi, "getEventTypeContains");
         mockGetOrganizationContains = td.replace(OrganizationApi, "getOrganizationContains");
         mockGetEventTaskCategories = td.replace(EventTaskApi, "getEventTaskCategoriesContains");
@@ -78,8 +78,8 @@ describe("displays event details", () => {
             eventId: 1,
             eventName: "name",
             organizations: orgNames,
-            startDate: new Date(dateToInput).toJSON(),
-            endDate: new Date(dateToInput).toJSON(),
+            startDate: new Date(dateToInput),
+            endDate: new Date(dateToInput),
             eventType: eventType1,
         });
 
@@ -288,7 +288,7 @@ describe("displays event details", () => {
         history.push(`/event/${event.eventId}`);
         td.when(mockGetEventById(event.eventId)).thenResolve(event);
         td.when(mockUserTimeZone()).thenReturn("TIMEZONE/timezone");
-        td.when(mockCurrentTime()).thenReturn(new Date(currentTime));
+        td.when(mockCurrentDateTime()).thenReturn(new Date(currentTime));
         td.when(mockGetEventTaskCategories(td.matchers.anything())).thenResolve(
             makePage({
                 items: [

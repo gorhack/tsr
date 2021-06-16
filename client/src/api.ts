@@ -17,7 +17,7 @@ import {
     EventActionTypes,
     EventTypeCacheReducerAction,
 } from "./Event/Type/EventTypeApi";
-import {now} from "./dateTimeHelpers/DateProvider";
+import { now } from "./dateTimeHelpers/DateProvider";
 
 export enum HttpStatus {
     OK = 200,

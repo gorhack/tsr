@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useReducer, useState } from "react";
 import { FormDatePicker } from "../Inputs/FormDatePicker";
 import {
-    currentDate,
+    currentDateTime,
     datePlusYears,
     eventTypesCacheReducer,
     MAX_NAME_LENGTH,
@@ -175,7 +175,7 @@ export function EventForm<E extends CreatableTsrEvent | TsrEvent>({
                         name="startDate"
                         label="start date"
                         placeholder="Choose the Start Date..."
-                        minDate={currentDate()}
+                        minDate={currentDateTime()}
                         maxDate={datePlusYears(10)}
                         error={errors.startDate && "start date is required MM/dd/YYYY"}
                     />
@@ -186,7 +186,7 @@ export function EventForm<E extends CreatableTsrEvent | TsrEvent>({
                         name="endDate"
                         label="end date"
                         placeholder="Choose the End Date..."
-                        minDate={startDateWatch ? startDateWatch : currentDate()}
+                        minDate={startDateWatch ? startDateWatch : currentDateTime()}
                         maxDate={
                             startDateWatch
                                 ? new Date(

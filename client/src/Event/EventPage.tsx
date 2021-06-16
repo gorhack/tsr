@@ -1,12 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { useHistory, useParams } from "react-router-dom";
 import { getEventById, TsrEvent, updateEvent } from "./EventApi";
-import moment from "moment";
 import { EventDetails } from "./EventDetails";
 import { LinkButton, PrimaryButton } from "../Buttons/Buttons";
 import "./EventPage.css";
 import { EventTaskSection } from "./Task/EventTaskSection";
-import { LONG_DATE_FORMAT } from "../api";
 import { EventForm } from "./EventForm";
 
 export interface RouteParams {
@@ -35,9 +33,6 @@ export const EventPage: React.FC = () => {
         return <></>;
     }
 
-    const setEditEventFunc = (): void => {
-        history.push(`/editEvent/${tsrEvent.eventId}`);
-    };
     const startDate = new Date(tsrEvent.startDate).toLocaleString();
     const endDate = new Date(tsrEvent.endDate).toLocaleString();
 
