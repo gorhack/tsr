@@ -37,7 +37,7 @@
     "lint:ci": "eslint . --max-warnings 0 --ext .js,.jsx,.ts,.tsx"
   },
   "eslintConfig": {
-    "extends": ["react-app", "prettier"]
+    "extends": ["react-app", "prettier"],
     "rules": {
         "react/no-danger": "error",
         "react-hooks/exhaustive-deps": "error",
