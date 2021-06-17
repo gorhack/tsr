@@ -37,11 +37,14 @@ On Ubuntu or OSX with bash or zsh: run `setup.sh`.
  - OSX specific: `homebrew` and `geckodriver`
 
 ## Run
- - Ensure docker is running the required containers (`postgres:12.3-alpine` and `g0rak/tsr-keycloak`)
-with `./docker_go.sh`.
+ - Ensure docker is running the required containers (`postgres:12.3-alpine` and
+   `g0rak/tsr-keycloak`) with `./docker_go.sh`.
  - `./run.sh` will run the full application.
-   - `./gradlew bootrun` will just run the backend.
-   - `yarn start` in the client directory will run just the front end.
+   - `./gradlew bootrun` will just run the backend <http://localhost:8080>
+   - `yarn start` in the client directory will run just the front end <http://localhost:3000>.
+ - Login with user `tsr:password` at <http://localhost:8080>. Switch to port 3000 for live
+   reloading.
+ - TSR uses Websockets for updating event state.
 
 ## Testing
 Created with TDD principles. Run `test.sh` to run all tests.
@@ -53,9 +56,10 @@ On the backend we use [JUnit5](https://junit.org/junit5/docs/current/user-guide/
 mocking.
 
 ## Auth
-Currently, _TSR_ uses [Keycloak's](https://www.keycloak.org) Oauth2 and Spring Security for authentication. Locally,
-keycloak runs within [docker](https://hub.docker.com/repository/docker/g0rak/tsr-keycloak) on port 8081 with realm
-credentials tsr:tsr and user credentials tsr:password /and/ tsrAdmin:password
+Currently, _TSR_ uses [Keycloak's](https://www.keycloak.org) Oauth2 and Spring Security for
+authentication. Locally, keycloak runs within [docker](https://hub.docker.com/repository/docker/g0rak/tsr-keycloak)
+on port 8081 with realm credentials `tsr:tsr` and user credentials `tsr:password` /and/
+`tsrAdmin:password`
 
 ## AWS
 #### **No longer deployed to AWS\**
