@@ -14,7 +14,8 @@ Dynamically manage and track planning requirements in a collaborative space.
     - [x] code quality - [sonarcloud](https://sonarcloud.io/dashboard?id=gorhack_tsr)
     - [x] dependency scan - Github's Dependabot
     - [x] deploy - [aws eb](https://tracked.events)
-    - [ ] deploy to Coding Repository and Transformation Environment (CReATE) platform (~JUN 2021)
+    - [ ] deploy to Coding Repository and Transformation Environment (CReATE) platform
+      (TBD 2021/2022)
 - [ ] SSO
     - [x] [keycloak](http://alcesleo.github.io/2020/01/30/setting-up-keycloak-on-aws/)
     - [ ] transition from dev/testing environment to deployment ready version of kc
@@ -54,11 +55,15 @@ db to deployment db
 ## Testing
 Created with TDD principles. Run `test.sh` to run all tests.
 
+On the backend we use [JUnit5](https://junit.org/junit5/docs/current/user-guide/) and [mockk](https://mockk.io) for
+mocking.
+
+To run the backend tests alone, run `gradlew test` in the root directory.
+
 On the front-end we use [react-testing-library](https://testing-library.com/docs/react-testing-library/intro), and
 [testdouble](https://github.com/testdouble/testdouble.js) / [jest](https://jestjs.io) for mocking.
 
-On the backend we use [JUnit5](https://junit.org/junit5/docs/current/user-guide/) and [mockk](https://mockk.io) for
-mocking.
+To run the frontend tests alone, run `yarn test` in the client directory.
 
 ## Auth
 Currently, _TSR_ uses [Keycloak's](https://www.keycloak.org) Oauth2 and Spring Security for
