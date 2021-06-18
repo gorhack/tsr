@@ -44,7 +44,7 @@ db to deployment db
 
 ## Run
  - Ensure docker is running the required containers (`postgres:12.3-alpine` and
-   `g0rak/tsr-keycloak`) with `./docker_go.sh`.
+   `g0rak/tsr-keycloak`). `./docker_go.sh` will pull and run both containers.
  - `./run.sh` will run the full application.
    - `./gradlew bootrun` will just run the backend <http://localhost:8080>
    - `yarn start` in the client directory will run just the front end <http://localhost:3000>.
