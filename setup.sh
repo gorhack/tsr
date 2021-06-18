@@ -137,7 +137,7 @@ fi
 
 # =============================================================================== Geckodriver
 
-if ! command -v geckodriver &> /dev/null && "${operatingSystem}" == "Darwin"; then
+if [[ -z $(which geckodriver) && "${operatingSystem}" == "Darwin" ]]; then
   printf "\n\nInstalling geckodriver...\n\n"
   brew install geckodriver
 fi

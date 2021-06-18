@@ -27,7 +27,12 @@ db to deployment db
 - [ ] notifications
 
 ## Setup
-On Ubuntu or OSX with bash or zsh: run `setup.sh`.
+ - Install Docker
+
+ - On Ubuntu or OSX with bash or zsh: run `. ./setup.sh`.
+
+ - Source your shell and `direnv` should source your project's `.envrc` when you enter the project
+   directory
 
 ### Prerequisites Installed:
  - Java 15 (JDK)
