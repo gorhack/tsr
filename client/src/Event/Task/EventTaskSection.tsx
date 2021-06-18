@@ -238,7 +238,9 @@ export const EventTaskSection = ({ tsrEvent }: EventTaskSectionProps): ReactElem
                                 >
                                     <DetailRow
                                         label="suspense date"
-                                        description={new Date(eventTask.suspenseDate).toDateString()}
+                                        description={new Date(
+                                            eventTask.suspenseDate,
+                                        ).toDateString()}
                                     />
                                     <DetailRow
                                         label="approver"

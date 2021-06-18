@@ -119,15 +119,15 @@ export function EventForm<E extends CreatableTsrEvent | TsrEvent>({
             return;
         }
 
-        const tsrEventToUpdate = {
+        const tsrEventToCreateOrUpdate = {
             ...event,
             eventName,
             organizations: foundOrgs,
-            startDate: startDate.toJSON(),
-            endDate: endDate.toJSON(),
+            startDate: startDate,
+            endDate: endDate,
             eventType: foundEventType,
         };
-        submitData(tsrEventToUpdate);
+        submitData(tsrEventToCreateOrUpdate);
     };
 
     return (

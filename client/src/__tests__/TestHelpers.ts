@@ -1,7 +1,7 @@
 import { act, fireEvent, RenderResult } from "@testing-library/react";
 import { Auditable, TsrEvent } from "../Event/EventApi";
 import { EventType } from "../Event/Type/EventTypeApi";
-import { PageDTO } from "../api";
+import { currentDateTime, PageDTO } from "../api";
 import { Organization } from "../Organization/OrganizationApi";
 import td from "testdouble";
 import { SocketService, SocketStatus } from "../SocketService";
@@ -46,9 +46,9 @@ export const fillInInputValueInForm = (
     }
 };
 
-export const fillInDatePicker = (container: RenderResult, name: string, dateVal: string): void => {
+export const fillInDatePicker = (container: RenderResult, name: string, dateVal: Date): void => {
     const datePicker = container.getByRole("textbox", { name });
-    userEvent.type(datePicker, dateVal);
+    userEvent.type(datePicker, dateVal.toString());
 };
 
 export const clearDatePicker = (container: RenderResult, name: string): void => {
@@ -103,10 +103,10 @@ export function makeOrganization(partial: Partial<Organization>): Organization {
 
 export const makeAudit = (partial: Partial<Auditable>): Auditable => {
     return {
-        lastModifiedDate: partial.lastModifiedDate || "",
+        lastModifiedDate: partial.lastModifiedDate || currentDateTime(),
         lastModifiedBy: partial.lastModifiedBy || "",
         lastModifiedByDisplayName: partial.lastModifiedByDisplayName || "",
-        createdDate: partial.createdDate || "",
+        createdDate: partial.createdDate || currentDateTime(),
         createdBy: partial.createdBy || "",
         createdByDisplayName: partial.createdByDisplayName || "",
     };
@@ -119,8 +119,8 @@ export const makeEvent = (partial: Partial<TsrEvent>): TsrEvent => {
     return {
         eventId: partial.eventId,
         eventName: partial.eventName || "",
-        startDate: partial.startDate || "",
-        endDate: partial.endDate || "",
+        startDate: partial.startDate || currentDateTime(),
+        endDate: partial.endDate || currentDateTime(),
         organizations: partial.organizations || [
             makeOrganization({ organizationId: 1, sortOrder: 1 }),
         ],

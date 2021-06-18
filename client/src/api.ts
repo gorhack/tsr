@@ -18,6 +18,7 @@ import {
     EventTypeCacheReducerAction,
 } from "./Event/Type/EventTypeApi";
 import { now } from "./dateTimeHelpers/DateProvider";
+import { formatDistanceToNow } from "date-fns";
 
 export enum HttpStatus {
     OK = 200,
@@ -67,6 +68,10 @@ export const userTimeZone = (): string => {
 
 export const currentDateTime = (): Date => {
     return now();
+};
+
+export const dateLastModifiedFormat = (dateLastModified: Date): string => {
+    return formatDistanceToNow(dateLastModified);
 };
 
 export const datePlusYears = (addYears: number): Date => {

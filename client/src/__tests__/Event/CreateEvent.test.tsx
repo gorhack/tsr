@@ -97,7 +97,7 @@ describe("create an event", () => {
         const orgNamesPromise = Promise.resolve(makePage({ items: orgNames }));
         const result = await renderCreateEvent({ history, orgNamesPromise });
         const tsrEvent = {
-            eventName: "name",
+            eventName: "new test event",
             organizations: [
                 makeOrganization({
                     organizationId: 2,
@@ -125,11 +125,11 @@ describe("create an event", () => {
             ...tsrEvent,
         });
 
-        fillInInputValueInForm(result, "name", EVENT_NAME_LABEL);
+        fillInInputValueInForm(result, "new test event", EVENT_NAME_LABEL);
         await selectEvent.select(screen.getByLabelText(ORGANIZATIONS_LABEL), "second");
         await selectEvent.select(screen.getByLabelText(ORGANIZATIONS_LABEL), "third");
-        fillInDatePicker(result, START_DATE_LABEL, TODAYS_DATE);
-        fillInDatePicker(result, END_DATE_LABEL, TODAYS_DATE);
+        fillInDatePicker(result, START_DATE_LABEL, startDate);
+        fillInDatePicker(result, END_DATE_LABEL, endDate);
 
         td.when(mockSaveEvent(tsrEvent)).thenDo(() => saveEventPromise);
 

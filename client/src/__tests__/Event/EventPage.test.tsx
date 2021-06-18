@@ -32,23 +32,26 @@ describe("displays event details", () => {
         UTCs: -12:00 to +14:00
      */
     let mockUserTimeZone: typeof Api.userTimeZone;
+    let mockCurrentDateTime: typeof Api.currentDateTime;
     let mockGetEventTypeContains: typeof EventTypeApi.getEventTypeContains;
     let mockGetOrganizationContains: typeof OrganizationApi.getOrganizationContains;
     let mockGetEventTaskCategories: typeof EventTaskApi.getEventTaskCategoriesContains;
     let mockGetEventTasks: typeof EventTaskApi.getEventTasks;
     let mockUpdateEvent: typeof EventApi.updateEvent;
-    let mockCurrentDateTime: typeof Api.currentDateTime;
+    let mockDateLastModifiedFormat: typeof Api.dateLastModifiedFormat;
 
     beforeEach(() => {
-        mockGetEventById = td.replace(EventApi, "getEventById");
         mockUserTimeZone = td.replace(Api, "userTimeZone");
         mockCurrentDateTime = td.replace(Api, "currentDateTime");
+        td.when(mockCurrentDateTime()).thenReturn(new Date("2020-07-20T10:00:00"));
+        mockGetEventById = td.replace(EventApi, "getEventById");
         mockGetEventTypeContains = td.replace(EventTypeApi, "getEventTypeContains");
         mockGetOrganizationContains = td.replace(OrganizationApi, "getOrganizationContains");
         mockGetEventTaskCategories = td.replace(EventTaskApi, "getEventTaskCategoriesContains");
         mockGetEventTasks = td.replace(EventTaskApi, "getEventTasks");
         mockUpdateEvent = td.replace(EventApi, "updateEvent");
         td.when(mockGetEventTasks(td.matchers.anything())).thenResolve([]);
+        mockDateLastModifiedFormat = td.replace(Api, "dateLastModifiedFormat");
     });
     afterEach(td.reset);
 
@@ -135,6 +138,7 @@ describe("displays event details", () => {
 
     describe("headers", () => {
         it("displays event details", async () => {
+            td.when(mockDateLastModifiedFormat(td.matchers.anything())).thenReturn("just now...");
             const event: TsrEvent = {
                 eventId: 4,
                 eventName: "first event",
@@ -163,30 +167,30 @@ describe("displays event details", () => {
                 audit: {
                     createdBy: "1234",
                     createdByDisplayName: "test_user",
-                    createdDate: "2020-07-18T06:15:59Z",
+                    createdDate: new Date("2020-07-18T06:15:59Z"),
                     lastModifiedBy: "6789",
                     lastModifiedByDisplayName: "test_user_2",
-                    lastModifiedDate: "2020-07-18T10:00:00Z",
+                    lastModifiedDate: new Date("2020-07-18T10:00:00Z"),
                 },
             };
 
             const result = await renderEventDetails({ event });
             const title = screen.getByText("first event details");
             expect(title.tagName).toEqual("H1");
-            const subheading = screen.getByText(
-                /(Tue|Wed) Aug (18|19), 2020 - (Thu|Fri) Aug (19|20), 2020/,
-            );
+            const subheading = screen.getByText("8/18/2020, 7:15:59 AM - 8/19/2020, 6:00:01 PM");
             expect(subheading.tagName).toEqual("H2");
             expect(screen.getByText("Big")).toBeInTheDocument();
             expect(findByAriaLabel(result.container, "End Date")).toHaveTextContent(
-                /^(Thursday|Wednesday), August (19th|20th) 2020, [0-9]{4} \(TIMEZONE\/timezone\)$/,
+                "8/19/2020, 6:00:01 PM - TIMEZONE/timezone",
             );
             expect(findByAriaLabel(result.container, "Start Date")).toHaveTextContent(
-                /^(Tuesday|Wednesday), August (18th|19th) 2020, [0-9]{4} \(TIMEZONE\/timezone\)$/,
+                "8/18/2020, 7:15:59 AM - TIMEZONE/timezone",
             );
             expect(screen.getByText("ragnar; org2")).toBeInTheDocument();
-            expect(screen.getByText(/test_user, \(7\/(17|18)\/20\)/)).toBeInTheDocument();
-            expect(screen.getByText("test_user_2, 2 days ago")).toBeInTheDocument();
+            expect(
+                screen.getByText("test_user, (7/17/2020, 11:15:59 PM - TIMEZONE/timezone)"),
+            ).toBeInTheDocument();
+            expect(screen.getByText("test_user_2, just now...")).toBeInTheDocument();
         });
 
         it("only one date if start and end date are the exact same", async () => {
@@ -197,17 +201,17 @@ describe("displays event details", () => {
                 endDate: new Date("2020-08-18T01:01:01"),
             });
             const result = await renderEventDetails({ event });
-            expect(screen.getByText(/(Mon|Tue) Aug (17|18), 2020/).tagName).toEqual("H2");
+            expect(screen.getByText("8/18/2020, 1:01:01 AM").tagName).toEqual("H2");
             expect(findByAriaLabel(result.container, "Date")).toHaveTextContent(
-                /(Monday|Tuesday), August (17th|18th) 2020, [0-9]{4} \(TIMEZONE\/timezone\)/,
+                "8/18/2020, 1:01:01 AM - TIMEZONE/timezone",
             );
         });
     });
 
     describe("last modified", () => {
-        const LAST_MODIFIED_DATE = "2020-07-18T10:00:00";
+        const LAST_MODIFIED_DATE = new Date("2020-07-18T10:00:00");
         const LAST_MODIFIED_ARIA_LABEL = "Last Modified By";
-        const makeEventWithLastModified = (lastModifiedDate: string): TsrEvent => {
+        const makeEventWithLastModified = (lastModifiedDate: Date): TsrEvent => {
             return makeEvent({
                 eventId: 1,
                 audit: makeAudit({
@@ -216,51 +220,12 @@ describe("displays event details", () => {
                 }),
             });
         };
-        it("last modified in the last 5 minutes displays just now", async () => {
+        it("last modified correctly displays to user", async () => {
             const event = makeEventWithLastModified(LAST_MODIFIED_DATE);
+            td.when(mockDateLastModifiedFormat(LAST_MODIFIED_DATE)).thenReturn("just now...");
             const result = await renderEventDetails({ event, currentTime: "2020-07-18T10:05:59" });
             expect(findByAriaLabel(result.container, LAST_MODIFIED_ARIA_LABEL)).toHaveTextContent(
-                "user, just now...",
-            );
-        });
-
-        it("last modified displays minutes if minutes ago", async () => {
-            const event = makeEventWithLastModified(LAST_MODIFIED_DATE);
-            const result = await renderEventDetails({ event, currentTime: "2020-07-18T10:06:00" });
-            expect(findByAriaLabel(result.container, LAST_MODIFIED_ARIA_LABEL)).toHaveTextContent(
-                "user, 6 minutes ago",
-            );
-        });
-
-        it("last modified displays hour if 1 hour ago", async () => {
-            const event = makeEventWithLastModified(LAST_MODIFIED_DATE);
-            const result = await renderEventDetails({ event, currentTime: "2020-07-18T11:59:59" });
-            expect(findByAriaLabel(result.container, LAST_MODIFIED_ARIA_LABEL)).toHaveTextContent(
-                "user, 1 hour ago",
-            );
-        });
-
-        it("last modified displays hours if hours ago", async () => {
-            const event = makeEventWithLastModified(LAST_MODIFIED_DATE);
-            const result = await renderEventDetails({ event, currentTime: "2020-07-18T12:00:00" });
-            expect(findByAriaLabel(result.container, LAST_MODIFIED_ARIA_LABEL)).toHaveTextContent(
-                "user, 2 hours ago",
-            );
-        });
-
-        it("last modified displays day if 1 day ago", async () => {
-            const event = makeEventWithLastModified("2020-07-17T10:00:00");
-            const result = await renderEventDetails({ event, currentTime: "2020-07-19T09:59:59" });
-            expect(findByAriaLabel(result.container, LAST_MODIFIED_ARIA_LABEL)).toHaveTextContent(
-                "user, 1 day ago",
-            );
-        });
-
-        it("last modified displays date if older than 1 week", async () => {
-            const event = makeEventWithLastModified("2020-07-17T10:00:00");
-            const result = await renderEventDetails({ event, currentTime: "2020-07-24T10:00:00" });
-            expect(findByAriaLabel(result.container, LAST_MODIFIED_ARIA_LABEL)).toHaveTextContent(
-                "user, 7/17/20",
+                "just now...",
             );
         });
     });
@@ -282,13 +247,12 @@ describe("displays event details", () => {
 
     const renderEventDetails = async ({
         event = makeEvent({ eventId: 1 }),
-        currentTime = "2020-07-20T10:00:00",
         history = createMemoryHistory(),
     }: RenderEventDetailsProps): Promise<RenderResult> => {
         history.push(`/event/${event.eventId}`);
-        td.when(mockGetEventById(event.eventId)).thenResolve(event);
         td.when(mockUserTimeZone()).thenReturn("TIMEZONE/timezone");
-        td.when(mockCurrentDateTime()).thenReturn(new Date(currentTime));
+        td.when(mockGetEventById(event.eventId)).thenResolve(event);
+
         td.when(mockGetEventTaskCategories(td.matchers.anything())).thenResolve(
             makePage({
                 items: [

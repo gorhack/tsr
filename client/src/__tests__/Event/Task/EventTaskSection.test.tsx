@@ -51,7 +51,7 @@ describe("event tasks", () => {
         mockCreateEventTaskCategory = td.replace(EventTaskApi, "createEventTaskCategory");
         tsrEvent = makeEvent({ eventId: 1 });
         mockUpdateEventTaskSuspense = td.replace(EventTaskApi, "updateEventTaskSuspense");
-        tsrEvent = makeEvent({ eventId: 1, startDate: "2020-08-18T00:00:01" });
+        tsrEvent = makeEvent({ eventId: 1, startDate: new Date("2020-08-18T00:00:01") });
         firstEventTaskCategory = makeEventTaskCategory({
             eventTaskCategoryId: 1,
             eventTaskDisplayName: "task 1",
@@ -170,9 +170,7 @@ describe("event tasks", () => {
         fireEvent.click(
             screen.getByRole("button", { name: firstEventTaskCategory.eventTaskDisplayName }),
         );
-        expect(screen.getByLabelText(SUSPENSE_DATE_LABEL)).toHaveTextContent(
-            /(Mon|Tue) Aug (17|18), 2020/,
-        );
+        expect(screen.getByLabelText(SUSPENSE_DATE_LABEL)).toHaveTextContent(/Tue Aug 18 2020/);
 
         expect(screen.getByLabelText(APPROVER_LABEL_TEXT)).toHaveTextContent("user");
         expect(screen.getByLabelText(RESOURCER_LABEL_TEXT)).toHaveTextContent("user");

@@ -1,9 +1,8 @@
 import React, { ReactElement } from "react";
 import { TsrEvent } from "./EventApi";
-import { userTimeZone } from "../api";
+import { dateLastModifiedFormat, userTimeZone } from "../api";
 import "./EventPage.css";
 import { DetailRow } from "./DetailRow";
-import {formatDistanceToNow} from "date-fns";
 
 interface EventDetailsProps {
     tsrEvent: TsrEvent;
@@ -11,7 +10,7 @@ interface EventDetailsProps {
 
 export const EventDetails = React.memo(({ tsrEvent }: EventDetailsProps): ReactElement => {
     const startEndDate = (startDate: Date, endDate: Date): ReactElement => {
-        if (startDate === endDate) {
+        if (startDate.getTime() === endDate.getTime()) {
             return <DetailRow label="Date" description={longDateFormat(startDate)} />;
         } else {
             return (
@@ -24,11 +23,7 @@ export const EventDetails = React.memo(({ tsrEvent }: EventDetailsProps): ReactE
     };
 
     const longDateFormat = (date: Date): string =>
-        `${date.toLocaleString() + ' - ' + userTimeZone()}`;
-
-    const dateLastModifiedFormat = (dateLastModified: Date): string => {
-        return formatDistanceToNow(dateLastModified)
-    };
+        `${date.toLocaleString() + " - " + userTimeZone()}`;
 
     const mapOrganizations = () => {
         const orgArray = tsrEvent.organizations.map((org) => org.organizationDisplayName);
@@ -50,7 +45,9 @@ export const EventDetails = React.memo(({ tsrEvent }: EventDetailsProps): ReactE
             <DetailRow label="Organization" description={mapOrganizations()} />
             <DetailRow
                 label="Event Created By"
-                description={`${tsrEvent.audit.createdByDisplayName}, (${new Date(tsrEvent.audit.createdDate).toLocaleString() + ' - ' + userTimeZone()})`}
+                description={`${tsrEvent.audit.createdByDisplayName}, (${
+                    new Date(tsrEvent.audit.createdDate).toLocaleString() + " - " + userTimeZone()
+                })`}
             />
             <DetailRow
                 label="Last Modified By"

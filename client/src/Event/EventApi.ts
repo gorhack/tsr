@@ -100,10 +100,10 @@ export interface TsrEvent {
 }
 
 export interface Auditable {
-    createdDate: string;
+    createdDate: Date;
     createdBy: string;
     createdByDisplayName?: string;
-    lastModifiedDate: string;
+    lastModifiedDate: Date;
     lastModifiedBy: string;
     lastModifiedByDisplayName?: string;
 }
@@ -118,5 +118,5 @@ export enum SocketSubscriptionTopics {
 export const toTsrEvent = (eventDto: TsrEventDto): TsrEvent => ({
     ...eventDto,
     startDate: new Date(eventDto.startDate),
-    endDate: new Date(eventDto.endDate)
+    endDate: new Date(eventDto.endDate),
 });

@@ -1,6 +1,6 @@
 import React from "react";
 import { useHistory } from "react-router";
-import { CreatableTsrEvent, saveEvent, TsrEvent } from "./EventApi";
+import { CreatableTsrEvent, saveEvent } from "./EventApi";
 import { LinkButton } from "../Buttons/Buttons";
 import { EventForm } from "./EventForm";
 
@@ -11,7 +11,7 @@ export const CreateEvent: React.FC = () => {
         history.push("/");
     };
 
-    const handleSubmit = async (event: CreatableTsrEvent | TsrEvent): Promise<void> => {
+    const handleSubmit = async (event: CreatableTsrEvent): Promise<void> => {
         await saveEvent(event)
             .then((result) => {
                 history.push(`/event/${result.eventId}`);

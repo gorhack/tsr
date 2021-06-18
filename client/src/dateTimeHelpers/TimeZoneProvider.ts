@@ -1,3 +1,3 @@
-export const defaultTimeZone = () => {
-  return Intl.DateTimeFormat().resolvedOptions().timeZone;
+export const defaultTimeZone = (): string => {
+    return Intl.DateTimeFormat().resolvedOptions().timeZone;
 };

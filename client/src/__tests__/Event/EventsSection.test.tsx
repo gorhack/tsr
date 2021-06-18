@@ -16,7 +16,7 @@ describe("home page of the application", () => {
     const SECOND_EVENT_NAME = "second event";
     const THIRD_EVENT_NAME = "third event";
     let mockUserTimeZone: typeof Api.userTimeZone;
-    let mockCurrentTime: typeof Api.currentDateTime;
+    let mockCurrentDateTime: typeof Api.currentDateTime;
     let mockGetActiveEventsByOrganizationIds: typeof EventApi.getActiveEventsByOrganizationIds;
     let mockGetActiveEventsByUserId: typeof EventApi.getActiveEventsByUserId;
     let userEventList: TsrEvent[];
@@ -26,9 +26,12 @@ describe("home page of the application", () => {
     let userPage2: PageDTO<TsrEvent>;
     let orgPage1: PageDTO<TsrEvent>;
     let orgPage2: PageDTO<TsrEvent>;
+    const currentTime = "2020-07-20T10:00:00";
+
     beforeEach(() => {
         mockUserTimeZone = td.replace(Api, "userTimeZone");
-        mockCurrentTime = td.replace(Api, "currentTimeUtc");
+        mockCurrentDateTime = td.replace(Api, "currentDateTime");
+        td.when(mockCurrentDateTime()).thenReturn(new Date(currentTime));
         mockGetActiveEventsByOrganizationIds = td.replace(
             EventApi,
             "getActiveEventsByOrganizationIds",
@@ -45,8 +48,8 @@ describe("home page of the application", () => {
             makeEvent({
                 eventId: 1,
                 eventName: FIRST_EVENT_NAME,
-                startDate: "2020-08-18T14:15:59Z",
-                endDate: "2020-08-20T01:00:01Z",
+                startDate: new Date("2020-08-18T14:15:59Z"),
+                endDate: new Date("2020-08-20T01:00:01Z"),
                 audit: makeAudit({ createdBy: "1234" }),
             }),
             makeEvent({
@@ -62,8 +65,8 @@ describe("home page of the application", () => {
                 eventId: 3,
                 eventName: THIRD_EVENT_NAME,
                 organizations,
-                startDate: "2020-08-18T14:15:59Z",
-                endDate: "2020-08-20T01:00:01Z",
+                startDate: new Date("2020-08-18T14:15:59Z"),
+                endDate: new Date("2020-08-20T01:00:01Z"),
                 audit: makeAudit({ createdBy: "0987" }),
             }),
         ];
@@ -191,7 +194,6 @@ describe("home page of the application", () => {
     }
 
     const renderEventsSection = async ({
-        currentTime = "2020-07-20T10:00:00",
         orgEvents = [],
         userEvents = [],
         history = createMemoryHistory(),
@@ -213,7 +215,6 @@ describe("home page of the application", () => {
         const userEventsPromise = Promise.resolve(userPage);
         const orgEventsPromise = Promise.resolve(orgPage);
         td.when(mockUserTimeZone()).thenReturn("TIMEZONE/timezone");
-        td.when(mockCurrentTime()).thenReturn(new Date(currentTime));
         td.when(mockGetActiveEventsByOrganizationIds()).thenDo(() =>
             Promise.resolve(orgEventsPromise),
         );
