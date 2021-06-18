@@ -14,7 +14,8 @@ Dynamically manage and track planning requirements in a collaborative space.
     - [x] code quality - [sonarcloud](https://sonarcloud.io/dashboard?id=gorhack_tsr)
     - [x] dependency scan - Github's Dependabot
     - [x] deploy - [aws eb](https://tracked.events)
-    - [ ] deploy to Coding Repository and Transformation Environment (CReATE) platform (~JUN 2021)
+    - [ ] deploy to Coding Repository and Transformation Environment (CReATE) platform
+      (TBD 2021/2022)
 - [ ] SSO
     - [x] [keycloak](http://alcesleo.github.io/2020/01/30/setting-up-keycloak-on-aws/)
     - [ ] transition from dev/testing environment to deployment ready version of kc
@@ -27,26 +28,48 @@ db to deployment db
 - [ ] notifications
 
 ## Setup
-For setup, run `setup.sh`.
+ - Install Docker
+
+ - On Ubuntu or OSX with bash or zsh: run `. ./setup.sh`.
+
+ - Source your shell and `direnv` should source your project's `.envrc` when you enter the project
+   directory
+
+### Prerequisites Installed:
+ - Java 15 (JDK)
+ - `yarn`
+ - `direnv`
+ - Docker / `docker-compose`
+ - OSX specific: `homebrew` and `geckodriver`
 
 ## Run
-Ensure docker is running the required containers (`postgres:12.3-alpine` and `g0rak/tsr-keycloak`) with
-`./docker_go.sh`. `./run.sh` will run the full application. `./gradlew bootrun` will just run the backend. `yarn start`
-in the client directory will run just the front end.
+ - Ensure docker is running the required containers (`postgres:12.3-alpine` and
+   `g0rak/tsr-keycloak`). `./docker_go.sh` will pull and run both containers.
+ - `./run.sh` will run the full application.
+   - `./gradlew bootrun` will just run the backend <http://localhost:8080>
+   - `yarn start` in the client directory will run just the front end <http://localhost:3000>.
+ - Login with user `tsr:password` at <http://localhost:8080>. Switch to port 3000 for live
+   reloading.
+ - TSR uses Websockets for updating event state.
 
 ## Testing
 Created with TDD principles. Run `test.sh` to run all tests.
 
-On the front-end we use [react-testing-library](https://testing-library.com/docs/react-testing-library/intro), and
-[testdouble](https://github.com/testdouble/testdouble.js) / [jest](https://jestjs.io) for mocking.
-
 On the backend we use [JUnit5](https://junit.org/junit5/docs/current/user-guide/) and [mockk](https://mockk.io) for
 mocking.
 
+To run the backend tests alone, run `gradlew test` in the root directory.
+
+On the front-end we use [react-testing-library](https://testing-library.com/docs/react-testing-library/intro), and
+[testdouble](https://github.com/testdouble/testdouble.js) / [jest](https://jestjs.io) for mocking.
+
+To run the frontend tests alone, run `yarn test` in the client directory.
+
 ## Auth
-Currently, _TSR_ uses [Keycloak's](https://www.keycloak.org) Oauth2 and Spring Security for authentication. Locally,
-keycloak runs within [docker](https://hub.docker.com/repository/docker/g0rak/tsr-keycloak) on port 8081 with realm
-credentials tsr:tsr and user credentials tsr:password /and/ tsrAdmin:password
+Currently, _TSR_ uses [Keycloak's](https://www.keycloak.org) Oauth2 and Spring Security for
+authentication. Locally, keycloak runs within [docker](https://hub.docker.com/repository/docker/g0rak/tsr-keycloak)
+on port 8081 with realm credentials `tsr:tsr` and user credentials `tsr:password` /and/
+`tsrAdmin:password`
 
 ## AWS
 #### **No longer deployed to AWS\**
