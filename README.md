@@ -5,7 +5,11 @@
 ![](logo/logo492.png)
 # _TSR_
 #### Track, Synchronize, Reporting Tool
-Dynamic tracking management tool. _TSR_ is built on Spring and React.
+_TSR_ is built on Spring and React. TSR is an event management tool. It is designed for
+organizations that require collaboration and cross-communication with both internal and external
+organizations. TSR enables complete transparency amongst participating organizations that work
+together to plan and coordinate events. Whether you are planning a single range or combined arms
+exercise, TSR allows its users to successfully plan events.
 
 ## Project Goals
 Dynamically manage and track planning requirements in a collaborative space.
@@ -29,9 +33,7 @@ db to deployment db
 
 ## Setup
  - Install Docker
-
  - On Ubuntu or OSX with bash or zsh: run `. ./setup.sh`.
-
  - Source your shell and `direnv` should source your project's `.envrc` when you enter the project
    directory
 
@@ -68,8 +70,8 @@ To run the frontend tests alone, run `yarn test` in the client directory.
 ## Auth
 Currently, _TSR_ uses [Keycloak's](https://www.keycloak.org) Oauth2 and Spring Security for
 authentication. Locally, keycloak runs within [docker](https://hub.docker.com/repository/docker/g0rak/tsr-keycloak)
-on port 8081 with realm credentials `tsr:tsr` and user credentials `tsr:password` /and/
-`tsrAdmin:password`
+on port 8081 with tsr realm credentials `tsr:tsr`. TSR user credentials are `tsr:password` /and/
+`tsrAdmin:password`, providing regular and admin user roles respectively.
 
 ## AWS
 #### **No longer deployed to AWS\**
