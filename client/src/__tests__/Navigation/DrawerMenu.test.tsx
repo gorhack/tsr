@@ -12,14 +12,14 @@ describe("Drawer menu", () => {
     const DRAWER_OVERLAY_TESTID = "drawer-overlay";
     it("displays button to open menu", () => {
         renderDrawer();
-        expect(screen.getByRole("button", { name: CLOSE_MENU_BUTTON_NAME })).toBeInTheDocument();
+        expect(screen.getByRole("button", { name: CLOSE_MENU_BUTTON_NAME })).toBeVisible()
     });
 
     it("clicking menu button opens drawer", () => {
         const result = renderDrawer();
         fireEvent.click(screen.getByRole("button", { name: CLOSE_MENU_BUTTON_NAME }));
-        expect(findByAriaLabel(result.container, "close menu")).toBeInTheDocument();
-        expect(screen.getByText("tsr")).toBeInTheDocument();
+        expect(findByAriaLabel(result.container, "close menu")).toBeVisible();
+        expect(screen.getByText("tsr")).toBeVisible();
     });
 
     it("clicking overlay closes the drawer", () => {
@@ -28,7 +28,7 @@ describe("Drawer menu", () => {
 
         expect(overlay()).not.toBeInTheDocument();
         fireEvent.click(screen.getByRole("button", { name: CLOSE_MENU_BUTTON_NAME }));
-        expect(overlay()).toBeInTheDocument();
+        expect(overlay()).toBeVisible();
         fireEvent.click(findByAriaLabel(result.container, "close menu"));
         expect(overlay()).not.toBeInTheDocument();
     });
@@ -42,8 +42,8 @@ describe("Drawer menu", () => {
         it("shows close button and tsr button", () => {
             const history = createMemoryHistory();
             setupMenu();
-            expect(screen.getByRole("button", { name: "close menu" })).toBeInTheDocument();
-            expect(screen.getByText("tsr")).toBeInTheDocument();
+            expect(screen.getByRole("button", { name: "close menu" })).toBeVisible();
+            expect(screen.getByText("tsr")).toBeVisible();
             fireEvent.click(screen.getByText("tsr"));
             expect(history.location.pathname).toEqual("/");
         });
@@ -51,7 +51,7 @@ describe("Drawer menu", () => {
         it("shows settings section", () => {
             const history = createMemoryHistory();
             setupMenu(history);
-            expect(screen.getByText("Settings")).toBeInTheDocument();
+            expect(screen.getByText("Settings")).toBeVisible();
             fireEvent.click(screen.getByText("user settings"));
             expect(history.location.pathname).toEqual("/settings");
             expect(screen.queryByTestId(DRAWER_OVERLAY_TESTID)).toBeNull();
@@ -59,7 +59,7 @@ describe("Drawer menu", () => {
 
         it("shows support section with contribute link", () => {
             setupMenu();
-            expect(screen.getByText("Support")).toBeInTheDocument();
+            expect(screen.getByText("Support")).toBeVisible();
             expect(screen.getByText("contribute").getAttribute("href")).toEqual(
                 "https://github.com/gorhack/tsr#readme",
             );
@@ -74,6 +74,13 @@ describe("Drawer menu", () => {
             expect(history.location.pathname).toEqual("/about");
             expect(screen.queryByTestId(DRAWER_OVERLAY_TESTID)).toBeNull();
         });
+
+        it('has logout button with appropriate href', () => {
+            setupMenu()
+
+            expect(screen.getByRole('link', { name: "Logout"})).toBeVisible()
+            expect(screen.getByRole('link', { name: 'Logout'})).toHaveAttribute('href', '/logout')
+        })
     });
 
     const renderDrawer = (history: MemoryHistory = createMemoryHistory()): RenderResult => {

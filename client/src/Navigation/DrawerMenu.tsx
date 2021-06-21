@@ -71,6 +71,12 @@ export const DrawerMenu: React.FC = (): ReactElement => {
                             >
                                 contribute
                             </a>
+                            <a
+                                className='DrawerMenu-section-link'
+                                href='/logout'
+                            >
+                                Logout
+                            </a>
                         </div>
                     </div>
                 </>

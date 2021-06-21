@@ -33,7 +33,10 @@ class CommonSecurityConfigurer : HttpSecurityConfigurer {
     //as per some STIG story
     private fun clearBrowserDataOnLogout(http: HttpSecurity) {
         val logoutHandler = HeaderWriterLogoutHandler(
-                ClearSiteDataHeaderWriter(ClearSiteDataHeaderWriter.Directive.ALL)
+                ClearSiteDataHeaderWriter(
+                        ClearSiteDataHeaderWriter.Directive.COOKIES,
+                        ClearSiteDataHeaderWriter.Directive.STORAGE
+                )
         )
         http.logout().addLogoutHandler(logoutHandler)
     }
