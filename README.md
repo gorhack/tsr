@@ -8,12 +8,15 @@
 
 #### Track, Synchronize, Reporting Tool
 
-_TSR_ is built on Spring and React. _TSR_ is an event management tool. It is designed for
-organizations that require collaboration and cross-communication with both internal and external
-organizations. _TSR_ enables complete transparency amongst participating organizations that work
-together to plan and coordinate events.
+_TSR_ is an event management tool created with the goal of helping military units plan training
+events. _TSR_ is built to be completely modular; capable of assisting any organization plan and
+coordinate any kind of event. It is designed for organizations that require collaboration and
+cross-communication with both internal and external organizations. _TSR_ enables transparency
+amongst participating organizations that work together to plan and coordinate events.
 
 ## Setup
+
+_TSR_ is built on Spring and React.
 
 - Install Docker
 - On Ubuntu or OSX with bash or zsh: run `. ./setup.sh`.
