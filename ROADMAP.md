@@ -2,7 +2,7 @@
 
 Dynamically manage and track planning requirements in a collaborative space. See the most up to
 date [backlog](https://github.com/gorhack/tsr/projects/2)
-and [icebox](https://github.com/gorhack/tsr/projects/3). Issues in the backlog are priorized. 
+and [icebox](https://github.com/gorhack/tsr/projects/3). Issues in the backlog are prioritized.
 Issues in the icebox are in no particular order.
 
 ### Overarching project goals:
@@ -18,7 +18,7 @@ Issues in the icebox are in no particular order.
     - [x] Development keycloak <https://kc.tracked.events>
     - [ ] Production ready
     - [ ] Third party login
-    - [x] Application ser roles ("user" / "admin")
+    - [x] Application user roles ("user" / "admin")
     - [ ] Organization specific user roles ("org_user" / "org_admin")
     - [ ] External organization sharing / password protected limited input request
 - [ ] Integrate with 3rd party systems
