@@ -11,33 +11,13 @@ organizations. TSR enables complete transparency amongst participating organizat
 together to plan and coordinate events. Whether you are planning a single range or combined arms
 exercise, TSR allows its users to successfully plan events.
 
-## Project Goals
-Dynamically manage and track planning requirements in a collaborative space.
-- [x] CI/CD pipeline
-    - [x] test - back/front end
-    - [x] code quality - [sonarcloud](https://sonarcloud.io/dashboard?id=gorhack_tsr)
-    - [x] dependency scan - Github's Dependabot
-    - [x] deploy - [aws eb](https://tracked.events)
-    - [ ] deploy to Coding Repository and Transformation Environment (CReATE) platform
-      (TBD 2021/2022)
-- [ ] SSO
-    - [x] [keycloak](http://alcesleo.github.io/2020/01/30/setting-up-keycloak-on-aws/)
-    - [ ] transition from dev/testing environment to deployment ready version of kc
-    - [ ] third party SSO?
-    - [x] user roles ("user" / "admin")
-- [ ] transition from [dev/testing rds](https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/using-features.managing.db.html?icmpid=docs_elasticbeanstalk_console)
-db to deployment db
-- [ ] integrate with 3rd party systems
-- [x] real time web socket updates
-- [ ] notifications
-
 ## Setup
  - Install Docker
  - On Ubuntu or OSX with bash or zsh: run `. ./setup.sh`.
  - Source your shell and `direnv` should source your project's `.envrc` when you enter the project
    directory
 
-### Prerequisites Installed:
+### Dependencies Installed:
  - Java 15 (JDK)
  - `yarn`
  - `direnv`
