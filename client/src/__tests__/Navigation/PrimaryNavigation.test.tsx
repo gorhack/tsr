@@ -1,8 +1,8 @@
 import React from "react";
 import td from "testdouble";
 import * as UserApi from "../../Users/UserApi";
+import { TsrUser } from "../../Users/UserApi";
 import { act, render, RenderResult, screen } from "@testing-library/react";
-import { MemoryRouter } from "react-router";
 import { PrimaryNavigation } from "../../Navigation/PrimaryNavigation";
 import { UserContextProvider } from "../../Users/UserContext";
 
@@ -16,24 +16,31 @@ describe("Primary nav", () => {
     afterEach(td.reset);
 
     it("Displays username", async () => {
-        td.when(mockGetUserInfo(), { times: 1 }).thenResolve({
+        const userPromise: Promise<TsrUser> = Promise.resolve({
             userId: "1234",
             username: "cool user",
             role: "USER",
+            settings: {
+                organizations: [],
+            },
         });
-        await act(async () => {
-            await renderPrimaryNavigation();
-        });
+        await renderPrimaryNavigation(userPromise);
+
         expect(screen.getByText("cool user")).toBeInTheDocument();
     });
 
-    const renderPrimaryNavigation = async (): Promise<RenderResult> => {
-        return render(
-            <MemoryRouter>
-                <UserContextProvider>
-                    <PrimaryNavigation />
-                </UserContextProvider>
-            </MemoryRouter>,
+    const renderPrimaryNavigation = async (
+        userPromise: Promise<TsrUser>,
+    ): Promise<RenderResult> => {
+        td.when(mockGetUserInfo()).thenDo(() => userPromise);
+        const result = render(
+            <UserContextProvider>
+                <PrimaryNavigation />
+            </UserContextProvider>,
         );
+        await act(async () => {
+            await userPromise;
+        });
+        return result;
     };
 });

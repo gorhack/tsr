@@ -32,24 +32,6 @@ describe("home page of the application", () => {
             "getActiveEventsByOrganizationIds",
         );
         mockGetUserInfo = td.replace(UserApi, "getUserInfo");
-        const user: TsrUser = {
-            userId: "1234",
-            username: "a user",
-            role: "USER",
-            settings: {
-                organizations: [
-                    makeOrganization({
-                        organizationId: 1,
-                        sortOrder: 1,
-                    }),
-                    makeOrganization({
-                        organizationId: 2,
-                        sortOrder: 2,
-                    }),
-                ],
-            },
-        };
-        td.when(mockGetUserInfo()).thenResolve(user);
     });
 
     afterEach(td.reset);
@@ -121,6 +103,25 @@ describe("home page of the application", () => {
         history = createMemoryHistory(),
         fakeStompSocketService = mockSocketService(),
     }: RenderHomePageProps): Promise<RenderResult> => {
+        const user: TsrUser = {
+            userId: "1234",
+            username: "a user",
+            role: "USER",
+            settings: {
+                organizations: [
+                    makeOrganization({
+                        organizationId: 1,
+                        sortOrder: 1,
+                    }),
+                    makeOrganization({
+                        organizationId: 2,
+                        sortOrder: 2,
+                    }),
+                ],
+            },
+        };
+        const userPromise = Promise.resolve(user);
+        td.when(mockGetUserInfo()).thenDo(() => userPromise);
         const userPage: PageDTO<TsrEvent> = {
             items: [
                 makeEvent({
@@ -144,7 +145,7 @@ describe("home page of the application", () => {
         td.when(mockGetActiveEventsByOrganizationIds()).thenDo(() =>
             Promise.resolve(orgEventsPromise),
         );
-        td.when(mockGetActiveEventsByUserId()).thenDo(() => Promise.resolve(userEventsPromise));
+        td.when(mockGetActiveEventsByUserId()).thenDo(() => userEventsPromise);
 
         history.push("/");
         const socketProps = {
@@ -163,6 +164,7 @@ describe("home page of the application", () => {
             </StompSocketProvider>,
         );
         await act(async () => {
+            await userPromise;
             await userEventsPromise;
             await orgEventsPromise;
         });

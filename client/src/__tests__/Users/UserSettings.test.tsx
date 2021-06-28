@@ -271,7 +271,7 @@ describe("User settings", () => {
     }: RenderUserSettingsProps): Promise<RenderResult> => {
         history.push("/settings");
 
-        td.when(mockGetUserInfo()).thenDo(() => Promise.resolve(userPromise));
+        td.when(mockGetUserInfo()).thenDo(() => userPromise);
         td.when(mockGetOrganizationContains("")).thenDo(() => Promise.resolve(organizationPromise));
         const result = render(
             <UserContextProvider>
