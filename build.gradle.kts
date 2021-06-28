@@ -4,7 +4,7 @@ import org.gradle.api.tasks.testing.logging.TestLogEvent
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-	id("org.springframework.boot") version "2.5.1"
+	id("org.springframework.boot") version "2.5.2"
 	id("io.spring.dependency-management") version "1.0.11.RELEASE"
 	id("com.moowork.node") version "1.3.1"
 	id("org.flywaydb.flyway") version "7.10.0"
@@ -12,8 +12,8 @@ plugins {
 
 	id ("org.jetbrains.kotlin.plugin.jpa") version "1.5.0"
 	id ("org.jetbrains.kotlin.plugin.noarg") version "1.5.0"
-	kotlin("jvm") version "1.5.10"
-	kotlin("plugin.spring") version "1.5.10"
+	kotlin("jvm") version "1.5.20"
+	kotlin("plugin.spring") version "1.5.20"
 
 	id("com.github.ben-manes.versions") version "0.39.0" // helps find latest dependency versions `./gradlew dependencyUpdates`
 }
@@ -43,10 +43,10 @@ repositories {
 }
 
 var springSecurityVersion = "5.5.0"
-var springBootVersion = "2.5.1"
+var springBootVersion = "2.5.2"
 var keycloakVersion = "11.0.0"
 var jacksonVersion = "2.12.3"
-var jetBrainsKotlin = "1.5.10"
+var jetBrainsKotlin = "1.5.20"
 
 dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-data-jpa:${springBootVersion}")
@@ -72,7 +72,7 @@ dependencies {
 	implementation("org.springframework.security:spring-security-oauth2-jose:${springSecurityVersion}")
 	implementation("org.springframework.security:spring-security-oauth2-resource-server:${springSecurityVersion}")
 	implementation("org.springframework.security.oauth:spring-security-oauth2:2.5.1.RELEASE")
-	implementation("org.springframework.session:spring-session-jdbc:2.5.0")
+	implementation("org.springframework.session:spring-session-jdbc:2.5.1")
 
 	implementation("org.hibernate.validator:hibernate-validator-cdi:7.0.1.Final")
 
