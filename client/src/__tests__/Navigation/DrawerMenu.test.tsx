@@ -5,7 +5,6 @@ import { DrawerMenu } from "../../Navigation/DrawerMenu";
 import { findByAriaLabel } from "../TestHelpers";
 import { createMemoryHistory, MemoryHistory } from "history";
 import { Router } from "react-router";
-import { UserContextProvider } from "../../Users/UserContext";
 
 describe("Drawer menu", () => {
     const CLOSE_MENU_BUTTON_NAME = "open menu";
@@ -80,11 +79,9 @@ describe("Drawer menu", () => {
         history.push("/somewhere");
 
         return render(
-            <UserContextProvider>
-                <Router history={history}>
-                    <DrawerMenu />
-                </Router>
-            </UserContextProvider>,
+            <Router history={history}>
+                <DrawerMenu />
+            </Router>,
         );
     };
 });
