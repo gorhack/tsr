@@ -79,7 +79,7 @@ dependencies {
 	runtimeOnly("org.postgresql:postgresql:42.2.22")
 
 	testImplementation("org.springframework.boot:spring-boot-starter-test:${springBootVersion}")
-	testImplementation("io.mockk:mockk:1.11.0")
+	testImplementation("io.mockk:mockk:1.12.0")
 }
 
 tasks.withType<KotlinCompile> {
