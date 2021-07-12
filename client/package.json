@@ -107,7 +107,7 @@
     "eslint-plugin-react-hooks": "^4.1.0",
     "history": "^5.0.0",
     "http-proxy-middleware": "^2.0.0",
-    "husky": "^6.0.0",
+    "husky": "^7.0.1",
     "lint-staged": "^11.0.0",
     "mutationobserver-shim": "^0.3.7",
     "nock": "^13.1.0",
