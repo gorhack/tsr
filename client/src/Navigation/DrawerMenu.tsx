@@ -1,12 +1,14 @@
-import React, { ReactElement, useState } from "react";
+import React, { ReactElement, useContext, useState } from "react";
 import { DrawerIcon } from "../Icons/DrawerIcon";
 import "./DrawerMenu.css";
 import { LinkButton } from "../Buttons/Buttons";
 import { DrawerCloseIcon } from "./DrawerCloseIcon";
 import { NavLink } from "react-router-dom";
 import LogoBold from "../Icons/TrackedIconBold.svg";
+import UserContext from "../Users/UserContext";
 
 export const DrawerMenu: React.FC = (): ReactElement => {
+    const tsrUser = useContext(UserContext);
     const [drawerOpen, setDrawerOpen] = useState<true | false>(false);
     const openDrawer = () => setDrawerOpen(true);
     const closeDrawer = () => setDrawerOpen(false);
@@ -43,6 +45,26 @@ export const DrawerMenu: React.FC = (): ReactElement => {
                                 <DrawerCloseIcon className={"DrawerMenu-CloseIcon"} />
                             </LinkButton>
                         </div>
+                        {tsrUser ? (
+                            <>
+                                <div className="DrawerMenu-section">
+                                    <p aria-label={"organizations section"}>Organizations</p>
+                                    {tsrUser.settings.organizations.map((org) => {
+                                        return (
+                                            <NavLink
+                                                key={`${tsrUser.username}-${org.organizationDisplayName}`}
+                                                to={`organization/${org.organizationId}`}
+                                            >
+                                                {org.organizationDisplayName}
+                                            </NavLink>
+                                        );
+                                    })}
+                                </div>
+                            </>
+                        ) : (
+                            <></>
+                        )}
+
                         <div className="DrawerMenu-section">
                             <p aria-label="settings section">Settings</p>
                             <NavLink

@@ -11,6 +11,7 @@ import { Footer } from "./Navigation/Footer";
 import { About } from "./About";
 import { UserSettings } from "./Users/UserSettings";
 import { UserContextProvider } from "./Users/UserContext";
+import OrganizationSettings from "./Organization/OrganizationSettings";
 
 const App: React.FC = () => {
     return (
@@ -26,6 +27,10 @@ const App: React.FC = () => {
                                     <Route path="/editEvent/:eventId" component={CreateEvent} />
                                     <Route path="/event/:eventId" component={EventPage} />
                                     <Route path="/about" component={About} />
+                                    <Route
+                                        path="/organization/:organizationId"
+                                        component={OrganizationSettings}
+                                    />
                                     <Route path="/settings" component={UserSettings} />
                                     <Route path="/" component={Home} />
                                 </Switch>
