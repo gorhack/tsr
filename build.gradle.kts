@@ -4,16 +4,16 @@ import org.gradle.api.tasks.testing.logging.TestLogEvent
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-	id("org.springframework.boot") version "2.5.2"
+	id("org.springframework.boot") version "2.5.5"
 	id("io.spring.dependency-management") version "1.0.11.RELEASE"
 	id("com.moowork.node") version "1.3.1"
-	id("org.flywaydb.flyway") version "7.10.0"
+	id("org.flywaydb.flyway") version "8.0.0"
 	id("org.sonarqube") version "3.3"
 
 	id ("org.jetbrains.kotlin.plugin.jpa") version "1.5.0"
 	id ("org.jetbrains.kotlin.plugin.noarg") version "1.5.0"
-	kotlin("jvm") version "1.5.20"
-	kotlin("plugin.spring") version "1.5.20"
+	kotlin("jvm") version "1.5.31"
+	kotlin("plugin.spring") version "1.5.31"
 
 	id("com.github.ben-manes.versions") version "0.39.0" // helps find latest dependency versions `./gradlew dependencyUpdates`
 }
@@ -42,18 +42,18 @@ repositories {
 	maven { url = uri("https://repo.spring.io/snapshot") }
 }
 
-var springSecurityVersion = "5.5.0"
-var springBootVersion = "2.5.2"
+var springSecurityVersion = "5.5.2"
+var springBootVersion = "2.5.5"
 var keycloakVersion = "11.0.0"
-var jacksonVersion = "2.12.3"
-var jetBrainsKotlin = "1.5.20"
+var jacksonVersion = "2.13.0"
+var jetBrainsKotlin = "1.5.31"
 
 dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-data-jpa:${springBootVersion}")
 	implementation("org.springframework.boot:spring-boot-starter-web:${springBootVersion}")
 	implementation("org.springframework.boot:spring-boot-starter-actuator:${springBootVersion}")
 	implementation("org.springframework.boot:spring-boot-starter-websocket:${springBootVersion}")
-	implementation("org.flywaydb:flyway-core:7.10.0")
+	implementation("org.flywaydb:flyway-core:8.0.0")
 
 	// Deserialize json
 	implementation("com.fasterxml.jackson.module:jackson-module-kotlin:${jacksonVersion}")
@@ -72,14 +72,14 @@ dependencies {
 	implementation("org.springframework.security:spring-security-oauth2-jose:${springSecurityVersion}")
 	implementation("org.springframework.security:spring-security-oauth2-resource-server:${springSecurityVersion}")
 	implementation("org.springframework.security.oauth:spring-security-oauth2:2.5.1.RELEASE")
-	implementation("org.springframework.session:spring-session-jdbc:2.5.1")
+	implementation("org.springframework.session:spring-session-jdbc:2.5.2")
 
 	implementation("org.hibernate.validator:hibernate-validator-cdi:7.0.1.Final")
 
-	runtimeOnly("org.postgresql:postgresql:42.2.22")
+	runtimeOnly("org.postgresql:postgresql:42.2.24")
 
 	testImplementation("org.springframework.boot:spring-boot-starter-test:${springBootVersion}")
-	testImplementation("io.mockk:mockk:1.11.0")
+	testImplementation("io.mockk:mockk:1.12.0")
 }
 
 tasks.withType<KotlinCompile> {
