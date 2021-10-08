@@ -109,9 +109,7 @@ describe("event tasks", () => {
             eventTaskDisplayName: "first",
         });
         await act(async () => {
-            await selectEvent.create(screen.getByLabelText("add tasks"), "first", {
-                waitForElement: false,
-            });
+            await selectEvent.create(screen.getByLabelText("add tasks"), "first");
         });
         expect(screen.getByText("first")).toBeInTheDocument();
     });

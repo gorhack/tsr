@@ -48,9 +48,7 @@ describe("event type select", () => {
             sortOrder: 4,
         });
         await act(async () => {
-            await selectEvent.create(screen.getByLabelText(EVENT_TYPE_LABEL), "fourth", {
-                waitForElement: false,
-            });
+            await selectEvent.create(screen.getByLabelText(EVENT_TYPE_LABEL), "fourth");
         });
         expect(screen.getByText("fourth")).toBeInTheDocument();
     });

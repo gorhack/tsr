@@ -12,8 +12,8 @@ export const createEventTask = async (
     const uri = `${baseUri}/${eventId}/task`;
     return axios
         .post(uri, creatableEvent)
-        .then((response: AxiosResponse<EventTask>) => {
-            return response.data;
+        .then((response) => {
+            return response.data as unknown as EventTask;
         })
         .catch((error) => {
             throw new Error(error.message);
@@ -41,8 +41,8 @@ export const updateEventTaskSuspense = (
     const uri = `${baseUri}/${eventId}/task/${taskId}/suspense`;
     return axios
         .put(uri, { suspenseDate: updatedSuspenseDate })
-        .then((response: AxiosResponse<EventTask>) => {
-            return response.data;
+        .then((response) => {
+            return response.data as EventTask;
         })
         .catch((error) => {
             throw new Error(error.message);
@@ -82,7 +82,7 @@ export const addComment = async (
     const uri = `${baseUri}/${eventId}/task/${comment.eventTaskId}/comment`;
     return axios
         .post(uri, comment)
-        .then((response: AxiosResponse) => {
+        .then((response) => {
             return response.data;
         })
         .catch((error) => {

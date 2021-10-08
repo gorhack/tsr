@@ -149,8 +149,8 @@ export const EventTaskSection = ({ tsrEvent }: EventTaskSectionProps): ReactElem
         for (const eventTask of foundEventTasks) {
             try {
                 await createEventTask(tsrEvent.eventId, eventTask);
-            } catch (error) {
-                console.error(`could not add event task ${error.message}`);
+            } catch ({ message }) {
+                console.error(`could not add event task ${message as string}`);
             }
         }
         setSelectedTaskOption([]); // TODO: clear the value in the select
@@ -183,8 +183,8 @@ export const EventTaskSection = ({ tsrEvent }: EventTaskSectionProps): ReactElem
                     eventTaskId: eventTask.eventTaskId,
                     annotation: commentAnnotation,
                 });
-            } catch (error) {
-                console.error(`unable to add your comment, ${error.message}`);
+            } catch ({ message }) {
+                console.error(`unable to add your comment, ${message as string}`);
             }
         })();
         setCommentAnnotation("");
