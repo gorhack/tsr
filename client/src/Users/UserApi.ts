@@ -17,12 +17,12 @@ export const saveUserRole = async (role: UserRole, userId: string): Promise<TsrU
     const userRoleUpdate: UserRoleUpdate = { role, userId };
     const uri = `${baseUri}/role`;
     const result = await axios.put(uri, userRoleUpdate);
-    return result.data;
+    return result.data as TsrUser;
 };
 
 export const setUserSettings = async (userSettings: TsrUserSettings): Promise<TsrUser> => {
     const uri = `${baseUri}/settings`;
-    return (await axios.put(uri, userSettings)).data;
+    return (await axios.put(uri, userSettings)).data as unknown as TsrUser;
 };
 
 export interface TsrUserSettings {

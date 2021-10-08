@@ -116,8 +116,8 @@ export const UserSettings: React.FC = (): ReactElement => {
         try {
             await setUserSettings(settingsToSave);
             history.push("/");
-        } catch (error) {
-            console.error(`error saving your settings, ${error.message}`);
+        } catch ({ message }) {
+            console.error(`error saving your settings, ${message as string}`);
         }
     };
     const onCancel = (e: React.MouseEvent<HTMLButtonElement>): void => {

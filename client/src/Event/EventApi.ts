@@ -7,17 +7,17 @@ const baseUri = "/api/v1/event";
 
 export const saveEvent = async (event: CreatableTsrEvent): Promise<TsrEvent> => {
     try {
-        return (await axios.post(baseUri, event)).data;
-    } catch (error) {
-        throw new Error(error.message);
+        return (await axios.post(baseUri, event)).data as TsrEvent;
+    } catch ({ message }) {
+        throw new Error(message as string);
     }
 };
 
 export const updateEvent = async (event: TsrEvent): Promise<TsrEvent> => {
     try {
         return (await axios.put(baseUri, event)).data;
-    } catch (error) {
-        throw new Error(error.message);
+    } catch ({ message }) {
+        throw new Error(message as string);
     }
 };
 
@@ -25,8 +25,8 @@ export const getEventById = async (eventId: number): Promise<TsrEvent> => {
     const uri = `${baseUri}/${eventId}`;
     try {
         return (await axios.get(uri)).data;
-    } catch (error) {
-        throw new Error(error.message);
+    } catch ({ message }) {
+        throw new Error(message as string);
     }
 };
 
