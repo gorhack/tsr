@@ -42,7 +42,7 @@ repositories {
 	maven { url = uri("https://repo.spring.io/snapshot") }
 }
 
-var springSecurityVersion = "5.5.2"
+var springSecurityVersion = "5.5.3"
 var springBootVersion = "2.5.5"
 var keycloakVersion = "11.0.0"
 var jacksonVersion = "2.13.0"
