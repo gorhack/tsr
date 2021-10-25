@@ -53,7 +53,7 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-web:${springBootVersion}")
 	implementation("org.springframework.boot:spring-boot-starter-actuator:${springBootVersion}")
 	implementation("org.springframework.boot:spring-boot-starter-websocket:${springBootVersion}")
-	implementation("org.flywaydb:flyway-core:8.0.0")
+	implementation("org.flywaydb:flyway-core:8.0.2")
 
 	// Deserialize json
 	implementation("com.fasterxml.jackson.module:jackson-module-kotlin:${jacksonVersion}")
