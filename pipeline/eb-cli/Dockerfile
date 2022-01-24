@@ -1,4 +1,4 @@
-FROM python:3.9.5-slim-buster
+FROM python:3.10.2-slim-buster
 
 LABEL "name"="download required eb cli packages"
 LABEL "maintainer"="Kyle Gorak"
