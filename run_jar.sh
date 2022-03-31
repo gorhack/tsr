@@ -84,7 +84,7 @@ echo ""
 
 if [[ -z ${CI+x} ]]; then
   # Not in CI
-  SPRING_PROFILES_ACTIVE="$env" ./gradlew yarnBuild assemble bootRun --console=plain --args="--server.port=$PORT" &
+  SPRING_PROFILES_ACTIVE="$env" ./gradlew yarn_build assemble bootRun --console=plain --args="--server.port=$PORT" &
 else
   # In CI
   SPRING_PROFILES_ACTIVE="$env" java -jar -Dserver.port=$PORT ./build/libs/tsr-*.jar &

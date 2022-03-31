@@ -1,4 +1,4 @@
-import com.moowork.gradle.node.yarn.YarnTask
+import com.github.gradle.node.yarn.task.YarnTask
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.gradle.api.tasks.testing.logging.TestLogEvent
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
@@ -6,7 +6,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 plugins {
 	id("org.springframework.boot") version "2.5.5"
 	id("io.spring.dependency-management") version "1.0.11.RELEASE"
-	id("com.moowork.node") version "1.3.1"
+	id("com.github.node-gradle.node") version "3.2.1"
 	id("org.flywaydb.flyway") version "8.0.0"
 	id("org.sonarqube") version "3.3"
 
@@ -23,7 +23,10 @@ version = "0.0.1-SNAPSHOT"
 java.sourceCompatibility = JavaVersion.VERSION_15
 
 node {
-	nodeModulesDir = file("${project.projectDir}/client")
+	download.set(false)
+	yarnWorkDir.set(file("${project.projectDir}/client"))
+	nodeProjectDir.set(file("${project.projectDir}/client"))
+	yarnWorkDir.set(file("${project.projectDir}/.gradle/yarn"))
 }
 
 noArg {
@@ -108,14 +111,13 @@ tasks.withType<Test> {
 	}
 }
 
-tasks.register("yarnBuild", YarnTask::class) {
-	setWorkingDir("client")
-	args = listOf("build")
-	dependsOn("yarnInstall")
+tasks.getByName<YarnTask>("yarn_build") {
+	dependsOn("yarn_install")
 }
-tasks.register("yarnInstall", YarnTask::class) {
-	setWorkingDir("client")
-	args = listOf("install")
+
+tasks.getByName<YarnTask>("yarn_test") {
+	dependsOn("yarn_build")
+	environment.put("CI", "true")
 }
 
 tasks.getByName<Jar>("jar") {
