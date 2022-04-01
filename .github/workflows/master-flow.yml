@@ -13,7 +13,7 @@ jobs:
       - name: Set up JDK 17
         uses: actions/setup-java@v2
         with:
-          distributiuon: 'temurin'
+          distribution: 'temurin'
           java-version: '17'
 
       - name: Build Jar
