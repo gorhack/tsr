@@ -64,6 +64,8 @@ yarn*.log
 
 **/.DS_STORE
 
+# jenv
+.java-version
 
 # Elastic Beanstalk Files
 .elasticbeanstalk/*

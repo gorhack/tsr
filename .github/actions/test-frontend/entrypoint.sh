@@ -1,18 +1,18 @@
 #!/bin/sh
 
-set -eou pipefail
+set -eu pipefail
 
-if [[ -z "$GITHUB_WORKSPACE" ]]; then
+if [ -z "$GITHUB_WORKSPACE" ]; then
   echo "Set the GITHUB_WORKSPACE env variable."
   exit 1
 fi
 
-if [[ -z "$GITHUB_REPOSITORY" ]]; then
+if [ -z "$GITHUB_REPOSITORY" ]; then
   echo "Set the GITHUB_REPOSITORY env variable."
   exit 1
 fi
 
-cd "$GITHUB_WORKSPACE"/client || exit 1
+cd client || exit 1
 echo "******* Testing Frontend"
 yarn install
 yarn lint:ci

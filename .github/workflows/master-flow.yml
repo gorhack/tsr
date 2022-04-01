@@ -6,14 +6,15 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20.04
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
-      - name: Set up JDK 15
-        uses: actions/setup-java@v1
+      - name: Set up JDK 17
+        uses: actions/setup-java@v2
         with:
-          java-version: 15
+          distributiuon: 'temurin'
+          java-version: '17'
 
       - name: Build Jar
         run: ./pipeline/build.sh
@@ -25,7 +26,7 @@ jobs:
           path: build/libs/*.jar
   test:
     name: run tests
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20.04
     needs: build
     services:
       postgres:
@@ -39,11 +40,12 @@ jobs:
         # needed because the postgres container does not provide a healthcheck
         options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
-      - uses: actions/setup-java@v1
+      - uses: actions/setup-java@v2
         with:
-          java-version: 15
+          distribution: 'temurin'
+          java-version: '17'
       - run: ./gradlew test --info
         env:
           RDS_HOSTNAME: localhost
