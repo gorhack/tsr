@@ -46,7 +46,7 @@ repositories {
 }
 
 var springSecurityVersion = "5.6.2"
-var springBootVersion = "2.6.5"
+var springBootVersion = "2.6.6"
 var jacksonVersion = "2.13.2"
 var jetBrainsKotlin = "1.6.10"
 
