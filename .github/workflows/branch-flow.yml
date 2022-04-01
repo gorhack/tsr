@@ -9,8 +9,8 @@ on:
 jobs:
   test:
     name: run-tests
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20.04
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - uses: ./.github/actions/test-frontend
       - uses: ./.github/actions/test-backend

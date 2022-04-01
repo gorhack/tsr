@@ -1,4 +1,4 @@
-FROM node:12.18.2-alpine3.12
+FROM node:16.14.2-alpine3.14
 
 LABEL "name"="Frontend Yarn Test"
 LABEL "maintainer"="Kyle Gorak"
