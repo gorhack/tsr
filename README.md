@@ -25,11 +25,11 @@ _TSR_ is built on Spring and React.
 
 #### Dependencies Installed:
 
-- Java 15 (JDK)
+- Java 17 (JDK)
 - `yarn`
 - `direnv`
 - Docker / `docker-compose`
-- OSX specific: `homebrew` and `geckodriver`
+- OSX specific: `homebrew`
 
 ## Run
 
@@ -40,11 +40,12 @@ _TSR_ is built on Spring and React.
     - `yarn start` in the client directory will run just the front end <http://localhost:3000>.
 - Login with user `tsr:password` at <http://localhost:8080>. Switch to port 3000 for live reloading.
 - _TSR_ uses Websockets for updating event state.
-- `./pipeline/build.sh` will build and package _TSR_ as a runnable jar file in `build/libs`.
+- `./pipeline/build.sh` will build and package a production _TSR_ application in a jar file within `build/libs`.
 
 ## Testing
 
 Created with TDD principles. Run `test.sh` to run all tests.
+- `test.sh` will run the tests and build a runnable jar in `build/libs` without CSP for use without HTTPS.
 
 - On the backend we use [JUnit5](https://junit.org/junit5/docs/current/user-guide/)
   and [mockk](https://mockk.io) for mocking.
