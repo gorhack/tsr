@@ -1,8 +1,7 @@
 import { act, render, RenderResult, screen } from "@testing-library/react";
 import td from "testdouble";
 import { Home } from "../Home";
-import { createMemoryHistory, MemoryHistory } from "history";
-import { Route, Router } from "react-router-dom";
+import { Route, Routes } from "react-router-dom";
 import React from "react";
 import {
     callSocketSubscriptionHandler,
@@ -19,6 +18,8 @@ import { PageDTO } from "../api";
 import { StompSocketProvider } from "../StompSocketContext";
 import { SocketService } from "../SocketService";
 import { UserContextProvider } from "../Users/UserContext";
+import { Router, useLocation } from "react-router";
+import { createMemoryHistory, MemoryHistory } from "history";
 
 describe("home page of the application", () => {
     let mockGetActiveEventsByUserId: typeof EventApi.getActiveEventsByUserId;
@@ -147,7 +148,6 @@ describe("home page of the application", () => {
         );
         td.when(mockGetActiveEventsByUserId()).thenDo(() => userEventsPromise);
 
-        history.push("/");
         const socketProps = {
             inputSocketService: fakeStompSocketService,
         };
@@ -155,10 +155,8 @@ describe("home page of the application", () => {
         const result = render(
             <StompSocketProvider {...socketProps}>
                 <UserContextProvider>
-                    <Router history={history}>
-                        <Route path="/">
-                            <Home />
-                        </Route>
+                    <Router navigator={history} location={"/"}>
+                        <Home />
                     </Router>
                 </UserContextProvider>
             </StompSocketProvider>,

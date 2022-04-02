@@ -1,4 +1,4 @@
-import { render, RenderResult, screen } from "@testing-library/react";
+import { act, render, RenderResult, screen } from "@testing-library/react";
 import { fireEvent } from "@testing-library/dom";
 import React from "react";
 import td from "testdouble";
@@ -8,15 +8,8 @@ import * as Api from "../../api";
 import { PageDTO } from "../../api";
 import { EventPage } from "../../Event/EventPage";
 import { createMemoryHistory, MemoryHistory } from "history";
-import { Route, Router } from "react-router-dom";
-import {
-    findByAriaLabel,
-    makeAudit,
-    makeEvent,
-    makeOrganization,
-    makePage,
-    reRender,
-} from "../TestHelpers";
+import { Route, Router, Routes } from "react-router-dom";
+import { findByAriaLabel, makeAudit, makeEvent, makeOrganization, makePage } from "../TestHelpers";
 import * as EventTaskApi from "../../Event/Task/EventTaskApi";
 import { EventTaskCategory } from "../../Event/Task/EventTaskApi";
 import moment from "moment";
@@ -211,8 +204,8 @@ describe("displays event details", () => {
         currentTime = "2020-07-20T10:00:00",
         history = createMemoryHistory(),
     }: RenderEventDetailsProps): Promise<RenderResult> => {
-        history.push(`/event/${event.eventId}`);
-        td.when(mockGetEventById(event.eventId)).thenResolve(event);
+        const eventPromise = Promise.resolve(event);
+        td.when(mockGetEventById(event.eventId)).thenDo(() => eventPromise);
         td.when(mockUserTimeZone()).thenReturn("TIMEZONE/timezone");
         td.when(mockCurrentTime()).thenReturn(moment(currentTime));
         td.when(mockGetEventTaskCategories(td.matchers.anything())).thenResolve(
@@ -233,13 +226,15 @@ describe("displays event details", () => {
         );
 
         const result = render(
-            <Router history={history}>
-                <Route path="/event/:eventId">
-                    <EventPage />
-                </Route>
+            <Router navigator={history} location={`/event/${event.eventId}`}>
+                <Routes>
+                    <Route path="/event/:eventId" element={<EventPage />} />
+                </Routes>
             </Router>,
         );
-        await reRender();
+        await act(async () => {
+            await eventPromise;
+        });
         return result;
     };
 });

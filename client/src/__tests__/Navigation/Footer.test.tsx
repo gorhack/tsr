@@ -20,9 +20,8 @@ interface RenderFooterProps {
 }
 
 const renderFooter = async ({ history }: RenderFooterProps): Promise<RenderResult> => {
-    history.push("/");
     return render(
-        <Router history={history}>
+        <Router navigator={history} location={"/"}>
             <Footer />
         </Router>,
     );

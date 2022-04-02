@@ -220,12 +220,9 @@ describe("home page of the application", () => {
         );
         td.when(mockGetActiveEventsByUserId()).thenDo(() => Promise.resolve(userEventsPromise));
 
-        history.push("/");
         const result = render(
-            <Router history={history}>
-                <Route path="/">
-                    <EventsSection />
-                </Route>
+            <Router navigator={history} location={"/"}>
+                <EventsSection />
             </Router>,
         );
         await act(async () => {

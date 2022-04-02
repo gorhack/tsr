@@ -1,14 +1,14 @@
 import React, { ReactElement, useEffect, useState } from "react";
 import { getActiveEventsByOrganizationIds, getActiveEventsByUserId, TsrEvent } from "./EventApi";
 import "./EventsSection.css";
-import { useHistory } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { emptyPage, PageDTO } from "../api";
 import uniqBy from "lodash/uniqBy";
 import { MenuButton } from "../Buttons/Buttons";
 import moment, { Moment } from "moment";
 
 export const EventsSection = (): ReactElement => {
-    const history = useHistory();
+    const navigate = useNavigate();
     const [userEventPage, setUserEventPage] = useState<PageDTO<TsrEvent>>(emptyPage);
     const [userEvents, setUserEvents] = useState<TsrEvent[]>([]);
     const [orgEventPage, setOrgEventPage] = useState<PageDTO<TsrEvent>>(emptyPage);
@@ -91,9 +91,7 @@ export const EventsSection = (): ReactElement => {
                 <div className={"EventsSection-No-Events"}>
                     No active events. Ensure you are subscribed to the correct Organizations.
                 </div>
-                <MenuButton onClick={() => history.push("/settings")}>
-                    Go To User Settings
-                </MenuButton>
+                <MenuButton onClick={() => navigate("/settings")}>Go To User Settings</MenuButton>
             </div>
         );
     };
@@ -142,7 +140,7 @@ interface SingleEventProps {
 }
 
 const SingleEvent = ({ event, dataTestId }: SingleEventProps): ReactElement => {
-    const history = useHistory();
+    const navigate = useNavigate();
     const SHORT_DATE_FORMAT = "M/D/YY";
 
     const shortDateFormat = (date: Moment): string => `${date.local().format(SHORT_DATE_FORMAT)}`;
@@ -153,7 +151,7 @@ const SingleEvent = ({ event, dataTestId }: SingleEventProps): ReactElement => {
                 <span style={{ fontSize: "26px" }}>{event.eventName}</span>
                 <MenuButton
                     style={{ alignSelf: "end" }}
-                    onClick={() => history.push(`/event/${event.eventId}`)}
+                    onClick={() => navigate(`/event/${event.eventId}`)}
                     className={"EventsSection-View-Button"}
                 >
                     View Event

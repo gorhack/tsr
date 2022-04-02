@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useReducer, useState } from "react";
 import { LabeledInput } from "../Inputs/LabeledInput";
-import { useHistory } from "react-router";
-import { FieldValues, SubmitHandler, useForm, useWatch } from "react-hook-form";
+import { useLocation, useNavigate } from "react-router";
+import { SubmitHandler, useForm, useWatch } from "react-hook-form";
 import { CreatableTsrEvent, getEventById, saveEvent, TsrEvent, updateEvent } from "./EventApi";
 import {
     currentDate,
@@ -18,7 +18,6 @@ import { Organization, OrganizationActionTypes } from "../Organization/Organizat
 import { LinkButton, PrimaryButton, SecondaryButton } from "../Buttons/Buttons";
 import { OrgSelect } from "../Organization/OrgSelect";
 import { useParams } from "react-router-dom";
-import { RouteParams } from "./EventPage";
 import { EventTypeSelect } from "./Type/EventType";
 
 type FormData = {
@@ -30,8 +29,9 @@ type FormData = {
 };
 
 export const CreateEvent: React.FC = () => {
-    const history = useHistory();
-    const { eventId } = useParams<RouteParams>();
+    const navigate = useNavigate();
+    const location = useLocation();
+    const { eventId } = useParams();
 
     const [organizationsCache, organizationCacheDispatch] = useReducer(orgCacheReducer, []);
     const [orgValues, setOrgValues] = useState<Option[]>([]);
@@ -48,14 +48,14 @@ export const CreateEvent: React.FC = () => {
         setError,
         setValue,
         formState: { errors },
-    } = useForm<FieldValues>({
+    } = useForm<FormData>({
         defaultValues: {
             eventTypeOption: eventTypeValue,
             organizationOption: orgValues,
         },
     });
-    const startDateWatch = useWatch({ control, name: "startDate", defaultValue: "" });
-    const endDateWatch = useWatch({ control, name: "endDate", defaultValue: "" });
+    const startDateWatch = useWatch({ control, name: "startDate", defaultValue: undefined });
+    const endDateWatch = useWatch({ control, name: "endDate", defaultValue: undefined });
 
     const setFormValues = useCallback(
         (event: TsrEvent): void => {
@@ -101,10 +101,10 @@ export const CreateEvent: React.FC = () => {
 
     const onCancel = (e: React.MouseEvent<HTMLButtonElement>): void => {
         e.preventDefault();
-        if (history.location.pathname.startsWith(`/editEvent/${eventId}`)) {
-            history.push(`/event/${eventId}`);
+        if (location.pathname.startsWith(`/editEvent/${eventId}`)) {
+            navigate(`/event/${eventId}`);
         } else {
-            history.push("/");
+            navigate("/");
         }
     };
 
@@ -145,7 +145,7 @@ export const CreateEvent: React.FC = () => {
             };
             await updateEvent(tsrEventToUpdate)
                 .then((result) => {
-                    history.push(`/event/${result.eventId}`);
+                    navigate(`/event/${result.eventId}`);
                 })
                 .catch((error) => {
                     console.error("error saving the event", error.message);
@@ -160,7 +160,7 @@ export const CreateEvent: React.FC = () => {
             };
             await saveEvent(tsrEventToSave)
                 .then((result) => {
-                    history.push(`/event/${result.eventId}`);
+                    navigate(`/event/${result.eventId}`);
                 })
                 .catch((error) => {
                     console.error("error saving the event", error.message);
@@ -176,7 +176,7 @@ export const CreateEvent: React.FC = () => {
 
     return (
         <>
-            <LinkButton onClick={() => history.push("/")}>{"< back to events"}</LinkButton>
+            <LinkButton onClick={() => navigate("/")}>{"< back to events"}</LinkButton>
             {createEventHeader}
             <div className={"CreateEvent-Content"}>
                 <form

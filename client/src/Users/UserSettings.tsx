@@ -20,7 +20,7 @@ import "../Form.css";
 import "./UserSettings.css";
 import { LabeledInput } from "../Inputs/LabeledInput";
 import sortedUniqBy from "lodash/sortedUniqBy";
-import { useHistory } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import UserContext from "./UserContext";
 
 interface FormData extends FieldValues {
@@ -30,7 +30,7 @@ interface FormData extends FieldValues {
 }
 
 export const UserSettings: React.FC = (): ReactElement => {
-    const history = useHistory();
+    const navigate = useNavigate();
     const tsrUser = useContext(UserContext);
 
     const orgCacheReducer = (state: Organization[], action: OrgCacheReducerAction) => {
@@ -92,7 +92,7 @@ export const UserSettings: React.FC = (): ReactElement => {
         return <></>;
     }
 
-    const onSubmit: SubmitHandler<FormData> = async (data): Promise<void> => {
+    const onSubmit: SubmitHandler<FieldValues> = async (data): Promise<void> => {
         const { phone, email } = data;
         let foundOrgs: Organization[] = [];
         orgValues.forEach((orgOption): void => {
@@ -115,7 +115,7 @@ export const UserSettings: React.FC = (): ReactElement => {
         };
         try {
             await setUserSettings(settingsToSave);
-            history.push("/");
+            navigate("/");
         } catch ({ message }) {
             console.error(`error saving your settings, ${message as string}`);
         }
@@ -127,7 +127,7 @@ export const UserSettings: React.FC = (): ReactElement => {
 
     return (
         <>
-            <LinkButton onClick={() => history.push("/")}>{"< back to events"}</LinkButton>
+            <LinkButton onClick={() => navigate("/")}>{"< back to events"}</LinkButton>
             <h1 className="UserSettings-Header">{`${tsrUser.username} settings`}</h1>
             <div className="UserSettings-Content">
                 <form

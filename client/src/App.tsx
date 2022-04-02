@@ -1,6 +1,6 @@
 import React from "react";
 import "./App.css";
-import { Route, Switch } from "react-router";
+import { Routes, Route } from "react-router";
 import { BrowserRouter } from "react-router-dom";
 import { Home } from "./Home";
 import { CreateEvent } from "./Event/CreateEvent";
@@ -21,14 +21,14 @@ const App: React.FC = () => {
                         <div className="App-Container">
                             <PrimaryNavigation />
                             <main className="App-Content">
-                                <Switch>
-                                    <Route path="/createEvent" component={CreateEvent} />
-                                    <Route path="/editEvent/:eventId" component={CreateEvent} />
-                                    <Route path="/event/:eventId" component={EventPage} />
-                                    <Route path="/about" component={About} />
-                                    <Route path="/settings" component={UserSettings} />
-                                    <Route path="/" component={Home} />
-                                </Switch>
+                                <Routes>
+                                    <Route path="/createEvent" element={<CreateEvent />} />
+                                    <Route path="/editEvent/:eventId" element={<CreateEvent />} />
+                                    <Route path="/event/:eventId" element={<EventPage />} />
+                                    <Route path="/about" element={<About />} />
+                                    <Route path="/settings" element={<UserSettings />} />
+                                    <Route path="/" element={<Home />} />
+                                </Routes>
                             </main>
                             <Footer />
                         </div>

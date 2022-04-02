@@ -76,10 +76,8 @@ describe("Drawer menu", () => {
     });
 
     const renderDrawer = (history: MemoryHistory = createMemoryHistory()): RenderResult => {
-        history.push("/somewhere");
-
         return render(
-            <Router history={history}>
+            <Router navigator={history} location={"/somewhere"}>
                 <DrawerMenu />
             </Router>,
         );

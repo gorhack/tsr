@@ -18,7 +18,7 @@ import { PageDTO } from "../../api";
 import selectEvent from "react-select-event";
 import { fireEvent } from "@testing-library/dom";
 import { createMemoryHistory, MemoryHistory } from "history";
-import { Route, Router } from "react-router";
+import { Router } from "react-router";
 import { UserContextProvider } from "../../Users/UserContext";
 
 const EMAIL_ADDRESS = "test@example.com";
@@ -275,10 +275,8 @@ describe("User settings", () => {
         td.when(mockGetOrganizationContains("")).thenDo(() => Promise.resolve(organizationPromise));
         const result = render(
             <UserContextProvider>
-                <Router history={history}>
-                    <Route path={"/settings"}>
-                        <UserSettings />
-                    </Route>
+                <Router navigator={history} location={"/settings"}>
+                    <UserSettings />
                 </Router>
             </UserContextProvider>,
         );

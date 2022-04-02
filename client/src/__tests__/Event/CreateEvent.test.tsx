@@ -2,7 +2,7 @@ import "mutationobserver-shim";
 import { act, fireEvent, render, RenderResult, screen } from "@testing-library/react";
 import { CreateEvent } from "../../Event/CreateEvent";
 import React from "react";
-import { Route, Router } from "react-router-dom";
+import { Route, Router, Routes } from "react-router-dom";
 import { createMemoryHistory, MemoryHistory } from "history";
 import {
     clearDatePicker,
@@ -341,10 +341,10 @@ describe("create an event", () => {
 
         const path = event ? "/editEvent/:eventId" : "/createEvent";
         const result = render(
-            <Router history={history}>
-                <Route path={path}>
-                    <CreateEvent />
-                </Route>
+            <Router navigator={history} location={"/createEvent"}>
+                <Routes>
+                    <Route path={path} element={<CreateEvent />} />
+                </Routes>
             </Router>,
         );
 

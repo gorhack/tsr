@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useHistory, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { getEventById, TsrEvent } from "./EventApi";
 import moment from "moment";
 import { EventDetails } from "./EventDetails";
@@ -13,8 +13,8 @@ export interface RouteParams {
 }
 
 export const EventPage: React.FC = () => {
-    const history = useHistory();
-    const { eventId } = useParams<RouteParams>();
+    const navigate = useNavigate();
+    const { eventId } = useParams();
     const [tsrEvent, setTsrEvent] = useState<TsrEvent | undefined>(undefined);
 
     useEffect(() => {
@@ -33,7 +33,7 @@ export const EventPage: React.FC = () => {
         return <></>;
     }
     const setEditEventFunc = (): void => {
-        history.push(`/editEvent/${tsrEvent.eventId}`);
+        navigate(`/editEvent/${tsrEvent.eventId}`);
     };
     const startDate = moment.utc(tsrEvent.startDate);
     const endDate = moment.utc(tsrEvent.endDate);
@@ -58,7 +58,7 @@ export const EventPage: React.FC = () => {
 
     return (
         <>
-            <LinkButton onClick={() => history.push("/")}>{"< back to events"}</LinkButton>
+            <LinkButton onClick={() => navigate("/")}>{"< back to events"}</LinkButton>
             <div className="space-3" />
             <div className={"EventPage-Header flex-row"}>
                 <div>

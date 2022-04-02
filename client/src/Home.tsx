@@ -1,5 +1,5 @@
 import React, { useContext, useEffect } from "react";
-import { useHistory } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { EventsSection } from "./Event/EventsSection";
 import { useStompSocketContext } from "./StompSocketContext";
 import { SocketStatus } from "./SocketService";
@@ -12,7 +12,7 @@ import UserContext from "./Users/UserContext";
 export const Home: React.FC = () => {
     const { socketService } = useStompSocketContext();
     const tsrUser = useContext(UserContext);
-    const history = useHistory();
+    const navigate = useNavigate();
 
     useEffect(() => {
         if (tsrUser === undefined) {
@@ -68,7 +68,7 @@ export const Home: React.FC = () => {
                 <h1>events</h1>
                 <PrimaryButton
                     className={"CreateEvent-Button"}
-                    onClick={() => history.push("/createEvent")}
+                    onClick={() => navigate("/createEvent")}
                 >
                     Create an Event
                 </PrimaryButton>

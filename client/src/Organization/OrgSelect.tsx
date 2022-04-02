@@ -85,7 +85,7 @@ export const OrgSelect = ({
                             setSelectedOrgs(newValuesOrEmpty);
                             onChange(selection);
                         }}
-                        onInputChange={(i) => i.substr(0, MAX_NAME_LENGTH)}
+                        onInputChange={(i) => i.slice(0, MAX_NAME_LENGTH)}
                         filterOption={createFilter({
                             ignoreCase: true,
                             matchFrom: "any",
