@@ -63,7 +63,7 @@ dependencies {
 
 	implementation("org.jetbrains.kotlin:kotlin-reflect:${jetBrainsKotlin}")
 	implementation("org.jetbrains.kotlin:kotlin-stdlib-js:${jetBrainsKotlin}")
-	implementation("jakarta.persistence:jakarta.persistence-api:2.2.3")
+	implementation("jakarta.persistence:jakarta.persistence-api:3.1.0")
 
 	// SSO - Security
 	implementation("org.springframework.boot:spring-boot-starter-security:${springBootVersion}")
