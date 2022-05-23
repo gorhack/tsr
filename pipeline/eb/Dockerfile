@@ -1,4 +1,4 @@
-FROM openjdk:15-alpine
+FROM openjdk:18-alpine
 
 ENV SPRING_PROFILES_ACTIVE=default
 
